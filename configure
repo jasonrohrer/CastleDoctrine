@@ -1,0 +1,3 @@
+#!/bin/sh
+
+../minorGems/game/platforms/SDL/configure

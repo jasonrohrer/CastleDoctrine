@@ -1,0 +1,25 @@
+writeFailed "Error:  game folder is read-only"
+
+
+
+
+pauseMessage1 "Press ENTER to resume"
+
+pauseMessage2 "or type something for posterity:"
+
+pauseMessage3 "Press '%' to quit"
+
+pauseMessage4 "-"
+
+playbackTag           "Playback %:"
+playbackToggleMessage "(Press % to hide)"
+playbackEndMessage    "(Press ESC to end)"
+
+
+enterDemoCode  "Enter a demo code:"
+checkingCode  "Checking demo permissions with server..."
+
+
+err_webRequest   "ERROR:  Web request failed."
+err_codeFailed  "This demo code was denied by the server."
+err_serverVerifyFailed  "Response from the server could not be authenticated."
