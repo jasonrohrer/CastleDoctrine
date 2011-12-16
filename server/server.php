@@ -528,6 +528,7 @@ function cd_showData() {
             <FORM ACTION="server.php" METHOD="post">
     <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
+    <INPUT TYPE="hidden" NAME="order_by" VALUE="<?php echo $order_by;?>">
     <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
              VALUE="<?php echo $search;?>">
     <INPUT TYPE="Submit" VALUE="Search">
