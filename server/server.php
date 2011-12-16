@@ -448,9 +448,13 @@ function cd_checkUser() {
 
 
 function cd_showData() {
-    $password = cd_checkPassword( "show_data" );
 
     global $tableNamePrefix, $remoteIP;
+
+    // these are global so they work in embeded function call below
+    global $skip, $search, $order_by, $password;
+
+    $password = cd_checkPassword( "show_data" );
     
 
     echo "[<a href=\"server.php?action=show_data&password=$password" .
@@ -470,6 +474,12 @@ function cd_showData() {
     if( isset( $_REQUEST[ "search" ] ) ) {
         $search = $_REQUEST[ "search" ];
         }
+
+    $order_by = "last_ping_time";
+    if( isset( $_REQUEST[ "order_by" ] ) ) {
+        $order_by = $_REQUEST[ "order_by" ];
+        }
+    
 
     $keywordClause = "";
     $searchDisplay = "";
@@ -496,7 +506,7 @@ function cd_showData() {
     
              
     $query = "SELECT * FROM $tableNamePrefix"."houses $keywordClause".
-        "ORDER BY last_ping_time DESC ".
+        "ORDER BY $order_by DESC ".
         "LIMIT $skip, $housesPerPage;";
     $result = cd_queryDatabase( $query );
     
@@ -538,23 +548,41 @@ function cd_showData() {
     
     if( $prevSkip >= 0 ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "&skip=$prevSkip&search=$search\">Previous Page</a>] ";
+            "&skip=$prevSkip&search=$search&order_by=$order_by\">".
+            "Previous Page</a>] ";
         }
     if( $nextSkip < $totalHouses ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "&skip=$nextSkip&search=$search\">Next Page</a>]";
+            "&skip=$nextSkip&search=$search&order_by=$order_by\">".
+            "Next Page</a>]";
         }
 
     echo "<br><br>";
     
     echo "<table border=1 cellpadding=5>\n";
 
-    echo "<tr><td>User ID</td>\n";
+
+    function orderLink( $inOrderBy, $inLinkText ) {
+        global $password, $skip, $search, $order_by;
+        if( $inOrderBy == $order_by ) {
+            // already displaying this order, don't show link
+            return "<b>$inLinkText</b>";
+            }
+
+        // else show a link to switch to this order
+        return "<a href=\"server.php?action=show_data&password=$password" .
+            "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
+        }
+    
+    echo "<tr>\n";
+    echo "<td>".orderLink( "user_id", "User ID" )."</td>\n";
     echo "<td>Blocked?</td>\n";
-    echo "<td>Character Name</td>\n";
-    echo "<td>Loot Value</td>\n";
+    echo "<td>".orderLink( "character_name", "Character Name" )."</td>\n";
+    echo "<td>".orderLink( "loot_value", "Loot Value" )."</td>\n";
     echo "<td>Checkout?</td>\n";
-    echo "<td>Ping Time</td>\n";
+    echo "<td>".orderLink( "last_ping_time", "PingTime" )."</td>\n";
+
+    echo "</tr>\n";
     
 
     for( $i=0; $i<$numRows; $i++ ) {
@@ -595,7 +623,7 @@ function cd_showData() {
         
         echo "<tr>\n";
         
-        echo "<td><b>$user_id</b>";
+        echo "<td><b>$user_id</b> ";
         echo "[<a href=\"server.php?action=show_detail&password=$password" .
             "&user_id=$user_id\">detail</a>]</td>\n";
         echo "<td align=right>$blocked [$block_toggle]</td>\n";
