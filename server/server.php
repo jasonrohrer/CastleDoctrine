@@ -229,7 +229,7 @@ function cd_setupDatabase() {
         // to prevent replay attacks
         $query =
             "CREATE TABLE $tableName(" .
-            "user_id INT NOT NULL PRIMARY KEY AUTO INCREMENT," .
+            "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
             "sequence_number INT NOT NULL," .
             "blocked TINYINT NOT NULL );";
@@ -335,17 +335,25 @@ function cd_checkUser() {
 
     $email = "";
     if( isset( $_REQUEST[ "email" ] ) ) {
-        $level_number = $_REQUEST[ "email" ];
+        $email = $_REQUEST[ "email" ];
         }
 
     $query = "SELECT * FROM $ticketServerNamePrefix"."tickets ".
             "WHERE email = '$email';";
-    $result = ts_queryDatabase( $query );
+    $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
 
-    if( $numRows != 1 ) {
+    // what if same email signs up multiple times?
+    // no way to prevent this through FastSpring payments
+    // and it will be a rare case.  Just assume it's the FIRST result
+    // back.  Users who have trouble with this can email me to complain, and
+    // I can fix it manually by changing their subsequent email addresses
+    // in the ticket server.
+    if( $numRows < 1 ) {
         echo "DENIED";
+
+        cd_log( "checkUser for $email DENIED, email not found" );
         return;
         }
     
@@ -357,13 +365,15 @@ function cd_checkUser() {
 
     if( $blocked ) {
         echo "DENIED";
+
+        cd_log( "checkUser for $email DENIED, blocked on ticket server" );
         return;
         }
 
     
     $query = "SELECT * FROM $tableNamePrefix"."users ".
         "WHERE ticket_id = '$ticket_id';";
-    $result = ts_queryDatabase( $query );
+    $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
 
@@ -378,8 +388,8 @@ function cd_checkUser() {
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
             "(ticket_id, sequence_number, blocked) VALUES(" .
-            " '$ticket_id', 0, 0 );" 
-        $result = ts_queryDatabase( $query );
+            " '$ticket_id', 0, 0 );";
+        $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
         $sequence_number = 0;
@@ -400,9 +410,10 @@ function cd_checkUser() {
         // FIXME:  generate a unique name here
         $character_name = "Sam Jacob Smith";
         
-        $query = "INSERT INTO $tableNamePrefix"."users VALUES(" .
-            " $user_id, $character_name, 1000, 0, 0, CURRENT_TIMESTAMP, 0 );";
-        $result = ts_queryDatabase( $query );
+        $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
+            " $user_id, '$character_name', '', 1000, 0, 0, ".
+            "CURRENT_TIMESTAMP, 0 );";
+        $result = cd_queryDatabase( $query );
         }
     else {
         $row = mysql_fetch_array( $result, MYSQL_ASSOC );
@@ -411,6 +422,9 @@ function cd_checkUser() {
 
         if( $blocked ) {
             echo "DENIED";
+
+            cd_log( "checkUser for $email DENIED, blocked on castle server" );
+
             return;
             }
 
@@ -482,7 +496,7 @@ function cd_showData() {
     
              
     $query = "SELECT * FROM $tableNamePrefix"."houses $keywordClause".
-        "ORDER BY last_download_date DESC ".
+        "ORDER BY last_ping_time DESC ".
         "LIMIT $skip, $housesPerPage;";
     $result = cd_queryDatabase( $query );
     
