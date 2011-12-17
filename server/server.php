@@ -434,6 +434,232 @@ function cd_checkUser() {
 
 
 
+function cd_startEditHouse() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "AND rob_checkout = 0 FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $house_map = $row[ "house_map" ];
+
+
+    
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP ".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    echo $house_map;    
+    }
+
+
+
+function cd_endEditHouse() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+
+    $house_map = "";
+    if( isset( $_REQUEST[ "house_map" ] ) ) {
+        $house_map = $_REQUEST[ "house_map" ];
+        }
+    
+    
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "edit_checkout = 0, house_map='$house_map' ".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    echo "OK";    
+    }
+
+
+
+
+function cd_pingHouse() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    
+    // automatically ignore blocked users and houses not checked out
+
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "last_ping_time = CURRENT_TIMESTAMP ".
+        "WHERE user_id = $user_id AND blocked='0' ".
+        "AND ( rob_checkout = 1 OR edit_checkout = 1 );";
+    
+    $result = cd_queryDatabase( $query );
+
+    
+    if( mysql_affected_rows( $result ) == 1 ) {
+        echo "OK";
+        }
+    else {
+        echo "DENIED";
+        }
+    }
+
+
+
+// utility function for stuff common to all denied user transactions
+function cd_transactionDeny() {
+    echo "DENIED";
+    
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    }
+
+
+
+
+// checks the ticket hash for the user ID and sequence number
+// attached to a transaction (also makes sure user isn't blocked!)
+function cd_verifyTransaction() {
+    global $tableNamePrefix;
+    
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    $sequence_number = "";
+    if( isset( $_REQUEST[ "sequence_number" ] ) ) {
+        $sequence_number = $_REQUEST[ "sequence_number" ];
+        }
+
+    $ticket_hash = "";
+    if( isset( $_REQUEST[ "ticket_hash" ] ) ) {
+        $ticket_hash = $_REQUEST[ "ticket_hash" ];
+        }
+    
+
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    // automatically ignore blocked users
+    
+    $query = "SELECT * FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+
+    $numRows = mysql_numrows( $result );
+
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return 0;
+        }
+    
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $last_sequence_number = $row[ "sequence_number" ];
+
+    if( $sequence_number < $last_sequence_number ) {
+        cd_transactionDeny();
+        return 0;
+        }
+    
+    
+    
+    $ticket_id = $row[ "ticket_id" ];
+
+
+    $correct_ticket_hash = sha1( $ticket_id . "$sequence_number" );
+
+
+    if( strtoupper( $correct_ticket_hash ) !=
+        strtoupper( $ticket_hash ) ) {
+        cd_transactionDeny();
+        return 0;
+        }
+
+    // sig passed, sequence number not a replay!
+
+    // update the sequence number, which we have locked
+
+    $new_number = $sequence_number + 1;
+    
+    $query = "UPDATE $tableNamePrefix"."users SET ".
+        "sequence_number = $new_number ".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    return 1;
+    }
+
+
 
 
 

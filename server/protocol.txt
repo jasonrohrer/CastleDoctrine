@@ -1,0 +1,85 @@
+All returns are whitespace-delimited.
+
+
+
+Most calls can return 'DENIED' on failure
+
+
+
+
+=== Call:
+server.php?action=check_user&email=[signup email address]
+
+Returns:
+userID
+sequenceNumber
+
+Where:
+userID = unique user ID number
+sequenceNumber = sequence number for sha1 secure hashing of download keys
+                 to sign future transactions.  Any transactions using
+                 lower sequence numbers will be denied as stale replays. 
+
+
+
+
+== General Note:
+To verify the identity of the user making each transaction, a hash of
+that user's original download ticket ID is included with the transaction call.
+That hash is constructed in the following way:
+
+  sha1( download_ticket_id . sequence_number )
+
+Where the download ticket ID is concatonated with the ascii, base-10 
+representation of the sequence number.
+
+Each transaction updates the sequence number associated with the user on
+the server.  Each subsequent transaction must use a new sequence number to
+thwart replay attacks.
+
+Thus, the ticket ID is never sent from the client to the server, yet the
+server can verify that the client making the transaction is indeed in 
+possession of the ticket ID (which only one person in the world should have).
+
+
+
+
+
+=== Call:
+server.php?action=start_edit_house&user_id=[id number]
+                                  &sequence_number=[number]
+                                  &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+houseMap
+
+Where:
+houseMap = ASCII string representing the house layout
+
+
+
+
+
+
+=== Call:
+server.php?action=end_edit_house&user_id=[id number]
+                                &sequence_number=[number]
+                                &ticket_hash=[sha1 hash, hex-encoded]
+                                &house_map=[house map ASCII string]
+Returns:
+OK
+
+
+
+
+
+=== Call:
+server.php?action=ping_house&user_id=[id number]
+                            &sequence_number=[number]
+                            &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+OK
+
+Note:
+Proves that house is still being actively edited or robbed, keeping the
+house checked out.  Without regular pings, the house will time out
+and automatically check back in
