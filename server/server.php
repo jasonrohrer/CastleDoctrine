@@ -232,7 +232,7 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
             "sequence_number INT NOT NULL," .
-            "blocked TINYINT NOT NULL );";
+            "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -370,9 +370,11 @@ function cd_checkUser() {
         return;
         }
 
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    
     
     $query = "SELECT * FROM $tableNamePrefix"."users ".
-        "WHERE ticket_id = '$ticket_id';";
+        "WHERE ticket_id = '$ticket_id' FOR UPDATE;";
     $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
@@ -393,38 +395,31 @@ function cd_checkUser() {
 
         $user_id = mysql_insert_id();
         $sequence_number = 0;
-
-
-        // create default house for user
-        /*
-"user_id INT NOT NULL PRIMARY KEY," .
-            "character_name TEXT NOT NULL," .
-            "house_map LONGTEXT NOT NULL," .
-            "loot_value INT NOT NULL," .
-            "edit_checkout TINYINT NOT NULL,".
-            "rob_checkout TINYINT NOT NULL,".
-            "last_ping_time DATETIME NOT NULL,".
-            "blocked TINYINT NOT NULL );";
-        */
-
-        // FIXME:  generate a unique name here
-        $character_name = "Sam Jacob Smith";
         
-        $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '', 1000, 0, 0, ".
-            "CURRENT_TIMESTAMP, 0 );";
-        $result = cd_queryDatabase( $query );
+        
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
+        
+
+        cd_newHouseForUser( $user_id );
         }
     else {
         $row = mysql_fetch_array( $result, MYSQL_ASSOC );
     
         $blocked = $row[ "blocked" ];
 
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
+        
+        
         if( $blocked ) {
             echo "DENIED";
 
+            
+
             cd_log( "checkUser for $email DENIED, blocked on castle server" );
 
+            
             return;
             }
 
@@ -435,6 +430,87 @@ function cd_checkUser() {
     echo "$user_id $sequence_number";
     
     
+    }
+
+
+
+
+
+
+function cd_newHouseForUser( $user_id ) {
+    global $tableNamePrefix;
+    
+    
+    // create default house for user
+        /*
+        "user_id INT NOT NULL PRIMARY KEY," .
+            "character_name TEXT NOT NULL," .
+            "house_map LONGTEXT NOT NULL," .
+            "loot_value INT NOT NULL," .
+            "edit_checkout TINYINT NOT NULL,".
+            "rob_checkout TINYINT NOT NULL,".
+            "last_ping_time DATETIME NOT NULL,".
+            "blocked TINYINT NOT NULL );";
+        */
+
+    //
+    cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
+
+    // select first, for update, so we can safely delete old house
+    // if there is one
+    // NOTE that if house doesn't exist, this select will NOT block the
+    // row gap.  In the case of concurrent inserts for the same user_id,
+    // the second insert will fail (user_id is the primary key)
+    
+    $query = "select * from $tableNamePrefix"."houses ".
+        "WHERE user_id = $user_id;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows > 0 ) {
+        $query = "delete from $tableNamePrefix"."houses ".
+            "WHERE user_id = $user_id;";
+        cd_queryDatabase( $query );
+        }
+    
+    
+    // FIXME:  generate a unique name here
+    $character_name = "Sam Jacob Smith";
+
+    // FIXME:  default house map, 16x16 map
+    $house_map =
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000".
+        "0000000000000000";
+    
+    
+    $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
+        " $user_id, '$character_name', '$house_map', 1000, 0, 0, ".
+        "CURRENT_TIMESTAMP, 0 );";
+    $result = cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    
+    
+    cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
     }
 
 
