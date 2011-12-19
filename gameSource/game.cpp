@@ -39,6 +39,18 @@ int versionNumber = 1;
 
 
 
+#include "LoginPage.h"
+
+
+
+GamePage *currentGamePage = NULL;
+
+
+LoginPage *loginPage;
+
+
+
+
 
 
 // position of view in world
@@ -97,6 +109,7 @@ char gamePlayingBack = false;
 
 
 Font *mainFont;
+Font *mainFontFixed;
 
 Font *tinyFont;
 
@@ -180,11 +193,11 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     
 
-    setCursorVisible( false );
-    grabInput( true );
+    setCursorVisible( true );
+    grabInput( false );
     
-    // raw screen coordinates
-    setMouseReportingMode( false );
+    // world coordinates
+    setMouseReportingMode( true );
     
     int x,y;
     warpMouseToCenter( &x, &y );
@@ -192,6 +205,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     
     mainFont = new Font( getFontTGAFileName(), 1, 4, false );
+    mainFontFixed = new Font( getFontTGAFileName(), 1, 4, true );
     
     tinyFont = new Font( "font_4_8.tga", 1, 2, false );
 
@@ -226,18 +240,29 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     mouseParam *= mouseSpeedSetting;
 
     mouseSpeed = mouseParam * inWidth / viewWidth;
+
+
+
+    loginPage = new LoginPage();
+    
+
+    currentGamePage = loginPage;
     }
 
 
 void freeFrameDrawer() {
     delete mainFont;
+    delete mainFontFixed;
     delete tinyFont;
     
     if( currentUserTypedMessage != NULL ) {
         delete [] currentUserTypedMessage;
         currentUserTypedMessage = NULL;
         }
-    
+
+
+    currentGamePage = NULL;
+    delete loginPage;
     }
 
 
@@ -608,6 +633,12 @@ void drawFrame( char inUpdate ) {
         firstDrawFrameCalled = true;
         }
 
+    
+    if( currentGamePage != NULL ) {
+        currentGamePage->step();
+        }
+
+
     // now draw stuff AFTER all updates
     drawFrameNoUpdate( true );
 
@@ -622,21 +653,59 @@ void drawFrame( char inUpdate ) {
 
 
 void drawFrameNoUpdate( char inUpdate ) {
+
+    if( currentGamePage != NULL ) {
+        currentGamePage->draw( lastScreenViewCenter, viewWidth );
+        }
+
     }
 
 
 
 void pointerMove( float inX, float inY ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+    if( currentGamePage != NULL ) {
+        currentGamePage->pointerMove( inX, inY );
+        }
     }
 
+
+
 void pointerDown( float inX, float inY ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+    if( currentGamePage != NULL ) {
+        currentGamePage->pointerDown( inX, inY );
+        }
     }
+
 
 
 void pointerDrag( float inX, float inY ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+    if( currentGamePage != NULL ) {
+        currentGamePage->pointerDrag( inX, inY );
+        }
     }
 
+
+
 void pointerUp( float inX, float inY ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+    if( currentGamePage != NULL ) {
+        currentGamePage->pointerUp( inX, inY );
+        }
     }
 
 
@@ -694,6 +763,11 @@ void keyDown( unsigned char inASCII ) {
         }
     
     
+    if( currentGamePage != NULL ) {
+        currentGamePage->keyDown( inASCII );
+        }
+
+    
     switch( inASCII ) {
         case 'm':
         case 'M': {
@@ -704,13 +778,9 @@ void keyDown( unsigned char inASCII ) {
 #endif
             }
             break;
-
-        case 'p':
-        case 'P':
-            pauseGame();
-            break;
         }
     }
+
 
 
 void keyUp( unsigned char inASCII ) {
@@ -720,7 +790,11 @@ void keyUp( unsigned char inASCII ) {
             holdDeleteKeySteps = -1;
             }
         }
-    
+    else {
+        if( currentGamePage != NULL ) {
+            currentGamePage->keyUp( inASCII );
+            }
+        }
 
     }
 
@@ -731,12 +805,28 @@ void keyUp( unsigned char inASCII ) {
 
 
 void specialKeyDown( int inKey ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+
+    if( currentGamePage != NULL ) {
+        currentGamePage->specialKeyDown( inKey );
+        }
 
 	}
 
 
 
 void specialKeyUp( int inKey ) {
+    if( isPaused() ) {
+        return;
+        }
+    
+
+    if( currentGamePage != NULL ) {
+        currentGamePage->specialKeyUp( inKey );
+        }
 	} 
 
 

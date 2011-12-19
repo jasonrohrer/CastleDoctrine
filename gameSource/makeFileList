@@ -13,6 +13,9 @@ APP_NAME = CastleDoctrine
 
 LAYER_SOURCE = \
 game.cpp \
+GamePage.cpp \
+LoginPage.cpp \
+TextField.cpp \
 
 
 
