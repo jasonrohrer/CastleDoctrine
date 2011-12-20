@@ -4,9 +4,11 @@ class TextField {
         
     public:
         
-        // should use fixed-width font
+        // Fixed width font is used for sizing of text field
         // centered on inX, inY
-        TextField( Font *inFont, double inX, double inY, int inCharsWide );
+        TextField( Font *inFixedFont, 
+                   Font *inDisplayFont, 
+                   double inX, double inY, int inCharsWide );
 
         virtual ~TextField();
         
@@ -24,6 +26,7 @@ class TextField {
         // causes it to respond to keystrokes that are passed to it
         virtual void focus();
         
+        virtual char isFocused();
 
         
     protected:
@@ -32,6 +35,13 @@ class TextField {
         int mCharsWide;
         double mWide, mHigh;
         
+        double mBorderWide;
+        
+        // width of a single character
+        double mCharWidth;
+        
+        
+
         char mFocused;
 
         char *mText;

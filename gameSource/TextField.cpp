@@ -4,6 +4,7 @@
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
+#include "minorGems/util/stringUtils.h"
 
 
 
@@ -12,15 +13,18 @@ TextField *TextField::sFocusedTextField = NULL;
 
 
 
-TextField::TextField( Font *inFont, double inX, double inY, int inCharsWide )
-        : mFont( inFont ), mX( inX ), mY( inY ), mCharsWide( inCharsWide ),
-          mFocused( false ), mText( new char[ inCharsWide + 1 ] ) {
+TextField::TextField( Font *inFixedFont,
+                      Font *inDisplayFont, 
+                      double inX, double inY, int inCharsWide )
+        : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
+          mCharsWide( inCharsWide ),
+          mFocused( false ), mText( new char[1] ) {
     
-    double charWidth = mFont->measureString( "W" );
+    mCharWidth = inFixedFont->measureString( "W" );
 
-    double borderWidth = charWidth * 0.25;
+    mBorderWide = mCharWidth * 0.25;
 
-    mHigh = charWidth + 2 * borderWidth;
+    mHigh = mCharWidth + 2 * mBorderWide;
 
     char *fullString = new char[ mCharsWide + 1 ];
     
@@ -29,11 +33,11 @@ TextField::TextField( Font *inFont, double inX, double inY, int inCharsWide )
         }
     fullString[ mCharsWide ] = '\0';
     
-    double fullStringWidth = mFont->measureString( fullString );
+    double fullStringWidth = inFixedFont->measureString( fullString );
 
     delete [] fullString;
 
-    mWide = fullStringWidth + 2 * borderWidth;
+    mWide = fullStringWidth + 2 * mBorderWide;
     
     
 
@@ -67,21 +71,49 @@ void TextField::draw() {
               mX + mWide / 2, mY + mHigh / 2 );
     
     setDrawColor( 0.25, 0.25, 0.25, 1 );
+    double pixWidth = mCharWidth / 8;
+
+
+    double rectStartX = mX - mWide / 2 + pixWidth;
+    double rectStartY = mY - mHigh / 2 + pixWidth;
+
+    double rectEndX = mX + mWide / 2 - pixWidth;
+    double rectEndY = mY + mHigh / 2 - pixWidth;
     
-
-    double charWidth = mFont->measureString( "W" );
-
-    double pixWidth = charWidth / 8;
-
-    drawRect( mX - mWide / 2 + pixWidth, mY - mHigh / 2 + pixWidth, 
-              mX + mWide / 2 - pixWidth, mY + mHigh / 2 - pixWidth );
-
+    drawRect( rectStartX, rectStartY,
+              rectEndX, rectEndY );
     
     setDrawColor( 1, 1, 1, 1 );
 
-    doublePair textPos = { mX - mWide/2, mY };
+    doublePair textPos = { mX - mWide/2 + mBorderWide, mY };
 
-    mFont->drawString( mText, textPos, alignLeft );
+    char *textToDraw = mText;
+    char tooLong = false;
+
+    while( mFont->measureString( textToDraw ) > mWide - 2 * mBorderWide ) {
+        
+        tooLong = true;
+        
+        textToDraw = &( textToDraw[1] );
+        }
+
+    mFont->drawString( textToDraw, textPos, alignLeft );
+
+    if( tooLong ) {
+        // draw shaded overlay over left of string
+        
+        double verts[] = { rectStartX, rectStartY,
+                           rectStartX, rectEndY,
+                           rectStartX + 2 * mCharWidth, rectEndY,
+                           rectStartX + 2 * mCharWidth, rectStartY };
+        float vertColors[] = { 0.25, 0.25, 0.25, 1,
+                               0.25, 0.25, 0.25, 1,
+                               0.25, 0.25, 0.25, 0,
+                               0.25, 0.25, 0.25, 0 };
+
+        drawQuads( 1, verts , vertColors );
+        }
+    
     }
 
 
@@ -104,6 +136,8 @@ void TextField::keyDown( unsigned char inASCII ) {
 
     int oldLength = strlen( mText );
     
+    char *oldText = mText;
+
 
     if( inASCII == 127 || inASCII == 8 ) {
         // delete
@@ -113,13 +147,9 @@ void TextField::keyDown( unsigned char inASCII ) {
         }
     else if( inASCII >= 32 ) {
         // add to it
+        mText = autoSprintf( "%s%c", oldText, inASCII );
         
-        if( oldLength < mCharsWide ) {
-            
-            mText[ oldLength ] = inASCII;
-            
-            mText[ oldLength + 1 ] = '\0';
-            }
+        delete [] oldText;
         }    
     }
 
@@ -130,8 +160,6 @@ void TextField::specialKeyDown( int inKeyCode ) {
 
 
 
-// makes this text field the only focused field.
-// causes it to respond to keystrokes that are passed to it
 void TextField::focus() {
     
     if( sFocusedTextField != NULL ) {
@@ -143,3 +171,8 @@ void TextField::focus() {
     sFocusedTextField = this;
     }
 
+
+
+char TextField::isFocused() {
+    return mFocused;
+    }

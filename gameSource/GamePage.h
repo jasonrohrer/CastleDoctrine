@@ -13,6 +13,9 @@ class GamePage {
         
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize ) = 0;
+        
+        virtual void makeActive() = 0;
+
 
 
         // default implementations do nothing

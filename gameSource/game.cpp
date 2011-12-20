@@ -247,6 +247,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     currentGamePage = loginPage;
+
+    currentGamePage->makeActive();
     }
 
 

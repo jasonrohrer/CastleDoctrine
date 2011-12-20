@@ -16,6 +16,8 @@ class LoginPage : public GamePage {
         
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize );
+        
+        virtual void makeActive();
 
 
         virtual void pointerUp( float inX, float inY );
@@ -30,6 +32,9 @@ class LoginPage : public GamePage {
         TextField mTicketField;
 
         TextField *mFields[2];
+        
+
+        void switchFields();
 
     };
 
