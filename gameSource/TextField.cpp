@@ -11,6 +11,10 @@
 // start:  none focused
 TextField *TextField::sFocusedTextField = NULL;
 
+int TextField::sDeleteFirstDelaySteps = 30;
+int TextField::sDeleteNextDelaySteps = 2;
+
+
 
 
 TextField::TextField( Font *inFixedFont,
@@ -18,7 +22,8 @@ TextField::TextField( Font *inFixedFont,
                       double inX, double inY, int inCharsWide )
         : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
-          mFocused( false ), mText( new char[1] ) {
+          mFocused( false ), mText( new char[1] ),
+          mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
     
     mCharWidth = inFixedFont->measureString( "W" );
 
@@ -53,6 +58,36 @@ TextField::~TextField() {
         }
 
     delete [] mText;
+    }
+
+
+
+void TextField::step() {
+    if( !mFocused ) {
+        // hold-down broken if not focused
+        mHoldDeleteSteps = -1;
+        mFirstDeleteRepeatDone = false;
+        }
+    
+
+    if( mHoldDeleteSteps > -1 ) {
+        mHoldDeleteSteps ++;
+
+        int stepsBetween = sDeleteFirstDelaySteps;
+        
+        if( mFirstDeleteRepeatDone ) {
+            stepsBetween = sDeleteNextDelaySteps;
+            }
+        
+        if( mHoldDeleteSteps > stepsBetween ) {
+            // delete repeat
+            mHoldDeleteSteps = 0;
+            mFirstDeleteRepeatDone = true;
+            
+            deleteHit();
+            }
+        }
+    
     }
 
         
@@ -134,23 +169,45 @@ void TextField::keyDown( unsigned char inASCII ) {
         }
     
 
-    int oldLength = strlen( mText );
     
-    char *oldText = mText;
-
 
     if( inASCII == 127 || inASCII == 8 ) {
         // delete
-        if( oldLength > 0 ) {
-            mText[ oldLength - 1 ] = '\0';
-            }
+        deleteHit();
+        
+        mHoldDeleteSteps = 0;
         }
     else if( inASCII >= 32 ) {
         // add to it
+        char *oldText = mText;
+
         mText = autoSprintf( "%s%c", oldText, inASCII );
         
         delete [] oldText;
+        
+        mHoldDeleteSteps = -1;
+        mFirstDeleteRepeatDone = false;
         }    
+    }
+
+
+
+void TextField::keyUp( unsigned char inASCII ) {
+    if( inASCII == 127 || inASCII == 8 ) {
+        // end delete hold down
+        mHoldDeleteSteps = -1;
+        mFirstDeleteRepeatDone = false;
+        }
+    }
+
+
+
+void TextField::deleteHit() {
+    int oldLength = strlen( mText );
+    
+    if( oldLength > 0 ) {
+        mText[ oldLength - 1 ] = '\0';
+        }
     }
 
 
@@ -175,4 +232,12 @@ void TextField::focus() {
 
 char TextField::isFocused() {
     return mFocused;
+    }
+
+
+
+void TextField::setDeleteRepeatDelays( int inFirstDelaySteps,
+                                       int inNextDelaySteps ) {
+    sDeleteFirstDelaySteps = inFirstDelaySteps;
+    sDeleteNextDelaySteps = inNextDelaySteps;
     }

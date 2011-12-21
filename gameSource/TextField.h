@@ -13,11 +13,14 @@ class TextField {
         virtual ~TextField();
         
         
-        virtual void draw();
+        virtual void step();
         
+        virtual void draw();
+
         virtual void pointerUp( float inX, float inY );
 
         virtual void keyDown( unsigned char inASCII );
+        virtual void keyUp( unsigned char inASCII );
         
         virtual void specialKeyDown( int inKeyCode );
         
@@ -27,6 +30,11 @@ class TextField {
         virtual void focus();
         
         virtual char isFocused();
+
+        // defaults to 30 and 2
+        static void setDeleteRepeatDelays( int inFirstDelaySteps,
+                                           int inNextDelaySteps );
+        
 
         
     protected:
@@ -46,10 +54,21 @@ class TextField {
 
         char *mText;
 
+        int mHoldDeleteSteps;
+        char mFirstDeleteRepeatDone;
+
+        void deleteHit();
+        
+        
+
         // clever (!) way of handling focus?
 
         // keep static pointer to focused field (there can be only one)
         static TextField *sFocusedTextField;
+        
 
+        static int sDeleteFirstDelaySteps;
+        static int sDeleteNextDelaySteps;
+        
     };
 

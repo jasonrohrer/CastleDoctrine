@@ -172,6 +172,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         frameRateFactor = (double)60 / (double)inTargetFrameRate;
         }
     
+    TextField::setDeleteRepeatDelays( (int)( 30 / frameRateFactor ),
+                                      (int)( 2 / frameRateFactor ) );
+    
 
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
@@ -576,7 +579,8 @@ void drawFrame( char inUpdate ) {
                             
 
                 // shorter delay for subsequent repeats
-                stepsBetweenDeleteRepeat = (int)( 10 / frameRateFactor );
+                stepsBetweenDeleteRepeat = (int)( 2/ frameRateFactor );
+                holdDeleteKeySteps = 0;
                 }
             }
 

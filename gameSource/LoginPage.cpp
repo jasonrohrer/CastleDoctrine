@@ -27,6 +27,9 @@ LoginPage::~LoginPage() {
 
 
 void LoginPage::step() {
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->step();
+        }
     }
 
 
@@ -76,6 +79,15 @@ void LoginPage::keyDown( unsigned char inASCII ) {
         mFields[i]->keyDown( inASCII );
         }
     }
+
+
+
+void LoginPage::keyUp( unsigned char inASCII ) {
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->keyUp( inASCII );
+        }
+    }
+
 
 
 void LoginPage::specialKeyDown( int inKeyCode ) {

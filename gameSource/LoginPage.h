@@ -23,6 +23,7 @@ class LoginPage : public GamePage {
         virtual void pointerUp( float inX, float inY );
 
         virtual void keyDown( unsigned char inASCII );
+        virtual void keyUp( unsigned char inASCII );
         
         virtual void specialKeyDown( int inKeyCode );
 
