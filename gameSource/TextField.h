@@ -59,6 +59,9 @@ class TextField {
 
         char *mText;
 
+        int mCursorPosition;
+        
+
         int mHoldDeleteSteps;
         char mFirstDeleteRepeatDone;
 

@@ -5,6 +5,7 @@
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
 
@@ -23,6 +24,7 @@ TextField::TextField( Font *inFixedFont,
         : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
           mFocused( false ), mText( new char[1] ),
+          mCursorPosition( 0 ),
           mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
     
     mCharWidth = inFixedFont->measureString( "W" );
@@ -118,25 +120,72 @@ void TextField::draw() {
 
     doublePair textPos = { mX - mWide/2 + mBorderWide, mY };
 
-    char *textToDraw = mText;
-    char tooLong = false;
+
+    char *textToDrawBase = stringDuplicate( mText );
+    
+    char *textToDraw = textToDrawBase;
+    char tooLongFront = false;
+    char tooLongBack = false;
+    
+    int cursorDrawPosition = mCursorPosition;
+
+    int firstCharIndex = 0;
+    
 
     while( mFont->measureString( textToDraw ) > mWide - 2 * mBorderWide ) {
         
-        tooLong = true;
+        tooLongFront = true;
         
         textToDraw = &( textToDraw[1] );
+
+        firstCharIndex++;
+
+        cursorDrawPosition --;
         }
+
+    if( tooLongFront ) {
+        // as cursor backs up, don't ever let it back past the half-way
+        // point in field
+        while( firstCharIndex > 0 &&
+               ( cursorDrawPosition < 0 
+                 || mFont->measureString( 
+                         &( textToDraw[ cursorDrawPosition ] ) )
+                    > mWide / 2 + mCharWidth ) ) {
+            
+            tooLongBack = true;
+        
+            textToDraw = &( textToDraw[-1] );
+            firstCharIndex --;
+            
+            textToDraw[ strlen( textToDraw ) - 1 ] = '\0';
+            
+            cursorDrawPosition ++;
+            }
+        }
+    
+    if( firstCharIndex == 0 ) {
+        tooLongFront = false;
+        }
+
+    if( tooLongBack ) {
+        // make sure it's not hanging off end again
+        while( mFont->measureString( textToDraw ) > mWide - 2 * mBorderWide ) {
+            textToDraw[ strlen( textToDraw ) - 1 ] = '\0';
+            }
+        }
+    
+        
+
 
     mFont->drawString( textToDraw, textPos, alignLeft );
 
-    if( tooLong ) {
+    if( tooLongFront ) {
         // draw shaded overlay over left of string
         
         double verts[] = { rectStartX, rectStartY,
                            rectStartX, rectEndY,
-                           rectStartX + 2 * mCharWidth, rectEndY,
-                           rectStartX + 2 * mCharWidth, rectStartY };
+                           rectStartX + 4 * mCharWidth, rectEndY,
+                           rectStartX + 4 * mCharWidth, rectStartY };
         float vertColors[] = { 0.25, 0.25, 0.25, 1,
                                0.25, 0.25, 0.25, 1,
                                0.25, 0.25, 0.25, 0,
@@ -144,7 +193,45 @@ void TextField::draw() {
 
         drawQuads( 1, verts , vertColors );
         }
+    if( tooLongBack ) {
+        // draw shaded overlay over right of string
+        
+        double verts[] = { rectEndX - 4 * mCharWidth, rectStartY,
+                           rectEndX - 4 * mCharWidth, rectEndY,
+                           rectEndX, rectEndY,
+                           rectEndX, rectStartY };
+        float vertColors[] = { 0.25, 0.25, 0.25, 0,
+                               0.25, 0.25, 0.25, 0,
+                               0.25, 0.25, 0.25, 1,
+                               0.25, 0.25, 0.25, 1 };
+
+        drawQuads( 1, verts , vertColors );
+        }
     
+    if( mFocused && cursorDrawPosition > -1 ) {            
+        // make measurement to draw cursor
+
+        char *beforeCursorText = stringDuplicate( textToDraw );
+        
+        beforeCursorText[ cursorDrawPosition ] = '\0';
+        
+        double cursorXOffset = mFont->measureString( beforeCursorText );
+        
+        if( cursorXOffset == 0 ) {
+            cursorXOffset -= pixWidth;
+            }
+
+        delete [] beforeCursorText;
+        
+        setDrawColor( 0, 0, 0, 0.5 );
+        
+        drawRect( textPos.x + cursorXOffset, 
+                  rectStartY - pixWidth,
+                  textPos.x + cursorXOffset + pixWidth, 
+                  rectEndY + pixWidth );
+        }
+    
+    delete [] textToDrawBase;
     }
 
 
@@ -176,10 +263,18 @@ void TextField::keyDown( unsigned char inASCII ) {
     else if( inASCII >= 32 ) {
         // add to it
         char *oldText = mText;
-
-        mText = autoSprintf( "%s%c", oldText, inASCII );
         
+        char *preCursor = stringDuplicate( mText );
+        preCursor[ mCursorPosition ] = '\0';
+        char *postCursor = &( mText[ mCursorPosition ] );
+
+        mText = autoSprintf( "%s%c%s", preCursor, inASCII, postCursor );
+        
+        delete [] preCursor;
+
         delete [] oldText;
+
+        mCursorPosition++;
         
         mHoldDeleteSteps = -1;
         mFirstDeleteRepeatDone = false;
@@ -199,16 +294,48 @@ void TextField::keyUp( unsigned char inASCII ) {
 
 
 void TextField::deleteHit() {
-    int oldLength = strlen( mText );
-    
-    if( oldLength > 0 ) {
-        mText[ oldLength - 1 ] = '\0';
+    if( mCursorPosition > 0 ) {
+
+        char *oldText = mText;
+        
+        char *preCursor = stringDuplicate( mText );
+        preCursor[ mCursorPosition - 1 ] = '\0';
+        char *postCursor = &( mText[ mCursorPosition ] );
+
+        mText = autoSprintf( "%s%s", preCursor, postCursor );
+        
+        delete [] preCursor;
+
+        delete [] oldText;
+
+        mCursorPosition--;
         }
     }
 
 
 
 void TextField::specialKeyDown( int inKeyCode ) {
+    if( !mFocused ) {
+        return;
+        }
+    
+    switch( inKeyCode ) {
+        case MG_KEY_LEFT:
+            mCursorPosition --;
+            if( mCursorPosition < 0 ) {
+                mCursorPosition = 0;
+                }
+            break;
+        case MG_KEY_RIGHT:
+            mCursorPosition ++;
+            if( mCursorPosition > (int)strlen( mText ) ) {
+                mCursorPosition = strlen( mText );
+                }
+            break;
+        default:
+            break;
+        }
+    
     }
 
 
