@@ -805,13 +805,13 @@ void keyDown( unsigned char inASCII ) {
 
 
 void keyUp( unsigned char inASCII ) {
-    if( isPaused() ) {
-        if( inASCII == 127 || inASCII == 8 ) {
-            // delete no longer held
-            holdDeleteKeySteps = -1;
-            }
+    if( inASCII == 127 || inASCII == 8 ) {
+        // delete no longer held
+        // even if pause screen no longer up, pay attention to this
+        holdDeleteKeySteps = -1;
         }
-    else {
+
+    if( ! isPaused() ) {
         if( currentGamePage != NULL ) {
             currentGamePage->keyUp( inASCII );
             }
