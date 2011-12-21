@@ -121,62 +121,94 @@ void TextField::draw() {
     doublePair textPos = { mX - mWide/2 + mBorderWide, mY };
 
 
-    char *textToDrawBase = stringDuplicate( mText );
-    
-    char *textToDraw = textToDrawBase;
     char tooLongFront = false;
     char tooLongBack = false;
     
     int cursorDrawPosition = mCursorPosition;
 
-    int firstCharIndex = 0;
+
+    char *textBeforeCursorBase = stringDuplicate( mText );
+    char *textAfterCursorBase = stringDuplicate( mText );
     
+    char *textBeforeCursor = textBeforeCursorBase;
+    char *textAfterCursor = textAfterCursorBase;
 
-    while( mFont->measureString( textToDraw ) > mWide - 2 * mBorderWide ) {
+    textBeforeCursor[ mCursorPosition ] = '\0';
+    
+    textAfterCursor = &( textAfterCursor[ mCursorPosition ] );
+
+    if( mFont->measureString( mText ) > mWide - 2 * mBorderWide ) {
         
-        tooLongFront = true;
+        if( mFont->measureString( textBeforeCursor ) > 
+            mWide / 2 - mBorderWide
+            &&
+            mFont->measureString( textAfterCursor ) > 
+            mWide / 2 - mBorderWide ) {
+
+            // trim both ends
+
+            while( mFont->measureString( textBeforeCursor ) > 
+                   mWide / 2 - mBorderWide ) {
+                
+                tooLongFront = true;
+                
+                textBeforeCursor = &( textBeforeCursor[1] );
+                
+                cursorDrawPosition --;
+                }
         
-        textToDraw = &( textToDraw[1] );
+            while( mFont->measureString( textAfterCursor ) > 
+                   mWide / 2 - mBorderWide ) {
+                
+                tooLongBack = true;
+                
+                textAfterCursor[ strlen( textAfterCursor ) - 1 ] = '\0';
+                }
+            }
+        else if( mFont->measureString( textBeforeCursor ) > 
+                 mWide / 2 - mBorderWide ) {
 
-        firstCharIndex++;
+            // just trim front
+            char *sumText = concatonate( textBeforeCursor, textAfterCursor );
+            
+            while( mFont->measureString( sumText ) > 
+                   mWide - 2 * mBorderWide ) {
+                
+                tooLongFront = true;
+                
+                textBeforeCursor = &( textBeforeCursor[1] );
+                
+                cursorDrawPosition --;
+                
+                delete [] sumText;
+                sumText = concatonate( textBeforeCursor, textAfterCursor );
+                }
+            delete [] sumText;
+            }    
+        else if( mFont->measureString( textAfterCursor ) > 
+                 mWide / 2 - mBorderWide ) {
+            
+            // just trim back
+            char *sumText = concatonate( textBeforeCursor, textAfterCursor );
 
-        cursorDrawPosition --;
-        }
-
-    if( tooLongFront ) {
-        // as cursor backs up, don't ever let it back past the half-way
-        // point in field
-        while( firstCharIndex > 0 &&
-               ( cursorDrawPosition < 0 
-                 || mFont->measureString( 
-                         &( textToDraw[ cursorDrawPosition ] ) )
-                    > mWide / 2 + mCharWidth ) ) {
-            
-            tooLongBack = true;
-        
-            textToDraw = &( textToDraw[-1] );
-            firstCharIndex --;
-            
-            textToDraw[ strlen( textToDraw ) - 1 ] = '\0';
-            
-            cursorDrawPosition ++;
+            while( mFont->measureString( sumText ) > 
+                   mWide - 2 * mBorderWide ) {
+                
+                tooLongBack = true;
+                
+                textAfterCursor[ strlen( textAfterCursor ) - 1 ] = '\0';
+                delete [] sumText;
+                sumText = concatonate( textBeforeCursor, textAfterCursor );
+                }
+            delete [] sumText;
             }
         }
+
     
-    if( firstCharIndex == 0 ) {
-        tooLongFront = false;
-        }
-
-    if( tooLongBack ) {
-        // make sure it's not hanging off end again
-        while( mFont->measureString( textToDraw ) > mWide - 2 * mBorderWide ) {
-            textToDraw[ strlen( textToDraw ) - 1 ] = '\0';
-            }
-        }
+    char *textToDraw = concatonate( textBeforeCursor, textAfterCursor );
+    delete [] textBeforeCursorBase;
+    delete [] textAfterCursorBase;
     
-        
-
-
     mFont->drawString( textToDraw, textPos, alignLeft );
 
     if( tooLongFront ) {
@@ -231,7 +263,7 @@ void TextField::draw() {
                   rectEndY + pixWidth );
         }
     
-    delete [] textToDrawBase;
+    delete [] textToDraw;
     }
 
 
