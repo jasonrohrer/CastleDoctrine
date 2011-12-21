@@ -114,9 +114,12 @@ Font *mainFontFixed;
 Font *tinyFont;
 
 
+static char wasPaused = false;
 static float pauseScreenFade = 0;
 
 static char *currentUserTypedMessage = NULL;
+
+
 
 // for delete key repeat during message typing
 static int holdDeleteKeySteps = -1;
@@ -558,6 +561,12 @@ void drawFrame( char inUpdate ) {
             
         drawPauseScreen();
         
+        if( !wasPaused ) {
+            if( currentGamePage != NULL ) {
+                currentGamePage->makeNotActive();
+                }
+            }
+        wasPaused = true;
 
         // handle delete key repeat
         if( holdDeleteKeySteps > -1 ) {
@@ -641,6 +650,12 @@ void drawFrame( char inUpdate ) {
 
     
     if( currentGamePage != NULL ) {
+        
+        if( wasPaused ) {
+            currentGamePage->makeActive();
+            wasPaused = false;
+            }
+
         currentGamePage->step();
         }
 

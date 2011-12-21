@@ -63,11 +63,7 @@ TextField::~TextField() {
 
 
 void TextField::step() {
-    if( !mFocused ) {
-        // hold-down broken if not focused
-        mHoldDeleteSteps = -1;
-        mFirstDeleteRepeatDone = false;
-        }
+
     
 
     if( mHoldDeleteSteps > -1 ) {
@@ -221,11 +217,25 @@ void TextField::focus() {
     
     if( sFocusedTextField != NULL ) {
         // unfocus last focused
-        sFocusedTextField->mFocused = false;
+        sFocusedTextField->unfocus();
         }
 
     mFocused = true;
     sFocusedTextField = this;
+    }
+
+
+
+void TextField::unfocus() {
+    mFocused = false;
+ 
+    // hold-down broken if not focused
+    mHoldDeleteSteps = -1;
+    mFirstDeleteRepeatDone = false;
+
+    if( sFocusedTextField == this ) {
+        sFocusedTextField = NULL;
+        }    
     }
 
 

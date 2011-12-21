@@ -15,7 +15,7 @@ class GamePage {
                            double inViewSize ) = 0;
         
         virtual void makeActive() = 0;
-
+        virtual void makeNotActive() = 0;
 
 
         // default implementations do nothing

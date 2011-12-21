@@ -18,7 +18,8 @@ class LoginPage : public GamePage {
                            double inViewSize );
         
         virtual void makeActive();
-
+        virtual void makeNotActive();
+        
 
         virtual void pointerUp( float inX, float inY );
 

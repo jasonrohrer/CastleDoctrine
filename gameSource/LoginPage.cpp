@@ -48,6 +48,13 @@ void LoginPage::makeActive() {
     }
 
 
+void LoginPage::makeNotActive() {
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->unfocus();
+        }
+    }
+
+
 
 void LoginPage::pointerUp( float inX, float inY ) {
     for( int i=0; i<2; i++ ) {

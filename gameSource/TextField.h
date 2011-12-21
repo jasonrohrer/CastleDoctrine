@@ -29,6 +29,11 @@ class TextField {
         // causes it to respond to keystrokes that are passed to it
         virtual void focus();
         
+        // if this field is the only focused field, this causes no
+        // fields to be focused.
+        // if this field is currently unfocused, this call has no effect.
+        virtual void unfocus();
+
         virtual char isFocused();
 
         // defaults to 30 and 2
