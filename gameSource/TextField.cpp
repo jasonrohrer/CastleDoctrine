@@ -206,10 +206,36 @@ void TextField::draw() {
 
     
     char *textToDraw = concatonate( textBeforeCursor, textAfterCursor );
-    delete [] textBeforeCursorBase;
-    delete [] textAfterCursorBase;
+
+    char leftAlign = true;
+    char cursorCentered = false;
+    doublePair centerPos = { mX, mY };
     
-    mFont->drawString( textToDraw, textPos, alignLeft );
+    if( ! tooLongFront ) {
+        mFont->drawString( textToDraw, textPos, alignLeft );
+        }
+    else if( tooLongFront && ! tooLongBack ) {
+        
+        leftAlign = false;
+
+        doublePair textPos2 = { mX + mWide/2 - mBorderWide, mY };
+
+        mFont->drawString( textToDraw, textPos2, alignRight );
+        }
+    else {
+        // text around perfectly centered cursor
+        cursorCentered = true;
+        
+        double beforeLength = mFont->measureString( textBeforeCursor );
+        
+        double xDiff = centerPos.x - ( textPos.x + beforeLength );
+        
+        doublePair textPos2 = textPos;
+        textPos2.x += xDiff;
+
+        mFont->drawString( textToDraw, textPos2, alignLeft );
+        }
+    
 
     if( tooLongFront ) {
         // draw shaded overlay over left of string
@@ -247,12 +273,28 @@ void TextField::draw() {
         
         beforeCursorText[ cursorDrawPosition ] = '\0';
         
-        double cursorXOffset = mFont->measureString( beforeCursorText );
-        
-        if( cursorXOffset == 0 ) {
-            cursorXOffset -= pixWidth;
-            }
+        double cursorXOffset;
 
+        if( cursorCentered ) {
+            cursorXOffset = mWide / 2 - mBorderWide;
+            }
+        else if( leftAlign ) {
+            cursorXOffset = mFont->measureString( textBeforeCursor );
+            if( cursorXOffset == 0 ) {
+                cursorXOffset -= pixWidth;
+                }
+            }
+        else {
+            double afterLength = mFont->measureString( textAfterCursor );
+            cursorXOffset = ( mWide - 2 * mBorderWide ) - afterLength;
+
+            if( afterLength > 0 ) {
+                cursorXOffset -= pixWidth;
+                }
+            }
+        
+
+        
         delete [] beforeCursorText;
         
         setDrawColor( 0, 0, 0, 0.5 );
@@ -264,6 +306,8 @@ void TextField::draw() {
         }
     
     delete [] textToDraw;
+    delete [] textBeforeCursorBase;
+    delete [] textAfterCursorBase;
     }
 
 
