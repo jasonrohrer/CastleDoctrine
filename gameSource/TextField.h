@@ -23,6 +23,7 @@ class TextField {
         virtual void keyUp( unsigned char inASCII );
         
         virtual void specialKeyDown( int inKeyCode );
+        virtual void specialKeyUp( int inKeyCode );
         
 
         // makes this text field the only focused field.
@@ -65,7 +66,15 @@ class TextField {
         int mHoldDeleteSteps;
         char mFirstDeleteRepeatDone;
 
+        int mHoldArrowSteps[2];
+        char mFirstArrowRepeatDone[2];
+        
+
         void deleteHit();
+        void leftHit();
+        void rightHit();
+        
+        void clearArrowRepeat();
         
         
 

@@ -112,3 +112,12 @@ void LoginPage::specialKeyDown( int inKeyCode ) {
     }
 
 
+
+void LoginPage::specialKeyUp( int inKeyCode ) {
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->specialKeyUp( inKeyCode );
+        }
+    }
+
+
+

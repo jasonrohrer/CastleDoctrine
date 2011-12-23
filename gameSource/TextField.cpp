@@ -26,7 +26,10 @@ TextField::TextField( Font *inFixedFont,
           mFocused( false ), mText( new char[1] ),
           mCursorPosition( 0 ),
           mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
-    
+
+    clearArrowRepeat();
+        
+
     mCharWidth = inFixedFont->measureString( "W" );
 
     mBorderWide = mCharWidth * 0.25;
@@ -85,7 +88,37 @@ void TextField::step() {
             deleteHit();
             }
         }
-    
+
+
+    for( int i=0; i<2; i++ ) {
+        
+        if( mHoldArrowSteps[i] > -1 ) {
+            mHoldArrowSteps[i] ++;
+
+            int stepsBetween = sDeleteFirstDelaySteps;
+        
+            if( mFirstArrowRepeatDone[i] ) {
+                stepsBetween = sDeleteNextDelaySteps;
+                }
+        
+            if( mHoldArrowSteps[i] > stepsBetween ) {
+                // arrow repeat
+                mHoldArrowSteps[i] = 0;
+                mFirstArrowRepeatDone[i] = true;
+            
+                switch( i ) {
+                    case 0:
+                        leftHit();
+                        break;
+                    case 1:
+                        rightHit();
+                        break;
+                    }
+                }
+            }
+        }
+
+
     }
 
         
@@ -335,6 +368,8 @@ void TextField::keyDown( unsigned char inASCII ) {
         deleteHit();
         
         mHoldDeleteSteps = 0;
+
+        clearArrowRepeat();
         }
     else if( inASCII >= 32 ) {
         // add to it
@@ -354,6 +389,8 @@ void TextField::keyDown( unsigned char inASCII ) {
         
         mHoldDeleteSteps = -1;
         mFirstDeleteRepeatDone = false;
+
+        clearArrowRepeat();
         }    
     }
 
@@ -390,6 +427,34 @@ void TextField::deleteHit() {
 
 
 
+void TextField::clearArrowRepeat() {
+    for( int i=0; i<2; i++ ) {
+        mHoldArrowSteps[i] = -1;
+        mFirstArrowRepeatDone[i] = false;
+        }
+    }
+
+
+
+void TextField::leftHit() {
+    mCursorPosition --;
+    if( mCursorPosition < 0 ) {
+        mCursorPosition = 0;
+        }
+    }
+
+
+
+void TextField::rightHit() {
+    mCursorPosition ++;
+    if( mCursorPosition > (int)strlen( mText ) ) {
+        mCursorPosition = strlen( mText );
+        }
+    }
+
+
+
+
 void TextField::specialKeyDown( int inKeyCode ) {
     if( !mFocused ) {
         return;
@@ -397,21 +462,32 @@ void TextField::specialKeyDown( int inKeyCode ) {
     
     switch( inKeyCode ) {
         case MG_KEY_LEFT:
-            mCursorPosition --;
-            if( mCursorPosition < 0 ) {
-                mCursorPosition = 0;
-                }
+            leftHit();
+            clearArrowRepeat();
+            mHoldArrowSteps[0] = 0;
             break;
         case MG_KEY_RIGHT:
-            mCursorPosition ++;
-            if( mCursorPosition > (int)strlen( mText ) ) {
-                mCursorPosition = strlen( mText );
-                }
+            rightHit(); 
+            clearArrowRepeat();
+            mHoldArrowSteps[1] = 0;
             break;
         default:
             break;
         }
     
+    }
+
+
+
+void TextField::specialKeyUp( int inKeyCode ) {
+    if( inKeyCode == MG_KEY_LEFT ) {
+        mHoldArrowSteps[0] = -1;
+        mFirstArrowRepeatDone[0] = false;
+        }
+    else if( inKeyCode == MG_KEY_RIGHT ) {
+        mHoldArrowSteps[1] = -1;
+        mFirstArrowRepeatDone[1] = false;
+        }
     }
 
 
@@ -435,6 +511,8 @@ void TextField::unfocus() {
     // hold-down broken if not focused
     mHoldDeleteSteps = -1;
     mFirstDeleteRepeatDone = false;
+
+    clearArrowRepeat();
 
     if( sFocusedTextField == this ) {
         sFocusedTextField = NULL;

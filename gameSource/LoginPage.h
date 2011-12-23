@@ -27,6 +27,7 @@ class LoginPage : public GamePage {
         virtual void keyUp( unsigned char inASCII );
         
         virtual void specialKeyDown( int inKeyCode );
+        virtual void specialKeyUp( int inKeyCode );
 
     protected:
         
