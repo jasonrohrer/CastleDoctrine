@@ -21,13 +21,23 @@ int TextField::sDeleteNextDelaySteps = 2;
 TextField::TextField( Font *inFixedFont,
                       Font *inDisplayFont, 
                       double inX, double inY, int inCharsWide,
-                      char inForceCaps )
+                      char inForceCaps,
+                      const char *inAllowedChars,
+                      const char *inForbiddenChars )
         : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
           mForceCaps( inForceCaps ),
+          mAllowedChars( NULL ), mForbiddenChars( NULL ),
           mFocused( false ), mText( new char[1] ),
           mCursorPosition( 0 ),
           mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
+
+    if( inAllowedChars != NULL ) {
+        mAllowedChars = stringDuplicate( inAllowedChars );
+        }
+    if( inForbiddenChars != NULL ) {
+        mForbiddenChars = stringDuplicate( inForbiddenChars );
+        }
 
     clearArrowRepeat();
         
@@ -65,6 +75,13 @@ TextField::~TextField() {
         }
 
     delete [] mText;
+
+    if( mAllowedChars != NULL ) {
+        delete [] mAllowedChars;
+        }
+    if( mForbiddenChars != NULL ) {
+        delete [] mForbiddenChars;
+        }
     }
 
 
@@ -380,7 +397,36 @@ void TextField::keyDown( unsigned char inASCII ) {
         if( mForceCaps ) {
             processedChar = toupper( inASCII );
             }
+
+        if( mForbiddenChars != NULL ) {
+            int num = strlen( mForbiddenChars );
+            
+            for( int i=0; i<num; i++ ) {
+                if( mForbiddenChars[i] == processedChar ) {
+                    return;
+                    }
+                }
+            }
         
+
+        if( mAllowedChars != NULL ) {
+            int num = strlen( mAllowedChars );
+            
+            char allowed = false;
+            
+            for( int i=0; i<num; i++ ) {
+                if( mAllowedChars[i] == processedChar ) {
+                    allowed = true;
+                    break;
+                    }
+                }
+
+            if( !allowed ) {
+                return;
+                }
+            }
+    
+
         // add to it
         char *oldText = mText;
         
