@@ -8,7 +8,8 @@ class TextField {
         // centered on inX, inY
         TextField( Font *inFixedFont, 
                    Font *inDisplayFont, 
-                   double inX, double inY, int inCharsWide );
+                   double inX, double inY, int inCharsWide,
+                   char inForceCaps = false );
 
         virtual ~TextField();
         
@@ -47,6 +48,9 @@ class TextField {
         Font *mFont;
         double mX, mY;
         int mCharsWide;
+
+        char mForceCaps;
+        
         double mWide, mHigh;
         
         double mBorderWide;

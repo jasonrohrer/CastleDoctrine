@@ -20,9 +20,11 @@ int TextField::sDeleteNextDelaySteps = 2;
 
 TextField::TextField( Font *inFixedFont,
                       Font *inDisplayFont, 
-                      double inX, double inY, int inCharsWide )
+                      double inX, double inY, int inCharsWide,
+                      char inForceCaps )
         : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
+          mForceCaps( inForceCaps ),
           mFocused( false ), mText( new char[1] ),
           mCursorPosition( 0 ),
           mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
@@ -372,6 +374,13 @@ void TextField::keyDown( unsigned char inASCII ) {
         clearArrowRepeat();
         }
     else if( inASCII >= 32 ) {
+
+        unsigned char processedChar = inASCII;
+        
+        if( mForceCaps ) {
+            processedChar = toupper( inASCII );
+            }
+        
         // add to it
         char *oldText = mText;
         
@@ -379,7 +388,7 @@ void TextField::keyDown( unsigned char inASCII ) {
         preCursor[ mCursorPosition ] = '\0';
         char *postCursor = &( mText[ mCursorPosition ] );
 
-        mText = autoSprintf( "%s%c%s", preCursor, inASCII, postCursor );
+        mText = autoSprintf( "%s%c%s", preCursor, processedChar, postCursor );
         
         delete [] preCursor;
 

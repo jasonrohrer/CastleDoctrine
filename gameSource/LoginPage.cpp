@@ -13,7 +13,7 @@ extern Font *mainFontFixed;
 
 LoginPage::LoginPage()
         : mEmailField( mainFontFixed, mainFont, 0, 1, 15 ),
-          mTicketField( mainFontFixed, mainFont, 0, -1, 15 ) {
+          mTicketField( mainFontFixed, mainFont, 0, -1, 15, true ) {
     
     mFields[0] = &mEmailField;
     mFields[1] = &mTicketField;
