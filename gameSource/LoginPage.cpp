@@ -20,7 +20,8 @@ LoginPage::LoginPage()
           mTicketField( mainFontFixed, mainFont, 0, -1, 13, true,
                         "Download Code:",
                         // allow only ticket code characters
-                        "ABCDEFWHJKXMNPTY" ) {
+                        "ABCDEFWHJKXMNPTY" ),
+          mLoginButton( mainFont, 4, -4, "Login" ) {
     
     mFields[0] = &mEmailField;
     mFields[1] = &mTicketField;
@@ -46,6 +47,7 @@ void LoginPage::draw( doublePair inViewCenter,
     for( int i=0; i<2; i++ ) {
         mFields[i]->draw();
         }
+    mLoginButton.draw();
     }
 
 
@@ -62,10 +64,27 @@ void LoginPage::makeNotActive() {
     }
 
 
+void LoginPage::pointerMove( float inX, float inY ) {
+    mLoginButton.pointerMove( inX, inY );
+    }
+
+void LoginPage::pointerDown( float inX, float inY ) {
+    mLoginButton.pointerDown( inX, inY );
+    }
+
+void LoginPage::pointerDrag( float inX, float inY ) {
+    mLoginButton.pointerDrag( inX, inY );
+    }
+
 
 void LoginPage::pointerUp( float inX, float inY ) {
     for( int i=0; i<2; i++ ) {
         mFields[i]->pointerUp( inX, inY );
+        }
+
+    if( mLoginButton.pointerUp( inX, inY ) ) {
+        // login pressed
+
         }
     }
 

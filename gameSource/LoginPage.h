@@ -1,6 +1,7 @@
 #include "GamePage.h"
 
 #include "TextField.h"
+#include "Button.h"
 
 
 class LoginPage : public GamePage {
@@ -21,6 +22,9 @@ class LoginPage : public GamePage {
         virtual void makeNotActive();
         
 
+        virtual void pointerMove( float inX, float inY );
+        virtual void pointerDown( float inX, float inY );
+        virtual void pointerDrag( float inX, float inY );
         virtual void pointerUp( float inX, float inY );
 
         virtual void keyDown( unsigned char inASCII );
@@ -36,6 +40,8 @@ class LoginPage : public GamePage {
 
         TextField *mFields[2];
         
+        Button mLoginButton;
+
 
         void switchFields();
 
