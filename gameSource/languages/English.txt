@@ -11,6 +11,15 @@ pauseMessage3 "Press '%' to quit"
 
 pauseMessage4 "-"
 
+
+
+email "Email:"
+downloadCode "Download Code:"
+loginButton "Login"
+
+
+
+
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"
 playbackEndMessage    "(Press ESC to end)"

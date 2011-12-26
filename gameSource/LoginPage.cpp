@@ -2,6 +2,7 @@
 
 
 #include "minorGems/game/Font.h"
+#include "minorGems/game/game.h"
 
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
@@ -13,15 +14,15 @@ extern Font *mainFontFixed;
 
 LoginPage::LoginPage()
         : mEmailField( mainFontFixed, mainFont, 0, 1, 13, false, 
-                       "Email:",
+                       translate( "email" ),
                        NULL,
                        // forbid only spaces
                        " "),
           mTicketField( mainFontFixed, mainFont, 0, -1, 13, true,
-                        "Download Code:",
+                        translate( "downloadCode" ),
                         // allow only ticket code characters
                         "ABCDEFWHJKXMNPTY" ),
-          mLoginButton( mainFont, 4, -4, "Login" ) {
+          mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ) {
     
     mFields[0] = &mEmailField;
     mFields[1] = &mTicketField;
