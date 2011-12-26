@@ -7,11 +7,12 @@ class TextField {
         // Fixed width font is used for sizing of text field
         // centered on inX, inY
 
-        // char maps copied internally
+        // label text and char maps copied internally
         TextField( Font *inFixedFont, 
                    Font *inDisplayFont, 
                    double inX, double inY, int inCharsWide,
                    char inForceCaps = false,
+                   const char *inLabelText = NULL,
                    const char *inAllowedChars = NULL,
                    const char *inForbiddenChars = NULL );
 
@@ -55,6 +56,8 @@ class TextField {
 
         char mForceCaps;
 
+        char *mLabelText;
+        
         char *mAllowedChars;
         char *mForbiddenChars;
 

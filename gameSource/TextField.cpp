@@ -22,16 +22,22 @@ TextField::TextField( Font *inFixedFont,
                       Font *inDisplayFont, 
                       double inX, double inY, int inCharsWide,
                       char inForceCaps,
+                      const char *inLabelText,
                       const char *inAllowedChars,
                       const char *inForbiddenChars )
         : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
           mForceCaps( inForceCaps ),
+          mLabelText( NULL ),
           mAllowedChars( NULL ), mForbiddenChars( NULL ),
           mFocused( false ), mText( new char[1] ),
           mCursorPosition( 0 ),
           mHoldDeleteSteps( -1 ), mFirstDeleteRepeatDone( false ) {
-
+    
+    if( inLabelText != NULL ) {
+        mLabelText = stringDuplicate( inLabelText );
+        }
+    
     if( inAllowedChars != NULL ) {
         mAllowedChars = stringDuplicate( inAllowedChars );
         }
@@ -75,6 +81,10 @@ TextField::~TextField() {
         }
 
     delete [] mText;
+
+    if( mLabelText != NULL ) {
+        delete [] mLabelText;
+        }
 
     if( mAllowedChars != NULL ) {
         delete [] mAllowedChars;
@@ -169,6 +179,14 @@ void TextField::draw() {
               rectEndX, rectEndY );
     
     setDrawColor( 1, 1, 1, 1 );
+
+    
+    if( mLabelText != NULL ) {
+        doublePair labelPos = { mX - mWide/2 - mBorderWide, mY };
+        
+        mFont->drawString( mLabelText, labelPos, alignRight );
+        }
+    
 
     doublePair textPos = { mX - mWide/2 + mBorderWide, mY };
 

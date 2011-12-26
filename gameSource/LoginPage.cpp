@@ -12,11 +12,13 @@ extern Font *mainFontFixed;
 
 
 LoginPage::LoginPage()
-        : mEmailField( mainFontFixed, mainFont, 0, 1, 15, false, 
+        : mEmailField( mainFontFixed, mainFont, 0, 1, 13, false, 
+                       "Email:",
                        NULL,
                        // forbid only spaces
                        " "),
-          mTicketField( mainFontFixed, mainFont, 0, -1, 15, true,
+          mTicketField( mainFontFixed, mainFont, 0, -1, 13, true,
+                        "Download Code:",
                         // allow only ticket code characters
                         "ABCDEFWHJKXMNPTY" ) {
     
