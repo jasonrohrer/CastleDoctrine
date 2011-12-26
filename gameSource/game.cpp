@@ -321,7 +321,7 @@ static void drawPauseScreen() {
             
         double maxWidth = 0.95 * ( viewHeight / 1.5 );
             
-        int maxLines = 8;
+        int maxLines = 9;
 
         SimpleVector<char *> *tokens = 
             tokenizeString( currentUserTypedMessage );
@@ -518,11 +518,11 @@ static void drawPauseScreen() {
     messagePos = lastScreenViewCenter;
 
     messagePos.y -= 3.75 * ( viewHeight / 15 );
-    mainFont->drawString( translate( "pauseMessage3" ), 
-                           messagePos, alignCenter );
+    //mainFont->drawString( translate( "pauseMessage3" ), 
+    //                      messagePos, alignCenter );
 
     messagePos.y -= 0.625 * (viewHeight / 15);
-    mainFont->drawString( translate( "pauseMessage4" ), 
+    mainFont->drawString( translate( "pauseMessage3" ), 
                            messagePos, alignCenter );
 
     }
