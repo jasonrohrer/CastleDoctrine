@@ -17,7 +17,7 @@ GamePage.cpp \
 LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
-
+ticketHash.cpp \
 
 
 GAME_GRAPHICS = \

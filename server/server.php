@@ -5,6 +5,8 @@
 global $cd_version;
 $cd_version = "1";
 
+global $cd_minClientVersion;
+$cd_minClientVersion = "1";
 
 
 // edit settings.php to change server' settings
@@ -426,10 +428,10 @@ function cd_checkUser() {
         $user_id = $row[ "user_id" ];
         $sequence_number = $row[ "sequence_number" ];
         }
+
+    global $cd_minClientVersion;
     
-    echo "$user_id $sequence_number";
-    
-    
+    echo "$cd_minClientVersion $user_id $sequence_number";
     }
 
 
@@ -954,14 +956,50 @@ function cd_showData() {
 function cd_showDetail() {
     $password = cd_checkPassword( "show_detail" );
 
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+    
      echo "[<a href=\"server.php?action=show_data&password=$password" .
          "\">Main</a>]<br><br><br>";
+     
+    global $tableNamePrefix, $ticketServerNamePrefix;
+
+    $query = "SELECT * FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
     
-    global $tableNamePrefix;
+    $numRows = mysql_numrows( $result );
 
-    // FIXME:  anything needed here?
+    if( $numRows < 1 ) {
+        cd_operationError( "User ID $user_id not found" );
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
-    echo "Does nothing for now";    
+    $ticket_id = $row[ "ticket_id" ];
+    $blocked = $row[ "blocked" ];
+
+
+    $query = "SELECT * FROM $ticketServerNamePrefix"."tickets ".
+        "WHERE ticket_id = '$ticket_id';";
+
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows < 1 ) {
+        cd_operationError( "Ticket ID $ticket_id not found" );
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $email = $row[ "email" ];
+
+
+    echo "User ID: $user_id<br>\n";
+    echo "Ticket: $ticket_id<br>\n";
+    echo "Email: $email<br>\n";
     }
 
 

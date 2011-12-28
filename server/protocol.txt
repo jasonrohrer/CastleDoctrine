@@ -11,10 +11,12 @@ Most calls can return 'DENIED' on failure
 server.php?action=check_user&email=[signup email address]
 
 Returns:
+minVersionNumber
 userID
 sequenceNumber
 
 Where:
+minVersionNumber = minimum client version number compatible with this server
 userID = unique user ID number
 sequenceNumber = sequence number for sha1 secure hashing of download keys
                  to sign future transactions.  Any transactions using

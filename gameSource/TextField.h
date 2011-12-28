@@ -17,6 +17,10 @@ class TextField {
                    const char *inForbiddenChars = NULL );
 
         virtual ~TextField();
+
+        // destroyed by caller
+        char *getText();
+        
         
         
         virtual void step();

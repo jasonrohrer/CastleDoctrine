@@ -114,6 +114,16 @@ Font *mainFontFixed;
 Font *tinyFont;
 
 
+char *serverURL = NULL;
+
+
+int userID = -1;
+char *downloadCode = NULL;
+// each new request to server must use next sequence number
+int serverSequenceNumber = -1;
+
+
+
 static char wasPaused = false;
 static float pauseScreenFade = 0;
 
@@ -249,6 +259,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
 
+    serverURL = SettingsManager::getStringSetting( "serverURL" );
+
+    if( serverURL == NULL ) {
+        serverURL = 
+            stringDuplicate( 
+                "http://localhost/jcr13/castleServer/server.php" );
+        }
+
+
     loginPage = new LoginPage();
     
 
@@ -271,6 +290,17 @@ void freeFrameDrawer() {
 
     currentGamePage = NULL;
     delete loginPage;
+
+    if( serverURL != NULL ) {
+        delete [] serverURL;
+        serverURL = NULL;
+        }
+
+    if( downloadCode != NULL ) {
+        delete [] downloadCode;
+        downloadCode = NULL;
+        }
+    
     }
 
 

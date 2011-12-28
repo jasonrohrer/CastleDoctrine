@@ -13,10 +13,17 @@ pauseMessage4 "-"
 
 
 
+quitMessage "Press ESC to Quit"
+
 email "Email:"
 downloadCode "Download Code:"
 loginButton "Login"
 
+loginMessage "Logging in..."
+
+loginFailed "Login Failed"
+
+outOfDateClient "Please download the latest version."
 
 
 
@@ -32,3 +39,5 @@ checkingCode  "Checking demo permissions with server..."
 err_webRequest   "ERROR:  Web request failed."
 err_codeFailed  "This demo code was denied by the server."
 err_serverVerifyFailed  "Response from the server could not be authenticated."
+
+err_badServerResponse  "ERROR:  Unexpected response from server"

@@ -12,6 +12,12 @@ class LoginPage : public GamePage {
         
         virtual ~LoginPage();
 
+        
+        // destroyed by caller
+        // NULL if not fetched yet
+        char *getHouseMap();
+        
+
 
         virtual void step();
         
@@ -41,6 +47,18 @@ class LoginPage : public GamePage {
         TextField *mFields[2];
         
         Button mLoginButton;
+
+
+        char *mHouseMap;
+
+        char *mServerURL;
+
+        int mRequestSteps;
+        int mWebRequest;
+        
+
+        char mStatusError;
+        const char *mStatusMessageKey;
 
 
         void switchFields();

@@ -96,6 +96,12 @@ TextField::~TextField() {
 
 
 
+char *TextField::getText() {
+    return stringDuplicate( mText );
+    }
+
+
+
 void TextField::step() {
 
     
