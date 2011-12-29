@@ -46,6 +46,16 @@ possession of the ticket ID (which only one person in the world should have).
 
 
 
+=== Call:
+server.php?action=check_hash&user_id=[id number]
+                            &sequence_number=[number]
+                            &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+OK
+
+
+
+
 
 === Call:
 server.php?action=start_edit_house&user_id=[id number]

@@ -117,6 +117,9 @@ else if( $action == "clear_log" ) {
 else if( $action == "check_user" ) {
     cd_checkUser();
     }
+else if( $action == "check_hash" ) {
+    cd_checkHash();
+    }
 else if( $action == "start_edit_house" ) {
     cd_startEditHouse();
     }
@@ -432,6 +435,16 @@ function cd_checkUser() {
     global $cd_minClientVersion;
     
     echo "$cd_minClientVersion $user_id $sequence_number";
+    }
+
+
+
+function cd_checkHash() {
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    echo "OK";
     }
 
 

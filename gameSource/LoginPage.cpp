@@ -40,7 +40,7 @@ LoginPage::LoginPage()
                         // allow only ticket code characters
                         "ABCDEFWHJKXMNPTY" ),
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
-          mHouseMap( NULL ),
+          mLoggedIn( false ),
           mRequestSteps( 0 ),
           mWebRequest( -1 ),
           mStatusError( false ),
@@ -55,9 +55,6 @@ LoginPage::LoginPage()
           
         
 LoginPage::~LoginPage() {
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
     
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
@@ -69,6 +66,11 @@ LoginPage::~LoginPage() {
 void LoginPage::step() {
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
+        }
+    else {
+        for( int i=0; i<2; i++ ) {
+            mFields[i]->step();
+            }
         }
     
     if( userID == -1 ) {
@@ -86,6 +88,7 @@ void LoginPage::step() {
                         mStatusMessageKey = "err_webRequest";
                         clearWebRequest( mWebRequest );
                         mWebRequest = -1;
+                        mEmailField.focus();
                         break;
                     case 1: {
                         char *result = getWebResult( mWebRequest );
@@ -95,6 +98,7 @@ void LoginPage::step() {
                         if( strstr( result, "DENIED" ) != NULL ) {
                             mStatusError = true;
                             mStatusMessageKey = "loginFailed";
+                            mEmailField.focus();
                             }
                         else {
                             int minClientVersion;
@@ -107,10 +111,12 @@ void LoginPage::step() {
                                 mStatusError = true;
                                 mStatusMessageKey = "err_badServerResponse";
                                 printf( "Server response: %s\n", result );
+                                mEmailField.focus();
                                 }
                             else if( minClientVersion > versionNumber ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "outOfDateClient";
+                                mEmailField.focus();
                                 }
                             else {
                                 // good email, good client version!
@@ -130,7 +136,7 @@ void LoginPage::step() {
                                 char *ticketHash = getTicketHash();
 
                                 char *fullRequestURL = autoSprintf( 
-                                    "%s?action=start_edit_house&user_id=%d"
+                                    "%s?action=check_hash&user_id=%d"
                                     "&sequence_number=%d"
                                     "&ticket_hash=%s",
                                     serverURL, userID, serverSequenceNumber,
@@ -156,8 +162,9 @@ void LoginPage::step() {
                 }
             }
         }
-    else if( mHouseMap == NULL ) {
+    else if( !mLoggedIn ) {
         if( mWebRequest != -1 ) {
+
             int result = stepWebRequest( mWebRequest );
 
             if( mRequestSteps > minRequestSteps ) {
@@ -170,20 +177,27 @@ void LoginPage::step() {
                         mStatusMessageKey = "err_webRequest";
                         clearWebRequest( mWebRequest );
                         mWebRequest = -1;
+                        // reset entire process
+                        userID = -1;
+                        mEmailField.focus();
                         break;
                     case 1: {
                         char *result = getWebResult( mWebRequest );
                         clearWebRequest( mWebRequest );
                         mWebRequest = -1;
                         
-                        if( strstr( result, "DENIED" ) != NULL ) {
-                            mStatusError = true;
-                            mStatusMessageKey = "loginFailed";
-                            }
-                        else {
+                        if( strstr( result, "OK" ) != NULL ) {
                             printf( "Request not denied, result %s\n",
                                     result );
                             
+                            mLoggedIn = true;
+                            }
+                        else {                            
+                            mStatusError = true;
+                            mStatusMessageKey = "loginFailed";
+                            // reset entire process
+                            userID = -1;
+                            mEmailField.focus();
                             }
                         delete [] result;
                         }
@@ -191,13 +205,6 @@ void LoginPage::step() {
                     }
                 }
             }
-        }
-    
-        // have user ID
-
-
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->step();
         }
     }
 
@@ -213,7 +220,7 @@ void LoginPage::draw( doublePair inViewCenter,
         mFields[i]->draw();
         }
 
-    if( mWebRequest == -1 ) {
+    if( mWebRequest == -1 && !mLoggedIn ) {
         mLoginButton.draw();
         }
 
@@ -241,7 +248,7 @@ void LoginPage::draw( doublePair inViewCenter,
 
 
 void LoginPage::makeActive() {
-    if( mWebRequest == -1 ) {
+    if( mWebRequest == -1 && !mLoggedIn ) {
         mEmailField.focus();
         }
     }
@@ -264,7 +271,7 @@ void LoginPage::pointerMove( float inX, float inY ) {
 
 
 void LoginPage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
+    if( mWebRequest != -1 || mLoggedIn ) {
         return;
         }
     
@@ -273,7 +280,7 @@ void LoginPage::pointerDown( float inX, float inY ) {
 
 
 void LoginPage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
         return;
         }
     
@@ -283,7 +290,7 @@ void LoginPage::pointerDrag( float inX, float inY ) {
 
 
 void LoginPage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
         return;
         }
     

@@ -13,9 +13,7 @@ class LoginPage : public GamePage {
         virtual ~LoginPage();
 
         
-        // destroyed by caller
-        // NULL if not fetched yet
-        char *getHouseMap();
+        char getLoginDone();
         
 
 
@@ -48,8 +46,8 @@ class LoginPage : public GamePage {
         
         Button mLoginButton;
 
-
-        char *mHouseMap;
+        char mLoggedIn;
+        
 
         char *mServerURL;
 
