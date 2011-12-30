@@ -1,3 +1,7 @@
+#ifndef TEXT_FIELD_INCLUDED
+#define TEXT_FIELD_INCLUDED
+
+
 #include "minorGems/game/Font.h"
 
 class TextField {
@@ -112,3 +116,5 @@ class TextField {
         
     };
 
+
+#endif

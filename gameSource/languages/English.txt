@@ -27,6 +27,12 @@ outOfDateClient "Please download the latest version."
 
 
 
+houseBeingRobbed "Your house is currently being robbed.##You can't edit it now."
+
+
+
+
+
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"
 playbackEndMessage    "(Press ESC to end)"

@@ -18,6 +18,8 @@ LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
 ticketHash.cpp \
+EditHousePage.cpp \
+
 
 
 GAME_GRAPHICS = \

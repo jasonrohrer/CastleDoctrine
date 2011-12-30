@@ -40,6 +40,7 @@ int versionNumber = 1;
 
 
 #include "LoginPage.h"
+#include "EditHousePage.h"
 
 
 
@@ -47,6 +48,7 @@ GamePage *currentGamePage = NULL;
 
 
 LoginPage *loginPage;
+EditHousePage *editHousePage;
 
 
 
@@ -269,7 +271,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     loginPage = new LoginPage();
-    
+    editHousePage = new EditHousePage();
 
     currentGamePage = loginPage;
 
@@ -290,6 +292,7 @@ void freeFrameDrawer() {
 
     currentGamePage = NULL;
     delete loginPage;
+    delete editHousePage;
 
     if( serverURL != NULL ) {
         delete [] serverURL;
@@ -687,6 +690,14 @@ void drawFrame( char inUpdate ) {
             }
 
         currentGamePage->step();
+
+        if( currentGamePage == loginPage ) {
+            if( loginPage->getLoginDone() ) {
+                
+                currentGamePage = editHousePage;
+                currentGamePage->makeActive();
+                }
+            }
         }
 
 

@@ -1,3 +1,7 @@
+#ifndef GAME_PAGE_INCLUDED
+#define GAME_PAGE_INCLUDED
+
+
 #include "minorGems/game/doublePair.h"
 
 class GamePage {
@@ -53,4 +57,6 @@ class GamePage {
 
     };
 
+
+#endif
 

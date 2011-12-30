@@ -1,3 +1,8 @@
+#ifndef BUTTON_INCLUDED
+#define BUTTON_INCLUDED
+
+
+
 #include "minorGems/game/Font.h"
 
 class Button {
@@ -42,3 +47,6 @@ class Button {
         
     };
 
+
+
+#endif

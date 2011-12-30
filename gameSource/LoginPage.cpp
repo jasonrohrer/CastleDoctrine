@@ -82,6 +82,12 @@ LoginPage::~LoginPage() {
 
 
 
+char LoginPage::getLoginDone() {
+    return mLoggedIn;
+    }
+
+
+
 void LoginPage::step() {
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
@@ -140,7 +146,7 @@ void LoginPage::step() {
                             else {
                                 // good email, good client version!
 
-                                // FIXME:  need separate server call
+                                // need separate server call
                                 // from checking out a house
                                 // (because that can fail if house is 
                                 //  currently being robbed)
