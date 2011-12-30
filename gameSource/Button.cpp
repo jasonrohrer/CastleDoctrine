@@ -26,7 +26,7 @@ Button::Button( Font *inDisplayFont,
 
 
 Button::~Button() {
-    delete mLabelText;
+    delete [] mLabelText;
     }
         
         
