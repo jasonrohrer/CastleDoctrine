@@ -18,6 +18,10 @@ class TextField {
 
         virtual ~TextField();
 
+        // copied internally
+        void setText( const char *inText );
+        
+
         // destroyed by caller
         char *getText();
         

@@ -96,6 +96,22 @@ TextField::~TextField() {
 
 
 
+void TextField::setText( const char *inText ) {
+    delete [] mText;
+    
+    mText = stringDuplicate( inText );
+    
+    mCursorPosition = 0;
+
+    // hold-downs broken
+    mHoldDeleteSteps = -1;
+    mFirstDeleteRepeatDone = false;
+
+    clearArrowRepeat();
+    }
+
+
+
 char *TextField::getText() {
     return stringDuplicate( mText );
     }

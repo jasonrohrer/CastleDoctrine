@@ -60,6 +60,8 @@ class LoginPage : public GamePage {
 
 
         void switchFields();
-
+        
+        void startLogin();
+        
     };
 

@@ -5,6 +5,7 @@
 #include "minorGems/game/game.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
@@ -50,6 +51,24 @@ LoginPage::LoginPage()
     mFields[1] = &mTicketField;
 
     minRequestSteps = (int)( 60 / frameRateFactor );
+
+
+    char *email = SettingsManager::getStringSetting( "email" );
+    char *code = SettingsManager::getStringSetting( "downloadCode" );
+    
+    if( email != NULL && code != NULL ) {
+        mEmailField.setText( email );
+        mTicketField.setText( code );
+        
+        startLogin();
+        }
+    
+    if( email != NULL ) {
+        delete [] email;
+        }
+    if( code != NULL ) {
+        delete [] code;
+        }    
     }
 
           
@@ -191,6 +210,16 @@ void LoginPage::step() {
                                     result );
                             
                             mLoggedIn = true;
+
+                            char *email = mEmailField.getText();
+                            char *code = mTicketField.getText();
+                            
+                            SettingsManager::setSetting( "email",
+                                                         email );
+                            SettingsManager::setSetting( "downloadCode",
+                                                         code );
+                            delete [] email;
+                            delete [] code;                            
                             }
                         else {                            
                             mStatusError = true;
@@ -289,6 +318,32 @@ void LoginPage::pointerDrag( float inX, float inY ) {
 
 
 
+void LoginPage::startLogin() {
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->unfocus();
+        }
+        
+    char *email = mEmailField.getText();
+
+    char *fullRequestURL = autoSprintf( 
+        "%s?action=check_user&email=%s",
+        serverURL, email );
+
+    delete [] email;
+
+    mRequestSteps = 0;
+    mWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
+        
+    printf( "Starting web request with URL %s\n", fullRequestURL );
+
+    delete [] fullRequestURL;
+
+    mStatusError = false;
+    mStatusMessageKey = "loginMessage";
+    }
+
+
+
 void LoginPage::pointerUp( float inX, float inY ) {
     if( mWebRequest != -1 || mLoggedIn  ) {
         return;
@@ -300,27 +355,7 @@ void LoginPage::pointerUp( float inX, float inY ) {
 
     if( mLoginButton.pointerUp( inX, inY ) ) {
         // login pressed
-        for( int i=0; i<2; i++ ) {
-            mFields[i]->unfocus();
-            }
-        
-        char *email = mEmailField.getText();
-
-        char *fullRequestURL = autoSprintf( 
-            "%s?action=check_user&email=%s",
-            serverURL, email );
-
-        delete [] email;
-
-        mRequestSteps = 0;
-        mWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
-        
-        printf( "Starting web request with URL %s\n", fullRequestURL );
-
-        delete [] fullRequestURL;
-
-        mStatusError = false;
-        mStatusMessageKey = "loginMessage";
+        startLogin();
         }
     }
 
