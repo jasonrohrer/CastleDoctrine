@@ -164,10 +164,8 @@ void LoginPage::step() {
 
                                 char *fullRequestURL = autoSprintf( 
                                     "%s?action=check_hash&user_id=%d"
-                                    "&sequence_number=%d"
-                                    "&ticket_hash=%s",
-                                    serverURL, userID, serverSequenceNumber,
-                                    ticketHash );
+                                    "&%s",
+                                    serverURL, userID, ticketHash );
                                 delete [] ticketHash;
 
                                 mWebRequest = startWebRequest( "GET", 

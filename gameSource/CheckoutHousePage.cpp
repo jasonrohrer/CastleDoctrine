@@ -15,7 +15,6 @@ extern Font *mainFont;
 extern char *serverURL;
 
 extern int userID;
-extern int serverSequenceNumber;
 
 
 
@@ -113,10 +112,8 @@ void CheckoutHousePage::makeActive() {
 
     char *fullRequestURL = autoSprintf( 
         "%s?action=start_edit_house&user_id=%d"
-        "&sequence_number=%d"
-        "&ticket_hash=%s",
-        serverURL, userID, serverSequenceNumber,
-        ticketHash );
+        "&%s",
+        serverURL, userID, ticketHash );
     delete [] ticketHash;
     
     mWebRequest = startWebRequest( "GET", 

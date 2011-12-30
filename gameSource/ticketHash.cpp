@@ -21,7 +21,14 @@ char *getTicketHash() {
     char *hash = computeSHA1Digest( toHash );
     
     delete [] toHash;
+
+    char *result = autoSprintf( "sequence_number=%d&ticket_hash=%s",
+                                serverSequenceNumber,
+                                hash );
+    delete [] hash;
+
+    serverSequenceNumber++;
     
-    return hash;
+    return result;
     }
 

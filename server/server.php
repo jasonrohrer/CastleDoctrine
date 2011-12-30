@@ -631,6 +631,8 @@ function cd_verifyTransaction() {
     
     if( $numRows < 1 ) {
         cd_transactionDeny();
+        cd_log( "Transaction denied for user_id $user_id, ".
+                "not found or blocked" );
         return 0;
         }
     
@@ -640,6 +642,8 @@ function cd_verifyTransaction() {
 
     if( $sequence_number < $last_sequence_number ) {
         cd_transactionDeny();
+        cd_log( "Transaction denied for user_id $user_id, ".
+                "stale sequence number" );
         return 0;
         }
     
@@ -654,6 +658,9 @@ function cd_verifyTransaction() {
     if( strtoupper( $correct_ticket_hash ) !=
         strtoupper( $ticket_hash ) ) {
         cd_transactionDeny();
+        cd_log( "Transaction denied for user_id $user_id, ".
+                "hash check failed" );
+
         return 0;
         }
 
@@ -935,7 +942,9 @@ function cd_showData() {
         if( $rob_checkout ) {
             $checkout = "rob";
             }
-        
+        if( $edit_checkout && $rob_checkout ) {
+            $checkout = "BOTH!";
+            }
         
 
         
