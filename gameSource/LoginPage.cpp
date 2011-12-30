@@ -372,11 +372,27 @@ void LoginPage::switchFields() {
     
 
 void LoginPage::keyDown( unsigned char inASCII ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
+        return;
+        }
+
     if( inASCII == 9 ) {
         // tab
         switchFields();
         return;
         }
+
+    if( inASCII == 10 || inASCII == 13 ) {
+        // enter key
+        
+        if( mTicketField.isFocused() ) {
+            startLogin();
+            
+            return;
+            }
+        }
+    
+        
     
     
     for( int i=0; i<2; i++ ) {
@@ -387,6 +403,10 @@ void LoginPage::keyDown( unsigned char inASCII ) {
 
 
 void LoginPage::keyUp( unsigned char inASCII ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
+        return;
+        }
+
     for( int i=0; i<2; i++ ) {
         mFields[i]->keyUp( inASCII );
         }
@@ -395,6 +415,10 @@ void LoginPage::keyUp( unsigned char inASCII ) {
 
 
 void LoginPage::specialKeyDown( int inKeyCode ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
+        return;
+        }
+
     if( inKeyCode == MG_KEY_DOWN ||
         inKeyCode == MG_KEY_UP ) {
         
@@ -411,6 +435,10 @@ void LoginPage::specialKeyDown( int inKeyCode ) {
 
 
 void LoginPage::specialKeyUp( int inKeyCode ) {
+    if( mWebRequest != -1 || mLoggedIn  ) {
+        return;
+        }
+
     for( int i=0; i<2; i++ ) {
         mFields[i]->specialKeyUp( inKeyCode );
         }
