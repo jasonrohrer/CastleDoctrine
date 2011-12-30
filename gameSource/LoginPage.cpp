@@ -1,5 +1,7 @@
 #include "LoginPage.h"
 #include "ticketHash.h"
+#include "message.h"
+
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -101,11 +103,11 @@ void LoginPage::step() {
     if( userID == -1 ) {
         if( mWebRequest != -1 ) {
             
-            int result = stepWebRequest( mWebRequest );
+            int stepResult = stepWebRequest( mWebRequest );
 
             if( mRequestSteps > minRequestSteps ) {
                 
-                switch( result ) {
+                switch( stepResult ) {
                     case 0:
                         break;
                     case -1:
@@ -260,23 +262,15 @@ void LoginPage::draw( doublePair inViewCenter,
         }
 
 
-    setDrawColor( 1, 1, 1, 1 );
-    
     doublePair labelPos = { 0, -7 };
 
-    mainFont->drawString( translate( "quitMessage" ), 
-                          labelPos, alignCenter );
-
+    drawMessage( "quitMessage", labelPos );
+    
 
     if( mStatusMessageKey != NULL ) {
         labelPos.y = -5;
 
-        if( mStatusError ) {
-            setDrawColor( 1, 0, 0, 1 );
-            }
-        
-        mainFont->drawString( translate( mStatusMessageKey ), 
-                              labelPos, alignCenter );
+        drawMessage( mStatusMessageKey, labelPos, mStatusError );
         }
     }
 

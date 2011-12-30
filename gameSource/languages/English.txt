@@ -28,7 +28,7 @@ outOfDateClient "Please download the latest version."
 
 
 houseBeingRobbed "Your house is currently being robbed.##You can't edit it now."
-
+returnMenu "Menu"
 
 
 

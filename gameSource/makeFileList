@@ -14,10 +14,12 @@ APP_NAME = CastleDoctrine
 LAYER_SOURCE = \
 game.cpp \
 GamePage.cpp \
+message.cpp \
 LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
 ticketHash.cpp \
+CheckoutHousePage.cpp \
 EditHousePage.cpp \
 
 
