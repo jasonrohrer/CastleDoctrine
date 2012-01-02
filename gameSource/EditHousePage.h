@@ -3,6 +3,9 @@
 #include "TextField.h"
 #include "Button.h"
 
+#include "HouseGridDisplay.h"
+
+
 
 class EditHousePage : public GamePage {
         
@@ -44,11 +47,10 @@ class EditHousePage : public GamePage {
         
         int mWebRequest;
 
-        char *mHouseMap;
-
         char mStatusError;
         const char *mStatusMessageKey;
-        
+
+        HouseGridDisplay mGridDisplay;
         Button mDoneButton;
         
 

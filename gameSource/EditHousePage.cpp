@@ -3,6 +3,7 @@
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
+#include "minorGems/game/drawUtils.h"
 
 #include "minorGems/util/stringUtils.h"
 
@@ -18,10 +19,10 @@ extern int userID;
 
 EditHousePage::EditHousePage() 
         : mWebRequest( -1 ),
-          mHouseMap( NULL ),
           mStatusError( false ),
           mStatusMessageKey( NULL ),
-          mDoneButton( mainFont, 4, -4, translate( "doneEdit" ) ) {
+          mGridDisplay( 0, 0 ),
+          mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ) {
     }
 
 
@@ -30,18 +31,12 @@ EditHousePage::~EditHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
     }
 
 
 
 void EditHousePage::setHouseMap( char *inHouseMap ) {
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
-    mHouseMap = inHouseMap;
+    mGridDisplay.setHouseMap( inHouseMap );
     }
 
 
@@ -73,11 +68,11 @@ void EditHousePage::step() {
                 else {
                     // house checked out!
                     
-                    int size = strlen( result );
+                    //int size = strlen( result );
                     
-                    mHouseMap = new char[ size + 1 ];
+                    //mHouseMap = new char[ size + 1 ];
                     
-                    sscanf( result, "%s", mHouseMap );
+                    //sscanf( result, "%s", mHouseMap );
                     }
                         
                         
@@ -108,6 +103,8 @@ void EditHousePage::draw( doublePair inViewCenter,
     if( mWebRequest == -1 ) {
         mDoneButton.draw();
         }
+
+    mGridDisplay.draw();
     }
 
 
@@ -145,6 +142,7 @@ void EditHousePage::pointerMove( float inX, float inY ) {
         return;
         }
     
+    mGridDisplay.pointerMove( inX, inY );
     mDoneButton.pointerMove( inX, inY );
     }
 
@@ -155,6 +153,7 @@ void EditHousePage::pointerDown( float inX, float inY ) {
         return;
         } 
 
+    mGridDisplay.pointerDown( inX, inY );
     mDoneButton.pointerDown( inX, inY );
     }
 
@@ -165,6 +164,7 @@ void EditHousePage::pointerDrag( float inX, float inY ) {
         return;
         }
 
+    mGridDisplay.pointerDrag( inX, inY );
     mDoneButton.pointerDrag( inX, inY );
     }
 
@@ -175,6 +175,7 @@ void EditHousePage::pointerUp( float inX, float inY ) {
         return;
         }
     
+    mGridDisplay.pointerUp( inX, inY );
     mDoneButton.pointerUp( inX, inY );
     }
 

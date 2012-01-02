@@ -21,6 +21,7 @@ Button.cpp \
 ticketHash.cpp \
 CheckoutHousePage.cpp \
 EditHousePage.cpp \
+HouseGridDisplay.cpp \
 
 
 
