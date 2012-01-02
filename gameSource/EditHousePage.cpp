@@ -20,7 +20,8 @@ EditHousePage::EditHousePage()
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
           mStatusError( false ),
-          mStatusMessageKey( NULL ) {
+          mStatusMessageKey( NULL ),
+          mDoneButton( mainFont, 4, -4, translate( "doneEdit" ) ) {
     }
 
 
@@ -33,6 +34,16 @@ EditHousePage::~EditHousePage() {
         delete [] mHouseMap;
         }
     }
+
+
+
+void EditHousePage::setHouseMap( char *inHouseMap ) {
+    if( mHouseMap != NULL ) {
+        delete [] mHouseMap;
+        }
+    mHouseMap = inHouseMap;
+    }
+
 
 
 
@@ -94,11 +105,15 @@ void EditHousePage::draw( doublePair inViewCenter,
                               labelPos, alignCenter );
         }
 
+    if( mWebRequest == -1 ) {
+        mDoneButton.draw();
+        }
     }
 
 
         
 void EditHousePage::makeActive() {
+    /*
     char *ticketHash = getTicketHash();
 
     char *fullRequestURL = autoSprintf( 
@@ -115,6 +130,7 @@ void EditHousePage::makeActive() {
             fullRequestURL );
 
     delete [] fullRequestURL;
+    */
     }
 
 
@@ -125,20 +141,40 @@ void EditHousePage::makeNotActive() {
 
         
 void EditHousePage::pointerMove( float inX, float inY ) {
+    if( mWebRequest != -1 ) {
+        return;
+        }
+    
+    mDoneButton.pointerMove( inX, inY );
     }
 
 
 
 void EditHousePage::pointerDown( float inX, float inY ) {
+    if( mWebRequest != -1 ) {
+        return;
+        } 
+
+    mDoneButton.pointerDown( inX, inY );
     }
 
 
 
 void EditHousePage::pointerDrag( float inX, float inY ) {
+    if( mWebRequest != -1 ) {
+        return;
+        }
+
+    mDoneButton.pointerDrag( inX, inY );
     }
 
 
 
 void EditHousePage::pointerUp( float inX, float inY ) {
+    if( mWebRequest != -1 ) {
+        return;
+        }
+    
+    mDoneButton.pointerUp( inX, inY );
     }
 

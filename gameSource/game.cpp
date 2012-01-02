@@ -702,6 +702,21 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->makeActive();
                 }
             }
+        else if( currentGamePage == checkoutHousePage ) {
+            if( checkoutHousePage->getReturnToMenu() ) {
+                printf( "Fixme:  Return to menu.\n" );
+                }
+            else {
+                char *houseMap = checkoutHousePage->getHouseMap();
+                
+                if( houseMap != NULL ) {
+                    
+                    editHousePage->setHouseMap( houseMap );
+                    currentGamePage = editHousePage;
+                    currentGamePage->makeActive();
+                    }
+                }
+            }
         }
 
 

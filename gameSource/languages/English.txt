@@ -32,6 +32,10 @@ returnMenu "Menu"
 
 
 
+doneEdit "Done"
+
+
+
 
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"

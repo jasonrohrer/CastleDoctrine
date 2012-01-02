@@ -23,7 +23,8 @@ CheckoutHousePage::CheckoutHousePage()
           mHouseMap( NULL ),
           mStatusError( false ),
           mStatusMessageKey( NULL ),
-          mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ) {
+          mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
+          mReturnToMenu( false ) {
     }
 
 
@@ -34,6 +35,23 @@ CheckoutHousePage::~CheckoutHousePage() {
         }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
+        }
+    }
+
+
+
+char CheckoutHousePage::getReturnToMenu() {
+    return mReturnToMenu;
+    }
+
+
+
+char *CheckoutHousePage::getHouseMap() {
+    if( mHouseMap == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mHouseMap );
         }
     }
 
@@ -134,20 +152,46 @@ void CheckoutHousePage::makeNotActive() {
 
         
 void CheckoutHousePage::pointerMove( float inX, float inY ) {
+    if( mWebRequest != -1 || 
+        mHouseMap != NULL ) {
+        return;
+        }
+
+    mMenuButton.pointerMove( inX, inY );
     }
 
 
 
 void CheckoutHousePage::pointerDown( float inX, float inY ) {
+    if( mWebRequest != -1 || 
+        mHouseMap != NULL ) {
+        return;
+        }
+
+    mMenuButton.pointerDown( inX, inY );
     }
 
 
 
 void CheckoutHousePage::pointerDrag( float inX, float inY ) {
+    if( mWebRequest != -1 || 
+        mHouseMap != NULL ) {
+        return;
+        }
+
+    mMenuButton.pointerDrag( inX, inY );
     }
 
 
 
 void CheckoutHousePage::pointerUp( float inX, float inY ) {
+    if( mWebRequest != -1 || 
+        mHouseMap != NULL ) {
+        return;
+        }
+
+    if( mMenuButton.pointerUp( inX, inY ) ) {
+        mReturnToMenu = true;
+        }
     }
 

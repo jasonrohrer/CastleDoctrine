@@ -13,6 +13,13 @@ class CheckoutHousePage : public GamePage {
         virtual ~CheckoutHousePage();
 
 
+        virtual char getReturnToMenu();
+        
+        // destroyed by caller if not NULL
+        virtual char *getHouseMap();
+        
+
+
         virtual void step();
         
         virtual void draw( doublePair inViewCenter, 
@@ -36,7 +43,7 @@ class CheckoutHousePage : public GamePage {
         */
 
     protected:
-        
+
         int mWebRequest;
 
         char *mHouseMap;
@@ -47,6 +54,8 @@ class CheckoutHousePage : public GamePage {
 
         Button mMenuButton;
 
+
+        char mReturnToMenu;
 
     };
 

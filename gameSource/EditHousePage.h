@@ -11,6 +11,11 @@ class EditHousePage : public GamePage {
         EditHousePage();
         
         virtual ~EditHousePage();
+        
+        
+        // destroyed internally
+        virtual void setHouseMap( char *inHouseMap );
+        
 
 
         virtual void step();
@@ -43,7 +48,9 @@ class EditHousePage : public GamePage {
 
         char mStatusError;
         const char *mStatusMessageKey;
-
+        
+        Button mDoneButton;
+        
 
     };
 
