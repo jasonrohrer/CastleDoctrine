@@ -41,6 +41,12 @@ void EditHousePage::setHouseMap( char *inHouseMap ) {
 
 
 
+char *EditHousePage::getHouseMap() {
+    return mGridDisplay.getHouseMap();
+    }
+
+
+
 
 void EditHousePage::step() {
     if( mWebRequest != -1 ) {
@@ -110,24 +116,7 @@ void EditHousePage::draw( doublePair inViewCenter,
 
         
 void EditHousePage::makeActive() {
-    /*
-    char *ticketHash = getTicketHash();
-
-    char *fullRequestURL = autoSprintf( 
-        "%s?action=start_edit_house&user_id=%d"
-        "&%s",
-        serverURL, userID, ticketHash );
-    delete [] ticketHash;
-    
-    mWebRequest = startWebRequest( "GET", 
-                                   fullRequestURL, 
-                                   NULL );
-    
-    printf( "Starting web request with URL %s\n", 
-            fullRequestURL );
-
-    delete [] fullRequestURL;
-    */
+    mDone = false;
     }
 
 
@@ -176,6 +165,10 @@ void EditHousePage::pointerUp( float inX, float inY ) {
         }
     
     mGridDisplay.pointerUp( inX, inY );
-    mDoneButton.pointerUp( inX, inY );
+
+
+    if( mDoneButton.pointerUp( inX, inY ) ) {
+        mDone = true;
+        }
     }
 

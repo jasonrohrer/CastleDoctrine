@@ -11,7 +11,7 @@ class HouseGridDisplay {
         virtual ~HouseGridDisplay();
         
 
-        // destroyed internally
+        // destroyed by caller
         void setHouseMap( char *inHouseMap );
         
         

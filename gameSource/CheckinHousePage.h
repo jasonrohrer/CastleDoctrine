@@ -3,28 +3,21 @@
 #include "TextField.h"
 #include "Button.h"
 
-#include "HouseGridDisplay.h"
 
-
-
-class EditHousePage : public GamePage {
+class CheckinHousePage : public GamePage {
         
     public:
         
-        EditHousePage();
+        CheckinHousePage();
         
-        virtual ~EditHousePage();
-        
+        virtual ~CheckinHousePage();
+
+
+        virtual char getReturnToMenu();
         
         // destroyed by caller
-        void setHouseMap( char *inHouseMap );
-        char *getHouseMap();
-
-
-        char getDone() {
-            return mDone;
-            }
-            
+        virtual void setHouseMap( char *inHouseMap );
+        
 
 
         virtual void step();
@@ -50,17 +43,19 @@ class EditHousePage : public GamePage {
         */
 
     protected:
-        
+
         int mWebRequest;
+
+        char *mHouseMap;
 
         char mStatusError;
         const char *mStatusMessageKey;
+        
 
-        HouseGridDisplay mGridDisplay;
-        Button mDoneButton;
-        
-        char mDone;
-        
+        Button mMenuButton;
+
+
+        char mReturnToMenu;
 
     };
 

@@ -28,7 +28,7 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
-    mHouseMap = inHouseMap;
+    mHouseMap = stringDuplicate( inHouseMap );
     }
 
 

@@ -91,6 +91,15 @@ if( isset( $_REQUEST[ "action" ] ) ) {
     $action = $_REQUEST[ "action" ];
     }
 
+/*
+// debugging:  log full request vars
+$fullRequest = "";
+foreach( $_REQUEST as $key => $value ) {
+    $fullRequest = $fullRequest . ", " . $key . "=>". $value;
+    }
+cd_log( "Web request with vars $fullRequest" );
+*/
+
 $debug = "";
 if( isset( $_REQUEST[ "debug" ] ) ) {
     $debug = $_REQUEST[ "debug" ];
@@ -124,7 +133,7 @@ else if( $action == "start_edit_house" ) {
     cd_startEditHouse();
     }
 else if( $action == "end_edit_house" ) {
-    cd_startEditHouse();
+    cd_endEditHouse();
     }
 else if( $action == "show_data" ) {
     cd_showData();
@@ -150,6 +159,10 @@ else if( $action == "cd_setup" ) {
     echo "</TD></TR></TABLE></TD></TR></TABLE></CENTER><BR><BR>";
     
     echo $setup_footer;
+    }
+else if( $action != "" ) {
+    cd_log( "Unknown action request:  $action" );
+    echo "DENIED";
     }
 else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
     // server.php has been called without an action parameter

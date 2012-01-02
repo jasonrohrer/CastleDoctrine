@@ -35,6 +35,10 @@ returnMenu "Menu"
 doneEdit "Done"
 
 
+houseCheckedIn "House checked back in."
+houseCheckInFailed "House check in failed."
+
+
 
 
 playbackTag           "Playback %:"
