@@ -128,7 +128,7 @@ void CheckinHousePage::makeActive() {
     
     char *actionString = autoSprintf( 
         "action=end_edit_house&user_id=%d"
-        "&%s&houseMap=%s",
+        "&%s&house_map=%s",
         userID, ticketHash, mHouseMap );
     delete [] ticketHash;
             
