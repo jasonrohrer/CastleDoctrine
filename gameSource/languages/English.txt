@@ -40,6 +40,11 @@ houseCheckInFailed "House check in failed."
 
 
 
+startEditHouse "Work on Your House"
+
+listFetchFailed "Failed to fetch house list"
+
+
 
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"

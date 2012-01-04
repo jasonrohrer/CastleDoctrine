@@ -135,6 +135,12 @@ else if( $action == "start_edit_house" ) {
 else if( $action == "end_edit_house" ) {
     cd_endEditHouse();
     }
+else if( $action == "ping_house" ) {
+    cd_pingHouse();
+    }
+else if( $action == "list_houses" ) {
+    cd_listHouses();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -210,6 +216,62 @@ cd_closeDatabase();
 
 
 
+function cd_populateNameTable( $inFileName, $inTableName ) {
+    $totalPopulation = 257746103;
+    
+
+    global $tableNamePrefix;
+
+    $tableName = $tableNamePrefix . $inTableName;
+
+    
+    if( $file = fopen( $inFileName, "r" ) ) {
+        $firstLine = true;
+
+        $query = "INSERT INTO $tableName VALUES ";
+        /*
+			(1, 'Komal',10),
+			(2, 'Ajay',10),
+			(3, 'Santosh',10),
+			(4, 'Rakesh',10),
+			(5, 'Bhau',10);
+        */
+
+        
+        while( !feof( $file ) ) {
+            $line = fgets( $file);
+
+            $tokens = preg_split( "/\s+/", trim( $line ) );
+            
+            if( count( $tokens ) == 4 ) {
+                
+                $name = $tokens[0];
+                $cumulativePercent = $tokens[2];
+                
+                $cumulative_count =
+                    ( $cumulativePercent / 100 ) * $totalPopulation;
+                
+                if( ! $firstLine ) {
+                    $query = $query . ",";
+                    }
+                
+                $query = $query . " ( $cumulative_count, '$name' )";
+                
+                $firstLine = false;
+                }
+            }
+        
+        fclose( $file );
+
+        $query = $query . ";";
+
+        $result = cd_queryDatabase( $query );
+        }
+    }
+
+
+
+
 
 
 
@@ -275,6 +337,7 @@ function cd_setupDatabase() {
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
             "rob_checkout TINYINT NOT NULL,".
+            "rob_attempts INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
@@ -285,6 +348,54 @@ function cd_setupDatabase() {
     else {
         echo "<B>$tableName</B> table already exists<BR>";
         }
+
+
+    $tableName = $tableNamePrefix . "last_names";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // a source list of character last names
+        // cumulative count is number of people in 1993 population
+        // who have this name or a more common name
+        // less common names have higher cumulative counts
+        $query =
+            "CREATE TABLE $tableName(" .
+            "cumulative_count INT NOT NULL PRIMARY KEY," .
+            "name VARCHAR(20) NOT NULL );";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        cd_populateNameTable( "namesLast.txt", "last_names" );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+    $tableName = $tableNamePrefix . "first_names";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+
+        // a source list of character first names
+        // cumulative count is number of people in 1993 population
+        // who have this name or a more common name
+        // less common names have higher cumulative counts
+        $query =
+            "CREATE TABLE $tableName(" .
+            "cumulative_count INT NOT NULL PRIMARY KEY," .
+            "name VARCHAR(20) NOT NULL );";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        cd_populateNameTable( "namesFirst.txt", "first_names" );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
 
     }
 
@@ -597,6 +708,43 @@ function cd_pingHouse() {
 
 
 
+function cd_listHouses() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+
+    $skip = 0;
+    $housesPerPage = 20;
+    
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "AND rob_checkout = 0 AND edit_checkout = 0 ".
+        "ORDER BY loot_value DESC ".
+        "LIMIT $skip, $housesPerPage;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $user_id = mysql_result( $result, $i, "user_id" );
+        $character_name = mysql_result( $result, $i, "character_name" );
+        $loot_value = mysql_result( $result, $i, "loot_value" );
+        $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+
+        echo "$user_id#$character_name#$loot_value#$rob_attempts\n";
+        }
+    }
+
+
+
 // utility function for stuff common to all denied user transactions
 function cd_transactionDeny() {
     echo "DENIED";
@@ -703,18 +851,8 @@ function cd_newHouseForUser( $user_id ) {
     
     
     // create default house for user
-        /*
-        "user_id INT NOT NULL PRIMARY KEY," .
-            "character_name TEXT NOT NULL," .
-            "house_map LONGTEXT NOT NULL," .
-            "loot_value INT NOT NULL," .
-            "edit_checkout TINYINT NOT NULL,".
-            "rob_checkout TINYINT NOT NULL,".
-            "last_ping_time DATETIME NOT NULL,".
-            "blocked TINYINT NOT NULL );";
-        */
 
-    //
+
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
     // select first, for update, so we can safely delete old house
@@ -738,7 +876,7 @@ function cd_newHouseForUser( $user_id ) {
     
     
     // FIXME:  generate a unique name here
-    $character_name = "Sam Jacob Smith";
+    $character_name = "Sam_Jacob_Smith";
 
     // FIXME:  default house map, 16x16 map
     $house_map =
@@ -764,7 +902,7 @@ function cd_newHouseForUser( $user_id ) {
     
     
     $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-        " $user_id, '$character_name', '$house_map', 1000, 0, 0, ".
+        " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, ".
         "CURRENT_TIMESTAMP, 0 );";
     $result = cd_queryDatabase( $query );
 

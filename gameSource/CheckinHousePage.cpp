@@ -103,8 +103,7 @@ void CheckinHousePage::step() {
 void CheckinHousePage::draw( doublePair inViewCenter, 
                           double inViewSize ) {
 
-    if( mWebRequest == -1 && 
-        mHouseMap == NULL ) {
+    if( mWebRequest == -1 ) {
         
         mMenuButton.draw();
         }

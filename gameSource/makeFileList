@@ -23,6 +23,7 @@ CheckoutHousePage.cpp \
 EditHousePage.cpp \
 HouseGridDisplay.cpp \
 CheckinHousePage.cpp \
+MenuPage.cpp \
 
 
 
