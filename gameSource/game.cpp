@@ -43,6 +43,7 @@ int versionNumber = 1;
 #include "CheckoutHousePage.h"
 #include "EditHousePage.h"
 #include "CheckinHousePage.h"
+#include "MenuPage.h"
 
 
 
@@ -53,7 +54,7 @@ LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 CheckinHousePage *checkinHousePage;
-
+MenuPage *menuPage;
 
 
 
@@ -277,6 +278,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
     checkinHousePage = new CheckinHousePage();
+    menuPage = new MenuPage();
     
     currentGamePage = loginPage;
 
@@ -300,6 +302,7 @@ void freeFrameDrawer() {
     delete checkoutHousePage;
     delete editHousePage;
     delete checkinHousePage;
+    delete menuPage;
     
     if( serverURL != NULL ) {
         delete [] serverURL;
@@ -728,6 +731,12 @@ void drawFrame( char inUpdate ) {
                 checkinHousePage->setHouseMap( houseMap );
                 
                 currentGamePage = checkinHousePage;
+                currentGamePage->makeActive();
+                }
+            }
+        else if( currentGamePage == checkinHousePage ) {
+            if( checkinHousePage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
                 currentGamePage->makeActive();
                 }
             }

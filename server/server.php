@@ -299,7 +299,8 @@ function cd_pickName( $inTableName ) {
     
     $result = cd_queryDatabase( $query );
 
-    return mysql_result( $result, 0, 0 );
+    return ucfirst( strtolower(
+                        mysql_result( $result, 0, 0 ) ) );
     }
 
 
@@ -769,6 +770,12 @@ function cd_listHouses() {
         return;
         }
 
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    
     
     // automatically ignore blocked users and houses already checked
     // out for robbery
@@ -777,7 +784,7 @@ function cd_listHouses() {
     $housesPerPage = 20;
     
     $query = "SELECT * FROM $tableNamePrefix"."houses ".
-        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "WHERE user_id != '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 AND edit_checkout = 0 ".
         "ORDER BY loot_value DESC ".
         "LIMIT $skip, $housesPerPage;";

@@ -96,12 +96,21 @@ void MenuPage::step() {
                         else {
                             HouseRecord r;
                             
+                            r.selected = false;
+                            r.position.x = 0;
+                            r.position.y = i * 0.5;
+                            
                             sscanf( parts[0], "%d", &( r.userID ) );
                             
-                            r.characterName = stringDuplicate( parts[1] );
+                            
+                            char found;
+                            r.characterName = 
+                                replaceAll( parts[1], "_", " ", &found );
                             
                             sscanf( parts[2], "%d", &( r.lootValue ) );
                             sscanf( parts[3], "%d", &( r.robAttempts ) );
+
+                            mHouseList.push_back( r );
                             }
                         
                         for( int j=0; j<numParts; j++ ) {
@@ -141,7 +150,16 @@ void MenuPage::draw( doublePair inViewCenter,
         
         setDrawColor( 1, 1, 1, 1 );
         
-        mainFont->drawString( r->characterName, r->position, alignLeft );
+        mainFont->drawString( r->characterName, r->position, alignRight );
+
+        char *lootString = autoSprintf( "$%d", r->lootValue );
+        
+        doublePair drawPos = r->position;
+        drawPos.x += 1;
+        
+        mainFont->drawString( lootString, drawPos, alignLeft );
+
+        delete [] lootString;
         }
     
 

@@ -137,6 +137,8 @@ void CheckinHousePage::makeActive() {
                                    actionString );
     
     delete [] actionString;
+
+    mReturnToMenu = false;
     }
 
 
@@ -147,8 +149,7 @@ void CheckinHousePage::makeNotActive() {
 
         
 void CheckinHousePage::pointerMove( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
+    if( mWebRequest != -1 ) {
         return;
         }
 
@@ -158,8 +159,7 @@ void CheckinHousePage::pointerMove( float inX, float inY ) {
 
 
 void CheckinHousePage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
+    if( mWebRequest != -1 ) {
         return;
         }
 
@@ -169,8 +169,7 @@ void CheckinHousePage::pointerDown( float inX, float inY ) {
 
 
 void CheckinHousePage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
+    if( mWebRequest != -1 ) {
         return;
         }
 
@@ -180,8 +179,7 @@ void CheckinHousePage::pointerDrag( float inX, float inY ) {
 
 
 void CheckinHousePage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
+    if( mWebRequest != -1 ) {
         return;
         }
 
