@@ -147,6 +147,9 @@ else if( $action == "show_data" ) {
 else if( $action == "show_detail" ) {
     cd_showDetail();
     }
+else if( $action == "block_user_id" ) {
+    cd_blockUserID();
+    }
 else if( $action == "cd_setup" ) {
     global $setup_header, $setup_footer;
     echo $setup_header; 
@@ -271,6 +274,56 @@ function cd_populateNameTable( $inFileName, $inTableName ) {
 
 
 
+// picks name according to cumulative distribution
+function cd_pickName( $inTableName ) {
+    global $tableNamePrefix;
+
+    $tableName = $tableNamePrefix . $inTableName;
+
+    $query = "SELECT FLOOR( RAND() * MAX( cumulative_count) ) FROM ".
+        $tableName .";";
+
+    $result = cd_queryDatabase( $query );
+
+    $cumulativeTarget = mysql_result( $result, 0, 0 );
+
+    $query = "SELECT MIN( cumulative_count ) FROM ". $tableName .
+        " WHERE cumulative_count > $cumulativeTarget;";
+
+    $result = cd_queryDatabase( $query );
+
+    $cumulativePick = mysql_result( $result, 0, 0 );
+
+    $query = "SELECT name FROM ". $tableName .
+        " WHERE cumulative_count = $cumulativePick;";
+    
+    $result = cd_queryDatabase( $query );
+
+    return mysql_result( $result, 0, 0 );
+    }
+
+
+
+function cd_pickFullName() {
+    $firstName = cd_pickName( "first_names" );
+
+    $middleName = cd_pickName( "first_names" );
+
+    while( $middleName == $firstName ) {
+        $middleName = cd_pickName( "first_names" );
+        }
+    
+    $character_name =
+        $firstName . "_" .
+        $middleName . "_" .
+        cd_pickName( "last_names" );
+
+    return $character_name;
+    }
+
+
+
+
 
 
 
@@ -332,7 +385,8 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY," .
-            "character_name TEXT NOT NULL," .
+            "character_name VARCHAR(62) NOT NULL," .
+            "UNIQUE KEY( character_name )," .
             "house_map LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
@@ -875,9 +929,16 @@ function cd_newHouseForUser( $user_id ) {
         }
     
     
-    // FIXME:  generate a unique name here
-    $character_name = "Sam_Jacob_Smith";
-
+    // Generate a unique name here
+    // Error number generated when a forced-unique key already exists upon
+    // insertion
+    // Best way to ensure that character names are unique, and keep
+    // searching for a unique one after a collision.
+    $errorNumber = 1062;    
+    $foundName = false;
+    
+    
+    
     // FIXME:  default house map, 16x16 map
     $house_map =
         "0000000000000000".
@@ -900,12 +961,26 @@ function cd_newHouseForUser( $user_id ) {
         "0000000000000000".
         "0000000000000000";
     
-    
-    $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-        " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, ".
-        "CURRENT_TIMESTAMP, 0 );";
-    $result = cd_queryDatabase( $query );
 
+    while( !$foundName && $errorNumber == 1062 ) {
+        $character_name = cd_pickFullName();
+        
+        
+        $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
+            " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, ".
+            "CURRENT_TIMESTAMP, 0 );";
+
+        $result = cd_queryDatabase( $query );
+
+        if( $result ) {
+            $foundName = true;
+            }
+        else {
+            $errorNumber = mysql_errno();
+            }
+        
+        }
+    
     cd_queryDatabase( "COMMIT;" );
     
     
@@ -1075,13 +1150,15 @@ function cd_showData() {
         if( $blocked ) {
             $blocked = "BLOCKED";
             $block_toggle = "<a href=\"server.php?action=block_user_id&".
-                "blocked=0&user_id=$user_id&password=$password\">unblock</a>";
+                "blocked=0&user_id=$user_id&password=$password".
+                "&search=$search&skip=$skip&order_by=$order_by\">unblock</a>";
             
             }
         else {
             $blocked = "";
             $block_toggle = "<a href=\"server.php?action=block_user_id&".
-                "blocked=1&user_id=$user_id&password=$password\">block</a>";
+                "blocked=1&user_id=$user_id&password=$password".
+                "&search=$search&skip=$skip&order_by=$order_by\">block</a>";
             
             }
 
@@ -1122,6 +1199,14 @@ function cd_showData() {
     echo "<hr>";
     echo "Generated for $remoteIP\n";
 
+    /*
+    echo "Name Test:<br>";
+
+    for( $i=0; $i<100; $i++ ) {
+        $character_name = cd_pickFullName();
+        echo "$character_name<br>\n";
+        }
+    */
     }
 
 
@@ -1175,6 +1260,64 @@ function cd_showDetail() {
     echo "Email: $email<br>\n";
     }
 
+
+
+
+function cd_blockUserID() {
+    $password = cd_checkPassword( "block_user_id" );
+
+
+    global $tableNamePrefix;
+        
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    $blocked = "";
+    if( isset( $_REQUEST[ "blocked" ] ) ) {
+        $blocked = $_REQUEST[ "blocked" ];
+        }
+
+    
+    global $remoteIP;
+
+    
+
+    
+    $query = "SELECT * FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows == 1 ) {
+
+        
+        $query = "UPDATE $tableNamePrefix"."users SET " .
+            "blocked = '$blocked' " .
+            "WHERE user_id = '$user_id';";
+        
+        $result = cd_queryDatabase( $query );
+
+                
+        $query = "UPDATE $tableNamePrefix"."houses SET " .
+            "blocked = '$blocked' " .
+            "WHERE user_id = '$user_id';";
+        
+        $result = cd_queryDatabase( $query );
+
+        
+        cd_log( "$user_id block changed to $blocked by $remoteIP" );
+
+        cd_showData();
+        }
+    else {
+        cd_log( "$user_id not found for $remoteIP" );
+
+        echo "$user_id not found";
+        }    
+    }
 
 
 
