@@ -123,7 +123,11 @@ void CheckoutHousePage::draw( doublePair inViewCenter,
 
 
         
-void CheckoutHousePage::makeActive() {
+void CheckoutHousePage::makeActive( char inFresh ) {
+    if( !inFresh ) {
+        return;
+        }
+    
     char *ticketHash = getTicketHash();
 
     char *fullRequestURL = autoSprintf( 

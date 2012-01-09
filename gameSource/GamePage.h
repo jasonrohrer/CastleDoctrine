@@ -18,7 +18,10 @@ class GamePage {
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize ) = 0;
         
-        virtual void makeActive() = 0;
+        // inFresh set to true when returning to this page
+        // after visiting other pages
+        // set to false after returning from pause.
+        virtual void makeActive( char inFresh ) = 0;
         virtual void makeNotActive() = 0;
 
 

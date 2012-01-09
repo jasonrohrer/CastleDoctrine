@@ -115,7 +115,11 @@ void EditHousePage::draw( doublePair inViewCenter,
 
 
         
-void EditHousePage::makeActive() {
+void EditHousePage::makeActive( char inFresh ) {
+    if( !inFresh ) {
+        return;
+        }
+    
     mDone = false;
     }
 

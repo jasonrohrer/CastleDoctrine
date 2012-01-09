@@ -282,7 +282,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     currentGamePage = loginPage;
 
-    currentGamePage->makeActive();
+    currentGamePage->makeActive( true );
     }
 
 
@@ -695,7 +695,7 @@ void drawFrame( char inUpdate ) {
     if( currentGamePage != NULL ) {
         
         if( wasPaused ) {
-            currentGamePage->makeActive();
+            currentGamePage->makeActive( false );
             wasPaused = false;
             }
 
@@ -705,7 +705,7 @@ void drawFrame( char inUpdate ) {
             if( loginPage->getLoginDone() ) {
                 
                 currentGamePage = checkoutHousePage;
-                currentGamePage->makeActive();
+                currentGamePage->makeActive( true );
                 }
             }
         else if( currentGamePage == checkoutHousePage ) {
@@ -720,7 +720,7 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
                     currentGamePage = editHousePage;
-                    currentGamePage->makeActive();
+                    currentGamePage->makeActive( true );
                     }
                 }
             }
@@ -731,19 +731,19 @@ void drawFrame( char inUpdate ) {
                 checkinHousePage->setHouseMap( houseMap );
                 
                 currentGamePage = checkinHousePage;
-                currentGamePage->makeActive();
+                currentGamePage->makeActive( true );
                 }
             }
         else if( currentGamePage == checkinHousePage ) {
             if( checkinHousePage->getReturnToMenu() ) {
                 currentGamePage = menuPage;
-                currentGamePage->makeActive();
+                currentGamePage->makeActive( true );
                 }
             }
         else if( currentGamePage == menuPage ) {
             if( menuPage->getStartEditHouse() ) {
                 currentGamePage = checkoutHousePage;
-                currentGamePage->makeActive();
+                currentGamePage->makeActive( true );
                 }
             }
         }

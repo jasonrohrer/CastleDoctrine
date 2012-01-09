@@ -274,7 +274,7 @@ void LoginPage::draw( doublePair inViewCenter,
 
 
 
-void LoginPage::makeActive() {
+void LoginPage::makeActive( char inFresh ) {
     if( mWebRequest == -1 && !mLoggedIn ) {
         mEmailField.focus();
         }

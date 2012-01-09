@@ -118,7 +118,11 @@ void CheckinHousePage::draw( doublePair inViewCenter,
 
 
         
-void CheckinHousePage::makeActive() {
+void CheckinHousePage::makeActive( char inFresh ) {
+    if( !inFresh ) {
+        return;
+        }
+    
     // send back to server            
     char *ticketHash = getTicketHash();
         

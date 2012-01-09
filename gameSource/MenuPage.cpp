@@ -173,7 +173,10 @@ void MenuPage::draw( doublePair inViewCenter,
 
 
         
-void MenuPage::makeActive() {
+void MenuPage::makeActive( char inFresh ) {
+    if( !inFresh ) {
+        return;
+        }
 
     // request house list from server
     char *ticketHash = getTicketHash();

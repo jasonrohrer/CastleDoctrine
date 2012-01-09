@@ -32,7 +32,7 @@ class EditHousePage : public GamePage {
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize );
         
-        virtual void makeActive();
+        virtual void makeActive( char inFresh );
         virtual void makeNotActive();
         
         
