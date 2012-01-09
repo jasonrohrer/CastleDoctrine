@@ -50,8 +50,6 @@ void MenuPage::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
-
-        printf( "StepResult %d\n", stepResult );
                 
         switch( stepResult ) {
             case 0:

@@ -60,8 +60,6 @@ void CheckinHousePage::step() {
             
         int stepResult = stepWebRequest( mWebRequest );
 
-        printf( "StepResult %d\n", stepResult );
-                
         switch( stepResult ) {
             case 0:
                 break;
@@ -88,6 +86,7 @@ void CheckinHousePage::step() {
 
                     mStatusError = false;
                     mStatusMessageKey = "houseCheckedIn";
+                    mReturnToMenu = true;
                     }
                         
                         
@@ -136,9 +135,13 @@ void CheckinHousePage::makeActive() {
                                    serverURL, 
                                    actionString );
     
+    printf( "Starting web request %s %s\n", serverURL, actionString );
+
     delete [] actionString;
 
     mReturnToMenu = false;
+    mStatusError = false;
+    mStatusMessageKey = NULL;
     }
 
 

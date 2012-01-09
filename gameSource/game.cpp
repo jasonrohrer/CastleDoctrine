@@ -740,7 +740,12 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->makeActive();
                 }
             }
-        
+        else if( currentGamePage == menuPage ) {
+            if( menuPage->getStartEditHouse() ) {
+                currentGamePage = checkoutHousePage;
+                currentGamePage->makeActive();
+                }
+            }
         }
 
 
