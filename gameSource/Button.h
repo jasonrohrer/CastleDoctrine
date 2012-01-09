@@ -18,6 +18,9 @@ class Button {
 
         virtual ~Button();
         
+        // clears hover or partially-pressed status
+        virtual void clearState();
+        
         
         virtual void step();
         

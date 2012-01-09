@@ -3,6 +3,8 @@
 
 
 #include "minorGems/game/doublePair.h"
+#include "Button.h"
+
 
 class GamePage {
         
@@ -11,18 +13,65 @@ class GamePage {
         
 
         virtual ~GamePage();
-        
 
-        virtual void step() = 0;
+
+        void base_step();
         
-        virtual void draw( doublePair inViewCenter, 
-                           double inViewSize ) = 0;
+        void base_draw( doublePair inViewCenter, 
+                       double inViewSize );
         
         // inFresh set to true when returning to this page
         // after visiting other pages
         // set to false after returning from pause.
-        virtual void makeActive( char inFresh ) = 0;
-        virtual void makeNotActive() = 0;
+        void base_makeActive( char inFresh );
+        void base_makeNotActive();
+
+
+        // default implementations do nothing
+        // sub classes implement whichever they need
+        void base_pointerMove( float inX, float inY );
+
+        void base_pointerDown( float inX, float inY );
+
+        void base_pointerDrag( float inX, float inY );
+
+        void base_pointerUp( float inX, float inY );
+
+        void base_keyDown( unsigned char inASCII );
+        
+        void base_keyUp( unsigned char inASCII );
+
+        void base_specialKeyDown( int inKeyCode );
+
+        void base_specialKeyUp( int inKeyCode );
+
+
+        
+    protected:
+        
+        // add button for default event handling
+        void addButton( Button *inButton );
+        
+
+
+
+
+        // subclasses override these to provide custom functionality
+
+        virtual void step() {
+            };
+        
+        virtual void draw( doublePair inViewCenter, 
+                               double inViewSize ) {
+            };
+        
+        // inFresh set to true when returning to this page
+        // after visiting other pages
+        // set to false after returning from pause.
+        virtual void makeActive( char inFresh ) {
+            };
+        virtual void makeNotActive() {
+            };
 
 
         // default implementations do nothing

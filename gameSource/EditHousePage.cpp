@@ -126,6 +126,7 @@ void EditHousePage::makeActive( char inFresh ) {
 
 
 void EditHousePage::makeNotActive() {
+    mDoneButton.clearState();
     }
         
 

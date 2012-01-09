@@ -28,7 +28,15 @@ Button::Button( Font *inDisplayFont,
 Button::~Button() {
     delete [] mLabelText;
     }
-        
+
+
+
+void Button::clearState() {
+    mHover = false;
+    mDragOver = false;
+    }
+
+
         
 void Button::step() {
     }

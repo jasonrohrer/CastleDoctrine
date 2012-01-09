@@ -285,6 +285,7 @@ void LoginPage::makeNotActive() {
     for( int i=0; i<2; i++ ) {
         mFields[i]->unfocus();
         }
+    mLoginButton.clearState();
     }
 
 

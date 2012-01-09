@@ -282,7 +282,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     currentGamePage = loginPage;
 
-    currentGamePage->makeActive( true );
+    currentGamePage->base_makeActive( true );
     }
 
 
@@ -606,7 +606,7 @@ void drawFrame( char inUpdate ) {
         
         if( !wasPaused ) {
             if( currentGamePage != NULL ) {
-                currentGamePage->makeNotActive();
+                currentGamePage->base_makeNotActive();
                 }
             }
         wasPaused = true;
@@ -695,17 +695,17 @@ void drawFrame( char inUpdate ) {
     if( currentGamePage != NULL ) {
         
         if( wasPaused ) {
-            currentGamePage->makeActive( false );
+            currentGamePage->base_makeActive( false );
             wasPaused = false;
             }
 
-        currentGamePage->step();
+        currentGamePage->base_step();
 
         if( currentGamePage == loginPage ) {
             if( loginPage->getLoginDone() ) {
                 
                 currentGamePage = checkoutHousePage;
-                currentGamePage->makeActive( true );
+                currentGamePage->base_makeActive( true );
                 }
             }
         else if( currentGamePage == checkoutHousePage ) {
@@ -720,7 +720,7 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
                     currentGamePage = editHousePage;
-                    currentGamePage->makeActive( true );
+                    currentGamePage->base_makeActive( true );
                     }
                 }
             }
@@ -731,19 +731,19 @@ void drawFrame( char inUpdate ) {
                 checkinHousePage->setHouseMap( houseMap );
                 
                 currentGamePage = checkinHousePage;
-                currentGamePage->makeActive( true );
+                currentGamePage->base_makeActive( true );
                 }
             }
         else if( currentGamePage == checkinHousePage ) {
             if( checkinHousePage->getReturnToMenu() ) {
                 currentGamePage = menuPage;
-                currentGamePage->makeActive( true );
+                currentGamePage->base_makeActive( true );
                 }
             }
         else if( currentGamePage == menuPage ) {
             if( menuPage->getStartEditHouse() ) {
                 currentGamePage = checkoutHousePage;
-                currentGamePage->makeActive( true );
+                currentGamePage->base_makeActive( true );
                 }
             }
         }
@@ -765,7 +765,7 @@ void drawFrame( char inUpdate ) {
 void drawFrameNoUpdate( char inUpdate ) {
 
     if( currentGamePage != NULL ) {
-        currentGamePage->draw( lastScreenViewCenter, viewWidth );
+        currentGamePage->base_draw( lastScreenViewCenter, viewWidth );
         }
 
     }
@@ -778,7 +778,7 @@ void pointerMove( float inX, float inY ) {
         }
     
     if( currentGamePage != NULL ) {
-        currentGamePage->pointerMove( inX, inY );
+        currentGamePage->base_pointerMove( inX, inY );
         }
     }
 
@@ -790,7 +790,7 @@ void pointerDown( float inX, float inY ) {
         }
     
     if( currentGamePage != NULL ) {
-        currentGamePage->pointerDown( inX, inY );
+        currentGamePage->base_pointerDown( inX, inY );
         }
     }
 
@@ -802,7 +802,7 @@ void pointerDrag( float inX, float inY ) {
         }
     
     if( currentGamePage != NULL ) {
-        currentGamePage->pointerDrag( inX, inY );
+        currentGamePage->base_pointerDrag( inX, inY );
         }
     }
 
@@ -814,7 +814,7 @@ void pointerUp( float inX, float inY ) {
         }
     
     if( currentGamePage != NULL ) {
-        currentGamePage->pointerUp( inX, inY );
+        currentGamePage->base_pointerUp( inX, inY );
         }
     }
 
@@ -874,7 +874,7 @@ void keyDown( unsigned char inASCII ) {
     
     
     if( currentGamePage != NULL ) {
-        currentGamePage->keyDown( inASCII );
+        currentGamePage->base_keyDown( inASCII );
         }
 
     
@@ -902,7 +902,7 @@ void keyUp( unsigned char inASCII ) {
 
     if( ! isPaused() ) {
         if( currentGamePage != NULL ) {
-            currentGamePage->keyUp( inASCII );
+            currentGamePage->base_keyUp( inASCII );
             }
         }
 
@@ -921,7 +921,7 @@ void specialKeyDown( int inKey ) {
     
 
     if( currentGamePage != NULL ) {
-        currentGamePage->specialKeyDown( inKey );
+        currentGamePage->base_specialKeyDown( inKey );
         }
 
 	}
@@ -935,7 +935,7 @@ void specialKeyUp( int inKey ) {
     
 
     if( currentGamePage != NULL ) {
-        currentGamePage->specialKeyUp( inKey );
+        currentGamePage->base_specialKeyUp( inKey );
         }
 	} 
 
