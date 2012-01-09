@@ -146,7 +146,7 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
     mHighlightIndex = getTileIndex( inX, inY );
     }
 
-char HouseGridDisplay::pointerUp( float inX, float inY ) {
+void HouseGridDisplay::pointerUp( float inX, float inY ) {
 
     mHighlightIndex = -1;
     
@@ -158,10 +158,7 @@ char HouseGridDisplay::pointerUp( float inX, float inY ) {
         
         if( old == '0' ) {
             mHouseMap[ index ] = '1';
-            return true;
+            fireActionPerformed( this );
             }
         }
-    
-    
-    return false;
     }

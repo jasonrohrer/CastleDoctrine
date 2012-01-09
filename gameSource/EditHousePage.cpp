@@ -23,6 +23,12 @@ EditHousePage::EditHousePage()
           mStatusMessageKey( NULL ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ) {
+
+    addComponent( &mDoneButton );
+    addComponent( &mGridDisplay );
+
+    mDoneButton.addActionListener( this );
+    mGridDisplay.addActionListener( this );
     }
 
 
@@ -45,6 +51,13 @@ char *EditHousePage::getHouseMap() {
     return mGridDisplay.getHouseMap();
     }
 
+
+
+void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mDoneButton ) {
+        mDone = true;
+        }
+    }
 
 
 
@@ -106,11 +119,6 @@ void EditHousePage::draw( doublePair inViewCenter,
                               labelPos, alignCenter );
         }
 
-    if( mWebRequest == -1 ) {
-        mDoneButton.draw();
-        }
-
-    mGridDisplay.draw();
     }
 
 
@@ -122,58 +130,5 @@ void EditHousePage::makeActive( char inFresh ) {
     
     mDone = false;
     }
-
-
-
-void EditHousePage::makeNotActive() {
-    mDoneButton.clearState();
-    }
         
-
-        
-void EditHousePage::pointerMove( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-    
-    mGridDisplay.pointerMove( inX, inY );
-    mDoneButton.pointerMove( inX, inY );
-    }
-
-
-
-void EditHousePage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        } 
-
-    mGridDisplay.pointerDown( inX, inY );
-    mDoneButton.pointerDown( inX, inY );
-    }
-
-
-
-void EditHousePage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-
-    mGridDisplay.pointerDrag( inX, inY );
-    mDoneButton.pointerDrag( inX, inY );
-    }
-
-
-
-void EditHousePage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-    
-    mGridDisplay.pointerUp( inX, inY );
-
-
-    if( mDoneButton.pointerUp( inX, inY ) ) {
-        mDone = true;
-        }
-    }
 

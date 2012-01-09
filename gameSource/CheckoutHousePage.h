@@ -4,7 +4,10 @@
 #include "Button.h"
 
 
-class CheckoutHousePage : public GamePage {
+#include "minorGems/ui/event/ActionListener.h"
+
+
+class CheckoutHousePage : public GamePage, public ActionListener {
         
     public:
         
@@ -18,6 +21,7 @@ class CheckoutHousePage : public GamePage {
         // destroyed by caller if not NULL
         virtual char *getHouseMap();
         
+        virtual void actionPerformed( GUIComponent *inTarget );
 
 
         virtual void step();
@@ -26,21 +30,6 @@ class CheckoutHousePage : public GamePage {
                            double inViewSize );
         
         virtual void makeActive( char inFresh );
-        virtual void makeNotActive();
-        
-        
-        virtual void pointerMove( float inX, float inY );
-        virtual void pointerDown( float inX, float inY );
-        virtual void pointerDrag( float inX, float inY );
-        virtual void pointerUp( float inX, float inY );
-
-        /*
-        virtual void keyDown( unsigned char inASCII );
-        virtual void keyUp( unsigned char inASCII );
-        
-        virtual void specialKeyDown( int inKeyCode );
-        virtual void specialKeyUp( int inKeyCode );
-        */
 
     protected:
 

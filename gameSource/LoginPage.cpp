@@ -62,6 +62,8 @@ LoginPage::LoginPage()
         mEmailField.setText( email );
         mTicketField.setText( code );
         
+        mLoginButton.setVisible( false );
+        
         startLogin();
         }
     
@@ -70,7 +72,11 @@ LoginPage::LoginPage()
         }
     if( code != NULL ) {
         delete [] code;
-        }    
+        }
+
+    addComponent( &mLoginButton );
+    
+    mLoginButton.addActionListener( this );
     }
 
           
@@ -116,6 +122,7 @@ void LoginPage::step() {
                         clearWebRequest( mWebRequest );
                         mWebRequest = -1;
                         mEmailField.focus();
+                        mLoginButton.setVisible( true );
                         break;
                     case 1: {
                         char *result = getWebResult( mWebRequest );
@@ -126,6 +133,7 @@ void LoginPage::step() {
                             mStatusError = true;
                             mStatusMessageKey = "loginFailed";
                             mEmailField.focus();
+                            mLoginButton.setVisible( true );
                             }
                         else {
                             int minClientVersion;
@@ -139,11 +147,13 @@ void LoginPage::step() {
                                 mStatusMessageKey = "err_badServerResponse";
                                 printf( "Server response: %s\n", result );
                                 mEmailField.focus();
+                                mLoginButton.setVisible( true );
                                 }
                             else if( minClientVersion > versionNumber ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "outOfDateClient";
                                 mEmailField.focus();
+                                mLoginButton.setVisible( true );
                                 }
                             else {
                                 // good email, good client version!
@@ -205,6 +215,7 @@ void LoginPage::step() {
                         // reset entire process
                         userID = -1;
                         mEmailField.focus();
+                        mLoginButton.setVisible( true );
                         break;
                     case 1: {
                         char *result = getWebResult( mWebRequest );
@@ -233,6 +244,7 @@ void LoginPage::step() {
                             // reset entire process
                             userID = -1;
                             mEmailField.focus();
+                            mLoginButton.setVisible( true );
                             }
                         delete [] result;
                         }
@@ -255,9 +267,6 @@ void LoginPage::draw( doublePair inViewCenter,
         mFields[i]->draw();
         }
 
-    if( mWebRequest == -1 && !mLoggedIn ) {
-        mLoginButton.draw();
-        }
 
 
     doublePair labelPos = { 0, -7 };
@@ -285,36 +294,7 @@ void LoginPage::makeNotActive() {
     for( int i=0; i<2; i++ ) {
         mFields[i]->unfocus();
         }
-    mLoginButton.clearState();
     }
-
-
-void LoginPage::pointerMove( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-    
-    mLoginButton.pointerMove( inX, inY );
-    }
-
-
-void LoginPage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 || mLoggedIn ) {
-        return;
-        }
-    
-    mLoginButton.pointerDown( inX, inY );
-    }
-
-
-void LoginPage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 || mLoggedIn  ) {
-        return;
-        }
-    
-    mLoginButton.pointerDrag( inX, inY );
-    }
-
 
 
 void LoginPage::startLogin() {
@@ -351,12 +331,17 @@ void LoginPage::pointerUp( float inX, float inY ) {
     for( int i=0; i<2; i++ ) {
         mFields[i]->pointerUp( inX, inY );
         }
+    }
 
-    if( mLoginButton.pointerUp( inX, inY ) ) {
-        // login pressed
+
+
+void LoginPage::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mLoginButton ) {
+        mLoginButton.setVisible( false );
         startLogin();
         }
     }
+
 
 
 void LoginPage::switchFields() {

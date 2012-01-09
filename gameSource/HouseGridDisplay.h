@@ -1,8 +1,13 @@
 #include "minorGems/game/doublePair.h"
 
 
+#include "PageComponent.h"
 
-class HouseGridDisplay {
+#include "minorGems/ui/event/ActionListenerList.h"
+
+
+// fires actionPerformed whenever grid contents changes
+class HouseGridDisplay : public PageComponent, public ActionListenerList {
     
     public:
 
@@ -30,7 +35,7 @@ class HouseGridDisplay {
         
         // returns true if grid changed as a result of
         // this event
-        virtual char pointerUp( float inX, float inY );
+        virtual void pointerUp( float inX, float inY );
         
 
     private:

@@ -9,7 +9,8 @@
 Button::Button( Font *inDisplayFont, 
                 double inX, double inY,
                 const char *inLabelText )
-        : mFont( inDisplayFont ), mX( inX ), mY( inY ),
+        : mVisible( true ), 
+          mFont( inDisplayFont ), mX( inX ), mY( inY ),
           mLabelText( stringDuplicate( inLabelText ) ),
           mHover( false ), mDragOver( false ) {
 
@@ -27,6 +28,18 @@ Button::Button( Font *inDisplayFont,
 
 Button::~Button() {
     delete [] mLabelText;
+    }
+
+
+
+void Button::setVisible( char inIsVible ) {
+    mVisible = inIsVible;
+    }
+
+
+
+char Button::isVisible() {
+    return mVisible;
     }
 
 
@@ -127,14 +140,11 @@ void Button::pointerDrag( float inX, float inY ) {
         
 
 
-char Button::pointerUp( float inX, float inY ) {
+void Button::pointerUp( float inX, float inY ) {
     mDragOver = false;
     if( isInside( inX, inY ) ) {
         mHover = true;
-        return true;
-        }
-    else {
-        return false;
+        fireActionPerformed( this );
         }
     }        
 

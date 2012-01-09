@@ -25,6 +25,9 @@ MenuPage::MenuPage()
           mStatusMessageKey( NULL ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
           mStartEditHouse( false ) {
+
+    addComponent( &mEditHouseButton );
+    mEditHouseButton.addActionListener( this );
     }
 
 
@@ -43,6 +46,13 @@ char MenuPage::getStartEditHouse() {
     return mStartEditHouse;
     }
 
+
+
+void MenuPage::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mEditHouseButton ) {
+        mStartEditHouse = true;
+        }
+    }
 
 
 
@@ -135,7 +145,6 @@ void MenuPage::step() {
 void MenuPage::draw( doublePair inViewCenter, 
                           double inViewSize ) {
 
-    mEditHouseButton.draw();
 
     for( int i=0; i<mHouseList.size(); i++ ) {
         HouseRecord *r = mHouseList.getElement( i );
@@ -200,10 +209,6 @@ void MenuPage::makeActive( char inFresh ) {
     clearHouseList();
     }
 
-
-
-void MenuPage::makeNotActive() {
-    }
         
 
 
@@ -216,27 +221,4 @@ void MenuPage::clearHouseList() {
 
 
         
-void MenuPage::pointerMove( float inX, float inY ) {
-    mEditHouseButton.pointerMove( inX, inY );
-    }
-
-
-
-void MenuPage::pointerDown( float inX, float inY ) {
-    mEditHouseButton.pointerDown( inX, inY );
-    }
-
-
-
-void MenuPage::pointerDrag( float inX, float inY ) {
-    mEditHouseButton.pointerDrag( inX, inY );
-    }
-
-
-
-void MenuPage::pointerUp( float inX, float inY ) {
-    if( mEditHouseButton.pointerUp( inX, inY ) ) {
-        mStartEditHouse = true;
-        }
-    }
 

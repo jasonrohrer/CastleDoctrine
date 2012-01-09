@@ -6,8 +6,11 @@
 #include "HouseGridDisplay.h"
 
 
+#include "minorGems/ui/event/ActionListener.h"
 
-class EditHousePage : public GamePage {
+
+
+class EditHousePage : public GamePage, public ActionListener {
         
     public:
         
@@ -26,6 +29,8 @@ class EditHousePage : public GamePage {
             }
             
 
+        virtual void actionPerformed( GUIComponent *inTarget );
+
 
         virtual void step();
         
@@ -33,21 +38,6 @@ class EditHousePage : public GamePage {
                            double inViewSize );
         
         virtual void makeActive( char inFresh );
-        virtual void makeNotActive();
-        
-        
-        virtual void pointerMove( float inX, float inY );
-        virtual void pointerDown( float inX, float inY );
-        virtual void pointerDrag( float inX, float inY );
-        virtual void pointerUp( float inX, float inY );
-
-        /*
-        virtual void keyDown( unsigned char inASCII );
-        virtual void keyUp( unsigned char inASCII );
-        
-        virtual void specialKeyDown( int inKeyCode );
-        virtual void specialKeyUp( int inKeyCode );
-        */
 
     protected:
         

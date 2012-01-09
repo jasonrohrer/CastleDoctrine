@@ -3,7 +3,10 @@
 
 
 #include "minorGems/game/doublePair.h"
-#include "Button.h"
+
+#include "minorGems/util/SimpleVector.h"
+
+#include "PageComponent.h"
 
 
 class GamePage {
@@ -49,8 +52,8 @@ class GamePage {
         
     protected:
         
-        // add button for default event handling
-        void addButton( Button *inButton );
+        // add for default event handling
+        void addComponent( PageComponent *inComponent );
         
 
 
@@ -106,6 +109,9 @@ class GamePage {
     protected:
         
         GamePage();
+        
+        SimpleVector<PageComponent*> mComponents;
+        
 
     };
 

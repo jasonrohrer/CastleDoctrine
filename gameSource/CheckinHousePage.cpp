@@ -25,6 +25,9 @@ CheckinHousePage::CheckinHousePage()
           mStatusMessageKey( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
+
+    addComponent( &mMenuButton );
+    mMenuButton.addActionListener( this );
     }
 
 
@@ -55,6 +58,13 @@ void CheckinHousePage::setHouseMap( char *inHouseMap ) {
 
 
 
+void CheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mMenuButton ) {
+        mReturnToMenu = true;
+        }
+    }
+
+
 void CheckinHousePage::step() {
     if( mWebRequest != -1 ) {
             
@@ -68,6 +78,7 @@ void CheckinHousePage::step() {
                 mStatusMessageKey = "err_webRequest";
                 clearWebRequest( mWebRequest );
                 mWebRequest = -1;
+                mMenuButton.setVisible( true );
                 break;
             case 1: {
                 char *result = getWebResult( mWebRequest );
@@ -79,6 +90,7 @@ void CheckinHousePage::step() {
                 if( strstr( result, "DENIED" ) != NULL ) {
                     mStatusError = true;
                     mStatusMessageKey = "houseCheckInFailed";
+                    mMenuButton.setVisible( true );
                     }
                 else {
                     // house checked in!
@@ -101,11 +113,6 @@ void CheckinHousePage::step() {
         
 void CheckinHousePage::draw( doublePair inViewCenter, 
                           double inViewSize ) {
-
-    if( mWebRequest == -1 ) {
-        
-        mMenuButton.draw();
-        }
     
 
     if( mStatusMessageKey != NULL ) {
@@ -146,52 +153,8 @@ void CheckinHousePage::makeActive( char inFresh ) {
     mReturnToMenu = false;
     mStatusError = false;
     mStatusMessageKey = NULL;
+
+    mMenuButton.setVisible( false );
     }
 
-
-
-void CheckinHousePage::makeNotActive() {
-    }
-        
-
-        
-void CheckinHousePage::pointerMove( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-
-    mMenuButton.pointerMove( inX, inY );
-    }
-
-
-
-void CheckinHousePage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-
-    mMenuButton.pointerDown( inX, inY );
-    }
-
-
-
-void CheckinHousePage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-
-    mMenuButton.pointerDrag( inX, inY );
-    }
-
-
-
-void CheckinHousePage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 ) {
-        return;
-        }
-
-    if( mMenuButton.pointerUp( inX, inY ) ) {
-        mReturnToMenu = true;
-        }
-    }
 

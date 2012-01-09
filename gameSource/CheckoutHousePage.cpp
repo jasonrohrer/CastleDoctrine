@@ -25,6 +25,9 @@ CheckoutHousePage::CheckoutHousePage()
           mStatusMessageKey( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
+
+    addComponent( &mMenuButton );
+    mMenuButton.addActionListener( this );
     }
 
 
@@ -56,6 +59,12 @@ char *CheckoutHousePage::getHouseMap() {
     }
 
 
+void CheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mMenuButton ) {
+        mReturnToMenu = true;
+        }
+    }
+
 
 void CheckoutHousePage::step() {
     if( mWebRequest != -1 ) {
@@ -70,6 +79,7 @@ void CheckoutHousePage::step() {
                 mStatusMessageKey = "err_webRequest";
                 clearWebRequest( mWebRequest );
                 mWebRequest = -1;
+                mMenuButton.setVisible( true );
                 break;
             case 1: {
                 char *result = getWebResult( mWebRequest );
@@ -81,6 +91,7 @@ void CheckoutHousePage::step() {
                 if( strstr( result, "DENIED" ) != NULL ) {
                     mStatusError = true;
                     mStatusMessageKey = "houseBeingRobbed";
+                    mMenuButton.setVisible( true );
                     }
                 else {
                     // house checked out!
@@ -105,12 +116,6 @@ void CheckoutHousePage::step() {
         
 void CheckoutHousePage::draw( doublePair inViewCenter, 
                           double inViewSize ) {
-
-    if( mWebRequest == -1 && 
-        mHouseMap == NULL ) {
-        
-        mMenuButton.draw();
-        }
     
 
     if( mStatusMessageKey != NULL ) {
@@ -144,56 +149,7 @@ void CheckoutHousePage::makeActive( char inFresh ) {
             fullRequestURL );
 
     delete [] fullRequestURL;
-    }
-
-
-
-void CheckoutHousePage::makeNotActive() {
-    }
-        
-
-        
-void CheckoutHousePage::pointerMove( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
-        return;
-        }
-
-    mMenuButton.pointerMove( inX, inY );
-    }
-
-
-
-void CheckoutHousePage::pointerDown( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
-        return;
-        }
-
-    mMenuButton.pointerDown( inX, inY );
-    }
-
-
-
-void CheckoutHousePage::pointerDrag( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
-        return;
-        }
-
-    mMenuButton.pointerDrag( inX, inY );
-    }
-
-
-
-void CheckoutHousePage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 || 
-        mHouseMap != NULL ) {
-        return;
-        }
-
-    if( mMenuButton.pointerUp( inX, inY ) ) {
-        mReturnToMenu = true;
-        }
+    
+    mMenuButton.setVisible( false );
     }
 

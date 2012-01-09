@@ -4,7 +4,10 @@
 #include "Button.h"
 
 
-class LoginPage : public GamePage {
+#include "minorGems/ui/event/ActionListener.h"
+
+
+class LoginPage : public GamePage, public ActionListener {
         
     public:
         
@@ -14,6 +17,9 @@ class LoginPage : public GamePage {
 
         
         char getLoginDone();
+        
+
+        virtual void actionPerformed( GUIComponent *inTarget );
         
 
 
@@ -26,9 +32,6 @@ class LoginPage : public GamePage {
         virtual void makeNotActive();
         
 
-        virtual void pointerMove( float inX, float inY );
-        virtual void pointerDown( float inX, float inY );
-        virtual void pointerDrag( float inX, float inY );
         virtual void pointerUp( float inX, float inY );
 
         virtual void keyDown( unsigned char inASCII );

@@ -2,10 +2,14 @@
 #define BUTTON_INCLUDED
 
 
+#include "PageComponent.h"
 
 #include "minorGems/game/Font.h"
+#include "minorGems/ui/event/ActionListenerList.h"
 
-class Button {
+
+// fires actionPerformed whenever button pressed
+class Button : public PageComponent, public ActionListenerList {
         
     public:
         
@@ -18,9 +22,13 @@ class Button {
 
         virtual ~Button();
         
-        // clears hover or partially-pressed status
-        virtual void clearState();
+
+        virtual void setVisible( char inIsVible );
         
+        virtual char isVisible();
+
+        
+        virtual void clearState();
         
         virtual void step();
         
@@ -30,12 +38,13 @@ class Button {
         virtual void pointerDown( float inX, float inY );
         virtual void pointerDrag( float inX, float inY );
         
-        // returns true if button pressed as a result of
-        // this event
-        virtual char pointerUp( float inX, float inY );        
+        // fires action performed to listener list
+        virtual void pointerUp( float inX, float inY );        
 
         
     protected:
+        char mVisible;
+        
         Font *mFont;
         double mX, mY;
         char *mLabelText;
