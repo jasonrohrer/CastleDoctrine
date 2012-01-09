@@ -977,15 +977,25 @@ function cd_newHouseForUser( $user_id ) {
             " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
-        $result = cd_queryDatabase( $query );
+        // bypass our default error handling here so that
+        // we can react to duplicate errors
+        $result = mysql_query( $query );
 
         if( $result ) {
             $foundName = true;
             }
         else {
             $errorNumber = mysql_errno();
+
+            cd_log( "Name collision for $character_name?  ".
+                    "Error: $errorNumber" );
+
+            if( $errorNumber != 1062 ) {
+                cd_fatalError(
+                    "Database query failed:<BR>$inQueryString<BR><BR>" .
+                    mysql_error() );
+                }
             }
-        
         }
     
     cd_queryDatabase( "COMMIT;" );
