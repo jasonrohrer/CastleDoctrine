@@ -49,6 +49,11 @@ void GamePage::base_makeActive( char inFresh ){
 
 
 void GamePage::base_makeNotActive(){
+    for( int i=0; i<mComponents.size(); i++ ) {
+        PageComponent *c = *( mComponents.getElement( i ) );
+        
+        c->clearState();
+        }
     
     makeNotActive();
     }
