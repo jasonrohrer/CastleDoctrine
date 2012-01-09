@@ -388,6 +388,9 @@ void LoginPage::keyDown( unsigned char inASCII ) {
             
             return;
             }
+        else if( mEmailField.isFocused() ) {
+            switchFields();
+            }
         }
     
         
