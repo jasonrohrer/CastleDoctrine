@@ -770,6 +770,8 @@ void drawFrame( char inUpdate ) {
                 
                 checkinHousePage->setHouseMap( houseMap );
                 
+                delete [] houseMap;
+
                 currentGamePage = checkinHousePage;
                 currentGamePage->base_makeActive( true );
                 }
