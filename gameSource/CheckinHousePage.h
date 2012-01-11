@@ -26,9 +26,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
 
 
         virtual void step();
-        
-        virtual void draw( doublePair inViewCenter, 
-                           double inViewSize );
+
         
         virtual void makeActive( char inFresh );
 
@@ -38,9 +36,6 @@ class CheckinHousePage : public GamePage, public ActionListener {
         int mWebRequest;
 
         char *mHouseMap;
-
-        char mStatusError;
-        const char *mStatusMessageKey;
         
 
         Button mMenuButton;

@@ -45,9 +45,7 @@ LoginPage::LoginPage()
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
           mLoggedIn( false ),
           mRequestSteps( 0 ),
-          mWebRequest( -1 ),
-          mStatusError( false ),
-          mStatusMessageKey( NULL ) {
+          mWebRequest( -1 ) {
     
     mFields[0] = &mEmailField;
     mFields[1] = &mTicketField;
@@ -261,13 +259,6 @@ void LoginPage::draw( doublePair inViewCenter,
     doublePair labelPos = { 0, -7 };
 
     drawMessage( "quitMessage", labelPos );
-    
-
-    if( mStatusMessageKey != NULL ) {
-        labelPos.y = -5;
-
-        drawMessage( mStatusMessageKey, labelPos, mStatusError );
-        }
     }
 
 
@@ -285,6 +276,11 @@ void LoginPage::acceptInput() {
 void LoginPage::makeActive( char inFresh ) {
     if( mWebRequest == -1 && !mLoggedIn ) {
         acceptInput();
+        }
+
+    if( inFresh ) {
+        mStatusMessageKey = NULL;
+        mStatusError = false;
         }
     }
 

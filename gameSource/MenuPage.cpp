@@ -21,8 +21,6 @@ extern int userID;
 
 MenuPage::MenuPage() 
         : mWebRequest( -1 ),
-          mStatusError( false ),
-          mStatusMessageKey( NULL ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
           mStartEditHouse( false ) {
 
@@ -168,16 +166,6 @@ void MenuPage::draw( doublePair inViewCenter,
 
         delete [] lootString;
         }
-    
-
-    
-    
-    if( mStatusMessageKey != NULL ) {
-        doublePair labelPos = { 0, -5 };
-
-        drawMessage( mStatusMessageKey, labelPos, mStatusError );
-        }
-
     }
 
 
@@ -207,6 +195,10 @@ void MenuPage::makeActive( char inFresh ) {
 
     mStartEditHouse = false;
     clearHouseList();
+
+
+    mStatusMessageKey = NULL;
+    mStatusError = false;
     }
 
         

@@ -21,8 +21,6 @@ extern int userID;
 CheckinHousePage::CheckinHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
-          mStatusError( false ),
-          mStatusMessageKey( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -109,19 +107,6 @@ void CheckinHousePage::step() {
         }
     }
 
-
-        
-void CheckinHousePage::draw( doublePair inViewCenter, 
-                          double inViewSize ) {
-    
-
-    if( mStatusMessageKey != NULL ) {
-        doublePair labelPos = { 0, -5 };
-
-        drawMessage( mStatusMessageKey, labelPos, mStatusError );
-        }
-
-    }
 
 
         

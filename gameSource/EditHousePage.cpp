@@ -19,8 +19,6 @@ extern int userID;
 
 EditHousePage::EditHousePage() 
         : mWebRequest( -1 ),
-          mStatusError( false ),
-          mStatusMessageKey( NULL ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ) {
 
@@ -100,25 +98,6 @@ void EditHousePage::step() {
                 break;
             }
         }
-    }
-
-
-        
-void EditHousePage::draw( doublePair inViewCenter, 
-                          double inViewSize ) {
-
-    if( mStatusMessageKey != NULL ) {
-    
-        doublePair labelPos = { 0, -12 };
-
-        if( mStatusError ) {
-            setDrawColor( 1, 0, 0, 1 );
-            }
-        
-        mainFont->drawString( translate( mStatusMessageKey ), 
-                              labelPos, alignCenter );
-        }
-
     }
 
 

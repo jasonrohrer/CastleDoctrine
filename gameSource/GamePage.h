@@ -105,13 +105,15 @@ class GamePage {
         
 
 
-
-    protected:
         
         GamePage();
         
         SimpleVector<PageComponent*> mComponents;
         
+
+        char mStatusError;
+        const char *mStatusMessageKey;
+
 
     };
 

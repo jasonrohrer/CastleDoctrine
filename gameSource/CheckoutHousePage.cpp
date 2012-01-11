@@ -21,8 +21,6 @@ extern int userID;
 CheckoutHousePage::CheckoutHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
-          mStatusError( false ),
-          mStatusMessageKey( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -114,20 +112,6 @@ void CheckoutHousePage::step() {
 
 
         
-void CheckoutHousePage::draw( doublePair inViewCenter, 
-                          double inViewSize ) {
-    
-
-    if( mStatusMessageKey != NULL ) {
-        doublePair labelPos = { 0, -5 };
-
-        drawMessage( mStatusMessageKey, labelPos, mStatusError );
-        }
-
-    }
-
-
-        
 void CheckoutHousePage::makeActive( char inFresh ) {
     if( !inFresh ) {
         return;
@@ -151,5 +135,8 @@ void CheckoutHousePage::makeActive( char inFresh ) {
     delete [] fullRequestURL;
     
     mMenuButton.setVisible( false );
+
+    mStatusError = false;
+    mStatusMessageKey = NULL;
     }
 

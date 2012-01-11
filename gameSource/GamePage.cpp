@@ -1,9 +1,15 @@
 #include "GamePage.h"
 
+#include "message.h"
 
 
-GamePage::GamePage() {
+
+
+GamePage::GamePage()
+        : mStatusError( false ),
+          mStatusMessageKey( NULL ) {
     }
+
 
 
 GamePage::~GamePage() {
@@ -38,6 +44,14 @@ void GamePage::base_draw( doublePair inViewCenter,
             }
         }
     
+    if( mStatusMessageKey != NULL ) {
+        doublePair labelPos = { 0, -5 };
+        
+        drawMessage( mStatusMessageKey, labelPos, mStatusError );
+        }
+
+
+
     draw( inViewCenter, inViewSize );
     }
 

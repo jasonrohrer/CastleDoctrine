@@ -47,9 +47,6 @@ class MenuPage : public GamePage, public ActionListener {
     protected:
 
         int mWebRequest;
-
-        char mStatusError;
-        const char *mStatusMessageKey;
         
 
         Button mEditHouseButton;

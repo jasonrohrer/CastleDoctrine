@@ -26,9 +26,6 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         virtual void step();
         
-        virtual void draw( doublePair inViewCenter, 
-                           double inViewSize );
-        
         virtual void makeActive( char inFresh );
 
     protected:
@@ -37,9 +34,6 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         char *mHouseMap;
 
-        char mStatusError;
-        const char *mStatusMessageKey;
-        
 
         Button mMenuButton;
 

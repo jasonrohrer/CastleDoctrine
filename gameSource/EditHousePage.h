@@ -34,8 +34,6 @@ class EditHousePage : public GamePage, public ActionListener {
 
         virtual void step();
         
-        virtual void draw( doublePair inViewCenter, 
-                           double inViewSize );
         
         virtual void makeActive( char inFresh );
 
@@ -43,8 +41,6 @@ class EditHousePage : public GamePage, public ActionListener {
         
         int mWebRequest;
 
-        char mStatusError;
-        const char *mStatusMessageKey;
 
         HouseGridDisplay mGridDisplay;
         Button mDoneButton;

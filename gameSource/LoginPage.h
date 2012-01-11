@@ -54,10 +54,6 @@ class LoginPage : public GamePage, public ActionListener {
 
         int mRequestSteps;
         int mWebRequest;
-        
-
-        char mStatusError;
-        const char *mStatusMessageKey;
 
 
         void switchFields();
