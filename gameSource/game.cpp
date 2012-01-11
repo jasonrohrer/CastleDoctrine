@@ -242,8 +242,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     // world coordinates
     setMouseReportingMode( true );
     
-    int x,y;
-    warpMouseToCenter( &x, &y );
+    if( !inPlayingBack ) {    
+        int x,y;
+        warpMouseToCenter( &x, &y );
+        }
     
     
     
