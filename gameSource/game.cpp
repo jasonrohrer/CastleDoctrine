@@ -123,6 +123,7 @@ Font *tinyFont;
 char *serverURL = NULL;
 
 
+char *userEmail = NULL;
 int userID = -1;
 char *downloadCode = NULL;
 // each new request to server must use next sequence number
@@ -148,8 +149,11 @@ static int stepsBetweenDeleteRepeat;
 #define SETTINGS_HASH_SALT "another_loss"
 
 
-static const char *customDataFormatString = 
-    "version%d_mouseSpeed%f";
+static const char *customDataFormatWriteString = 
+    "version%d_mouseSpeed%f_downloadCode%s_email%s";
+
+static const char *customDataFormatReadString = 
+    "version%d_mouseSpeed%f_downloadCode%10s_email%99s";
 
 
 char *getCustomRecordedGameData() {    
@@ -157,10 +161,27 @@ char *getCustomRecordedGameData() {
     float mouseSpeedSetting = 
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
     
+    char *email =
+        SettingsManager::getStringSetting( "email" );
+    if( email == NULL ) {
+        email = stringDuplicate( "*" );
+        }
+    
+    char *code =
+        SettingsManager::getStringSetting( "downloadCode" );
+    if( code == NULL ) {
+        code = stringDuplicate( "**********" );
+        }
+    
+
 
     char * result = autoSprintf(
-        customDataFormatString,
-        versionNumber, mouseSpeedSetting  );
+        customDataFormatWriteString,
+        versionNumber, mouseSpeedSetting, code, email );
+
+    delete [] email;
+    delete [] code;
+    
 
     return result;
     }
@@ -234,13 +255,18 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     float mouseSpeedSetting = 1.0f;
 
+    userEmail = new char[100];
+    downloadCode = new char[11];
+    
     int readVersionNumber;
     
     int numRead = sscanf( inCustomRecordedGameData, 
-                          customDataFormatString, 
+                          customDataFormatReadString, 
                           &readVersionNumber,
-                          &mouseSpeedSetting );
-    if( numRead != 2 ) {
+                          &mouseSpeedSetting, 
+                          downloadCode,
+                          userEmail );
+    if( numRead != 4 ) {
         // no recorded game?
         }
     else {
@@ -253,7 +279,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                 "but game version is %d...",
                 readVersionNumber, versionNumber );
             }
-        
+
+        if( strcmp( downloadCode, "**********" ) == 0 ) {
+            delete [] downloadCode;
+            downloadCode = NULL;
+            }
+        if( strcmp( userEmail, "*" ) == 0 ) {
+            delete [] userEmail;
+            userEmail = NULL;
+            }
         }
 
     
@@ -314,6 +348,12 @@ void freeFrameDrawer() {
         downloadCode = NULL;
         }
     
+    if( userEmail != NULL ) {
+        delete [] userEmail;
+        userEmail = NULL;
+        }
+    
+
     }
 
 

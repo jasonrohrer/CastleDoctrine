@@ -18,8 +18,11 @@ extern Font *mainFontFixed;
 extern char *serverURL;
 
 extern int userID;
+extern char *userEmail;
 extern char *downloadCode;
 extern int serverSequenceNumber;
+
+extern char gamePlayingBack;
 
 
 extern double frameRateFactor;
@@ -53,25 +56,15 @@ LoginPage::LoginPage()
     minRequestSteps = (int)( 60 / frameRateFactor );
 
 
-    char *email = SettingsManager::getStringSetting( "email" );
-    char *code = SettingsManager::getStringSetting( "downloadCode" );
-    
-    if( email != NULL && code != NULL ) {
-        mEmailField.setText( email );
-        mTicketField.setText( code );
+    if( userEmail != NULL && downloadCode != NULL ) {
+        mEmailField.setText( userEmail );
+        mTicketField.setText( downloadCode );
         
         mLoginButton.setVisible( false );
         
         startLogin();
         }
     
-    if( email != NULL ) {
-        delete [] email;
-        }
-    if( code != NULL ) {
-        delete [] code;
-        }
-
     addComponent( &mLoginButton );
     addComponent( &mEmailField );
     addComponent( &mTicketField );
@@ -223,15 +216,24 @@ void LoginPage::step() {
                             
                             mLoggedIn = true;
 
-                            char *email = mEmailField.getText();
-                            char *code = mTicketField.getText();
+                            if( userEmail != NULL ) {
+                                delete [] userEmail;
+                                }
+                            if( downloadCode != NULL ) {
+                                delete [] downloadCode;
+                                }
+
+                            userEmail = mEmailField.getText();
+                            downloadCode = mTicketField.getText();
                             
-                            SettingsManager::setSetting( "email",
-                                                         email );
-                            SettingsManager::setSetting( "downloadCode",
-                                                         code );
-                            delete [] email;
-                            delete [] code;                            
+                            
+                            if( !gamePlayingBack ) {
+                                
+                                SettingsManager::setSetting( "email",
+                                                             userEmail );
+                                SettingsManager::setSetting( "downloadCode",
+                                                             downloadCode );
+                                }
                             }
                         else {                            
                             mStatusError = true;
