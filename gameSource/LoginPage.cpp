@@ -75,6 +75,8 @@ LoginPage::LoginPage()
         }
 
     addComponent( &mLoginButton );
+    addComponent( &mEmailField );
+    addComponent( &mTicketField );
     
     mLoginButton.addActionListener( this );
     }
@@ -100,11 +102,6 @@ void LoginPage::step() {
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
         }
-    else {
-        for( int i=0; i<2; i++ ) {
-            mFields[i]->step();
-            }
-        }
     
     if( userID == -1 ) {
         if( mWebRequest != -1 ) {
@@ -121,7 +118,7 @@ void LoginPage::step() {
                         mStatusMessageKey = "err_webRequest";
                         clearWebRequest( mWebRequest );
                         mWebRequest = -1;
-                        mEmailField.focus();
+                        acceptInput();
                         mLoginButton.setVisible( true );
                         break;
                     case 1: {
@@ -132,7 +129,7 @@ void LoginPage::step() {
                         if( strstr( result, "DENIED" ) != NULL ) {
                             mStatusError = true;
                             mStatusMessageKey = "loginFailed";
-                            mEmailField.focus();
+                            acceptInput();
                             mLoginButton.setVisible( true );
                             }
                         else {
@@ -146,13 +143,13 @@ void LoginPage::step() {
                                 mStatusError = true;
                                 mStatusMessageKey = "err_badServerResponse";
                                 printf( "Server response: %s\n", result );
-                                mEmailField.focus();
+                                acceptInput();
                                 mLoginButton.setVisible( true );
                                 }
                             else if( minClientVersion > versionNumber ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "outOfDateClient";
-                                mEmailField.focus();
+                                acceptInput();
                                 mLoginButton.setVisible( true );
                                 }
                             else {
@@ -214,7 +211,7 @@ void LoginPage::step() {
                         mWebRequest = -1;
                         // reset entire process
                         userID = -1;
-                        mEmailField.focus();
+                        acceptInput();
                         mLoginButton.setVisible( true );
                         break;
                     case 1: {
@@ -243,7 +240,7 @@ void LoginPage::step() {
                             mStatusMessageKey = "loginFailed";
                             // reset entire process
                             userID = -1;
-                            mEmailField.focus();
+                            acceptInput();
                             mLoginButton.setVisible( true );
                             }
                         delete [] result;
@@ -259,14 +256,6 @@ void LoginPage::step() {
 
 void LoginPage::draw( doublePair inViewCenter, 
                       double inViewSize ) {
-    
-        
-
-
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->draw();
-        }
-
 
 
     doublePair labelPos = { 0, -7 };
@@ -283,11 +272,22 @@ void LoginPage::draw( doublePair inViewCenter,
 
 
 
-void LoginPage::makeActive( char inFresh ) {
-    if( mWebRequest == -1 && !mLoggedIn ) {
-        mEmailField.focus();
+void LoginPage::acceptInput() {
+    mEmailField.focus();
+        
+    for( int i=0; i<2; i++ ) {
+        mFields[i]->setActive( true );
         }
     }
+
+
+
+void LoginPage::makeActive( char inFresh ) {
+    if( mWebRequest == -1 && !mLoggedIn ) {
+        acceptInput();
+        }
+    }
+
 
 
 void LoginPage::makeNotActive() {
@@ -297,9 +297,12 @@ void LoginPage::makeNotActive() {
     }
 
 
+
 void LoginPage::startLogin() {
+    mLoginButton.setVisible( false );
     for( int i=0; i<2; i++ ) {
         mFields[i]->unfocus();
+        mFields[i]->setActive( false );
         }
         
     char *email = mEmailField.getText();
@@ -323,21 +326,8 @@ void LoginPage::startLogin() {
 
 
 
-void LoginPage::pointerUp( float inX, float inY ) {
-    if( mWebRequest != -1 || mLoggedIn  ) {
-        return;
-        }
-    
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->pointerUp( inX, inY );
-        }
-    }
-
-
-
 void LoginPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mLoginButton ) {
-        mLoginButton.setVisible( false );
         startLogin();
         }
     }
@@ -378,25 +368,6 @@ void LoginPage::keyDown( unsigned char inASCII ) {
             switchFields();
             }
         }
-    
-        
-    
-    
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->keyDown( inASCII );
-        }
-    }
-
-
-
-void LoginPage::keyUp( unsigned char inASCII ) {
-    if( mWebRequest != -1 || mLoggedIn  ) {
-        return;
-        }
-
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->keyUp( inASCII );
-        }
     }
 
 
@@ -412,24 +383,6 @@ void LoginPage::specialKeyDown( int inKeyCode ) {
         switchFields();
         return;
         }
-    
-
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->specialKeyDown( inKeyCode );
-        }
     }
-
-
-
-void LoginPage::specialKeyUp( int inKeyCode ) {
-    if( mWebRequest != -1 || mLoggedIn  ) {
-        return;
-        }
-
-    for( int i=0; i<2; i++ ) {
-        mFields[i]->specialKeyUp( inKeyCode );
-        }
-    }
-
 
 

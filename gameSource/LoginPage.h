@@ -32,14 +32,12 @@ class LoginPage : public GamePage, public ActionListener {
         virtual void makeNotActive();
         
 
-        virtual void pointerUp( float inX, float inY );
-
+        // for TAB and ENTER (switch fields and start login)
         virtual void keyDown( unsigned char inASCII );
-        virtual void keyUp( unsigned char inASCII );
         
+        // for arrow keys (switch fields)
         virtual void specialKeyDown( int inKeyCode );
-        virtual void specialKeyUp( int inKeyCode );
-
+        
     protected:
         
         TextField mEmailField;
@@ -66,5 +64,8 @@ class LoginPage : public GamePage, public ActionListener {
         
         void startLogin();
         
+
+        void acceptInput();
+
     };
 

@@ -4,7 +4,10 @@
 
 #include "minorGems/game/Font.h"
 
-class TextField {
+#include "PageComponent.h"
+
+
+class TextField : public PageComponent {
         
     public:
         
@@ -28,6 +31,10 @@ class TextField {
 
         // destroyed by caller
         char *getText();
+        
+
+        virtual void setActive( char inActive );
+        virtual char isActive();
         
         
         
@@ -62,6 +69,8 @@ class TextField {
 
         
     protected:
+        char mActive;
+        
         Font *mFont;
         double mX, mY;
         int mCharsWide;

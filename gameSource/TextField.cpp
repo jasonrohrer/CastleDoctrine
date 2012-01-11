@@ -25,7 +25,7 @@ TextField::TextField( Font *inFixedFont,
                       const char *inLabelText,
                       const char *inAllowedChars,
                       const char *inForbiddenChars )
-        : mFont( inDisplayFont ), mX( inX ), mY( inY ), 
+        : mActive( true ), mFont( inDisplayFont ), mX( inX ), mY( inY ), 
           mCharsWide( inCharsWide ),
           mForceCaps( inForceCaps ),
           mLabelText( NULL ),
@@ -116,6 +116,18 @@ char *TextField::getText() {
     return stringDuplicate( mText );
     }
 
+
+
+void TextField::setActive( char inActive ) {
+    mActive = inActive;
+    }
+
+
+
+char TextField::isActive() {
+    return mActive;
+    }
+        
 
 
 void TextField::step() {
