@@ -166,11 +166,34 @@ char *getCustomRecordedGameData() {
     if( email == NULL ) {
         email = stringDuplicate( "*" );
         }
+    else {
+        // put bogus email in recording files, since we don't
+        // need a email during playback anyway (not communicating with 
+        // server during playback)
+        
+        // want people to be able to share playback files freely without
+        // divulging their emails
+        delete [] email;
+
+        email = stringDuplicate( "redacted@redacted.com" );
+        }
     
-    char *code =
-        SettingsManager::getStringSetting( "downloadCode" );
+    
+    char *code = SettingsManager::getStringSetting( "downloadCode" );
+    
     if( code == NULL ) {
         code = stringDuplicate( "**********" );
+        }
+    else {
+        // put bogus code in recording files, since we don't
+        // need a valid code during playback anyway (not communicating with 
+        // server during playback)
+        
+        // want people to be able to share playback files freely without
+        // divulging their download codes
+        delete [] code;
+
+        code = stringDuplicate( "EMPTYDEEPS" );
         }
     
 
@@ -291,6 +314,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
             userEmail = NULL;
             }
         }
+    
+    if( !inPlayingBack ) {
+        // read REAL email and download code from settings file
+
+        delete [] userEmail;
+        
+        userEmail = SettingsManager::getStringSetting( "email" );    
+
+        
+        delete [] downloadCode;
+        
+        downloadCode = SettingsManager::getStringSetting( "downloadCode" );    
+        }
+    
 
     
     double mouseParam = 0.000976562;
