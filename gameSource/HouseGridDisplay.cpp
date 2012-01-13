@@ -123,7 +123,7 @@ void HouseGridDisplay::draw() {
             drawSquare( tilePos, mTileRadius );
             
             if( mHighlightIndex == i ) {
-                setDrawColor( 1, 1, 0, 0.5 );
+                setDrawColor( 1, 1, 0, 0.35 );
                 drawSquare( tilePos, mTileRadius ); 
                 }
 
@@ -148,10 +148,10 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
 
 void HouseGridDisplay::pointerUp( float inX, float inY ) {
 
-    mHighlightIndex = -1;
-    
     int index = getTileIndex( inX, inY );
     
+    mHighlightIndex = index;
+
     if( index != -1 ) {
     
         char old = mHouseMap[ index ];
