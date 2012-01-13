@@ -116,6 +116,11 @@ void CheckoutHousePage::makeActive( char inFresh ) {
     if( !inFresh ) {
         return;
         }
+
+    if( mHouseMap != NULL ) {
+        delete [] mHouseMap;
+        }
+    mHouseMap = NULL;
     
     char *ticketHash = getTicketHash();
 
