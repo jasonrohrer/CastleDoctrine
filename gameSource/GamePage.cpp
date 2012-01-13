@@ -18,6 +18,12 @@ GamePage::~GamePage() {
 
 
 
+void GamePage::setStatus( const char *inStatusMessageKey, char inError ) {
+    mStatusMessageKey = inStatusMessageKey;
+    mStatusError = inError;
+    }
+
+
 
 void GamePage::base_step(){
     for( int i=0; i<mComponents.size(); i++ ) {

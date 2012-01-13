@@ -16,6 +16,8 @@ class GamePage {
         
 
         virtual ~GamePage();
+        
+        void setStatus( const char *inStatusMessageKey, char inError );
 
 
         void base_step();
@@ -48,7 +50,7 @@ class GamePage {
 
         void base_specialKeyUp( int inKeyCode );
 
-
+        
         
     protected:
         

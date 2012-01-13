@@ -2,23 +2,13 @@
 
 #include "TextField.h"
 #include "Button.h"
+#include "RobPickList.h"
 
 #include "minorGems/util/SimpleVector.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
 
-
-
-typedef struct HouseRecord {
-        int userID;
-        char *characterName;
-        int lootValue;
-        int robAttempts;
-
-        char selected;
-        doublePair position;
-    } HouseRecord;
 
 
 
@@ -45,18 +35,16 @@ class MenuPage : public GamePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-
-        int mWebRequest;
         
+
+        RobPickList mPickList;
 
         Button mEditHouseButton;
 
 
         char mStartEditHouse;
         
-        SimpleVector<HouseRecord> mHouseList;
-
-        void clearHouseList();
+        
         
     };
 
