@@ -54,16 +54,6 @@ LoginPage::LoginPage()
     mFields[1] = &mTicketField;
 
     minRequestSteps = (int)( 60 / frameRateFactor );
-
-
-    if( userEmail != NULL && downloadCode != NULL ) {
-        mEmailField.setText( userEmail );
-        mTicketField.setText( downloadCode );
-        
-        mLoginButton.setVisible( false );
-        
-        startLogin();
-        }
     
     addComponent( &mLoginButton );
     addComponent( &mEmailField );
@@ -283,6 +273,15 @@ void LoginPage::makeActive( char inFresh ) {
     if( inFresh ) {
         mStatusMessageKey = NULL;
         mStatusError = false;
+
+        if( userEmail != NULL && downloadCode != NULL ) {
+            mEmailField.setText( userEmail );
+            mTicketField.setText( downloadCode );
+            
+            mLoginButton.setVisible( false );
+            
+            startLogin();
+            }
         }
     }
 
