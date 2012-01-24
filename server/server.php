@@ -775,19 +775,27 @@ function cd_listHouses() {
         $user_id = $_REQUEST[ "user_id" ];
         }
 
+
+    $skip = 0;
+    if( isset( $_REQUEST[ "skip" ] ) ) {
+        $skip = $_REQUEST[ "skip" ];
+        }
+    
+    $limit = 20;
+    if( isset( $_REQUEST[ "limit" ] ) ) {
+        $limit = $_REQUEST[ "limit" ];
+        }
+
     
     
     // automatically ignore blocked users and houses already checked
     // out for robbery
-
-    $skip = 0;
-    $housesPerPage = 20;
     
     $query = "SELECT * FROM $tableNamePrefix"."houses ".
         "WHERE user_id != '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 AND edit_checkout = 0 ".
         "ORDER BY loot_value DESC ".
-        "LIMIT $skip, $housesPerPage;";
+        "LIMIT $skip, $limit;";
 
     $result = cd_queryDatabase( $query );
 

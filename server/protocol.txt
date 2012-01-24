@@ -101,6 +101,8 @@ and automatically check back in
 
 === Call:
 server.php?action=list_houses&user_id=[id number]
+                             &skip=[number]
+                             &limit=[number]
                              &sequence_number=[number]
                              &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
@@ -115,3 +117,4 @@ character_name has spaces repaced by "_"
 
 Note:
 Lists only robbable houses.
+Returns at most [limit] houses, skipping the first [skip] houses.

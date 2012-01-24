@@ -17,6 +17,9 @@ extern char *serverURL;
 extern int userID;
 
 
+static const int linesPerPage = 8;
+
+
 
 RobPickList::RobPickList( double inX, double inY,
                           GamePage *inParentPage )
@@ -50,9 +53,9 @@ void RobPickList::refreshList() {
             
     
     char *actionString = autoSprintf( 
-        "action=list_houses&user_id=%d"
+        "action=list_houses&skip=0&limit=%d&user_id=%d"
         "&%s",
-        userID, ticketHash );
+        linesPerPage, userID, ticketHash );
     delete [] ticketHash;
             
     
@@ -96,7 +99,11 @@ void RobPickList::step() {
                     // parse result
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
-                    
+
+                    double lineHeight = 0.5;
+
+                    double topOffset = ( linesPerPage * lineHeight ) / 2;
+
                     for( int i=0; i<lines->size(); i++ ) {
                         char *line = *( lines->getElement( i ) );
                         
@@ -112,7 +119,7 @@ void RobPickList::step() {
                             
                             r.selected = false;
                             r.position.x = mX;
-                            r.position.y = mY + i * 0.5;
+                            r.position.y = mY + topOffset - i * lineHeight;
                             
                             sscanf( parts[0], "%d", &( r.userID ) );
                             
