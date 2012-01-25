@@ -298,8 +298,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
         if( readVersionNumber != versionNumber ) {
             AppLog::printOutNextMessage();
-            AppLog::getLog()->logPrintf( 
-                Log::WARNING_LEVEL,
+            AppLog::warningF( 
                 "WARNING:  version number in playback file is %d "
                 "but game version is %d...",
                 readVersionNumber, versionNumber );
