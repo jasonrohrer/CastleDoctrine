@@ -1,7 +1,7 @@
 #include "GamePage.h"
 
 #include "TextField.h"
-#include "Button.h"
+#include "TextButton.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
@@ -38,7 +38,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
         char *mHouseMap;
         
 
-        Button mMenuButton;
+        TextButton mMenuButton;
 
 
         char mReturnToMenu;

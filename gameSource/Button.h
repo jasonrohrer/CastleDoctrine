@@ -8,17 +8,16 @@
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
+// button superclass that draws a 1-pixel border and handles events
 // fires actionPerformed whenever button pressed
 class Button : public PageComponent, public ActionListenerList {
         
     public:
         
         // centered on inX, inY
-
-        // label text copied internally
-        Button( Font *inDisplayFont, 
-                double inX, double inY,
-                const char *inLabelText );
+        Button( double inX, double inY,
+                double inWide, double inHigh,
+                double inPixelSize );
 
         virtual ~Button();
         
@@ -44,17 +43,22 @@ class Button : public PageComponent, public ActionListenerList {
         
     protected:
         char mVisible;
-        
-        Font *mFont;
-        double mX, mY;
-        char *mLabelText;
-
         char mHover;
         char mDragOver;
+        
+        double mX, mY;
 
         double mWide, mHigh, mPixWidth;
         
         char isInside( float inX, float inY );
+
+
+        // draw the contents of the button
+        // should be overridden by subclasses
+        // Button class sets the draw color before calling drawContents
+        // (default implementation draws nothing)
+        virtual void drawContents();
+        
 
         
     };

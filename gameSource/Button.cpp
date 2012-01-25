@@ -1,33 +1,21 @@
 #include "Button.h"
-#include "minorGems/util/stringUtils.h"
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/game/gameGraphics.h"
 
 #include <math.h>
 
 
-Button::Button( Font *inDisplayFont, 
-                double inX, double inY,
-                const char *inLabelText )
+Button::Button( double inX, double inY,
+                double inWide, double inHigh,
+                double inPixelSize )
         : mVisible( true ), 
-          mFont( inDisplayFont ), mX( inX ), mY( inY ),
-          mLabelText( stringDuplicate( inLabelText ) ),
-          mHover( false ), mDragOver( false ) {
-
-    double fontHigh = mFont->getFontHeight();
-
-    mPixWidth = fontHigh / 8;
-
-    double padding = fontHigh * 0.5;
-    
-
-    mWide = mFont->measureString( mLabelText ) + 2 * padding;
-    mHigh = mFont->getFontHeight() + 2 * padding;
+          mHover( false ), mDragOver( false ),
+          mX( inX ), mY( inY ),
+          mWide( inWide ), mHigh( inHigh ), mPixWidth( inPixelSize ) {
     }
 
 
 Button::~Button() {
-    delete [] mLabelText;
     }
 
 
@@ -96,12 +84,14 @@ void Button::draw() {
         setDrawColor( 1, 1, 1, 1 );
         }
     
-    //setDrawColor( 1, 1, 1, 1 );
-    
-    doublePair textPos = { mX, mY };
-    
-    mFont->drawString( mLabelText, textPos, alignCenter );
+    drawContents();
     }
+
+
+
+void Button::drawContents() {
+    }
+
 
 
 

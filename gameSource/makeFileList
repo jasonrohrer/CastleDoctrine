@@ -18,6 +18,7 @@ message.cpp \
 LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
+TextButton.cpp \
 ticketHash.cpp \
 CheckoutHousePage.cpp \
 EditHousePage.cpp \

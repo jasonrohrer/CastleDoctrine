@@ -1,7 +1,7 @@
 #include "GamePage.h"
 
 #include "TextField.h"
-#include "Button.h"
+#include "TextButton.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
@@ -45,7 +45,7 @@ class LoginPage : public GamePage, public ActionListener {
 
         TextField *mFields[2];
         
-        Button mLoginButton;
+        TextButton mLoginButton;
 
         char mLoggedIn;
         

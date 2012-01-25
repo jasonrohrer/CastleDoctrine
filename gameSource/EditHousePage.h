@@ -1,7 +1,7 @@
 #include "GamePage.h"
 
 #include "TextField.h"
-#include "Button.h"
+#include "TextButton.h"
 
 #include "HouseGridDisplay.h"
 
@@ -43,7 +43,7 @@ class EditHousePage : public GamePage, public ActionListener {
 
 
         HouseGridDisplay mGridDisplay;
-        Button mDoneButton;
+        TextButton mDoneButton;
         
         char mDone;
         

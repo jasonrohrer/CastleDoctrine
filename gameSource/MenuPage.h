@@ -1,7 +1,7 @@
 #include "GamePage.h"
 
 #include "TextField.h"
-#include "Button.h"
+#include "TextButton.h"
 #include "RobPickList.h"
 
 #include "minorGems/util/SimpleVector.h"
@@ -39,7 +39,7 @@ class MenuPage : public GamePage, public ActionListener {
 
         RobPickList mPickList;
 
-        Button mEditHouseButton;
+        TextButton mEditHouseButton;
 
 
         char mStartEditHouse;
