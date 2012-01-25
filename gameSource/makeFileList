@@ -19,6 +19,7 @@ LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
 TextButton.cpp \
+SpriteButton.cpp \
 ticketHash.cpp \
 CheckoutHousePage.cpp \
 EditHousePage.cpp \
@@ -32,6 +33,7 @@ RobPickList.cpp \
 GAME_GRAPHICS = \
 graphics/font_8_16.tga \
 graphics/font_4_8.tga \
+graphics/up.tga \
 
 
 
