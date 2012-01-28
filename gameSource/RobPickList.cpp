@@ -103,6 +103,12 @@ void RobPickList::refreshList() {
 
 
 
+static double lineHeight = 0.75;
+static double lineWidthLeft = 7;
+static double lineWidthRight = 4;
+
+
+
 void RobPickList::step() {
     if( mWebRequest != -1 ) {
             
@@ -135,7 +141,6 @@ void RobPickList::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
 
-                    double lineHeight = 0.5;
 
                     double topOffset = ( linesPerPage * lineHeight ) / 2 
                         - lineHeight / 2;
@@ -164,6 +169,47 @@ void RobPickList::step() {
                             r.characterName = 
                                 replaceAll( parts[1], "_", " ", &found );
                             
+                            // make sure name isn't too long for display
+                            if( mainFont->measureString( r.characterName ) 
+                                > lineWidthLeft ) {
+                            
+                                // try trimming middle name
+                                int namePartCount;
+                                char **nameParts = split( r.characterName, " ",
+                                                          &namePartCount );
+                                
+                                // first letter only, followed by period
+                                nameParts[1][1] = '.';
+                                nameParts[1][2] = '\0';
+                                
+                                delete [] r.characterName;
+                                
+                                r.characterName = 
+                                    join( nameParts, namePartCount, " " );
+                                
+                                if( mainFont->measureString( r.characterName ) 
+                                    > lineWidthLeft ) {
+                                    // still too long!
+                                    
+                                    // condense first name too.
+
+                                    // first letter only, followed by period
+                                    nameParts[0][1] = '.';
+                                    nameParts[0][2] = '\0';
+                                
+                                    delete [] r.characterName;
+                                    
+                                    r.characterName = 
+                                        join( nameParts, namePartCount, " " );
+                                    }                                        
+
+                                for( int j=0; j<namePartCount; j++ ) {
+                                    delete [] nameParts[j];
+                                    }
+                                delete [] nameParts;
+                                }
+                            
+
                             sscanf( parts[2], "%d", &( r.lootValue ) );
                             sscanf( parts[3], "%d", &( r.robAttempts ) );
 
@@ -202,17 +248,38 @@ void RobPickList::step() {
 
 void RobPickList::draw() {
     
+    // alternate every other line
+    char altColor = false;
+    
 
     for( int i=0; i<mHouseList.size(); i++ ) {
         HouseRecord *r = mHouseList.getElement( i );
     
 
         if( r->selected ) {
-            setDrawColor( 0.25, 0.25, 0.25, 1 );
-            drawSquare( r->position, 1 );
+            setDrawColor( 0.35, 0.35, 0.15, 1 );
             }
-        
-        setDrawColor( 1, 1, 1, 1 );
+        else {
+            if( altColor ) {
+                setDrawColor( 0.2, 0.2, 0.2, 1 );
+                }
+            else {
+                setDrawColor( 0.15, 0.15, 0.15, 1 );
+                }
+            }
+
+        drawRect( r->position.x - lineWidthLeft, 
+                  r->position.y - lineHeight / 2, 
+                  r->position.x + lineWidthRight, 
+                  r->position.y + lineHeight / 2 );
+
+        if( r->selected ) {
+            setDrawColor( 1, 1, 0, 1 );
+            }
+        else {
+            setDrawColor( 1, 1, 1, 1 );
+            }
+            
         
         mainFont->drawString( r->characterName, r->position, alignRight );
 
@@ -224,12 +291,31 @@ void RobPickList::draw() {
         mainFont->drawString( lootString, drawPos, alignLeft );
 
         delete [] lootString;
+
+        altColor = ! altColor;
         }
     }
 
 
 
 void RobPickList::pointerUp( float inX, float inY ) {
+    for( int i=0; i<mHouseList.size(); i++ ) {
+        HouseRecord *r = mHouseList.getElement( i );
+    
+        if( inX > - lineWidthLeft && inX < lineWidthRight &&
+            fabs( inY - r->position.y ) < lineHeight / 2 ) {
+            // hit
+            
+            // unselect all
+            for( int j=0; j<mHouseList.size(); j++ ) {
+                HouseRecord *rB = mHouseList.getElement( j );
+                rB->selected = false;
+                }
+            
+            r->selected = true;
+            return;
+            }
+        }
     }
 
 
