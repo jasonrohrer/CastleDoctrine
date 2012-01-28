@@ -47,6 +47,13 @@ void PageComponent::base_draw( doublePair inViewCenter,
 
 
 
+void PageComponent::setPosition( double inX, double inY ) {
+    mX = inX;
+    mY = inY;
+    }
+
+
+
 void PageComponent::base_clearState(){
     
     for( int i=0; i<mComponents.size(); i++ ) {
@@ -62,6 +69,9 @@ void PageComponent::base_clearState(){
 
 
 void PageComponent::base_pointerMove( float inX, float inY ){
+    inX -= mX;
+    inY -= mY;
+    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     
@@ -76,6 +86,9 @@ void PageComponent::base_pointerMove( float inX, float inY ){
 
 
 void PageComponent::base_pointerDown( float inX, float inY ){
+    inX -= mX;
+    inY -= mY;
+    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     
@@ -90,6 +103,9 @@ void PageComponent::base_pointerDown( float inX, float inY ){
 
 
 void PageComponent::base_pointerDrag( float inX, float inY ){
+    inX -= mX;
+    inY -= mY;
+    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     
@@ -104,6 +120,9 @@ void PageComponent::base_pointerDrag( float inX, float inY ){
 
 
 void PageComponent::base_pointerUp( float inX, float inY ){
+    inX -= mX;
+    inY -= mY;
+    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     

@@ -26,8 +26,8 @@ RobPickList::RobPickList( double inX, double inY,
         : PageComponent( inX, inY ),
           mParentPage( inParentPage ),
           mWebRequest( -1 ),
-          mUpButton( "up.tga", -4, 4, 1/16.0 ),
-          mDownButton( "down.tga", 4, 4, 1/16.0 ) {
+          mUpButton( "up.tga", 5, 1, 1/16.0 ),
+          mDownButton( "down.tga", 5, -1, 1/16.0 ) {
     
     addComponent( &mUpButton );
     addComponent( &mDownButton );
@@ -123,8 +123,8 @@ void RobPickList::step() {
                             HouseRecord r;
                             
                             r.selected = false;
-                            r.position.x = mX;
-                            r.position.y = mY + topOffset - i * lineHeight;
+                            r.position.x = 0;
+                            r.position.y = topOffset - i * lineHeight;
                             
                             sscanf( parts[0], "%d", &( r.userID ) );
                             

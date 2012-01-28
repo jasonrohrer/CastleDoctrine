@@ -417,10 +417,10 @@ void TextField::draw() {
 
 
 void TextField::pointerUp( float inX, float inY ) {
-    if( inX > mX - mWide / 2 &&
-        inX < mX + mWide / 2 &&
-        inY > mY - mHigh / 2 &&
-        inY < mY + mHigh / 2 ) {
+    if( inX > - mWide / 2 &&
+        inX < + mWide / 2 &&
+        inY > - mHigh / 2 &&
+        inY < + mHigh / 2 ) {
 
         focus();
         }

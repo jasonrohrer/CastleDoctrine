@@ -46,7 +46,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mHighlightIndex;
         
         
-        // get tile at absolute position inX, inY
+        // get tile at relative position inX, inY
         int getTileIndex( double inX, double inY );
 
         // get relative position of tile inIndex

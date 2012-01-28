@@ -96,8 +96,8 @@ void Button::drawContents() {
 
 
 char Button::isInside( float inX, float inY ) {
-    return fabs( mX - inX ) < mWide / 2 &&
-        fabs( mY - inY ) < mHigh / 2;
+    return fabs( inX ) < mWide / 2 &&
+        fabs( inY ) < mHigh / 2;
     }
 
 

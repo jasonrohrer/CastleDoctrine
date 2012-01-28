@@ -52,8 +52,8 @@ void HouseGridDisplay::step() {
 
 int HouseGridDisplay::getTileIndex( double inX, double inY ) {
 
-    double relX = inX - mX;
-    double relY = inY - mY;
+    double relX = inX;
+    double relY = inY;
     
     int x = lrint(
         ( relX + ( 16 * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )

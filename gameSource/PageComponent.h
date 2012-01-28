@@ -30,6 +30,8 @@ class PageComponent : public GUIComponent {
         
         virtual void base_draw( doublePair inViewCenter, 
                                 double inViewSize );
+        
+        void setPosition( double inX, double inY );
 
 
         void base_pointerMove( float inX, float inY );
@@ -73,6 +75,9 @@ class PageComponent : public GUIComponent {
         
         virtual void draw() {
             };
+
+        
+        // these calls receive pointer coordinates relative to component center
         
         virtual void pointerMove( float inX, float inY ) {
             };
