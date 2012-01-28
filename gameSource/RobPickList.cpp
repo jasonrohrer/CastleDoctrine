@@ -16,6 +16,8 @@ extern char *serverURL;
 
 extern int userID;
 
+extern double frameRateFactor;
+
 
 static const int linesPerPage = 8;
 
@@ -27,10 +29,12 @@ RobPickList::RobPickList( double inX, double inY,
           mParentPage( inParentPage ),
           mCurrentSkip( 0 ),
           mWebRequest( -1 ),
+          mProgressiveDrawSteps( 0 ),
           mUpButton( "up.tga", 5, 1, 1/16.0 ),
           mDownButton( "down.tga", 5, -1, 1/16.0 ) {
 
     mUpButton.setVisible( false );
+    mDownButton.setVisible( false );
     
     addComponent( &mUpButton );
     addComponent( &mDownButton );
@@ -60,6 +64,10 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         if( mCurrentSkip == 0 ) {
             mUpButton.setVisible( false );
             }
+
+        mUpButton.setVisible( false );
+        mDownButton.setVisible( false );
+
         refreshList();
         }
     else if( inTarget == &mDownButton ) {
@@ -68,6 +76,10 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         if( mCurrentSkip > 0 ) {
             mUpButton.setVisible( true );
             }
+
+        mUpButton.setVisible( false );
+        mDownButton.setVisible( false );
+
         refreshList();
         }
     }
@@ -113,7 +125,9 @@ void RobPickList::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
-                
+              
+        mProgressiveDrawSteps = 0;
+        
         switch( stepResult ) {
             case 0:
                 break;
@@ -159,6 +173,7 @@ void RobPickList::step() {
                             HouseRecord r;
                             
                             r.selected = false;
+                            r.draw = false;
                             r.position.x = 0;
                             r.position.y = topOffset - i * lineHeight;
                             
@@ -225,13 +240,7 @@ void RobPickList::step() {
                         delete [] line;
                         }
 
-                    if( lines->size() < linesPerPage ) {
-                        // on last page of list
-                        mDownButton.setVisible( false );
-                        }
-                    else {
-                        mDownButton.setVisible( true );
-                        }                    
+                                        
 
                     delete lines;
                     }
@@ -242,6 +251,43 @@ void RobPickList::step() {
                 break;
             }
         }
+
+    
+    mProgressiveDrawSteps++;
+    
+    if( mProgressiveDrawSteps > 2 * frameRateFactor ) {
+        mProgressiveDrawSteps = 0;
+
+        // turn on one at a time
+        char foundNew = false;
+        for( int i=0; i<mHouseList.size() && !foundNew; i++ ) {
+            HouseRecord *r = mHouseList.getElement( i );
+            if( !r->draw ) {
+                r->draw = true;
+                foundNew = true;
+                }
+            }
+        if( !foundNew ) {
+            // all have been drawn now
+            
+            if( mHouseList.size() < linesPerPage ) {
+                // on last page of list
+                mDownButton.setVisible( false );
+                }
+            else {
+                mDownButton.setVisible( true );
+                }
+            
+            if( mCurrentSkip > 0 ) {
+                mUpButton.setVisible( true );
+                }
+            else {
+                mUpButton.setVisible( false );
+                }
+            }
+        
+        }
+    
     }
 
 
@@ -256,43 +302,46 @@ void RobPickList::draw() {
         HouseRecord *r = mHouseList.getElement( i );
     
 
-        if( r->selected ) {
-            setDrawColor( 0.35, 0.35, 0.15, 1 );
-            }
-        else {
-            if( altColor ) {
-                setDrawColor( 0.2, 0.2, 0.2, 1 );
+        if( r->draw ) {
+            
+            if( r->selected ) {
+                setDrawColor( 0.35, 0.35, 0.15, 1 );
                 }
             else {
-                setDrawColor( 0.15, 0.15, 0.15, 1 );
+                if( altColor ) {
+                    setDrawColor( 0.2, 0.2, 0.2, 1 );
+                    }
+                else {
+                    setDrawColor( 0.15, 0.15, 0.15, 1 );
+                    }
                 }
-            }
 
-        drawRect( r->position.x - lineWidthLeft, 
-                  r->position.y - lineHeight / 2, 
-                  r->position.x + lineWidthRight, 
-                  r->position.y + lineHeight / 2 );
+            drawRect( r->position.x - lineWidthLeft, 
+                      r->position.y - lineHeight / 2, 
+                      r->position.x + lineWidthRight, 
+                      r->position.y + lineHeight / 2 );
 
-        if( r->selected ) {
-            setDrawColor( 1, 1, 0, 1 );
-            }
-        else {
-            setDrawColor( 1, 1, 1, 1 );
-            }
+            if( r->selected ) {
+                setDrawColor( 1, 1, 0, 1 );
+                }
+            else {
+                setDrawColor( 1, 1, 1, 1 );
+                }
             
         
-        mainFont->drawString( r->characterName, r->position, alignRight );
+            mainFont->drawString( r->characterName, r->position, alignRight );
 
-        char *lootString = autoSprintf( "$%d", r->lootValue );
+            char *lootString = autoSprintf( "$%d", r->lootValue );
         
-        doublePair drawPos = r->position;
-        drawPos.x += 1;
+            doublePair drawPos = r->position;
+            drawPos.x += 1;
         
-        mainFont->drawString( lootString, drawPos, alignLeft );
+            mainFont->drawString( lootString, drawPos, alignLeft );
 
-        delete [] lootString;
+            delete [] lootString;
 
-        altColor = ! altColor;
+            altColor = ! altColor;
+            }
         }
     }
 

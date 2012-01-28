@@ -15,6 +15,8 @@ typedef struct HouseRecord {
 
         char selected;
         doublePair position;
+
+        char draw;
     } HouseRecord;
 
 
@@ -53,7 +55,9 @@ class RobPickList : public PageComponent, public ActionListener {
         int mCurrentSkip;
         
         int mWebRequest;
-
+        
+        int mProgressiveDrawSteps;
+        
 
         SimpleVector<HouseRecord> mHouseList;
 
