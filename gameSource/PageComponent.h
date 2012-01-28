@@ -4,6 +4,8 @@
 
 #include "minorGems/ui/GUIComponent.h"
 
+#include "minorGems/util/SimpleVector.h"
+
 #include "minorGems/game/doublePair.h"
 
 
@@ -24,9 +26,45 @@ class PageComponent : public GUIComponent {
             }
         
         
+        virtual void base_step();
+        
+        virtual void base_draw( doublePair inViewCenter, 
+                                double inViewSize );
+
+
+        void base_pointerMove( float inX, float inY );
+
+        void base_pointerDown( float inX, float inY );
+
+        void base_pointerDrag( float inX, float inY );
+
+        void base_pointerUp( float inX, float inY );
+
+        void base_keyDown( unsigned char inASCII );
+        
+        void base_keyUp( unsigned char inASCII );
+
+        void base_specialKeyDown( int inKeyCode );
+
+        void base_specialKeyUp( int inKeyCode );
+
+        
+        void base_clearState();
+        
+        
+    protected:
+        
+        PageComponent() {
+            };
+        
+        // add for default event handling
+        void addComponent( PageComponent *inComponent );
+
+
         // clears hover or partially-pressed status
         virtual void clearState() {
             };
+
 
         virtual void step() {
             };
@@ -58,11 +96,9 @@ class PageComponent : public GUIComponent {
         virtual void specialKeyUp( int inKeyCode ) {
             };
         
-    protected:
+        SimpleVector<PageComponent*> mComponents;
         
-        PageComponent() {
-            };
-        
+
         
     };
 

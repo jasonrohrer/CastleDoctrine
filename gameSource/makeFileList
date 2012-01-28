@@ -13,6 +13,7 @@ APP_NAME = CastleDoctrine
 
 LAYER_SOURCE = \
 game.cpp \
+PageComponent.cpp \
 GamePage.cpp \
 message.cpp \
 LoginPage.cpp \
@@ -34,6 +35,7 @@ GAME_GRAPHICS = \
 graphics/font_8_16.tga \
 graphics/font_4_8.tga \
 graphics/up.tga \
+graphics/down.tga \
 
 
 

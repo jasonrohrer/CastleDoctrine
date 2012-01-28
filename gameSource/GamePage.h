@@ -4,12 +4,10 @@
 
 #include "minorGems/game/doublePair.h"
 
-#include "minorGems/util/SimpleVector.h"
-
 #include "PageComponent.h"
 
 
-class GamePage {
+class GamePage : public PageComponent {
         
 
     public:
@@ -20,10 +18,6 @@ class GamePage {
         void setStatus( const char *inStatusMessageKey, char inError );
 
 
-        void base_step();
-        
-        void base_draw( doublePair inViewCenter, 
-                       double inViewSize );
         
         // inFresh set to true when returning to this page
         // after visiting other pages
@@ -32,33 +26,15 @@ class GamePage {
         void base_makeNotActive();
 
 
-        // default implementations do nothing
-        // sub classes implement whichever they need
-        void base_pointerMove( float inX, float inY );
+        // override to draw status message
+        virtual void base_draw( doublePair inViewCenter, 
+                                double inViewSize );
 
-        void base_pointerDown( float inX, float inY );
-
-        void base_pointerDrag( float inX, float inY );
-
-        void base_pointerUp( float inX, float inY );
-
-        void base_keyDown( unsigned char inASCII );
-        
-        void base_keyUp( unsigned char inASCII );
-
-        void base_specialKeyDown( int inKeyCode );
-
-        void base_specialKeyUp( int inKeyCode );
 
         
         
     protected:
         
-        // add for default event handling
-        void addComponent( PageComponent *inComponent );
-        
-
-
 
 
         // subclasses override these to provide custom functionality
@@ -67,7 +43,7 @@ class GamePage {
             };
         
         virtual void draw( doublePair inViewCenter, 
-                               double inViewSize ) {
+                           double inViewSize ) {
             };
         
         // inFresh set to true when returning to this page
@@ -109,8 +85,6 @@ class GamePage {
 
         
         GamePage();
-        
-        SimpleVector<PageComponent*> mComponents;
         
 
         char mStatusError;
