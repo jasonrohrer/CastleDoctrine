@@ -6,7 +6,8 @@
 
 
 GamePage::GamePage()
-        : mStatusError( false ),
+        : PageComponent( 0, 0 ),
+          mStatusError( false ),
           mStatusMessageKey( NULL ) {
     }
 

@@ -8,9 +8,9 @@
 Button::Button( double inX, double inY,
                 double inWide, double inHigh,
                 double inPixelSize )
-        : mVisible( true ), 
+        : PageComponent( inX, inY ),
+          mVisible( true ), 
           mHover( false ), mDragOver( false ),
-          mX( inX ), mY( inY ),
           mWide( inWide ), mHigh( inHigh ), mPixWidth( inPixelSize ) {
     }
 

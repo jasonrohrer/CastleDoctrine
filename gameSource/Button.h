@@ -45,8 +45,6 @@ class Button : public PageComponent, public ActionListenerList {
         char mVisible;
         char mHover;
         char mDragOver;
-        
-        double mX, mY;
 
         double mWide, mHigh, mPixWidth;
         

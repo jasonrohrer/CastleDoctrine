@@ -44,8 +44,6 @@ class RobPickList : public PageComponent {
 
     protected:
         
-        double mX, mY;
-        
         GamePage *mParentPage;
 
         int mWebRequest;

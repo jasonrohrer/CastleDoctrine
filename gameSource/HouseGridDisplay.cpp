@@ -10,7 +10,8 @@
 
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )
-        : mX( inX ), mY( inY ), mHouseMap( NULL ), 
+        : PageComponent( inX, inY ),
+          mHouseMap( NULL ), 
           mHighlightIndex( -1 ), mTileRadius( 0.5 ) {
     }
 

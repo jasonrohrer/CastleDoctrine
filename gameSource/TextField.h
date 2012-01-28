@@ -72,7 +72,6 @@ class TextField : public PageComponent {
         char mActive;
         
         Font *mFont;
-        double mX, mY;
         int mCharsWide;
 
         char mForceCaps;

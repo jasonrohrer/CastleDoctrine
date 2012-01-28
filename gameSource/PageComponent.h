@@ -54,8 +54,10 @@ class PageComponent : public GUIComponent {
         
     protected:
         
-        PageComponent() {
-            };
+        // inX, inY specify center position of this component
+        // Positions of sub components are relative to this center position
+        PageComponent( double inX, double inY );
+        
         
         // add for default event handling
         void addComponent( PageComponent *inComponent );
@@ -96,8 +98,12 @@ class PageComponent : public GUIComponent {
         virtual void specialKeyUp( int inKeyCode ) {
             };
         
+
+
+
         SimpleVector<PageComponent*> mComponents;
         
+        double mX, mY;
 
         
     };

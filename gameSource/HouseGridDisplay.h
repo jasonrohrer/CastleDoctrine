@@ -40,8 +40,6 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
     private:
         
-        double mX, mY;
-        
         char *mHouseMap;
         
         
