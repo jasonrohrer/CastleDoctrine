@@ -18,7 +18,7 @@ typedef struct HouseRecord {
     } HouseRecord;
 
 
-class RobPickList : public PageComponent {
+class RobPickList : public PageComponent, public ActionListener {
         
     public:
         
@@ -29,6 +29,9 @@ class RobPickList : public PageComponent {
 
         virtual ~RobPickList();
         
+        
+        virtual void actionPerformed( GUIComponent *inTarget );
+
         
         // fetch new results from server
         virtual void refreshList();
@@ -46,6 +49,9 @@ class RobPickList : public PageComponent {
         
         GamePage *mParentPage;
 
+
+        int mCurrentSkip;
+        
         int mWebRequest;
 
 

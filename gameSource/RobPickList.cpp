@@ -25,12 +25,18 @@ RobPickList::RobPickList( double inX, double inY,
                           GamePage *inParentPage )
         : PageComponent( inX, inY ),
           mParentPage( inParentPage ),
+          mCurrentSkip( 0 ),
           mWebRequest( -1 ),
           mUpButton( "up.tga", 5, 1, 1/16.0 ),
           mDownButton( "down.tga", 5, -1, 1/16.0 ) {
+
+    mUpButton.setVisible( false );
     
     addComponent( &mUpButton );
     addComponent( &mDownButton );
+
+    mUpButton.addActionListener( this );
+    mDownButton.addActionListener( this );
     }
 
 
@@ -40,6 +46,30 @@ RobPickList::~RobPickList() {
         clearWebRequest( mWebRequest );
         }
     clearHouseList();
+    }
+
+
+
+void RobPickList::actionPerformed( GUIComponent *inTarget ) {
+    if( inTarget == &mUpButton ) {
+        mCurrentSkip -= linesPerPage;
+        if( mCurrentSkip < 0 ) {
+            mCurrentSkip = 0;
+            }
+
+        if( mCurrentSkip == 0 ) {
+            mUpButton.setVisible( false );
+            }
+        refreshList();
+        }
+    else if( inTarget == &mDownButton ) {
+        mCurrentSkip += linesPerPage;
+        
+        if( mCurrentSkip > 0 ) {
+            mUpButton.setVisible( true );
+            }
+        refreshList();
+        }
     }
 
 
@@ -58,9 +88,9 @@ void RobPickList::refreshList() {
             
     
     char *actionString = autoSprintf( 
-        "action=list_houses&skip=0&limit=%d&user_id=%d"
+        "action=list_houses&skip=%d&limit=%d&user_id=%d"
         "&%s",
-        linesPerPage, userID, ticketHash );
+        mCurrentSkip, linesPerPage, userID, ticketHash );
     delete [] ticketHash;
             
     
@@ -107,7 +137,8 @@ void RobPickList::step() {
 
                     double lineHeight = 0.5;
 
-                    double topOffset = ( linesPerPage * lineHeight ) / 2;
+                    double topOffset = ( linesPerPage * lineHeight ) / 2 
+                        - lineHeight / 2;
 
                     for( int i=0; i<lines->size(); i++ ) {
                         char *line = *( lines->getElement( i ) );
@@ -147,6 +178,15 @@ void RobPickList::step() {
                         
                         delete [] line;
                         }
+
+                    if( lines->size() < linesPerPage ) {
+                        // on last page of list
+                        mDownButton.setVisible( false );
+                        }
+                    else {
+                        mDownButton.setVisible( true );
+                        }                    
+
                     delete lines;
                     }
                         
