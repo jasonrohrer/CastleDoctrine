@@ -36,7 +36,7 @@ class RobPickList : public PageComponent, public ActionListener {
 
         
         // fetch new results from server
-        virtual void refreshList();
+        virtual void refreshList( char inPreservePosition = false );
         
 
         virtual void step();

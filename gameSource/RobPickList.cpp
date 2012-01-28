@@ -61,38 +61,33 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
             mCurrentSkip = 0;
             }
 
-        if( mCurrentSkip == 0 ) {
-            mUpButton.setVisible( false );
-            }
-
-        mUpButton.setVisible( false );
-        mDownButton.setVisible( false );
-
-        refreshList();
+        refreshList( true );
         }
     else if( inTarget == &mDownButton ) {
         mCurrentSkip += linesPerPage;
-        
-        if( mCurrentSkip > 0 ) {
-            mUpButton.setVisible( true );
-            }
 
-        mUpButton.setVisible( false );
-        mDownButton.setVisible( false );
-
-        refreshList();
+        refreshList( true );
         }
     }
 
 
 
 // fetch new results from server
-void RobPickList::refreshList() {
+void RobPickList::refreshList( char inPreservePosition ) {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
     clearHouseList();
+
+    mUpButton.setVisible( false );
+    mDownButton.setVisible( false );
+
+
     
+    if( ! inPreservePosition ) {
+        mCurrentSkip = 0;
+        }
+
 
     // request house list from server
     char *ticketHash = getTicketHash();
