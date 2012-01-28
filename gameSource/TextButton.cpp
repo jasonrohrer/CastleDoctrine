@@ -29,7 +29,7 @@ TextButton::~TextButton() {
 void TextButton::drawContents() {
     // leave draw color set by Button
     
-    doublePair textPos = { mX, mY };
+    doublePair textPos = { 0, 0 };
     
     mFont->drawString( mLabelText, textPos, alignCenter );
     }

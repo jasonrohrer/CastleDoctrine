@@ -40,10 +40,9 @@ void PageComponent::base_draw( doublePair inViewCenter,
             }
         }
 
-    setViewCenterPosition( oldViewCenter.x, oldViewCenter.y );
-
-
     draw();
+
+    setViewCenterPosition( oldViewCenter.x, oldViewCenter.y );
     }
 
 

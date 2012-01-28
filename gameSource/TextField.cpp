@@ -197,18 +197,18 @@ void TextField::draw() {
         }
     
 
-    drawRect( mX - mWide / 2, mY - mHigh / 2, 
-              mX + mWide / 2, mY + mHigh / 2 );
+    drawRect( - mWide / 2, - mHigh / 2, 
+              mWide / 2, mHigh / 2 );
     
     setDrawColor( 0.25, 0.25, 0.25, 1 );
     double pixWidth = mCharWidth / 8;
 
 
-    double rectStartX = mX - mWide / 2 + pixWidth;
-    double rectStartY = mY - mHigh / 2 + pixWidth;
+    double rectStartX = - mWide / 2 + pixWidth;
+    double rectStartY = - mHigh / 2 + pixWidth;
 
-    double rectEndX = mX + mWide / 2 - pixWidth;
-    double rectEndY = mY + mHigh / 2 - pixWidth;
+    double rectEndX = mWide / 2 - pixWidth;
+    double rectEndY = mHigh / 2 - pixWidth;
     
     drawRect( rectStartX, rectStartY,
               rectEndX, rectEndY );
@@ -217,13 +217,13 @@ void TextField::draw() {
 
     
     if( mLabelText != NULL ) {
-        doublePair labelPos = { mX - mWide/2 - mBorderWide, mY };
+        doublePair labelPos = { - mWide/2 - mBorderWide, 0 };
         
         mFont->drawString( mLabelText, labelPos, alignRight );
         }
     
 
-    doublePair textPos = { mX - mWide/2 + mBorderWide, mY };
+    doublePair textPos = { - mWide/2 + mBorderWide, 0 };
 
 
     char tooLongFront = false;
@@ -314,7 +314,7 @@ void TextField::draw() {
 
     char leftAlign = true;
     char cursorCentered = false;
-    doublePair centerPos = { mX, mY };
+    doublePair centerPos = { 0, 0 };
     
     if( ! tooLongFront ) {
         mFont->drawString( textToDraw, textPos, alignLeft );
@@ -323,7 +323,7 @@ void TextField::draw() {
         
         leftAlign = false;
 
-        doublePair textPos2 = { mX + mWide/2 - mBorderWide, mY };
+        doublePair textPos2 = { mWide/2 - mBorderWide, 0 };
 
         mFont->drawString( textToDraw, textPos2, alignRight );
         }

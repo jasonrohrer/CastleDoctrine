@@ -55,8 +55,8 @@ void Button::draw() {
         }
     
 
-    drawRect( mX - mWide / 2, mY - mHigh / 2, 
-              mX + mWide / 2, mY + mHigh / 2 );
+    drawRect( - mWide / 2, - mHigh / 2, 
+              mWide / 2, mHigh / 2 );
 
     if( mDragOver ) {
         setDrawColor( 0.1, 0.1, 0.1, 1 );
@@ -65,11 +65,11 @@ void Button::draw() {
         setDrawColor( 0.25, 0.25, 0.25, 1 );
         }
     
-    double rectStartX = mX - mWide / 2 + mPixWidth;
-    double rectStartY = mY - mHigh / 2 + mPixWidth;
+    double rectStartX = - mWide / 2 + mPixWidth;
+    double rectStartY = - mHigh / 2 + mPixWidth;
 
-    double rectEndX = mX + mWide / 2 - mPixWidth;
-    double rectEndY = mY + mHigh / 2 - mPixWidth;
+    double rectEndX = mWide / 2 - mPixWidth;
+    double rectEndY = mHigh / 2 - mPixWidth;
     
     drawRect( rectStartX, rectStartY,
               rectEndX, rectEndY );

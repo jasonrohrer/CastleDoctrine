@@ -88,9 +88,6 @@ doublePair HouseGridDisplay::getTilePos( int inIndex ) {
                             y * 2 * mTileRadius - 
                               ( 16 * mTileRadius - mTileRadius ) };
 
-    tilePos.x += mX;
-    tilePos.y += mY;
-    
     return tilePos;
     }
 
