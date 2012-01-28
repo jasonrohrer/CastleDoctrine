@@ -3,6 +3,8 @@
 #include "GamePage.h"
 #include "PageComponent.h"
 
+#include "SpriteButton.h"
+
 
 
 typedef struct HouseRecord {
@@ -53,6 +55,11 @@ class RobPickList : public PageComponent {
 
         void clearHouseList();
         
+        
+        SpriteButton mUpButton;
+        SpriteButton mDownButton;
+
+
     };
 
 

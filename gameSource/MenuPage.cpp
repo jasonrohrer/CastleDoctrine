@@ -12,11 +12,9 @@ extern Font *mainFont;
 MenuPage::MenuPage() 
         : mPickList( 0, 0, this ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
-          mUpButton( "up.tga", -4, 4, 1/16.0),
           mStartEditHouse( false ) {
 
     addComponent( &mEditHouseButton );
-    addComponent( &mUpButton );
     addComponent( &mPickList );
     mEditHouseButton.addActionListener( this );
     }

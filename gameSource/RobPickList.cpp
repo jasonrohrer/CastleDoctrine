@@ -25,7 +25,12 @@ RobPickList::RobPickList( double inX, double inY,
                           GamePage *inParentPage )
         : mX( inX ), mY( inY ),
           mParentPage( inParentPage ),
-          mWebRequest( -1 ) {
+          mWebRequest( -1 ),
+          mUpButton( "up.tga", -4, 4, 1/16.0 ),
+          mDownButton( "down.tga", 4, 4, 1/16.0 ) {
+    
+    addComponent( &mUpButton );
+    addComponent( &mDownButton );
     }
 
 
