@@ -413,6 +413,38 @@ function cd_setupDatabase() {
         }
 
 
+    
+    $tableName = $tableNamePrefix . "limbo_robberies";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // contains information about lapsed robberies (user quits, power
+        // out, etc)
+        // User gets one success/failure(death) chance to rob each house
+        // with current life.  If user "bails out" mid-robbery,
+        // it's unfair to punish them (might not be their fault, game crash?),
+        // but we don't want them to exploit it as another chance to rob
+        // with new info.
+        // So, lapsed attempts go into the limbo list, and user is not
+        // allowed to try robbing that same house again.
+
+        // This maps a user ID to another user ID, where the second
+        // ID specifies a house that the first user cannot rob again.
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+    
+
     $tableName = $tableNamePrefix . "last_names";
     if( ! cd_doesTableExist( $tableName ) ) {
 
