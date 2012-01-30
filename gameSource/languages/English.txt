@@ -41,6 +41,7 @@ houseCheckInFailed "House check in failed."
 
 
 startEditHouse "Work on Your House"
+startRobHouse "Rob House"
 
 listFetchFailed "Failed to fetch house list"
 

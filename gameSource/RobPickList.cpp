@@ -106,7 +106,25 @@ void RobPickList::refreshList( char inPreservePosition ) {
                                    actionString );
     
     delete [] actionString;
+
+    // nothing selected now (so selection might have changed)
+    fireActionPerformed( this );
     }
+
+
+
+HouseRecord *RobPickList::getSelectedHouse() {
+    for( int i=0; i<mHouseList.size(); i++ ) {
+        HouseRecord *r = mHouseList.getElement( i );
+        
+        if( r->selected ) {
+            return r;
+            }
+        }
+
+    return NULL;
+    }
+
 
 
 
@@ -235,8 +253,6 @@ void RobPickList::step() {
                         delete [] line;
                         }
 
-                                        
-
                     delete lines;
                     }
                         
@@ -357,6 +373,8 @@ void RobPickList::pointerUp( float inX, float inY ) {
                 }
             
             r->selected = true;
+            
+            fireActionPerformed( this );
             return;
             }
         }

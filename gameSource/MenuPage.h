@@ -40,6 +40,7 @@ class MenuPage : public GamePage, public ActionListener {
         RobPickList mPickList;
 
         TextButton mEditHouseButton;
+        TextButton mRobHouseButton;
         
         
 

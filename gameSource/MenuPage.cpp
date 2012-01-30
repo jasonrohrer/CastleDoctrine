@@ -12,11 +12,19 @@ extern Font *mainFont;
 MenuPage::MenuPage() 
         : mPickList( 0, 0, this ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
+          mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
           mStartEditHouse( false ) {
 
     addComponent( &mEditHouseButton );
+    addComponent( &mRobHouseButton );
     addComponent( &mPickList );
+
     mEditHouseButton.addActionListener( this );
+    mRobHouseButton.addActionListener( this );
+
+    mPickList.addActionListener( this );
+
+    mRobHouseButton.setVisible( false );
     }
 
 
@@ -36,6 +44,15 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mEditHouseButton ) {
         mStartEditHouse = true;
         }
+    else if( inTarget == &mPickList ) {
+        if( mPickList.getSelectedHouse() == NULL ) {
+            mRobHouseButton.setVisible( false );
+            }
+        else {
+            mRobHouseButton.setVisible( true );
+            }
+        }
+    
     }
 
 

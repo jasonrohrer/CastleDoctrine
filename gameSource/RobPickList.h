@@ -20,7 +20,9 @@ typedef struct HouseRecord {
     } HouseRecord;
 
 
-class RobPickList : public PageComponent, public ActionListener {
+// fires actionPerformed when selection changes
+class RobPickList : public PageComponent, public ActionListener, 
+                    public ActionListenerList {
         
     public:
         
@@ -38,6 +40,11 @@ class RobPickList : public PageComponent, public ActionListener {
         // fetch new results from server
         virtual void refreshList( char inPreservePosition = false );
         
+        
+        // NULL if nothing selected
+        // destroyed internally
+        virtual HouseRecord *getSelectedHouse();
+        
 
         virtual void step();
         
@@ -46,6 +53,7 @@ class RobPickList : public PageComponent, public ActionListener {
 
         virtual void pointerUp( float inX, float inY );
         
+
 
     protected:
         
