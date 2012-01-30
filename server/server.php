@@ -651,6 +651,12 @@ function cd_startEditHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
+    // first clear any stale robberies from this user that are lingering
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
+    cd_queryDatabase( $query );
+
+    
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
@@ -842,6 +848,12 @@ function cd_startRobHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
+    // first clear any stale robberies from this user that are lingering
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
+    cd_queryDatabase( $query );
+    
+    
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
