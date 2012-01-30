@@ -1,3 +1,7 @@
+#ifndef HOUSE_GRID_DISPLAY_INCLUDED
+#define HOUSE_GRID_DISPLAY_INCLUDED
+
+
 #include "minorGems/game/doublePair.h"
 
 
@@ -55,3 +59,6 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         double mTileRadius;
     };
 
+
+
+#endif

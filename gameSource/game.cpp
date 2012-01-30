@@ -45,6 +45,8 @@ int versionNumber = 1;
 #include "CheckinHousePage.h"
 #include "MenuPage.h"
 #include "RobCheckoutHousePage.h"
+#include "RobHousePage.h"
+#include "RobCheckinHousePage.h"
 
 
 
@@ -57,6 +59,8 @@ EditHousePage *editHousePage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
 RobCheckoutHousePage *robCheckoutHousePage;
+RobHousePage *robHousePage;
+RobCheckinHousePage *robCheckinHousePage;
 
 
 
@@ -354,6 +358,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
     robCheckoutHousePage = new RobCheckoutHousePage();
+    robHousePage = new RobHousePage();
+    robCheckinHousePage = new RobCheckinHousePage();
 
     currentGamePage = loginPage;
 
@@ -379,6 +385,8 @@ void freeFrameDrawer() {
     delete checkinHousePage;
     delete menuPage;
     delete robCheckoutHousePage;
+    delete robHousePage;
+    delete robCheckinHousePage;
 
     if( serverURL != NULL ) {
         delete [] serverURL;
@@ -848,13 +856,32 @@ void drawFrame( char inUpdate ) {
                 
                 if( houseMap != NULL ) {
                     
-                    editHousePage->setHouseMap( houseMap );
+                    robHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
-                    currentGamePage = editHousePage;
+                    currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );
                     }
                 }
             }
+        else if( currentGamePage == robHousePage ) {
+            if( robHousePage->getDone() ) {
+                char *houseMap = robHousePage->getHouseMap();
+                
+                robCheckinHousePage->setHouseMap( houseMap );
+                
+                delete [] houseMap;
+
+                currentGamePage = robCheckinHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == robCheckinHousePage ) {
+            if( robCheckinHousePage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+
         }
 
 

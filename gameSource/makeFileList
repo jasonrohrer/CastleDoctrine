@@ -29,7 +29,8 @@ CheckinHousePage.cpp \
 MenuPage.cpp \
 RobPickList.cpp \
 RobCheckoutHousePage.cpp \
-
+RobHousePage.cpp \
+RobCheckinHousePage.cpp \
 
 
 GAME_GRAPHICS = \
