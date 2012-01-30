@@ -13,7 +13,8 @@ MenuPage::MenuPage()
         : mPickList( 0, 0, this ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
           mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
-          mStartEditHouse( false ) {
+          mStartEditHouse( false ),
+          mStartRobHouse( false ) {
 
     addComponent( &mEditHouseButton );
     addComponent( &mRobHouseButton );
@@ -40,6 +41,18 @@ char MenuPage::getStartEditHouse() {
 
 
 
+char MenuPage::getStartRobHouse() {
+    return mStartRobHouse;
+    }
+
+
+
+HouseRecord *MenuPage::getSelectedHouse() {
+    return mPickList.getSelectedHouse();
+    }
+
+
+
 void MenuPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mEditHouseButton ) {
         mStartEditHouse = true;
@@ -51,6 +64,9 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
         else {
             mRobHouseButton.setVisible( true );
             }
+        }
+    else if( inTarget == &mRobHouseButton ) {
+        mStartRobHouse = true;
         }
     
     }
@@ -76,7 +92,7 @@ void MenuPage::makeActive( char inFresh ) {
     mPickList.refreshList();
     
     mStartEditHouse = false;
-    
+    mStartRobHouse = false;
 
     mStatusMessageKey = NULL;
     mStatusError = false;

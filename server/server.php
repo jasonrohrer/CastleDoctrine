@@ -141,6 +141,12 @@ else if( $action == "ping_house" ) {
 else if( $action == "list_houses" ) {
     cd_listHouses();
     }
+else if( $action == "start_rob_house" ) {
+    cd_startRobHouse();
+    }
+else if( $action == "end_rob_house" ) {
+    cd_endRobHouse();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -392,6 +398,8 @@ function cd_setupDatabase() {
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
             "rob_checkout TINYINT NOT NULL,".
+            // ignored if not checked out for robbery
+            "robbing_user_id INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
@@ -814,6 +822,126 @@ function cd_listHouses() {
 
 
 
+function cd_startRobHouse() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    $to_rob_user_id = "";
+    if( isset( $_REQUEST[ "to_rob_user_id" ] ) ) {
+        $to_rob_user_id = $_REQUEST[ "to_rob_user_id" ];
+        }
+
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
+        "AND edit_checkout = 0 AND rob_checkout = 0 FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $house_map = $row[ "house_map" ];
+    $rob_attempts = $row[ "rob_attempts" ];
+    $rob_attempts ++;
+    
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "rob_checkout = 1, robbing_user_id = '$user_id', ".
+        "rob_attempts = '$rob_attempts', last_ping_time = CURRENT_TIMESTAMP ".
+        "WHERE user_id = $to_rob_user_id;";
+    cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    echo $house_map;    
+    }
+
+
+
+function cd_endRobHouse() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
+        "AND rob_checkout = 1 AND edit_checkout = 0 FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+
+    $house_map = "";
+    if( isset( $_REQUEST[ "house_map" ] ) ) {
+        $house_map = $_REQUEST[ "house_map" ];
+        }
+    
+    
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "rob_checkout = 0, house_map='$house_map' ".
+        "WHERE robbing_user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
+    echo "OK";    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // utility function for stuff common to all denied user transactions
 function cd_transactionDeny() {
     echo "DENIED";
@@ -982,7 +1110,7 @@ function cd_newHouseForUser( $user_id ) {
         
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, ".
+            " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
@@ -1155,7 +1283,9 @@ function cd_showData() {
     echo "<td>Blocked?</td>\n";
     echo "<td>".orderLink( "character_name", "Character Name" )."</td>\n";
     echo "<td>".orderLink( "loot_value", "Loot Value" )."</td>\n";
+    echo "<td>".orderLink( "rob_attempts", "Rob Attempts" )."</td>\n";
     echo "<td>Checkout?</td>\n";
+    echo "<td>Robbing User</td>\n";
     echo "<td>".orderLink( "last_ping_time", "PingTime" )."</td>\n";
 
     echo "</tr>\n";
@@ -1167,6 +1297,8 @@ function cd_showData() {
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $edit_checkout = mysql_result( $result, $i, "edit_checkout" );
         $rob_checkout = mysql_result( $result, $i, "rob_checkout" );
+        $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
+        $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
         $blocked = mysql_result( $result, $i, "blocked" );
         
@@ -1187,7 +1319,7 @@ function cd_showData() {
             
             }
 
-        $checkout = "";
+        $checkout = " ";
 
         if( $edit_checkout ) {
             $checkout = "edit";
@@ -1209,7 +1341,9 @@ function cd_showData() {
         echo "<td align=right>$blocked [$block_toggle]</td>\n";
         echo "<td>$character_name</td>\n";
         echo "<td>$loot_value</td>\n";
+        echo "<td>$rob_attempts</td>\n";
         echo "<td>$checkout</td>\n";
+        echo "<td>$robbing_user_id</td>\n";
         echo "<td>$last_ping_time</td>\n";
         echo "</tr>\n";
         }

@@ -44,6 +44,7 @@ int versionNumber = 1;
 #include "EditHousePage.h"
 #include "CheckinHousePage.h"
 #include "MenuPage.h"
+#include "RobCheckoutHousePage.h"
 
 
 
@@ -55,6 +56,7 @@ CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
+RobCheckoutHousePage *robCheckoutHousePage;
 
 
 
@@ -351,7 +353,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     editHousePage = new EditHousePage();
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
-    
+    robCheckoutHousePage = new RobCheckoutHousePage();
+
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );
@@ -375,7 +378,8 @@ void freeFrameDrawer() {
     delete editHousePage;
     delete checkinHousePage;
     delete menuPage;
-    
+    delete robCheckoutHousePage;
+
     if( serverURL != NULL ) {
         delete [] serverURL;
         serverURL = NULL;
@@ -824,6 +828,31 @@ void drawFrame( char inUpdate ) {
             if( menuPage->getStartEditHouse() ) {
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
+                }
+            else if( menuPage->getStartRobHouse() ) {
+                HouseRecord *r = menuPage->getSelectedHouse();
+                
+                if( r != NULL ) {
+                    currentGamePage = robCheckoutHousePage;
+                    robCheckoutHousePage->setToRobUserID( r->userID );
+                    currentGamePage->base_makeActive( true );
+                    }
+                }
+            }
+        else if( currentGamePage == robCheckoutHousePage ) {
+            if( robCheckoutHousePage->getReturnToMenu() ) {
+                printf( "Fixme:  Return to menu.\n" );
+                }
+            else {
+                char *houseMap = robCheckoutHousePage->getHouseMap();
+                
+                if( houseMap != NULL ) {
+                    
+                    editHousePage->setHouseMap( houseMap );
+                    delete [] houseMap;
+                    currentGamePage = editHousePage;
+                    currentGamePage->base_makeActive( true );
+                    }
                 }
             }
         }

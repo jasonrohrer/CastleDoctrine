@@ -28,6 +28,7 @@ HouseGridDisplay.cpp \
 CheckinHousePage.cpp \
 MenuPage.cpp \
 RobPickList.cpp \
+RobCheckoutHousePage.cpp \
 
 
 

@@ -47,6 +47,13 @@ listFetchFailed "Failed to fetch house list"
 
 
 
+houseBeingRobbedOrEdited "Someone else is in that house.##You can't rob it now."
+
+
+
+
+
+
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"
 playbackEndMessage    "(Press ESC to end)"

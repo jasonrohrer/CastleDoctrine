@@ -22,7 +22,12 @@ class MenuPage : public GamePage, public ActionListener {
 
 
         virtual char getStartEditHouse();
-
+        virtual char getStartRobHouse();
+        
+        // destroyed internally
+        // can be NULL
+        virtual HouseRecord *getSelectedHouse();
+        
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -45,7 +50,7 @@ class MenuPage : public GamePage, public ActionListener {
         
 
         char mStartEditHouse;
-        
+        char mStartRobHouse;
         
         
     };
