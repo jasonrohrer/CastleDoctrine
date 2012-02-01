@@ -57,6 +57,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         doublePair getTilePos( int inIndex );
         
         double mTileRadius;
+
+        int mStartIndex;
+        int mGoalIndex;
     };
 
 

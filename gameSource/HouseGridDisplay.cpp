@@ -8,11 +8,16 @@
 #include <math.h>
 
 
+#define HOUSE_D 16
+
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )
         : PageComponent( inX, inY ),
           mHouseMap( NULL ), 
           mHighlightIndex( -1 ), mTileRadius( 0.5 ) {
+
+    mStartIndex = HOUSE_D * ( HOUSE_D / 2 );
+    mGoalIndex = HOUSE_D * ( HOUSE_D / 2 ) + HOUSE_D - 1;
     }
 
 
@@ -56,18 +61,20 @@ int HouseGridDisplay::getTileIndex( double inX, double inY ) {
     double relY = inY;
     
     int x = lrint(
-        ( relX + ( 16 * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
+        ( relX + 
+          ( HOUSE_D * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
         );
     
     int y = lrint( 
-        ( relY + ( 16 * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
+        ( relY + 
+          ( HOUSE_D * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
         );
     
-    if( x >= 0 && x < 16 
+    if( x >= 0 && x < HOUSE_D 
         &&
-        y >= 0 && y < 16 ) {
+        y >= 0 && y < HOUSE_D ) {
         
-        return y * 16 + x;
+        return y * HOUSE_D + x;
         }
     else {
         return -1;
@@ -78,15 +85,15 @@ int HouseGridDisplay::getTileIndex( double inX, double inY ) {
 
 doublePair HouseGridDisplay::getTilePos( int inIndex ) {
     
-    int x = inIndex % 16;
-    int y = inIndex / 16;
+    int x = inIndex % HOUSE_D;
+    int y = inIndex / HOUSE_D;
     
 
 
     doublePair tilePos = {  x * 2 * mTileRadius - 
-                              ( 16 * mTileRadius - mTileRadius ), 
+                              ( HOUSE_D * mTileRadius - mTileRadius ), 
                             y * 2 * mTileRadius - 
-                              ( 16 * mTileRadius - mTileRadius ) };
+                              ( HOUSE_D * mTileRadius - mTileRadius ) };
 
     return tilePos;
     }
@@ -100,13 +107,14 @@ void HouseGridDisplay::draw() {
         return;
         }
 
+    
 
 
     // draw house
     int i = 0;
-    for( int y=0; y<16; y++ ) {
-        for( int x=0; x<16; x++ ) {
-    
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+
             char houseTile = mHouseMap[i];
             
             
@@ -133,6 +141,13 @@ void HouseGridDisplay::draw() {
             i++;
             }
         }
+
+    setDrawColor( 0, 1, 0, 1 );
+    drawSquare( getTilePos( mStartIndex ), 0.75 * mTileRadius );
+
+    setDrawColor( 1, 1, 0, 1 );
+    drawSquare( getTilePos( mGoalIndex ), 0.75 * mTileRadius );
+
     }
 
 
@@ -155,7 +170,7 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
     
     mHighlightIndex = index;
 
-    if( index != -1 ) {
+    if( index != -1 && index != mStartIndex && index != mGoalIndex ) {
     
         char old = mHouseMap[ index ];
         
