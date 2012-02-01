@@ -10,6 +10,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
           mRobberIndex( mStartIndex ) {
 
+    memset( mVisibleMap, 0, HOUSE_D * HOUSE_D );
     }
 
 
@@ -24,6 +25,30 @@ void RobHouseGridDisplay::draw() {
 
     setDrawColor( 0, 0, 1, 1 );
     drawSquare( getTilePos( mRobberIndex ), 0.5 * mTileRadius );
+
+    
+    // visibility overlay
+    int i = 0;
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+
+            char visTile = mVisibleMap[i];
+            
+            
+            if( visTile == 0 ) {
+                setDrawColor( 0, 0, 0, 1 );
+                doublePair tilePos = getTilePos( i );
+                
+                drawSquare( tilePos, mTileRadius );
+                }
+            else {
+                }
+            
+            i++;
+            }
+        }
+
+
     }
 
 
@@ -83,8 +108,56 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
         // hit wall, roll back to last position
         mRobberIndex = oldIndex;
         }
+    
+    if( mRobberIndex != oldIndex ) {
+        recomputeVisibility();
+        }
     }
+
+
 
 void RobHouseGridDisplay::specialKeyUp( int inKeyCode ) {
     }
 
+
+
+void RobHouseGridDisplay::recomputeVisibility() {
+
+    doublePair robPos = getTilePos( mRobberIndex );
+
+
+    int i = 0;
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            
+            
+            doublePair pos = getTilePos( i );
+
+            char hit = false;
+            
+            // steps
+            for( int j=0; j<100 && !hit; j++ ) {
+                double weight = j / 99.0;
+                
+                doublePair stepPos = add( mult( pos, weight ), 
+                                          mult( robPos, 1 - weight ) );
+                
+                int stepIndex = getTileIndex( stepPos.x, stepPos.y );
+                
+                if( stepIndex != i && mHouseMap[stepIndex] != '0' ) {
+                    hit = true;
+                    }
+                }
+
+            if( hit ) {
+                mVisibleMap[i] = 0;
+                }
+            else {
+                mVisibleMap[i] = 1;
+                }
+
+            i++;
+            }
+        }
+    
+    }

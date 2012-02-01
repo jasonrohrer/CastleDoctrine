@@ -33,6 +33,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
         int mRobberIndex;
 
+        char mVisibleMap[ HOUSE_D * HOUSE_D ];
+
+
+        void recomputeVisibility();
+        
     };
 
 
