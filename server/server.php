@@ -667,6 +667,36 @@ function cd_checkHash() {
     }
 
 
+function cd_processStaleRobberies( $user_id ) {
+    global $tableNamePrefix;
+
+
+    // first find all stale robberies
+    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+        "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
+
+    
+    $numRows = mysql_numrows( $result );
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $house_user_id = mysql_result( $result, $i, "user_id" );
+
+        // add each one to the limbo table
+        $query = "INSERT INTO $tableNamePrefix"."limbo_robberies VALUES(" .
+            " $user_id, $house_user_id );";
+        cd_queryDatabase( $query );
+        }
+    
+
+    // finally clear all the robberies themselves
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
+    cd_queryDatabase( $query );
+    }
+
+
 
 function cd_startEditHouse() {
     global $tableNamePrefix;
@@ -683,11 +713,8 @@ function cd_startEditHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
-    // first clear any stale robberies from this user that are lingering
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
-    cd_queryDatabase( $query );
-
+    cd_processStaleRobberies( $user_id );
+    
     
     // automatically ignore blocked users and houses already checked
     // out for robbery
@@ -793,7 +820,8 @@ function cd_pingHouse() {
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP ".
-        "WHERE user_id = $user_id AND blocked='0' ".
+        "WHERE ( user_id = $user_id OR robbing_user_id = $user_id ) ".
+        "AND blocked='0' ".
         "AND ( rob_checkout = 1 OR edit_checkout = 1 );";
     
     $result = cd_queryDatabase( $query );
@@ -835,11 +863,14 @@ function cd_listHouses() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery
+    // out for robbery and limbo houses for this user
     
     $query = "SELECT * FROM $tableNamePrefix"."houses ".
         "WHERE user_id != '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 AND edit_checkout = 0 ".
+        "AND user_id NOT IN ".
+        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
+        "  WHERE user_id = $user_id ) ".
         "ORDER BY loot_value DESC ".
         "LIMIT $skip, $limit;";
 
@@ -880,18 +911,19 @@ function cd_startRobHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
-    // first clear any stale robberies from this user that are lingering
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
-    cd_queryDatabase( $query );
+    cd_processStaleRobberies( $user_id );
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery
+    // out for robbery and limbo houses for this user
     
     $query = "SELECT * FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
-        "AND edit_checkout = 0 AND rob_checkout = 0 FOR UPDATE;";
+        "AND edit_checkout = 0 AND rob_checkout = 0 ".
+        "AND user_id NOT IN ".
+        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
+        "  WHERE user_id = $user_id ) ".
+        "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
 
@@ -937,11 +969,15 @@ function cd_endRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
     // automatically ignore blocked users and houses already checked
-    // out for robbery
+    // out for robbery and limbo houses for this user
     
     $query = "SELECT * FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
-        "AND rob_checkout = 1 AND edit_checkout = 0 FOR UPDATE;";
+        "AND rob_checkout = 1 AND edit_checkout = 0 ".
+        "AND user_id NOT IN ".
+        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
+        "  WHERE user_id = $user_id ) ".
+        "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
 
