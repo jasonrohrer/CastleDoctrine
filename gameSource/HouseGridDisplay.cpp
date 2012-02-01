@@ -121,7 +121,12 @@ void HouseGridDisplay::draw() {
             drawSquare( tilePos, mTileRadius );
             
             if( mHighlightIndex == i ) {
-                setDrawColor( 1, 1, 0, 0.35 );
+                if( houseTile == '0' ) {
+                    setDrawColor( 1, 0, 0, 0.35 );
+                    }
+                else {
+                    setDrawColor( 0, 0, 0, 0.35 );
+                    }
                 drawSquare( tilePos, mTileRadius ); 
                 }
 
@@ -156,6 +161,10 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         
         if( old == '0' ) {
             mHouseMap[ index ] = '1';
+            fireActionPerformed( this );
+            }
+        else if( old == '1' ) {
+            mHouseMap[ index ] = '0';
             fireActionPerformed( this );
             }
         }
