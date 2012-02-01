@@ -8,7 +8,6 @@
 #include <math.h>
 
 
-#define HOUSE_D 16
 
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )

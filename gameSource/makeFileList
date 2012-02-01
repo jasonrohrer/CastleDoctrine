@@ -31,6 +31,7 @@ RobPickList.cpp \
 RobCheckoutHousePage.cpp \
 RobHousePage.cpp \
 RobCheckinHousePage.cpp \
+RobHouseGridDisplay.cpp \
 
 
 GAME_GRAPHICS = \

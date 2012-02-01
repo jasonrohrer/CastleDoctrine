@@ -10,6 +10,9 @@
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
+#define HOUSE_D 16
+
+
 // fires actionPerformed whenever grid contents changes
 class HouseGridDisplay : public PageComponent, public ActionListenerList {
     
@@ -36,13 +39,11 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         virtual void pointerMove( float inX, float inY );
         virtual void pointerDown( float inX, float inY );
         virtual void pointerDrag( float inX, float inY );
-        
-        // returns true if grid changed as a result of
-        // this event
+
         virtual void pointerUp( float inX, float inY );
         
 
-    private:
+    protected:
         
         char *mHouseMap;
         

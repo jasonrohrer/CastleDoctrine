@@ -4,3 +4,6 @@ syntax: glob
 *.o
 *.dep
 *~
+
+gameSource/testUser/*
+gameSource/recordedGames/*

@@ -3,7 +3,7 @@
 #include "TextField.h"
 #include "TextButton.h"
 
-#include "HouseGridDisplay.h"
+#include "RobHouseGridDisplay.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
@@ -42,7 +42,7 @@ class RobHousePage : public GamePage, public ActionListener {
         int mWebRequest;
 
 
-        HouseGridDisplay mGridDisplay;
+        RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
         
         char mDone;
