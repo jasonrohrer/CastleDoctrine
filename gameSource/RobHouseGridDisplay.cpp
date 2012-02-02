@@ -18,6 +18,12 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
     }
 
 
+
+void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
+    HouseGridDisplay::setHouseMap( inHouseMap );    
+    recomputeVisibility();
+    }
+
     
 
 void RobHouseGridDisplay::draw() {
@@ -133,23 +139,48 @@ void RobHouseGridDisplay::recomputeVisibility() {
             
             doublePair pos = getTilePos( i );
 
-            char hit = false;
+            // corners, plus center
+            // if ANY of these is visible, count
+            // whole tile as visible
+            doublePair vertOffsets[5] = 
+                { { 0, 0 },
+                  { -mTileRadius, -mTileRadius },
+                  { -mTileRadius, +mTileRadius },
+                  { +mTileRadius, +mTileRadius },
+                  { +mTileRadius, -mTileRadius } };
             
-            // steps
-            for( int j=0; j<100 && !hit; j++ ) {
-                double weight = j / 99.0;
+            char hitForAll = true;
+            
+            for( int v=0; v<5 && hitForAll; v++ ) {
                 
-                doublePair stepPos = add( mult( pos, weight ), 
-                                          mult( robPos, 1 - weight ) );
-                
-                int stepIndex = getTileIndex( stepPos.x, stepPos.y );
-                
-                if( stepIndex != i && mHouseMap[stepIndex] != '0' ) {
-                    hit = true;
-                    }
-                }
+                doublePair vertPos = add( pos, vertOffsets[v] );
 
-            if( hit ) {
+                char hit = false;
+                
+                // steps
+                int numSteps = lrint( distance( vertPos, robPos ) * 2 );
+                
+
+                for( int j=1; j<numSteps && !hit; j++ ) {
+                    double weight = j / (double)numSteps;
+                    
+                    doublePair stepPos = add( mult( vertPos, weight ), 
+                                              mult( robPos, 1 - weight ) );
+                    
+                    int stepIndex = getTileIndex( stepPos.x, stepPos.y );
+                    
+                    if( stepIndex != i && mHouseMap[stepIndex] != '0' ) {
+                        hit = true;
+                        }
+                    }
+
+                if( !hit ) {
+                    hitForAll = false;
+                    }                
+                }
+            
+
+            if( hitForAll ) {
                 mVisibleMap[i] = 0;
                 }
             else {

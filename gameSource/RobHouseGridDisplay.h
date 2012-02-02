@@ -13,7 +13,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         RobHouseGridDisplay( double inX, double inY );
         
         virtual ~RobHouseGridDisplay();
-                
+        
+
+        // override to update visibility when map changes
+        virtual void setHouseMap( char *inHouseMap );
             
 
         virtual void draw();

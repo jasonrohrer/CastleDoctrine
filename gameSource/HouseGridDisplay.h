@@ -24,7 +24,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
         // destroyed by caller
-        void setHouseMap( char *inHouseMap );
+        virtual void setHouseMap( char *inHouseMap );
         
         
         // destroyed by caller
