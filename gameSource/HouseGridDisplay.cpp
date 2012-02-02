@@ -13,7 +13,7 @@
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )
         : PageComponent( inX, inY ),
           mHouseMap( NULL ), 
-          mHighlightIndex( -1 ), mTileRadius( 0.5 ) {
+          mHighlightIndex( -1 ), mTileRadius( 0.375 ) {
 
     mStartIndex = HOUSE_D * ( HOUSE_D / 2 );
     mGoalIndex = HOUSE_D * ( HOUSE_D / 2 ) + HOUSE_D - 1;
@@ -107,7 +107,12 @@ void HouseGridDisplay::draw() {
         }
 
     
-
+    // draw border
+    doublePair center = { 0, 0 };
+    
+    setDrawColor( 1, 1, 1, 1 );
+    drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
+    
 
     // draw house
     int i = 0;
