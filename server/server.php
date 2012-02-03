@@ -892,14 +892,22 @@ function cd_listHouses() {
     
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
+
+    // join to include last robber name for each result
+    // (maps each robbing_user_id to the corresponding character_name
+    //  by joining the houses table to itself)
+    $tableName = $tableNamePrefix ."houses";
     
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
-        "WHERE user_id != '$user_id' AND blocked='0' ".
-        "AND rob_checkout = 0 AND edit_checkout = 0 ".
-        "AND user_id NOT IN ".
+    $query = "SELECT houses.*, robbers.character_name as robber_name ".
+        "FROM $tableName as houses ".
+        "LEFT JOIN $tableName as robbers ".
+        "ON houses.robbing_user_id = robbers.user_id ".
+        "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
+        "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
+        "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
         "  WHERE user_id = $user_id ) ".
-        "ORDER BY loot_value DESC ".
+        "ORDER BY houses.loot_value DESC ".
         "LIMIT $skip, $limit;";
 
     $result = cd_queryDatabase( $query );
@@ -910,10 +918,16 @@ function cd_listHouses() {
     for( $i=0; $i<$numRows; $i++ ) {
         $user_id = mysql_result( $result, $i, "user_id" );
         $character_name = mysql_result( $result, $i, "character_name" );
+        $robber_name = mysql_result( $result, $i, "robber_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
 
-        echo "$user_id#$character_name#$loot_value#$rob_attempts\n";
+        if( $robber_name == NULL ) {
+            $robber_name = "Null_Null_Null";
+            }
+        
+        echo "$user_id#$character_name#$robber_name".
+            "#$loot_value#$rob_attempts\n";
         }
     }
 

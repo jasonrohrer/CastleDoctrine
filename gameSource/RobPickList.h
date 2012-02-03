@@ -8,8 +8,11 @@
 
 
 typedef struct HouseRecord {
-        int userID;
+        // might be userID (in case of houses-to-rob list)
+        //       or logID (in the case of a list of past robberies to replay)
+        int uniqueID;
         char *characterName;
+        char *lastRobberName;
         int lootValue;
         int robAttempts;
 
@@ -28,6 +31,7 @@ class RobPickList : public PageComponent, public ActionListener,
         
         
         RobPickList( double inX, double inY,
+                     char inShowRobberName,
                      GamePage *inParentPage );
         
 
@@ -66,6 +70,7 @@ class RobPickList : public PageComponent, public ActionListener,
         
         int mProgressiveDrawSteps;
         
+        char mShowRobberName;
 
         SimpleVector<HouseRecord> mHouseList;
 

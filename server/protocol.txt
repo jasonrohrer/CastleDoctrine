@@ -106,14 +106,14 @@ server.php?action=list_houses&user_id=[id number]
                              &sequence_number=[number]
                              &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
-user_id#character_name#loot_value#rob_attempts
-user_id#character_name#loot_value#rob_attempts
-user_id#character_name#loot_value#rob_attempts
-user_id#character_name#loot_value#rob_attempts
+user_id#character_name#last_robber_name#loot_value#rob_attempts
+user_id#character_name#last_robber_name#loot_value#rob_attempts
+user_id#character_name#last_robber_name#loot_value#rob_attempts
+user_id#character_name#last_robber_name#loot_value#rob_attempts
 ....
 
 Where:
-character_name has spaces repaced by "_"
+character_name and last_robber_name have spaces repaced by "_"
 
 Note:
 Lists only robbable houses.

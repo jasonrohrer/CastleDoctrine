@@ -842,7 +842,7 @@ void drawFrame( char inUpdate ) {
                 
                 if( r != NULL ) {
                     currentGamePage = robCheckoutHousePage;
-                    robCheckoutHousePage->setToRobUserID( r->userID );
+                    robCheckoutHousePage->setToRobUserID( r->uniqueID );
                     currentGamePage->base_makeActive( true );
                     }
                 }

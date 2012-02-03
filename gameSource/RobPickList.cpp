@@ -24,12 +24,14 @@ static const int linesPerPage = 8;
 
 
 RobPickList::RobPickList( double inX, double inY,
+                          char inShowRobberName,
                           GamePage *inParentPage )
         : PageComponent( inX, inY ),
           mParentPage( inParentPage ),
           mCurrentSkip( 0 ),
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
+          mShowRobberName( inShowRobberName ),
           mUpButton( "up.tga", 7, 1, 1/16.0 ),
           mDownButton( "down.tga", 7, -1, 1/16.0 ) {
 
@@ -134,6 +136,55 @@ static double lineWidthRight = 6;
 
 
 
+// inName destroyed internally
+// result destroyed by caller
+static char *trimName( char *inName, double inMaxLength ) {
+    
+    // make sure name isn't too long for display
+    if( mainFont->measureString( inName ) 
+        > inMaxLength ) {
+                            
+        // try trimming middle name
+        int namePartCount;
+        char **nameParts = split( inName, " ",
+                                  &namePartCount );
+                                
+        // first letter only, followed by period
+        nameParts[1][1] = '.';
+        nameParts[1][2] = '\0';
+                                
+        delete [] inName;
+                                
+        inName = 
+            join( nameParts, namePartCount, " " );
+                                
+        if( mainFont->measureString( inName ) 
+            > inMaxLength ) {
+            // still too long!
+                                    
+            // condense first name too.
+
+            // first letter only, followed by period
+            nameParts[0][1] = '.';
+            nameParts[0][2] = '\0';
+                                
+            delete [] inName;
+                                    
+            inName = 
+                join( nameParts, namePartCount, " " );
+            }                                        
+
+        for( int j=0; j<namePartCount; j++ ) {
+            delete [] nameParts[j];
+            }
+        delete [] nameParts;
+        }
+
+    return inName;
+    }
+
+
+
 void RobPickList::step() {
     if( mWebRequest != -1 ) {
             
@@ -178,7 +229,7 @@ void RobPickList::step() {
                         int numParts;
                         char **parts = split( line, "#", &numParts );
                         
-                        if( numParts != 4 ) {
+                        if( numParts != 5 ) {
                             printf( "Unexpected number of parts on house "
                                     "list line: %d\n", numParts );
                             }
@@ -190,56 +241,23 @@ void RobPickList::step() {
                             r.position.x = 0;
                             r.position.y = topOffset - i * lineHeight;
                             
-                            sscanf( parts[0], "%d", &( r.userID ) );
+                            sscanf( parts[0], "%d", &( r.uniqueID ) );
                             
                             
                             char found;
                             r.characterName = 
-                                replaceAll( parts[1], "_", " ", &found );
+                                trimName(
+                                    replaceAll( parts[1], "_", " ", &found ),
+                                    lineWidthLeft);
                             
-                            // make sure name isn't too long for display
-                            if( mainFont->measureString( r.characterName ) 
-                                > lineWidthLeft ) {
-                            
-                                // try trimming middle name
-                                int namePartCount;
-                                char **nameParts = split( r.characterName, " ",
-                                                          &namePartCount );
-                                
-                                // first letter only, followed by period
-                                nameParts[1][1] = '.';
-                                nameParts[1][2] = '\0';
-                                
-                                delete [] r.characterName;
-                                
-                                r.characterName = 
-                                    join( nameParts, namePartCount, " " );
-                                
-                                if( mainFont->measureString( r.characterName ) 
-                                    > lineWidthLeft ) {
-                                    // still too long!
-                                    
-                                    // condense first name too.
-
-                                    // first letter only, followed by period
-                                    nameParts[0][1] = '.';
-                                    nameParts[0][2] = '\0';
-                                
-                                    delete [] r.characterName;
-                                    
-                                    r.characterName = 
-                                        join( nameParts, namePartCount, " " );
-                                    }                                        
-
-                                for( int j=0; j<namePartCount; j++ ) {
-                                    delete [] nameParts[j];
-                                    }
-                                delete [] nameParts;
-                                }
+                            r.lastRobberName = 
+                                trimName (
+                                    replaceAll( parts[2], "_", " ", &found ),
+                                    lineWidthLeft );
                             
 
-                            sscanf( parts[2], "%d", &( r.lootValue ) );
-                            sscanf( parts[3], "%d", &( r.robAttempts ) );
+                            sscanf( parts[3], "%d", &( r.lootValue ) );
+                            sscanf( parts[4], "%d", &( r.robAttempts ) );
 
                             mHouseList.push_back( r );
                             }
@@ -339,8 +357,15 @@ void RobPickList::draw() {
                 setDrawColor( 1, 1, 1, 1 );
                 }
             
+            char *nameToDraw = r->characterName;
+            
         
-            mainFont->drawString( r->characterName, r->position, alignRight );
+            if( mShowRobberName ) {
+                nameToDraw = r->lastRobberName;
+                }
+            
+            mainFont->drawString( nameToDraw, r->position, alignRight );
+            
 
             char *lootString = autoSprintf( "$%d", r->lootValue );
         
@@ -396,6 +421,7 @@ void RobPickList::pointerUp( float inX, float inY ) {
 void RobPickList::clearHouseList() {
     for( int i=0; i<mHouseList.size(); i++ ) {
         delete [] mHouseList.getElement(i)->characterName;
+        delete [] mHouseList.getElement(i)->lastRobberName;
         }
     mHouseList.deleteAll();
     }
