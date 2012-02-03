@@ -40,6 +40,10 @@ char RobHouseGridDisplay::getSuccess() {
 
 
 char *RobHouseGridDisplay::getMoveList() {
+    if( mMoveList.size() == 0 ) {
+        return stringDuplicate( "" );
+        }
+    
     char **moveArray = mMoveList.getElementArray();
     
     char *moveString = join( moveArray, mMoveList.size(), "_" );
