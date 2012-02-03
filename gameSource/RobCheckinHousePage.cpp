@@ -21,6 +21,7 @@ extern int userID;
 RobCheckinHousePage::RobCheckinHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mMoveList( NULL ),
           mSuccess( false ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
@@ -38,6 +39,9 @@ RobCheckinHousePage::~RobCheckinHousePage() {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
+    if( mMoveList != NULL ) {
+        delete [] mMoveList;
+        }
     }
 
 
@@ -53,6 +57,15 @@ void RobCheckinHousePage::setHouseMap( char *inHouseMap ) {
         delete [] mHouseMap;
         }
     mHouseMap = stringDuplicate( inHouseMap );
+    }
+
+
+
+void RobCheckinHousePage::setMoveList( char *inMoveList ) {
+    if( mMoveList != NULL ) {
+        delete [] mMoveList;
+        }
+    mMoveList = stringDuplicate( inMoveList );
     }
 
 
@@ -131,8 +144,9 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         "action=end_rob_house&user_id=%d"
         "&%s"
         "&success=%d"
+        "&move_list=%s"
         "&house_map=%s",
-        userID, ticketHash, mSuccess, mHouseMap );
+        userID, ticketHash, mSuccess, mMoveList, mHouseMap );
     delete [] ticketHash;
             
     

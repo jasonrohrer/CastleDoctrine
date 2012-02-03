@@ -866,12 +866,17 @@ void drawFrame( char inUpdate ) {
         else if( currentGamePage == robHousePage ) {
             if( robHousePage->getDone() ) {
                 char *houseMap = robHousePage->getHouseMap();
-                
+                char *moveList = robHousePage->getMoveList();
+
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
+                                
+                robCheckinHousePage->setMoveList( 
+                    robHousePage->getMoveList() );
                 
+                delete [] moveList;
                 delete [] houseMap;
-
+                
                 currentGamePage = robCheckinHousePage;
                 currentGamePage->base_makeActive( true );
                 }

@@ -4,6 +4,9 @@
 
 #include "HouseGridDisplay.h"
 
+#include "minorGems/util/SimpleVector.h"
+
+
 
 // fires actionPerformed whenever robbery ends
 class RobHouseGridDisplay : public HouseGridDisplay {
@@ -17,6 +20,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         char getSuccess();
 
+        // list as a whitespace-free string
+        // destroyed by caller
+        char *getMoveList();
         
 
         // override to update visibility when map changes
@@ -44,6 +50,13 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
 
         char mVisibleMap[ HOUSE_D * HOUSE_D ];
+
+        
+
+        SimpleVector<char *> mMoveList;
+
+        void clearMoveList();
+
 
 
         void recomputeVisibility();

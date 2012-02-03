@@ -26,6 +26,10 @@ class RobHousePage : public GamePage, public ActionListener {
         char getSuccess() {
             return mGridDisplay.getSuccess();
             }
+
+        char *getMoveList() {
+            return mGridDisplay.getMoveList();
+            }
         
         char getDone() {
             return mDone;

@@ -21,6 +21,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         virtual void setHouseMap( char *inHouseMap );
         
         virtual void setSuccess( char inSuccess );
+
+        // destoryed by caller
+        virtual void setMoveList( char *inMoveList );
         
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -37,6 +40,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
         int mWebRequest;
 
+        char *mMoveList;
         char *mHouseMap;
         
         char mSuccess;

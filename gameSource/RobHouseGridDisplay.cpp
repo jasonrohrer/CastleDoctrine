@@ -3,6 +3,8 @@
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 
+#include "minorGems/util/stringUtils.h"
+
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
@@ -17,6 +19,16 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
 
 
 RobHouseGridDisplay::~RobHouseGridDisplay() {
+    clearMoveList();
+    }
+
+
+
+void RobHouseGridDisplay::clearMoveList() {
+    for( int i=0; i<mMoveList.size(); i++ ) {
+        delete [] *( mMoveList.getElement( i ) );
+        }
+    mMoveList.deleteAll();
     }
 
 
@@ -27,9 +39,21 @@ char RobHouseGridDisplay::getSuccess() {
 
 
 
+char *RobHouseGridDisplay::getMoveList() {
+    char **moveArray = mMoveList.getElementArray();
+    
+    char *moveString = join( moveArray, mMoveList.size(), "_" );
+    
+    delete [] moveArray;
+
+    return moveString;
+    }
+
+
 void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     mRobberIndex = mStartIndex;
     mSuccess = false;
+    clearMoveList();
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
     recomputeVisibility();
@@ -128,6 +152,9 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     if( mRobberIndex != oldIndex ) {
         recomputeVisibility();
+
+        // a move!
+        mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
         }
 
     if( mRobberIndex == mGoalIndex ) {
