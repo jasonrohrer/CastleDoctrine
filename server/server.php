@@ -443,6 +443,33 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+    
+    $tableName = $tableNamePrefix . "robbery_logs";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // contains move log for each robbery
+
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "robber_name VARCHAR(62) NOT NULL," .
+            "victim_name VARCHAR(62) NOT NULL," .
+            "rob_time DATETIME NOT NULL,".
+            "house_start_map LONGTEXT NOT NULL," .
+            "loadout LONGTEXT NOT NULL," .
+            "move_list LONGTEXT NOT NULL," .
+            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }    
+
     
 
     $tableName = $tableNamePrefix . "last_names";
@@ -1001,11 +1028,14 @@ function cd_endRobHouse() {
         }
 
     $house_money = $row[ "loot_value" ];
-
+    $old_house_map = $row[ "house_map" ];
+    $victim_id = $row[ "user_id" ];
+    $victim_name = $row[ "character_name" ];
+    
     
     if( ! $success ) {
         // keep original house map, untouched
-        $house_map = $row[ "house_map" ];
+        $house_map = $old_house_map;
 
         // don't touch loot value
         }
@@ -1021,6 +1051,39 @@ function cd_endRobHouse() {
 
         // all loot taken
         $house_money = 0;
+
+
+        // log robbery
+        $robber_name = cd_getCharacterName( $user_id );
+
+        $loadout = "";
+        if( isset( $_REQUEST[ "loadout" ] ) ) {
+            $loadout = $_REQUEST[ "loadout" ];
+            }
+
+        $move_list = "";
+        if( isset( $_REQUEST[ "move_list" ] ) ) {
+            $move_list = $_REQUEST[ "move_list" ];
+            }
+        /*
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "robber_name VARCHAR(62) NOT NULL," .
+            "victim_name VARCHAR(62) NOT NULL," .
+            "rob_time DATETIME NOT NULL,".
+            "house_start_map LONGTEXT NOT NULL," .
+            "loadout LONGTEXT NOT NULL," .
+            "move_list LONGTEXT NOT NULL," .
+            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
+        */
+        
+        $query = "INSERT INTO $tableNamePrefix"."robbery_logs VALUES(" .
+            " $user_id, $victim_id, '$robber_name', '$victim_name', ".
+            "CURRENT_TIMESTAMP, '$old_house_map', '$loadout', '$move_list', ".
+            "'$house_map' );";
+        cd_queryDatabase( $query );        
         }
     
         
@@ -1060,6 +1123,24 @@ function cd_transactionDeny() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
     }
 
+
+
+function cd_getCharacterName( $user_id ) {
+    global $tableNamePrefix;
+    
+    $result = cd_queryDatabase( "SELECT character_name ".
+                                "FROM $tableNamePrefix"."houses " .
+                                "WHERE user_id = $user_id;" );
+
+    $numRows = mysql_numrows( $result );
+
+    
+    if( $numRows < 1 ) {
+        cd_fatalError( "Failed to fetch character name for user $user_id" );
+        }
+
+    return mysql_result( $result, 0, 0 );
+    }
 
 
 
