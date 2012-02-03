@@ -452,6 +452,7 @@ function cd_setupDatabase() {
 
         $query =
             "CREATE TABLE $tableName(" .
+            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "robber_name VARCHAR(62) NOT NULL," .
@@ -1068,6 +1069,7 @@ function cd_endRobHouse() {
         /*
         $query =
             "CREATE TABLE $tableName(" .
+            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "robber_name VARCHAR(62) NOT NULL," .
@@ -1078,8 +1080,13 @@ function cd_endRobHouse() {
             "move_list LONGTEXT NOT NULL," .
             "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
         */
-        
-        $query = "INSERT INTO $tableNamePrefix"."robbery_logs VALUES(" .
+
+        // log_id auto-assigned
+        $query =
+            "INSERT INTO $tableNamePrefix"."robbery_logs ".
+            "(user_id, house_user_id, robber_name, victim_name, rob_time, ".
+            " house_start_map, loadout, move_list, house_end_map ) ".
+            "VALUES(" .
             " $user_id, $victim_id, '$robber_name', '$victim_name', ".
             "CURRENT_TIMESTAMP, '$old_house_map', '$loadout', '$move_list', ".
             "'$house_map' );";
