@@ -1091,7 +1091,7 @@ function cd_endRobHouse() {
     // all loot gone from 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "rob_checkout = 0, house_map='$house_map', loot_value = $house_money ".
-        "WHERE robbing_user_id = $user_id;";
+        "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
