@@ -30,8 +30,8 @@ RobPickList::RobPickList( double inX, double inY,
           mCurrentSkip( 0 ),
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
-          mUpButton( "up.tga", 5, 1, 1/16.0 ),
-          mDownButton( "down.tga", 5, -1, 1/16.0 ) {
+          mUpButton( "up.tga", 7, 1, 1/16.0 ),
+          mDownButton( "down.tga", 7, -1, 1/16.0 ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
@@ -130,7 +130,7 @@ HouseRecord *RobPickList::getSelectedHouse() {
 
 static double lineHeight = 0.75;
 static double lineWidthLeft = 7;
-static double lineWidthRight = 4;
+static double lineWidthRight = 6;
 
 
 
@@ -350,6 +350,17 @@ void RobPickList::draw() {
             mainFont->drawString( lootString, drawPos, alignLeft );
 
             delete [] lootString;
+
+
+            char *attemptString = autoSprintf( "%d", r->robAttempts );
+        
+            drawPos = r->position;
+            drawPos.x += 5;
+        
+            mainFont->drawString( attemptString, drawPos, alignRight );
+
+            delete [] attemptString;
+
 
             altColor = ! altColor;
             }
