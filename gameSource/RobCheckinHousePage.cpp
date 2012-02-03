@@ -21,6 +21,7 @@ extern int userID;
 RobCheckinHousePage::RobCheckinHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mSuccess( false ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -52,6 +53,12 @@ void RobCheckinHousePage::setHouseMap( char *inHouseMap ) {
         delete [] mHouseMap;
         }
     mHouseMap = stringDuplicate( inHouseMap );
+    }
+
+
+
+void RobCheckinHousePage::setSuccess( char inSuccess ) {
+    mSuccess = inSuccess;
     }
 
 
@@ -122,8 +129,10 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     
     char *actionString = autoSprintf( 
         "action=end_rob_house&user_id=%d"
-        "&%s&house_map=%s",
-        userID, ticketHash, mHouseMap );
+        "&%s"
+        "&success=%d"
+        "&house_map=%s",
+        userID, ticketHash, mSuccess, mHouseMap );
     delete [] ticketHash;
             
     

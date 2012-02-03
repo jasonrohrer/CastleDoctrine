@@ -868,6 +868,7 @@ void drawFrame( char inUpdate ) {
                 char *houseMap = robHousePage->getHouseMap();
                 
                 robCheckinHousePage->setHouseMap( houseMap );
+                robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
                 
                 delete [] houseMap;
 

@@ -19,7 +19,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         
         // destroyed by caller
         virtual void setHouseMap( char *inHouseMap );
-
+        
+        virtual void setSuccess( char inSuccess );
+        
 
         virtual void actionPerformed( GUIComponent *inTarget );
         
@@ -37,6 +39,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
         char *mHouseMap;
         
+        char mSuccess;
 
         TextButton mMenuButton;
 

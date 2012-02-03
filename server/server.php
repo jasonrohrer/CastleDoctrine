@@ -965,6 +965,11 @@ function cd_endRobHouse() {
         $user_id = $_REQUEST[ "user_id" ];
         }
 
+    $success = "";
+    if( isset( $_REQUEST[ "success" ] ) ) {
+        $success = $_REQUEST[ "success" ];
+        }
+
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
@@ -994,10 +999,35 @@ function cd_endRobHouse() {
     if( isset( $_REQUEST[ "house_map" ] ) ) {
         $house_map = $_REQUEST[ "house_map" ];
         }
+
+    $house_money = $row[ "loot_value" ];
+
     
+    if( ! $success ) {
+        // keep original house map, untouched
+        $house_map = $row[ "house_map" ];
+
+        // don't touch loot value
+        }
+    else {
+        // use new house map
+
+        // also transfer all money from victim to robber
+        
+        $query = "UPDATE $tableNamePrefix"."houses SET ".
+            "loot_value = loot_value + $house_money ".
+            "WHERE user_id = $user_id;";
+        cd_queryDatabase( $query );
+
+        // all loot taken
+        $house_money = 0;
+        }
     
+        
+    
+    // all loot gone from 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0, house_map='$house_map' ".
+        "rob_checkout = 0, house_map='$house_map', loot_value = $house_money ".
         "WHERE robbing_user_id = $user_id;";
     cd_queryDatabase( $query );
 

@@ -23,7 +23,10 @@ class RobHousePage : public GamePage, public ActionListener {
         void setHouseMap( char *inHouseMap );
         char *getHouseMap();
 
-
+        char getSuccess() {
+            return mGridDisplay.getSuccess();
+            }
+        
         char getDone() {
             return mDone;
             }
