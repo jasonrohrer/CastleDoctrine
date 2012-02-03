@@ -42,6 +42,15 @@ void GamePage::base_draw( doublePair inViewCenter,
 
 
 void GamePage::base_makeActive( char inFresh ){
+    if( inFresh ) {    
+        for( int i=0; i<mComponents.size(); i++ ) {
+            PageComponent *c = *( mComponents.getElement( i ) );
+            
+            c->base_clearState();
+            }
+        }
+    
+
     makeActive( inFresh );
     }
 
