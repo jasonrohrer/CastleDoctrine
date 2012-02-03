@@ -5,7 +5,7 @@
 #include "HouseGridDisplay.h"
 
 
-// fires actionPerformed whenever grid contents changes
+// fires actionPerformed whenever robbery ends
 class RobHouseGridDisplay : public HouseGridDisplay {
     
     public:
@@ -13,6 +13,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         RobHouseGridDisplay( double inX, double inY );
         
         virtual ~RobHouseGridDisplay();
+
+
+        char getSuccess();
+
         
 
         // override to update visibility when map changes
@@ -35,6 +39,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
     protected:
         
         int mRobberIndex;
+        
+        char mSuccess;
+        
 
         char mVisibleMap[ HOUSE_D * HOUSE_D ];
 

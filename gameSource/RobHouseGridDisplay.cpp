@@ -8,10 +8,12 @@
 
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
-          mRobberIndex( mStartIndex ) {
+          mRobberIndex( mStartIndex ),
+          mSuccess( false ) {
 
     memset( mVisibleMap, 0, HOUSE_D * HOUSE_D );
     }
+
 
 
 RobHouseGridDisplay::~RobHouseGridDisplay() {
@@ -19,7 +21,16 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
 
 
 
+char RobHouseGridDisplay::getSuccess() {
+    return mSuccess;
+    }
+
+
+
 void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
+    mRobberIndex = mStartIndex;
+    mSuccess = false;
+
     HouseGridDisplay::setHouseMap( inHouseMap );    
     recomputeVisibility();
     }
@@ -117,6 +128,11 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     if( mRobberIndex != oldIndex ) {
         recomputeVisibility();
+        }
+
+    if( mRobberIndex == mGoalIndex ) {
+        mSuccess = true;
+        fireActionPerformed( this );
         }
     }
 

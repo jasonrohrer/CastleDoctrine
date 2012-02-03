@@ -55,6 +55,11 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mDoneButton ) {
         mDone = true;
         }
+    else if( inTarget == &mGridDisplay ) {
+        if( mGridDisplay.getSuccess() ) {
+            mDone = true;
+            }
+        }
     }
 
 
