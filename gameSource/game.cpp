@@ -806,7 +806,8 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == checkoutHousePage ) {
             if( checkoutHousePage->getReturnToMenu() ) {
-                printf( "Fixme:  Return to menu.\n" );
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
                 }
             else {
                 char *houseMap = checkoutHousePage->getHouseMap();
@@ -859,7 +860,8 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == robCheckoutHousePage ) {
             if( robCheckoutHousePage->getReturnToMenu() ) {
-                printf( "Fixme:  Return to menu.\n" );
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
                 }
             else {
                 char *houseMap = robCheckoutHousePage->getHouseMap();
@@ -910,6 +912,15 @@ void drawFrame( char inUpdate ) {
                     fetchRobberyReplayPage->setLogID( id );
                     currentGamePage->base_makeActive( true );
                     }
+                }
+            }
+        else if( currentGamePage == fetchRobberyReplayPage ) {
+            if( fetchRobberyReplayPage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( fetchRobberyReplayPage->getRecordReady() ) {
+                // FIXME
                 }
             }
 
