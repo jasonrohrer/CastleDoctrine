@@ -537,7 +537,7 @@ function cd_showLog() {
     
     global $tableNamePrefix;
 
-    $query = "SELECT * FROM $tableNamePrefix"."log ".
+    $query = "SELECT entry, entry_time FROM $tableNamePrefix"."log ".
         "ORDER BY entry_time DESC;";
     $result = cd_queryDatabase( $query );
 
@@ -595,8 +595,9 @@ function cd_checkUser() {
         $email = $_REQUEST[ "email" ];
         }
 
-    $query = "SELECT * FROM $ticketServerNamePrefix"."tickets ".
-            "WHERE email = '$email';";
+    $query = "SELECT ticket_id, blocked ".
+        "FROM $ticketServerNamePrefix"."tickets ".
+        "WHERE email = '$email';";
     $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
@@ -630,7 +631,8 @@ function cd_checkUser() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
     
     
-    $query = "SELECT * FROM $tableNamePrefix"."users ".
+    $query = "SELECT user_id, blocked, sequence_number ".
+        "FROM $tableNamePrefix"."users ".
         "WHERE ticket_id = '$ticket_id' FOR UPDATE;";
     $result = cd_queryDatabase( $query );
     
@@ -705,7 +707,7 @@ function cd_processStaleRobberies( $user_id ) {
 
 
     // first find all stale robberies
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
         "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
@@ -752,7 +754,7 @@ function cd_startEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+    $query = "SELECT house_map FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -801,7 +803,7 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
 
@@ -903,7 +905,9 @@ function cd_listHouses() {
     //  by joining the houses table to itself)
     $tableName = $tableNamePrefix ."houses";
     
-    $query = "SELECT houses.*, robbers.character_name as robber_name ".
+    $query = "SELECT houses.user_id, houses.character_name, ".
+        "houses.loot_value, houses.rob_attempts, ".
+        "robbers.character_name as robber_name ".
         "FROM $tableName as houses ".
         "LEFT JOIN $tableName as robbers ".
         "ON houses.robbing_user_id = robbers.user_id ".
@@ -964,7 +968,7 @@ function cd_startRobHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
     
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+    $query = "SELECT house_map, rob_attempts FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 AND rob_checkout = 0 ".
         "AND user_id NOT IN ".
@@ -1023,7 +1027,9 @@ function cd_endRobHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
     
-    $query = "SELECT * FROM $tableNamePrefix"."houses ".
+    $query = "SELECT loot_value, house_map, user_id, character_name, ".
+        "loot_value, rob_attempts ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
         "AND user_id NOT IN ".
@@ -1270,7 +1276,8 @@ function cd_verifyTransaction() {
 
     // automatically ignore blocked users
     
-    $query = "SELECT * FROM $tableNamePrefix"."users ".
+    $query = "SELECT sequence_number, ticket_id ".
+        "FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -1500,7 +1507,10 @@ function cd_showData() {
 
     
              
-    $query = "SELECT * FROM $tableNamePrefix"."houses $keywordClause".
+    $query = "SELECT user_id, character_name, loot_value, edit_checkout, ".
+        "rob_checkout, robbing_user_id, rob_attempts, last_ping_time, ".
+        "blocked ".
+        "FROM $tableNamePrefix"."houses $keywordClause".
         "ORDER BY $order_by DESC ".
         "LIMIT $skip, $housesPerPage;";
     $result = cd_queryDatabase( $query );
@@ -1675,7 +1685,7 @@ function cd_showDetail() {
      
     global $tableNamePrefix, $ticketServerNamePrefix;
 
-    $query = "SELECT * FROM $tableNamePrefix"."users ".
+    $query = "SELECT ticket_id, blocked FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
@@ -1691,7 +1701,7 @@ function cd_showDetail() {
     $blocked = $row[ "blocked" ];
 
 
-    $query = "SELECT * FROM $ticketServerNamePrefix"."tickets ".
+    $query = "SELECT email FROM $ticketServerNamePrefix"."tickets ".
         "WHERE ticket_id = '$ticket_id';";
 
     $result = cd_queryDatabase( $query );
@@ -1736,7 +1746,7 @@ function cd_blockUserID() {
     
 
     
-    $query = "SELECT * FROM $tableNamePrefix"."users ".
+    $query = "SELECT user_id FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
