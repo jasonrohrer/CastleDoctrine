@@ -147,6 +147,9 @@ else if( $action == "start_rob_house" ) {
 else if( $action == "end_rob_house" ) {
     cd_endRobHouse();
     }
+else if( $action == "list_logged_robberies" ) {
+    cd_listLoggedRobberies();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -455,6 +458,8 @@ function cd_setupDatabase() {
             "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
+            "loot_value INT NOT NULL," .
+            "rob_attempts INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
             "rob_time DATETIME NOT NULL,".
@@ -1046,6 +1051,8 @@ function cd_endRobHouse() {
     $old_house_map = $row[ "house_map" ];
     $victim_id = $row[ "user_id" ];
     $victim_name = $row[ "character_name" ];
+    $loot_value = $row[ "loot_value" ];
+    $rob_attempts = $row[ "rob_attempts" ];
     
     
     if( ! $success ) {
@@ -1086,6 +1093,8 @@ function cd_endRobHouse() {
             "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
+            "loot_value INT NOT NULL," .
+            "rob_attempts INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
             "rob_time DATETIME NOT NULL,".
@@ -1098,12 +1107,14 @@ function cd_endRobHouse() {
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
-            "(user_id, house_user_id, robber_name, victim_name, rob_time, ".
+            "(user_id, house_user_id, loot_value, rob_attempts, ".
+            " robber_name, victim_name, rob_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$robber_name', '$victim_name', ".
-            "CURRENT_TIMESTAMP, '$old_house_map', '$loadout', '$move_list', ".
-            "'$house_map' );";
+            " $user_id, $victim_id, '$loot_value', '$rob_attempts', ".
+            " '$robber_name', '$victim_name', ".
+            " CURRENT_TIMESTAMP, '$old_house_map', '$loadout', '$move_list', ".
+            " '$house_map' );";
         cd_queryDatabase( $query );        
         }
     
@@ -1119,6 +1130,75 @@ function cd_endRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
     echo "OK";    
+    }
+
+
+
+
+function cd_listLoggedRobberies() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+
+    $skip = 0;
+    if( isset( $_REQUEST[ "skip" ] ) ) {
+        $skip = $_REQUEST[ "skip" ];
+        }
+    
+    $limit = 20;
+    if( isset( $_REQUEST[ "limit" ] ) ) {
+        $limit = $_REQUEST[ "limit" ];
+        }
+
+
+    /*
+        $query =
+            "CREATE TABLE $tableName(" .
+            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "loot_value INT NOT NULL," .
+            "rob_attempts INT NOT NULL,".
+            "robber_name VARCHAR(62) NOT NULL," .
+            "victim_name VARCHAR(62) NOT NULL," .
+            "rob_time DATETIME NOT NULL,".
+            "house_start_map LONGTEXT NOT NULL," .
+            "loadout LONGTEXT NOT NULL," .
+            "move_list LONGTEXT NOT NULL," .
+            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
+        */
+    
+    $tableName = $tableNamePrefix ."robbery_logs";
+    
+    $query = "SELECT log_id, victim_name, robber_name, ".
+        "loot_value, rob_attempts ".
+        "FROM $tableName ".
+        "ORDER BY rob_time DESC ".
+        "LIMIT $skip, $limit;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $log_id = mysql_result( $result, $i, "log_id" );
+        $victim_name = mysql_result( $result, $i, "victim_name" );
+        $robber_name = mysql_result( $result, $i, "robber_name" );
+        $loot_value = mysql_result( $result, $i, "loot_value" );
+        $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+        
+        echo "$log_id#$victim_name#$robber_name".
+            "#$loot_value#$rob_attempts\n";
+        }
     }
 
 

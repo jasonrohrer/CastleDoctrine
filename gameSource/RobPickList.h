@@ -31,7 +31,9 @@ class RobPickList : public PageComponent, public ActionListener,
         
         
         RobPickList( double inX, double inY,
-                     char inShowRobberName,
+                     // if false, show houses-to-rob list
+                     // if true, show list of successful robberies to view
+                     char inRobberyLog,
                      GamePage *inParentPage );
         
 
@@ -70,7 +72,7 @@ class RobPickList : public PageComponent, public ActionListener,
         
         int mProgressiveDrawSteps;
         
-        char mShowRobberName;
+        char mRobberyLog;
 
         SimpleVector<HouseRecord> mHouseList;
 

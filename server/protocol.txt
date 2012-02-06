@@ -149,3 +149,28 @@ server.php?action=end_rob_house&user_id=[id number]
                                &house_map=[house map ASCII string]
 Returns:
 OK
+
+
+
+
+
+=== Call:
+server.php?action=list_loggged_robberies&user_id=[id number]
+                                        &skip=[number]
+                                        &limit=[number]
+                                        &sequence_number=[number]
+                                        &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+log_id#character_name#last_robber_name#loot_value#rob_attempts
+log_id#character_name#last_robber_name#loot_value#rob_attempts
+log_id#character_name#last_robber_name#loot_value#rob_attempts
+log_id#character_name#last_robber_name#loot_value#rob_attempts
+....
+
+Where:
+character_name and last_robber_name have spaces repaced by "_"
+
+Note:
+Lists only logged successful robberies, where last_robber_name is the name
+of the successful robber, and loot_value is the value of loot taken.
+Returns at most [limit] houses, skipping the first [skip] houses.

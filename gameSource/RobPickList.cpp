@@ -24,14 +24,14 @@ static const int linesPerPage = 8;
 
 
 RobPickList::RobPickList( double inX, double inY,
-                          char inShowRobberName,
+                          char inRobberyLog,
                           GamePage *inParentPage )
         : PageComponent( inX, inY ),
           mParentPage( inParentPage ),
           mCurrentSkip( 0 ),
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
-          mShowRobberName( inShowRobberName ),
+          mRobberyLog( inRobberyLog ),
           mUpButton( "up.tga", 7, 1, 1/16.0 ),
           mDownButton( "down.tga", 7, -1, 1/16.0 ) {
 
@@ -94,12 +94,17 @@ void RobPickList::refreshList( char inPreservePosition ) {
     // request house list from server
     char *ticketHash = getTicketHash();
         
-            
+    const char *action = "list_houses";
+    
+    if( mRobberyLog ) {
+        action = "list_logged_robberies";
+        }
+    
     
     char *actionString = autoSprintf( 
-        "action=list_houses&skip=%d&limit=%d&user_id=%d"
+        "action=%s&skip=%d&limit=%d&user_id=%d"
         "&%s",
-        mCurrentSkip, linesPerPage, userID, ticketHash );
+        action, mCurrentSkip, linesPerPage, userID, ticketHash );
     delete [] ticketHash;
             
     
@@ -360,7 +365,7 @@ void RobPickList::draw() {
             char *nameToDraw = r->characterName;
             
         
-            if( mShowRobberName ) {
+            if( mRobberyLog ) {
                 nameToDraw = r->lastRobberName;
                 }
             
