@@ -42,6 +42,8 @@ houseCheckInFailed "House check in failed."
 
 startEditHouse "Work on Your House"
 startRobHouse "Rob House"
+listRobberyReplays "View Successful Robberies"
+
 
 listFetchFailed "Failed to fetch house list"
 
@@ -49,6 +51,13 @@ listFetchFailed "Failed to fetch house list"
 
 houseBeingRobbedOrEdited "Someone else is in that house.##You can't rob it now."
 
+
+robberyLogNotFound "Failed to find the requested robbery log."
+
+
+
+
+startReplay "Start Robbery Replay"
 
 
 

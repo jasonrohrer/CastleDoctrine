@@ -47,7 +47,7 @@ int versionNumber = 1;
 #include "RobCheckoutHousePage.h"
 #include "RobHousePage.h"
 #include "RobCheckinHousePage.h"
-
+#include "RobberyReplayMenuPage.h"
 
 
 GamePage *currentGamePage = NULL;
@@ -61,6 +61,7 @@ MenuPage *menuPage;
 RobCheckoutHousePage *robCheckoutHousePage;
 RobHousePage *robHousePage;
 RobCheckinHousePage *robCheckinHousePage;
+RobberyReplayMenuPage *robberyReplayMenuPage;
 
 
 
@@ -360,7 +361,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robCheckoutHousePage = new RobCheckoutHousePage();
     robHousePage = new RobHousePage();
     robCheckinHousePage = new RobCheckinHousePage();
-
+    robberyReplayMenuPage = new RobberyReplayMenuPage();
+    
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );
@@ -387,7 +389,8 @@ void freeFrameDrawer() {
     delete robCheckoutHousePage;
     delete robHousePage;
     delete robCheckinHousePage;
-
+    delete robberyReplayMenuPage;
+    
     if( serverURL != NULL ) {
         delete [] serverURL;
         serverURL = NULL;
@@ -837,6 +840,10 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
                 }
+            if( menuPage->getShowReplayList() ) {
+                currentGamePage = robberyReplayMenuPage;
+                currentGamePage->base_makeActive( true );
+                }
             else if( menuPage->getStartRobHouse() ) {
                 HouseRecord *r = menuPage->getSelectedHouse();
                 
@@ -885,6 +892,15 @@ void drawFrame( char inUpdate ) {
             if( robCheckinHousePage->getReturnToMenu() ) {
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == robberyReplayMenuPage ) {
+            if( robberyReplayMenuPage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( robberyReplayMenuPage->getStartReplay() ) {
+                // FIXME
                 }
             }
 

@@ -12,22 +12,19 @@
 
 
 
-class MenuPage : public GamePage, public ActionListener {
+class RobberyReplayMenuPage : public GamePage, public ActionListener {
         
     public:
         
-        MenuPage();
+        RobberyReplayMenuPage();
         
-        virtual ~MenuPage();
+        virtual ~RobberyReplayMenuPage();
 
 
-        virtual char getStartEditHouse();
-        virtual char getStartRobHouse();
-        virtual char getShowReplayList();
-        
-        // destroyed internally
-        // can be NULL
-        virtual HouseRecord *getSelectedHouse();
+        virtual char getReturnToMenu();
+        virtual char getStartReplay();
+
+        virtual int getLogID();
         
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -45,16 +42,13 @@ class MenuPage : public GamePage, public ActionListener {
 
         RobPickList mPickList;
 
-        TextButton mEditHouseButton;
-        TextButton mRobHouseButton;
+        TextButton mMenuButton;
+        TextButton mReplayButton;
         
-        TextButton mShowReplayListButton;
         
 
-        char mStartEditHouse;
-        char mStartRobHouse;
-        char mShowReplayList;
-        
+        char mReturnToMenu;
+        char mStartReplay;
         
     };
 

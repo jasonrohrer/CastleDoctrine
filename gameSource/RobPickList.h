@@ -1,3 +1,6 @@
+#ifndef ROB_PICK_LIST_INCLUDED
+#define ROB_PICK_LIST_INCLUDED
+
 
 
 #include "GamePage.h"
@@ -85,5 +88,8 @@ class RobPickList : public PageComponent, public ActionListener,
 
     };
 
+
+
+#endif
 
         

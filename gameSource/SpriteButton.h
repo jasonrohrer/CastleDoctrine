@@ -1,3 +1,7 @@
+#ifndef SPRITE_BUTTON_INCLUDED
+#define SPRITE_BUTTON_INCLUDED
+
+
 #include "Button.h"
 
 #include "minorGems/game/gameGraphics.h"
@@ -34,4 +38,7 @@ class SpriteButton : public Button {
         
     };
 
+
+
+#endif
         

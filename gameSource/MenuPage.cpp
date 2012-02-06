@@ -13,15 +13,20 @@ MenuPage::MenuPage()
         : mPickList( 0, 0, false, this ),
           mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
           mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
+          mShowReplayListButton( mainFont, -4, -6, 
+                                 translate( "listRobberyReplays" ) ),
           mStartEditHouse( false ),
-          mStartRobHouse( false ) {
+          mStartRobHouse( false ),
+          mShowReplayList( false ) {
 
     addComponent( &mEditHouseButton );
     addComponent( &mRobHouseButton );
+    addComponent( &mShowReplayListButton );
     addComponent( &mPickList );
 
     mEditHouseButton.addActionListener( this );
     mRobHouseButton.addActionListener( this );
+    mShowReplayListButton.addActionListener( this );
 
     mPickList.addActionListener( this );
 
@@ -43,6 +48,11 @@ char MenuPage::getStartEditHouse() {
 
 char MenuPage::getStartRobHouse() {
     return mStartRobHouse;
+    }
+
+
+char MenuPage::getShowReplayList() {
+    return mShowReplayList;
     }
 
 
@@ -68,7 +78,9 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mRobHouseButton ) {
         mStartRobHouse = true;
         }
-    
+    else if( inTarget == &mShowReplayListButton ) {
+        mShowReplayList = true;
+        }
     }
 
 
@@ -93,7 +105,8 @@ void MenuPage::makeActive( char inFresh ) {
     
     mStartEditHouse = false;
     mStartRobHouse = false;
-
+    mShowReplayList = false;
+    
     mStatusMessageKey = NULL;
     mStatusError = false;
     }
