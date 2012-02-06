@@ -174,3 +174,24 @@ Note:
 Lists only logged successful robberies, where last_robber_name is the name
 of the successful robber, and loot_value is the value of loot taken.
 Returns at most [limit] houses, skipping the first [skip] houses.
+
+
+
+
+=== Call:
+server.php?action=get_robbery_log&user_id=[id number]
+                                 &sequence_number=[number]
+                                 &ticket_hash=[sha1 hash, hex-encoded]
+                                 &log_id=[id_number]
+Returns:
+robber_name
+victim_name
+houseMap
+loadout
+moveList
+
+Where
+robber_name and victim_name have spaces repaced by "_"
+houseMap = ASCII string representing the house layout
+loadout = ASCII string representing loadout
+moveList = ASCII string representing moves made

@@ -150,6 +150,9 @@ else if( $action == "end_rob_house" ) {
 else if( $action == "list_logged_robberies" ) {
     cd_listLoggedRobberies();
     }
+else if( $action == "get_robbery_log" ) {
+    cd_getRobberyLog();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -778,7 +781,7 @@ function cd_startEditHouse() {
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo $house_map;    
     }
@@ -830,7 +833,7 @@ function cd_endEditHouse() {
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo "OK";    
     }
@@ -997,7 +1000,7 @@ function cd_startRobHouse() {
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo $house_map;    
     }
@@ -1133,7 +1136,7 @@ function cd_endRobHouse() {
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo "OK";    
     }
@@ -1209,6 +1212,48 @@ function cd_listLoggedRobberies() {
 
 
 
+function cd_getRobberyLog() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+
+    $log_id = "";
+    if( isset( $_REQUEST[ "log_id" ] ) ) {
+        $log_id = $_REQUEST[ "log_id" ];
+        }
+    
+    
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $query = "SELECT robber_name, victim_name, house_start_map, loadout, ".
+        "move_list ".
+        "FROM $tableNamePrefix"."robbery_logs ".
+        "WHERE log_id = '$log_id';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    
+    echo $row[ "robber_name" ] . "\n";    
+    echo $row[ "victim_name" ] . "\n";    
+    echo $row[ "house_start_map" ] . "\n";    
+    echo $row[ "loadout" ] . "\n";    
+    echo $row[ "move_list" ];    
+    }
+
+
+
 
 
 
@@ -1227,7 +1272,7 @@ function cd_transactionDeny() {
     echo "DENIED";
     
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
     }
 
 
@@ -1333,7 +1378,7 @@ function cd_verifyTransaction() {
     cd_queryDatabase( $query );
 
     cd_queryDatabase( "COMMIT;" );
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     return 1;
     }

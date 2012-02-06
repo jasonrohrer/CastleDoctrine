@@ -48,6 +48,7 @@ int versionNumber = 1;
 #include "RobHousePage.h"
 #include "RobCheckinHousePage.h"
 #include "RobberyReplayMenuPage.h"
+#include "FetchRobberyReplayPage.h"
 
 
 GamePage *currentGamePage = NULL;
@@ -62,7 +63,7 @@ RobCheckoutHousePage *robCheckoutHousePage;
 RobHousePage *robHousePage;
 RobCheckinHousePage *robCheckinHousePage;
 RobberyReplayMenuPage *robberyReplayMenuPage;
-
+FetchRobberyReplayPage *fetchRobberyReplayPage;
 
 
 
@@ -362,6 +363,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robHousePage = new RobHousePage();
     robCheckinHousePage = new RobCheckinHousePage();
     robberyReplayMenuPage = new RobberyReplayMenuPage();
+    fetchRobberyReplayPage = new FetchRobberyReplayPage();
     
     currentGamePage = loginPage;
 
@@ -390,6 +392,7 @@ void freeFrameDrawer() {
     delete robHousePage;
     delete robCheckinHousePage;
     delete robberyReplayMenuPage;
+    delete fetchRobberyReplayPage;
     
     if( serverURL != NULL ) {
         delete [] serverURL;
@@ -900,7 +903,13 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else if( robberyReplayMenuPage->getStartReplay() ) {
-                // FIXME
+                int id = robberyReplayMenuPage->getLogID();
+                
+                if( id != -1  ) {
+                    currentGamePage = fetchRobberyReplayPage;
+                    fetchRobberyReplayPage->setLogID( id );
+                    currentGamePage->base_makeActive( true );
+                    }
                 }
             }
 

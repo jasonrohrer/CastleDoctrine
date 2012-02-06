@@ -33,6 +33,7 @@ RobHousePage.cpp \
 RobCheckinHousePage.cpp \
 RobHouseGridDisplay.cpp \
 RobberyReplayMenuPage.cpp \
+FetchRobberyReplayPage.cpp \
 
 
 GAME_GRAPHICS = \

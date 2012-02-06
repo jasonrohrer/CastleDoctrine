@@ -20,8 +20,8 @@ extern int userID;
 
 RobCheckinHousePage::RobCheckinHousePage() 
         : mWebRequest( -1 ),
-          mHouseMap( NULL ),
           mMoveList( NULL ),
+          mHouseMap( NULL ),
           mSuccess( false ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
@@ -144,6 +144,8 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         "action=end_rob_house&user_id=%d"
         "&%s"
         "&success=%d"
+        // loadout placeholder for now
+        "&loadout=x"
         "&move_list=%s"
         "&house_map=%s",
         userID, ticketHash, mSuccess, mMoveList, mHouseMap );
