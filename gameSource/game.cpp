@@ -49,6 +49,7 @@ int versionNumber = 1;
 #include "RobCheckinHousePage.h"
 #include "RobberyReplayMenuPage.h"
 #include "FetchRobberyReplayPage.h"
+#include "ReplayRobHousePage.h"
 
 
 GamePage *currentGamePage = NULL;
@@ -64,6 +65,7 @@ RobHousePage *robHousePage;
 RobCheckinHousePage *robCheckinHousePage;
 RobberyReplayMenuPage *robberyReplayMenuPage;
 FetchRobberyReplayPage *fetchRobberyReplayPage;
+ReplayRobHousePage *replayRobHousePage;
 
 
 
@@ -364,6 +366,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robCheckinHousePage = new RobCheckinHousePage();
     robberyReplayMenuPage = new RobberyReplayMenuPage();
     fetchRobberyReplayPage = new FetchRobberyReplayPage();
+    replayRobHousePage = new ReplayRobHousePage();
     
     currentGamePage = loginPage;
 
@@ -393,7 +396,8 @@ void freeFrameDrawer() {
     delete robCheckinHousePage;
     delete robberyReplayMenuPage;
     delete fetchRobberyReplayPage;
-    
+    delete replayRobHousePage;
+
     if( serverURL != NULL ) {
         delete [] serverURL;
         serverURL = NULL;
@@ -920,7 +924,22 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else if( fetchRobberyReplayPage->getRecordReady() ) {
-                // FIXME
+                RobberyLog log = fetchRobberyReplayPage->getLogRecord();
+                
+                replayRobHousePage->setHouseMap( log.houseMap );
+                replayRobHousePage->setMoveList( log.moveList );
+
+                currentGamePage = replayRobHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == replayRobHousePage ) {
+            if( replayRobHousePage->getDone() ) {
+                // nothing to check in (just a read-only replay)
+
+                // back to menu right away
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
                 }
             }
 
