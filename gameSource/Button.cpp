@@ -22,6 +22,10 @@ Button::~Button() {
 
 void Button::setVisible( char inIsVible ) {
     mVisible = inIsVible;
+    
+    if( ! mVisible ) {
+        clearState();
+        }
     }
 
 
