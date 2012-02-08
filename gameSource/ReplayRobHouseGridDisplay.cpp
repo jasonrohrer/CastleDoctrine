@@ -26,18 +26,23 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
                        translate( "play" ) ),
           mStopButton( mainFont, 4, BUTTON_Y, 
                        translate( "stop" ) ),
+          mVisibilityButton( mainFont, -4, BUTTON_Y, 
+                             translate( "toggleVisibility" ) ),
           mPlaying( false ),
-          mStepsUntilNextPlayStep( 0 ) {
+          mStepsUntilNextPlayStep( 0 ),
+          mVisibilityToggle( false ) {
 
     mStopButton.setVisible( false );
     
     addComponent( &mStepButton );
     addComponent( &mPlayButton );
     addComponent( &mStopButton );
+    addComponent( &mVisibilityButton );
     
     mStepButton.addActionListener( this );
     mPlayButton.addActionListener( this );
     mStopButton.addActionListener( this );
+    mVisibilityButton.addActionListener( this );
     }
 
 
@@ -98,6 +103,7 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 // player movement to new index
 
                 sscanf( move, "m%d", &mRobberIndex );
+                recomputeVisibility();
                 }
             }
         delete [] move;
@@ -140,22 +146,32 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mStepButton ) {
         takeStep();
         }
+    else if( inTarget == &mVisibilityButton ) {
+        mVisibilityToggle = ! mVisibilityToggle;
+        recomputeVisibility();
+        }
     }
 
 
 
 void ReplayRobHouseGridDisplay::recomputeVisibility() {
-    // all visible during playback
+    
+    if( mVisibilityToggle ) {    
+        // all visible during playback
 
-    int i = 0;
-    for( int y=0; y<HOUSE_D; y++ ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
+        int i = 0;
+        for( int y=0; y<HOUSE_D; y++ ) {
+            for( int x=0; x<HOUSE_D; x++ ) {
 
-            mVisibleMap[i] = 1;
+                mVisibleMap[i] = 1;
 
-            i++;
+                i++;
+                }
             }
         }
+    else {
+        RobHouseGridDisplay::recomputeVisibility();
+        }
+    
     }
-
 

@@ -39,7 +39,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
     protected:
         
         
-        // override to make EVERYTHING visible
+        // override to make EVERYTHING visible if visibility toggled
         virtual void recomputeVisibility();
 
         
@@ -47,8 +47,12 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         TextButton mPlayButton;
         TextButton mStopButton;
         
+        TextButton mVisibilityButton;
+
         char mPlaying;
         int mStepsUntilNextPlayStep;
+
+        char mVisibilityToggle;
 
         void takeStep();
         
