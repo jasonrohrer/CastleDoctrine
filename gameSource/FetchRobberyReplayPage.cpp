@@ -93,6 +93,20 @@ void FetchRobberyReplayPage::actionPerformed( GUIComponent *inTarget ) {
     }
 
 
+
+static char *nameParse( char *inNameString ) {
+    
+    char found;
+    
+    char *name = replaceAll( inNameString, "_", " ", &found );
+    
+    delete [] inNameString;
+
+    return name;
+    }
+
+
+
 void FetchRobberyReplayPage::step() {
     if( mWebRequest != -1 ) {
             
@@ -126,7 +140,7 @@ void FetchRobberyReplayPage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 5 ) {
+                    if( tokens->size() != 6 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -136,11 +150,16 @@ void FetchRobberyReplayPage::step() {
                             }
                         }
                     else {    
-                        mLogRecord.robberName = *( tokens->getElement( 0 ) );
-                        mLogRecord.victimName = *( tokens->getElement( 1 ) );
+                        mLogRecord.robberName = 
+                            nameParse( *( tokens->getElement( 0 ) ) );
+                        mLogRecord.victimName = 
+                            nameParse( *( tokens->getElement( 1 ) ) );
                         mLogRecord.houseMap = *( tokens->getElement( 2 ) );
                         mLogRecord.loadout = *( tokens->getElement( 3 ) );
                         mLogRecord.moveList = *( tokens->getElement( 4 ) );
+
+                        sscanf( *( tokens->getElement( 5 ) ),
+                                "%d", &( mLogRecord.lootValue ) );
 
                         mRecordReady = true;
                         }

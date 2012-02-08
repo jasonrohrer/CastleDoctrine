@@ -37,6 +37,8 @@ void GamePage::base_draw( doublePair inViewCenter,
         
         drawMessage( mStatusMessageKey, labelPos, mStatusError );
         }
+
+    draw( inViewCenter, inViewSize );
     }
 
 

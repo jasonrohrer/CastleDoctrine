@@ -1,3 +1,7 @@
+#ifndef FETCH_ROBBERY_REPLAY_PAGE_INCLUDED
+#define FETCH_ROBBERY_REPLAY_PAGE_INCLUDED
+
+
 #include "GamePage.h"
 
 #include "TextField.h"
@@ -13,6 +17,7 @@ typedef struct RobberyLog {
         char *houseMap;
         char *loadout;
         char *moveList;
+        int lootValue;
     } RobberyLog;
 
 
@@ -60,3 +65,6 @@ class FetchRobberyReplayPage : public GamePage, public ActionListener {
         void clearRecord();
     };
 
+
+
+#endif

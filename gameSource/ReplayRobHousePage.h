@@ -1,9 +1,9 @@
 #include "GamePage.h"
 
-#include "TextField.h"
 #include "TextButton.h"
 
 #include "ReplayRobHouseGridDisplay.h"
+#include "FetchRobberyReplayPage.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
@@ -19,11 +19,8 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
         virtual ~ReplayRobHousePage();
         
         
-        // destroyed by caller
-        void setHouseMap( char *inHouseMap );
-
-        // destroyed by caller, must be set AFTER house map
-        void setMoveList( char *inMoveList );
+        // members destroyed by caller
+        void setLog( RobberyLog inLog );
         
         
         char getDone() {
@@ -35,6 +32,10 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
 
 
         virtual void step();
+        
+
+        virtual void draw( doublePair inViewCenter, 
+                           double inViewSize );
         
         
         virtual void makeActive( char inFresh );
@@ -49,6 +50,7 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
         
         char mDone;
         
+        char *mDescription;
 
     };
 

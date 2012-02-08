@@ -1,5 +1,8 @@
 #include "ReplayRobHousePage.h"
-#include "ticketHash.h"
+
+
+#include "message.h"
+
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -20,7 +23,8 @@ extern int userID;
 ReplayRobHousePage::ReplayRobHousePage() 
         : mWebRequest( -1 ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ) {
+          mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ),
+          mDescription( NULL ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
@@ -35,18 +39,26 @@ ReplayRobHousePage::~ReplayRobHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
+
+    if( mDescription != NULL ) {
+        delete [] mDescription;
+        }
     }
 
 
 
-void ReplayRobHousePage::setHouseMap( char *inHouseMap ) {
-    mGridDisplay.setHouseMap( inHouseMap );
-    }
+void ReplayRobHousePage::setLog( RobberyLog inLog ) {
+    mGridDisplay.setHouseMap( inLog.houseMap );
+    mGridDisplay.setMoveList( inLog.moveList );
 
-
-
-void ReplayRobHousePage::setMoveList( char *inMoveList ) {
-    mGridDisplay.setMoveList( inMoveList );
+    if( mDescription != NULL ) {
+        delete [] mDescription;
+        }
+    
+    mDescription = autoSprintf( translate( "replayDescription" ),
+                                inLog.robberName,
+                                inLog.victimName,
+                                inLog.lootValue );
     }
 
 
@@ -104,6 +116,19 @@ void ReplayRobHousePage::step() {
             }
         }
     }
+
+
+
+void ReplayRobHousePage::draw( doublePair inViewCenter, 
+                               double inViewSize ) {
+        
+    if( mDescription != NULL ) {
+        doublePair labelPos = { 0, 7.25 };
+        
+        drawMessage( mDescription, labelPos, false );
+        }
+    }
+
 
 
         

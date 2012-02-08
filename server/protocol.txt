@@ -189,6 +189,7 @@ victim_name
 houseMap
 loadout
 moveList
+loot_value
 
 Where
 robber_name and victim_name have spaces repaced by "_"

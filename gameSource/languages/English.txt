@@ -60,6 +60,8 @@ robberyLogNotFound "Failed to find the requested robbery log."
 startReplay "Start Robbery Replay"
 
 
+replayDescription "Replay:  %s robbed##%s for $%d"
+
 step "Step"
 play "Play"
 stop "Stop"

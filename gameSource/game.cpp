@@ -926,9 +926,8 @@ void drawFrame( char inUpdate ) {
             else if( fetchRobberyReplayPage->getRecordReady() ) {
                 RobberyLog log = fetchRobberyReplayPage->getLogRecord();
                 
-                replayRobHousePage->setHouseMap( log.houseMap );
-                replayRobHousePage->setMoveList( log.moveList );
-
+                replayRobHousePage->setLog( log );
+                
                 currentGamePage = replayRobHousePage;
                 currentGamePage->base_makeActive( true );
                 }
