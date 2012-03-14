@@ -221,6 +221,15 @@ char *getCustomRecordedGameData() {
 
 
 
+char showMouseDuringPlayback() {
+    // since we rely on the system mouse pointer during the game (and don't
+    // draw our own pointer), we need to see the recorded pointer position
+    // to make sense of game playback
+    return true;
+    }
+
+
+
 char *getHashSalt() {
     return stringDuplicate( SETTINGS_HASH_SALT );
     }
