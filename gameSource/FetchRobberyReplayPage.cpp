@@ -102,6 +102,12 @@ static char *nameParse( char *inNameString ) {
     
     delete [] inNameString;
 
+    if( strcmp( name, "You" ) == 0 ) {
+        delete [] name;
+        
+        name = stringDuplicate( translate( "nameYou" ) );
+        }
+
     return name;
     }
 
@@ -160,6 +166,8 @@ void FetchRobberyReplayPage::step() {
 
                         sscanf( *( tokens->getElement( 5 ) ),
                                 "%d", &( mLogRecord.lootValue ) );
+                        
+                        delete [] *( tokens->getElement( 5 ) );
 
                         mRecordReady = true;
                         }

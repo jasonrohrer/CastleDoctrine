@@ -56,6 +56,7 @@ robberyLogNotFound "Failed to find the requested robbery log."
 
 
 
+nameYou "You"
 
 startReplay "Start Robbery Replay"
 

@@ -910,7 +910,8 @@ function cd_listHouses() {
     
     $query = "SELECT houses.user_id, houses.character_name, ".
         "houses.loot_value, houses.rob_attempts, ".
-        "robbers.character_name as robber_name ".
+        "robbers.character_name as robber_name, ".
+        "robbers.user_id as robber_id ".
         "FROM $tableName as houses ".
         "LEFT JOIN $tableName as robbers ".
         "ON houses.robbing_user_id = robbers.user_id ".
@@ -928,17 +929,23 @@ function cd_listHouses() {
 
 
     for( $i=0; $i<$numRows; $i++ ) {
-        $user_id = mysql_result( $result, $i, "user_id" );
+        $house_user_id = mysql_result( $result, $i, "user_id" );
         $character_name = mysql_result( $result, $i, "character_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
+        $robber_id = mysql_result( $result, $i, "robber_id" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
 
         if( $robber_name == NULL ) {
             $robber_name = "Null_Null_Null";
             }
+
+        if( $robber_id == $user_id ) {
+            // hide name from self
+            $robber_name = "You";
+            }
         
-        echo "$user_id#$character_name#$robber_name".
+        echo "$house_user_id#$character_name#$robber_name".
             "#$loot_value#$rob_attempts\n";
         }
     }
@@ -1187,7 +1194,8 @@ function cd_listLoggedRobberies() {
     
     $tableName = $tableNamePrefix ."robbery_logs";
     
-    $query = "SELECT log_id, victim_name, robber_name, ".
+    $query = "SELECT user_id, house_user_id, ".
+        "log_id, victim_name, robber_name, ".
         "loot_value, rob_attempts ".
         "FROM $tableName ".
         "ORDER BY rob_time DESC ".
@@ -1199,11 +1207,22 @@ function cd_listLoggedRobberies() {
 
 
     for( $i=0; $i<$numRows; $i++ ) {
+        $robber_id = mysql_result( $result, $i, "user_id" );
+        $victim_id = mysql_result( $result, $i, "house_user_id" );
+
         $log_id = mysql_result( $result, $i, "log_id" );
         $victim_name = mysql_result( $result, $i, "victim_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+
+        if( $robber_id == $user_id ) {
+            $robber_name = "You";
+            }
+        if( $victim_id == $user_id ) {
+            $victim_name = "You";
+            }
+        
         
         echo "$log_id#$victim_name#$robber_name".
             "#$loot_value#$rob_attempts\n";
@@ -1220,16 +1239,21 @@ function cd_getRobberyLog() {
         }
 
 
+    $user_id = "";
+    if( isset( $_REQUEST[ "user_id" ] ) ) {
+        $user_id = $_REQUEST[ "user_id" ];
+        }
+
+
     $log_id = "";
     if( isset( $_REQUEST[ "log_id" ] ) ) {
         $log_id = $_REQUEST[ "log_id" ];
         }
     
     
-    // automatically ignore blocked users and houses already checked
-    // out for robbery
     
-    $query = "SELECT robber_name, victim_name, house_start_map, loadout, ".
+    $query = "SELECT user_id, house_user_id, ".
+        "robber_name, victim_name, house_start_map, loadout, ".
         "move_list, loot_value ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
@@ -1244,9 +1268,22 @@ function cd_getRobberyLog() {
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
+
+    $robber_name = $row[ "robber_name" ];
+    $victim_name = $row[ "victim_name" ];
+
+    if( $user_id == $row[ "user_id" ] ) {
+        $robber_name = "You";
+        }
+
+    if( $user_id == $row[ "house_user_id" ] ) {
+        $victim_name = "You";
+        }
     
-    echo $row[ "robber_name" ] . "\n";    
-    echo $row[ "victim_name" ] . "\n";    
+    
+    
+    echo $robber_name . "\n";    
+    echo $victim_name . "\n";    
     echo $row[ "house_start_map" ] . "\n";    
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";

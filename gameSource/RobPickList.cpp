@@ -185,6 +185,13 @@ static char *trimName( char *inName, double inMaxLength ) {
         delete [] nameParts;
         }
 
+    if( strcmp( inName, "You" ) == 0 ) {
+        delete [] inName;
+        
+        inName = stringDuplicate( translate( "nameYou" ) );
+        }
+    
+
     return inName;
     }
 

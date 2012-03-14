@@ -118,7 +118,8 @@ character_name and last_robber_name have spaces repaced by "_"
 Note:
 Lists only robbable houses.
 Returns at most [limit] houses, skipping the first [skip] houses.
-
+House owned by user_id is skipped.
+If last_robber is user_id, last_robber_name is set to "You".
 
 
 
@@ -174,6 +175,7 @@ Note:
 Lists only logged successful robberies, where last_robber_name is the name
 of the successful robber, and loot_value is the value of loot taken.
 Returns at most [limit] houses, skipping the first [skip] houses.
+If robber or victim is user_id, corresponding "_name" field is set to "You".
 
 
 
@@ -191,8 +193,14 @@ loadout
 moveList
 loot_value
 
-Where
+Where:
 robber_name and victim_name have spaces repaced by "_"
 houseMap = ASCII string representing the house layout
 loadout = ASCII string representing loadout
 moveList = ASCII string representing moves made
+
+
+Note:
+If robber or victim is user_id, corresponding "_name" field is set to "You".
+
+
