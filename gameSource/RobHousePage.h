@@ -35,12 +35,18 @@ class RobHousePage : public GamePage, public ActionListener {
             return mDone;
             }
             
+        void setDescription( const char *inDescription );
+        
+
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
         virtual void step();
-        
+
+        virtual void draw( doublePair inViewCenter, 
+                   double inViewSize );
+
         
         virtual void makeActive( char inFresh );
 
@@ -53,6 +59,8 @@ class RobHousePage : public GamePage, public ActionListener {
         TextButton mDoneButton;
         
         char mDone;
+
+        char *mDescription;
         
 
     };

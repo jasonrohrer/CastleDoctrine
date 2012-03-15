@@ -23,7 +23,7 @@ extern int userID;
 ReplayRobHousePage::ReplayRobHousePage() 
         : mWebRequest( -1 ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ),
+          mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );

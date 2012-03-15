@@ -22,7 +22,10 @@ class EditHousePage : public GamePage, public ActionListener {
         // destroyed by caller
         void setHouseMap( char *inHouseMap );
         char *getHouseMap();
-
+        
+        // true if map changed since last setHouseMap call
+        char houseMapChanged();
+        
 
         char getDone() {
             return mDone;
@@ -33,6 +36,9 @@ class EditHousePage : public GamePage, public ActionListener {
 
 
         virtual void step();
+
+        virtual void draw( doublePair inViewCenter, 
+                           double inViewSize );
         
         
         virtual void makeActive( char inFresh );
@@ -41,6 +47,10 @@ class EditHousePage : public GamePage, public ActionListener {
         
         int mWebRequest;
 
+
+        // for change detection
+        char *mStartHouseMap;
+        
 
         HouseGridDisplay mGridDisplay;
         TextButton mDoneButton;

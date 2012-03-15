@@ -32,7 +32,13 @@ returnMenu "Menu"
 
 
 
+
+editDescription "Work on your house:"
+
 doneEdit "Done"
+
+
+selfTestDescription "Prove that your house is fair:"
 
 
 houseCheckedIn "House checked back in."
@@ -43,6 +49,9 @@ houseCheckInFailed "House check in failed."
 startEditHouse "Work on Your House"
 startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
+
+
+doneRob "Give Up"
 
 
 listFetchFailed "Failed to fetch house list"

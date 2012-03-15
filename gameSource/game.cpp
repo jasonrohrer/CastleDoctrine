@@ -58,6 +58,7 @@ GamePage *currentGamePage = NULL;
 LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
+RobHousePage *selfHouseTestPage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
 RobCheckoutHousePage *robCheckoutHousePage;
@@ -368,6 +369,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
+    selfHouseTestPage = new RobHousePage();
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
     robCheckoutHousePage = new RobCheckoutHousePage();
@@ -398,6 +400,7 @@ void freeFrameDrawer() {
     delete loginPage;
     delete checkoutHousePage;
     delete editHousePage;
+    delete selfHouseTestPage;
     delete checkinHousePage;
     delete menuPage;
     delete robCheckoutHousePage;
@@ -836,14 +839,55 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == editHousePage ) {
             if( editHousePage->getDone() ) {
+
                 char *houseMap = editHousePage->getHouseMap();
                 
-                checkinHousePage->setHouseMap( houseMap );
-                
-                delete [] houseMap;
+                if( editHousePage->houseMapChanged() ) {
+                    // force player to test own house first
+                    selfHouseTestPage->setHouseMap( houseMap );
+                    
+                    selfHouseTestPage->setDescription( 
+                        translate( "selfTestDescription" ) );
 
-                currentGamePage = checkinHousePage;
-                currentGamePage->base_makeActive( true );
+                    currentGamePage = selfHouseTestPage;
+                    currentGamePage->base_makeActive( true );
+                    }
+                else {
+                    // not changed, check it right in
+                
+                    checkinHousePage->setHouseMap( houseMap );
+                    
+                    currentGamePage = checkinHousePage;
+                    currentGamePage->base_makeActive( true );
+                    }
+
+                delete [] houseMap;
+                }
+            }
+        else if( currentGamePage == selfHouseTestPage ) {
+            if( selfHouseTestPage->getDone() ) {
+                char *houseMap = selfHouseTestPage->getHouseMap();
+                
+                if( selfHouseTestPage->getSuccess() ) {
+                    
+                    // house passed by owner, okay to check in
+                    checkinHousePage->setHouseMap( houseMap );
+                    
+                    currentGamePage = checkinHousePage;
+                    currentGamePage->base_makeActive( true );
+                    }
+                else {
+                    // back to editing it
+                    
+                    // don't SET it again, because we want to keep
+                    // track of the fact that it has changed since the
+                    // last valid checkin
+                    // editHousePage->setHouseMap( houseMap );
+                    
+                    currentGamePage = editHousePage;
+                    currentGamePage->base_makeActive( true );
+                    }
+                delete [] houseMap;
                 }
             }
         else if( currentGamePage == checkinHousePage ) {

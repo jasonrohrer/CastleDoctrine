@@ -1,6 +1,8 @@
 #include "RobHousePage.h"
 #include "ticketHash.h"
 
+#include "message.h"
+
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 #include "minorGems/game/drawUtils.h"
@@ -20,7 +22,8 @@ extern int userID;
 RobHousePage::RobHousePage() 
         : mWebRequest( -1 ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 9, -5, translate( "doneEdit" ) ) {
+          mDoneButton( mainFont, 8, -5, translate( "doneRob" ) ),
+          mDescription( NULL ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
@@ -35,6 +38,10 @@ RobHousePage::~RobHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
+
+    if( mDescription != NULL ) {
+        delete [] mDescription;
+        }
     }
 
 
@@ -47,6 +54,15 @@ void RobHousePage::setHouseMap( char *inHouseMap ) {
 
 char *RobHousePage::getHouseMap() {
     return mGridDisplay.getHouseMap();
+    }
+
+
+
+void RobHousePage::setDescription( const char *inDescription ) {
+    if( mDescription != NULL ) {
+        delete [] mDescription;
+        }
+    mDescription = stringDuplicate( inDescription );
     }
 
 
@@ -114,5 +130,18 @@ void RobHousePage::makeActive( char inFresh ) {
     
     mDone = false;
     }
+
+
+
+void RobHousePage::draw( doublePair inViewCenter, 
+                               double inViewSize ) {
+     
+    if( mDescription != NULL ) {
+        doublePair labelPos = { 0, 6.75 };
+        
+        drawMessage( mDescription, labelPos, false );
+        }
+    }
+
         
 
