@@ -157,6 +157,11 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         delete [] mHouseMap;
         }
     mHouseMap = NULL;
+
+    if( mOwnerName != NULL ) {
+        delete [] mOwnerName;
+        }
+    mOwnerName = NULL;
     
     char *ticketHash = getTicketHash();
 

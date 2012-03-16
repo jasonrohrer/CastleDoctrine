@@ -51,7 +51,7 @@ startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 
 
-robDescription "Robbing %s's house"
+robDescription "Robbing %s house"
 
 doneRob "Give Up"
 

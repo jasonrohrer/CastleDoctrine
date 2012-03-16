@@ -930,11 +930,24 @@ void drawFrame( char inUpdate ) {
 
                     char *ownerName = robCheckoutHousePage->getOwnerName();
                     
+                    // handle names that end with "s" properly
+                    char *ownerNamePossessive;
+
+                    if( ownerName[ strlen( ownerName ) - 1 ] == 's' ) {
+                        ownerNamePossessive = 
+                            autoSprintf( "%s'", ownerName );
+                        }
+                    else {
+                        ownerNamePossessive = 
+                            autoSprintf( "%s's", ownerName );
+                        }
+                    delete [] ownerName;
+
                     char *description = 
                         autoSprintf( translate( "robDescription" ),
-                                     ownerName );
+                                     ownerNamePossessive );
 
-                    delete [] ownerName;
+                    delete [] ownerNamePossessive;
 
 
                     robHousePage->setDescription( description );
@@ -953,9 +966,8 @@ void drawFrame( char inUpdate ) {
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
                                 
-                robCheckinHousePage->setMoveList( 
-                    robHousePage->getMoveList() );
-                
+                robCheckinHousePage->setMoveList( moveList );
+
                 delete [] moveList;
                 delete [] houseMap;
                 
