@@ -51,6 +51,8 @@ startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 
 
+robDescription "Robbing %s's house"
+
 doneRob "Give Up"
 
 

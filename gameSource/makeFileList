@@ -36,6 +36,8 @@ RobberyReplayMenuPage.cpp \
 FetchRobberyReplayPage.cpp \
 ReplayRobHouseGridDisplay.cpp \
 ReplayRobHousePage.cpp \
+nameProcessing.cpp \
+
 
 
 

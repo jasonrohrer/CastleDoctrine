@@ -130,9 +130,11 @@ server.php?action=start_rob_house&user_id=[id number]
                                  &sequence_number=[number]
                                  &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
+character_name
 houseMap
 
 Where:
+character_name has spaces repaced by "_"
 houseMap = ASCII string representing the house layout
 
 

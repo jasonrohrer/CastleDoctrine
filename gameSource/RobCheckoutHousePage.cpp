@@ -1,6 +1,7 @@
 #include "RobCheckoutHousePage.h"
 #include "ticketHash.h"
 #include "message.h"
+#include "nameProcessing.h"
 
 
 #include "minorGems/game/Font.h"
@@ -20,6 +21,7 @@ extern int userID;
 
 RobCheckoutHousePage::RobCheckoutHousePage() 
         : mWebRequest( -1 ),
+          mOwnerName( NULL ),
           mHouseMap( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
@@ -33,6 +35,9 @@ RobCheckoutHousePage::RobCheckoutHousePage()
 RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
+        }
+    if( mOwnerName != NULL ) {
+        delete [] mOwnerName;
         }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
@@ -59,6 +64,16 @@ char *RobCheckoutHousePage::getHouseMap() {
         }
     else {
         return stringDuplicate( mHouseMap );
+        }
+    }
+
+
+char *RobCheckoutHousePage::getOwnerName() {
+    if( mOwnerName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mOwnerName );
         }
     }
 
@@ -100,12 +115,27 @@ void RobCheckoutHousePage::step() {
                 else {
                     // house checked out!
                     
-                    int size = strlen( result );
+                    SimpleVector<char *> *tokens =
+                        tokenizeString( result );
                     
-                    mHouseMap = new char[ size + 1 ];
+                    if( tokens->size() != 2 ) {
+                        mStatusError = true;
+                        mStatusMessageKey = "err_badServerResponse";
+                        mMenuButton.setVisible( true );
                     
-                    sscanf( result, "%s", mHouseMap );
-                    printf( "HouseMap = %s\n", mHouseMap );
+                        for( int i=0; i<tokens->size(); i++ ) {
+                            delete [] *( tokens->getElement( i ) );
+                            }
+                        }
+                    else {
+                        mOwnerName = nameParse( *( tokens->getElement( 0 ) ) );
+                        mHouseMap = *( tokens->getElement( 1 ) );
+                        
+                        printf( "OwnerName = %s\n", mOwnerName );
+                        printf( "HouseMap = %s\n", mHouseMap );
+                        }
+                    
+                    delete tokens;
                     }
                         
                         

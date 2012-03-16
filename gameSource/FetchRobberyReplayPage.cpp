@@ -2,6 +2,8 @@
 #include "ticketHash.h"
 #include "message.h"
 
+#include "nameProcessing.h"
+
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -94,22 +96,7 @@ void FetchRobberyReplayPage::actionPerformed( GUIComponent *inTarget ) {
 
 
 
-static char *nameParse( char *inNameString ) {
-    
-    char found;
-    
-    char *name = replaceAll( inNameString, "_", " ", &found );
-    
-    delete [] inNameString;
 
-    if( strcmp( name, "You" ) == 0 ) {
-        delete [] name;
-        
-        name = stringDuplicate( translate( "nameYou" ) );
-        }
-
-    return name;
-    }
 
 
 

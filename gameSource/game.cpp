@@ -927,6 +927,19 @@ void drawFrame( char inUpdate ) {
                     
                     robHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
+
+                    char *ownerName = robCheckoutHousePage->getOwnerName();
+                    
+                    char *description = 
+                        autoSprintf( translate( "robDescription" ),
+                                     ownerName );
+
+                    delete [] ownerName;
+
+
+                    robHousePage->setDescription( description );
+                    delete [] description;
+
                     currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );
                     }
