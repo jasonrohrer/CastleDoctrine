@@ -14,7 +14,7 @@ class RobHousePage : public GamePage, public ActionListener {
         
     public:
         
-        RobHousePage();
+        RobHousePage( const char *inDoneButtonKey = "doneRob" );
         
         virtual ~RobHousePage();
         

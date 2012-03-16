@@ -369,7 +369,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
-    selfHouseTestPage = new RobHousePage();
+    selfHouseTestPage = new RobHousePage( "doneRobTest" );
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
     robCheckoutHousePage = new RobCheckoutHousePage();

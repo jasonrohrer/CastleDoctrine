@@ -19,10 +19,10 @@ extern int userID;
 
 
 
-RobHousePage::RobHousePage() 
+RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
         : mWebRequest( -1 ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 8, -5, translate( "doneRob" ) ),
+          mDoneButton( mainFont, 8, -5, translate( inDoneButtonKey ) ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );

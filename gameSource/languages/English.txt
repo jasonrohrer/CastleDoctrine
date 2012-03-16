@@ -53,7 +53,11 @@ listRobberyReplays "View Successful Robberies"
 
 robDescription "Robbing %s house"
 
-doneRob "Give Up"
+doneRob "Suicide"
+
+doneRobTest "Give Up"
+
+
 
 
 listFetchFailed "Failed to fetch house list"
