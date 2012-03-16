@@ -143,5 +143,7 @@ void CheckoutHousePage::makeActive( char inFresh ) {
 
     mStatusError = false;
     mStatusMessageKey = NULL;
+
+    mReturnToMenu = false;
     }
 
