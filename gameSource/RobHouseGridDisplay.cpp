@@ -13,7 +13,9 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mRobberIndex( mStartIndex ),
           mSuccess( false ) {
 
-    memset( mVisibleMap, 0, HOUSE_D * HOUSE_D );
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        mVisibleMap[i] = 0;
+        }
     }
 
 
@@ -60,6 +62,11 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     clearMoveList();
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
+
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        mVisibleMap[i] = 0;
+        }
+
     recomputeVisibility();
     }
 
@@ -77,11 +84,11 @@ void RobHouseGridDisplay::draw() {
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
-            char visTile = mVisibleMap[i];
+            float visTile = mVisibleMap[i];
             
             
-            if( visTile == 0 ) {
-                setDrawColor( 0, 0, 0, 1 );
+            if( visTile < 1 ) {
+                setDrawColor( 0, 0, 0, 1 - visTile );
                 doublePair tilePos = getTilePos( i );
                 
                 drawSquare( tilePos, mTileRadius );
@@ -228,7 +235,10 @@ void RobHouseGridDisplay::recomputeVisibility() {
             
 
             if( hitForAll ) {
-                mVisibleMap[i] = 0;
+                if( mVisibleMap[i] != 0 ) {
+                    // decay, since no longer visible
+                    mVisibleMap[i] -= 0.05;
+                    }
                 }
             else {
                 mVisibleMap[i] = 1;
