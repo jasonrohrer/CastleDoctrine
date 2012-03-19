@@ -253,7 +253,7 @@ void RobHouseGridDisplay::draw() {
 
     int *touchIndices = new int[ numBlowupPixels ];
 
-    int t = 0;
+    int numTouched = 0;
 
     memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
 
@@ -276,8 +276,19 @@ void RobHouseGridDisplay::draw() {
                     
                     fullGridChannelsBlownUpAlpha[ imageIndex ] = alphaValue;
                     
-                    touchIndices[t] = imageIndex;
-                    t++;
+                    if( blowUpY > 0 && blowUpY < blownUpSize - 1
+                        &&
+                        blowUpX > 0 && blowUpX < blownUpSize - 1 ) {
+                        
+                        // apply blur filter to non-border pixels
+                        touchIndices[numTouched] = imageIndex;
+                        numTouched++;
+                        }
+                    else {
+                        // set all border pixels to black
+                        // and don't apply blur filter to those
+                        fullGridChannelsBlownUpAlpha[ imageIndex ] = 255;
+                        }
                     }
                 }
             }
@@ -291,7 +302,7 @@ void RobHouseGridDisplay::draw() {
         
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                                 touchIndices,
-                                numBlowupPixels,
+                                numTouched,
                                 blownUpSize, blownUpSize );
         }
     
