@@ -8,6 +8,11 @@
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
+
+extern double frameRateFactor;
+
+
+
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
           mRobberIndex( mStartIndex ),
@@ -77,6 +82,22 @@ void RobHouseGridDisplay::draw() {
 
     setDrawColor( 0, 0, 1, 1 );
     drawSquare( getTilePos( mRobberIndex ), 0.5 * mTileRadius );
+
+    
+    // decay each frame
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        if( mVisibleMap[i] != 1 ) {
+            
+            if( mVisibleMap[i] != 0 ) {
+                
+                mVisibleMap[i] -= 0.002 * frameRateFactor;
+                
+                if( mVisibleMap[i] < 0 ) {
+                    mVisibleMap[i] = 0;
+                    }
+                }
+            }
+        }
 
     
     // visibility overlay
@@ -235,9 +256,9 @@ void RobHouseGridDisplay::recomputeVisibility() {
             
 
             if( hitForAll ) {
-                if( mVisibleMap[i] != 0 ) {
-                    // decay, since no longer visible
-                    mVisibleMap[i] -= 0.05;
+                if( mVisibleMap[i] == 1 ) {
+                    // start decay, since no longer visible
+                    mVisibleMap[i] = 0.99;
                     }
                 }
             else {
