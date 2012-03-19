@@ -8,6 +8,9 @@
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
+#include <math.h>
+
+
 
 extern double frameRateFactor;
 
@@ -75,6 +78,118 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     recomputeVisibility();
     }
 
+
+
+
+/**
+ * Blur convolution filter that uses a box for averaging.
+ *
+ * Faster accumulative implementation, as suggested by Gamasutra.
+ *
+ * For speed, does NOT handle edge pixels correctly
+ *
+ * For even more speed, does not support multiple radii (only radius=1)
+ *
+ *
+ * Also, changed to process uchar channels (instead of doubles) for speed
+ *
+ * @author Jason Rohrer 
+ */
+class FastBoxBlurFilter { 
+	
+	public:
+		
+		/**
+		 * Constructs a box filter.
+		 */
+		FastBoxBlurFilter();
+		
+		// implements the ChannelFilter interface 
+        // (but for uchars and sub-regions, and a subset of pixels in that
+        //  region)
+		void applySubRegion( unsigned char *inChannel,
+                             int *inTouchPixelIndices,
+                             int inNumTouchPixels,
+                             int inWidth, int inHeight );
+
+	};
+	
+	
+	
+FastBoxBlurFilter::FastBoxBlurFilter() {	
+	
+	}
+
+
+
+
+
+void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
+                                        int *inTouchPixelIndices,
+                                        int inNumTouchPixels,
+                                        int inWidth, int inHeight ) {
+
+    
+
+
+    // use pointer tricks to walk through neighbor box of each pixel
+
+    // four "corners" around box in accumulation table used to compute
+    // box total
+    // these are offsets to current accumulation pointer
+    int cornerOffsetA = inWidth + 1;
+    int cornerOffsetB = -inWidth + 1;
+    int cornerOffsetC = inWidth - 1;
+    int cornerOffsetD = -inWidth - 1;
+
+    // sides around box
+    int sideOffsetA = inWidth;
+    int sideOffsetB = -inWidth;
+    int sideOffsetC = 1;
+    int sideOffsetD = -1;
+
+    unsigned char *sourceData = new unsigned char[ inWidth * inHeight ];
+    
+    memcpy( sourceData, inChannel, inWidth * inHeight );
+    
+    
+    
+    // sum boxes right into passed-in channel
+
+    for( int i=0; i<inNumTouchPixels; i++ ) {
+
+        int pixelIndex = inTouchPixelIndices[ i ];
+        
+
+        unsigned char *sourcePointer = &( sourceData[ pixelIndex ] );
+
+        inChannel[ pixelIndex ] =
+            ( sourcePointer[ 0 ] +
+              sourcePointer[ cornerOffsetA ] +
+              sourcePointer[ cornerOffsetB ] +
+              sourcePointer[ cornerOffsetC ] +
+              sourcePointer[ cornerOffsetD ] +
+              sourcePointer[ sideOffsetA ] +
+              sourcePointer[ sideOffsetB ] +
+              sourcePointer[ sideOffsetC ] +
+              sourcePointer[ sideOffsetD ]
+              ) / 9;
+        }
+
+    delete [] sourceData;
+    
+
+    return;
+    }
+
+
+
+
+
+
+
+
+
     
 
 void RobHouseGridDisplay::draw() {
@@ -99,7 +214,107 @@ void RobHouseGridDisplay::draw() {
             }
         }
 
+
+    unsigned char visPixels[ HOUSE_D * HOUSE_D ];
     
+
+    int i=0;
+    for( int y=0; y<HOUSE_D; y++ ) {
+        // vertical flip
+
+        int srcY = HOUSE_D - y - 1;
+            
+        for( int x=0; x<HOUSE_D; x++ ) {
+            
+            int srcI = srcY * HOUSE_D + x;
+
+            visPixels[i] = 
+                (unsigned char)( lrint( 255 - 255 * mVisibleMap[ srcI ] ) );
+            i++;
+            }
+        }
+    
+    /*
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        visPixels[i] = (unsigned char)( lrint( 255 - 255 * mVisibleMap[i] ) );
+        }
+    */
+    
+
+
+    int blowUpFactor = 4;
+    int blownUpSize = HOUSE_D * blowUpFactor;
+
+    int numBlowupPixels = blownUpSize * blownUpSize;
+    
+    // opt:  do all this processing with uchars instead of doubles
+    unsigned char *fullGridChannelsBlownUpAlpha =
+        new unsigned char[ numBlowupPixels ];
+
+    int *touchIndices = new int[ numBlowupPixels ];
+
+    int t = 0;
+
+    memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
+
+    
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+    
+            unsigned char alphaValue = visPixels[ y * HOUSE_D + x ];
+
+            for( int blowUpY= y * blowUpFactor; 
+                 blowUpY< y * blowUpFactor + blowUpFactor; 
+                 blowUpY++ ) {
+
+                for( int blowUpX= x * blowUpFactor; 
+                     blowUpX< x * blowUpFactor + blowUpFactor; 
+                     blowUpX++ ) {
+                
+
+                    int imageIndex = blowUpY * blownUpSize + blowUpX;
+                    
+                    fullGridChannelsBlownUpAlpha[ imageIndex ] = alphaValue;
+                    
+                    touchIndices[t] = imageIndex;
+                    t++;
+                    }
+                }
+            }
+        }
+    
+    
+    FastBoxBlurFilter filter2;
+
+    
+    for( int f=0; f<10; f++ ) {
+        
+        filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                touchIndices,
+                                numBlowupPixels,
+                                blownUpSize, blownUpSize );
+        }
+    
+
+
+    SpriteHandle visSprite = 
+        fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha, 
+                             blownUpSize, blownUpSize );
+    
+    delete [] fullGridChannelsBlownUpAlpha;
+    delete [] touchIndices;
+
+    doublePair spritePos = { 0, 0 };
+    
+    setDrawColor( 0, 0, 0, 1 );
+
+    toggleLinearMagFilter( true );
+    drawSprite( visSprite, spritePos, 1.0 * 2 * mTileRadius / blowUpFactor );
+    toggleLinearMagFilter( false );
+    
+    freeSprite( visSprite );
+
+    /*
     // visibility overlay
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
@@ -120,7 +335,7 @@ void RobHouseGridDisplay::draw() {
             i++;
             }
         }
-
+    */
 
     }
 
