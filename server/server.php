@@ -1067,6 +1067,9 @@ function cd_endRobHouse() {
         }
 
     $house_money = $row[ "loot_value" ];
+
+    $amountTaken = $house_money;
+    
     $old_house_map = $row[ "house_map" ];
     $victim_id = $row[ "user_id" ];
     $victim_name = $row[ "character_name" ];
@@ -1080,6 +1083,8 @@ function cd_endRobHouse() {
 
         // don't touch loot value
 
+        $amountTaken = 0;
+        
         // robber dies, starts over as new character, house destroyed
         cd_newHouseForUser( $user_id );
         }
@@ -1150,7 +1155,8 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
-    echo "OK";    
+    echo "OK\n";
+    echo $amountTaken;
     }
 
 

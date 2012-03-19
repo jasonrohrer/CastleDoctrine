@@ -152,7 +152,11 @@ server.php?action=end_rob_house&user_id=[id number]
                                &house_map=[house map ASCII string]
 Returns:
 OK
+dollar_value
 
+
+Note:
+dollar_value 0 on failure
 
 
 

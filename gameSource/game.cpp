@@ -980,6 +980,11 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
+            else if( robCheckinHousePage->getStartOver() ) {
+                // fresh start, back to editing empty house
+                currentGamePage = checkoutHousePage;
+                currentGamePage->base_makeActive( true );
+                }
             }
         else if( currentGamePage == robberyReplayMenuPage ) {
             if( robberyReplayMenuPage->getReturnToMenu() ) {

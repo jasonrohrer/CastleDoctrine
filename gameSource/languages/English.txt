@@ -58,6 +58,13 @@ doneRob "Suicide"
 doneRobTest "Give Up"
 
 
+deathMessage "You died."
+
+startOver "Fresh Start"
+
+
+robSuccess "You stole $%d"
+
 
 
 listFetchFailed "Failed to fetch house list"

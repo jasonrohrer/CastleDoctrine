@@ -17,6 +17,10 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
         virtual char getReturnToMenu();
         
+        // did robber die?
+        virtual char getStartOver();
+        
+
         // destroyed by caller
         virtual void setHouseMap( char *inHouseMap );
         
@@ -46,9 +50,11 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         char mSuccess;
 
         TextButton mMenuButton;
+        TextButton mStartOverButton;
 
 
         char mReturnToMenu;
+        char mStartOver;
 
     };
 

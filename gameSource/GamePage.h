@@ -17,6 +17,9 @@ class GamePage : public PageComponent {
         
         void setStatus( const char *inStatusMessageKey, char inError );
 
+        // inStatusMessage destroyed by caller
+        void setStatusDirect( char *inStatusMessage, char inError );
+
 
         
         // inFresh set to true when returning to this page
@@ -89,7 +92,7 @@ class GamePage : public PageComponent {
 
         char mStatusError;
         const char *mStatusMessageKey;
-
+        char *mStatusMessage;
 
     };
 

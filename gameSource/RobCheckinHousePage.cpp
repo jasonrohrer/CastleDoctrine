@@ -24,10 +24,15 @@ RobCheckinHousePage::RobCheckinHousePage()
           mHouseMap( NULL ),
           mSuccess( false ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
-          mReturnToMenu( false ) {
+          mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
+          mReturnToMenu( false ),
+          mStartOver( true ) {
 
     addComponent( &mMenuButton );
     mMenuButton.addActionListener( this );
+
+    addComponent( &mStartOverButton );
+    mStartOverButton.addActionListener( this );
     }
 
 
@@ -48,6 +53,12 @@ RobCheckinHousePage::~RobCheckinHousePage() {
 
 char RobCheckinHousePage::getReturnToMenu() {
     return mReturnToMenu;
+    }
+
+
+
+char RobCheckinHousePage::getStartOver() {
+    return mStartOver;
     }
 
 
@@ -79,6 +90,9 @@ void RobCheckinHousePage::setSuccess( char inSuccess ) {
 void RobCheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
         mReturnToMenu = true;
+        }
+    else if( inTarget == &mStartOverButton ) {
+        mStartOver = true;
         }
     }
 
@@ -113,10 +127,47 @@ void RobCheckinHousePage::step() {
                 else {
                     // house checked in!
                     
+                    SimpleVector<char *> *tokens =
+                        tokenizeString( result );
+                    
+                    if( tokens->size() != 2 ) {
+                        mStatusError = true;
+                        mStatusMessageKey = "err_badServerResponse";
+                        mMenuButton.setVisible( true );                    
+                        }
+                    else {
+                        int value;
 
-                    mStatusError = false;
-                    mStatusMessageKey = "houseCheckedIn";
-                    mReturnToMenu = true;
+                        sscanf( *( tokens->getElement( 1 ) ), 
+                                "%d", &value );
+                        
+
+                        
+                        if( mSuccess ) {
+                            mStatusError = false;
+
+                            char *robReport = 
+                                autoSprintf( translate( "robSuccess" ), 
+                                             value );
+                            
+                            setStatusDirect( robReport, false );
+                            
+                            delete [] robReport;
+                            
+                            mMenuButton.setVisible( true );
+                            }
+                        else {
+                            mStatusError = true;
+                            mStatusMessageKey = "deathMessage";
+                            mStartOverButton.setVisible( true );
+                            }
+                        
+                        }
+
+                    for( int i=0; i<tokens->size(); i++ ) {
+                        delete [] *( tokens->getElement( i ) );
+                        }
+                    delete tokens;
                     }
                         
                         
@@ -161,10 +212,16 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     delete [] actionString;
 
     mReturnToMenu = false;
+    mStartOver = false;
+    
     mStatusError = false;
     mStatusMessageKey = NULL;
 
+    setStatusDirect( NULL, false );
+    
+
     mMenuButton.setVisible( false );
+    mStartOverButton.setVisible( false );
     }
 
 
