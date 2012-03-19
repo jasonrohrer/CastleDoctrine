@@ -1079,6 +1079,9 @@ function cd_endRobHouse() {
         $house_map = $old_house_map;
 
         // don't touch loot value
+
+        // robber dies, starts over as new character, house destroyed
+        cd_newHouseForUser( $user_id );
         }
     else {
         // use new house map
@@ -1139,7 +1142,6 @@ function cd_endRobHouse() {
     
         
     
-    // all loot gone from 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "rob_checkout = 0, house_map='$house_map', loot_value = $house_money ".
         "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
