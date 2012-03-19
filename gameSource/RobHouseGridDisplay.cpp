@@ -205,7 +205,7 @@ void RobHouseGridDisplay::draw() {
             
             if( mVisibleMap[i] != 0 ) {
                 
-                mVisibleMap[i] -= 0.002 * frameRateFactor;
+                mVisibleMap[i] -= 0.02 * frameRateFactor;
                 
                 if( mVisibleMap[i] < 0 ) {
                     mVisibleMap[i] = 0;
