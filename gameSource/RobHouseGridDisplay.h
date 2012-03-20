@@ -7,6 +7,8 @@
 #include "minorGems/util/SimpleVector.h"
 
 
+#define VIS_BLOWUP 2
+
 
 // fires actionPerformed whenever robbery ends
 class RobHouseGridDisplay : public HouseGridDisplay {
@@ -49,7 +51,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mSuccess;
         
 
-        unsigned char mVisibleMap[ 4 * 4 * HOUSE_D * HOUSE_D ];
+        unsigned char mVisibleMap[ 
+            VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
         
 

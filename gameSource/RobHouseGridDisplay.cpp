@@ -200,7 +200,7 @@ void RobHouseGridDisplay::draw() {
 
     
     // decay each frame
-    for( int i=0; i<HOUSE_D * HOUSE_D * 4 * 4; i++ ) {
+    for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         if( mVisibleMap[i] != 0 ) {
             
             if( mVisibleMap[i] != 255 ) {
@@ -244,11 +244,11 @@ void RobHouseGridDisplay::draw() {
     */
     
 
-    int blowUpFactor = 4;
-    int blownUpSize = HOUSE_D * blowUpFactor;
+    int blowUpFactor = 2;
+    int blownUpSize = HOUSE_D * VIS_BLOWUP * blowUpFactor;
 
     int numBlowupPixels = blownUpSize * blownUpSize;
-
+    /*
     unsigned char *fullGridChannelsBlownUpAlpha =
         new unsigned char[ numBlowupPixels ];
 
@@ -266,7 +266,10 @@ void RobHouseGridDisplay::draw() {
                 touchIndices[ numTouched ] = i;
                 numTouched++;
 
-                fullGridChannelsBlownUpAlpha[i] = mVisibleMap[i];
+                int visIndex = ( ( VIS_BLOWUP * y ) / 4 ) * HOUSE_D + 
+                    ( x * VIS_BLOWUP ) / 4;
+
+                fullGridChannelsBlownUpAlpha[i] = mVisibleMap[visIndex];
                 }
             else {
                 // black borders
@@ -275,8 +278,8 @@ void RobHouseGridDisplay::draw() {
             i++;            
             }
         }
+    */
     
-    /*
     
     // opt:  do all this processing with uchars instead of doubles
     unsigned char *fullGridChannelsBlownUpAlpha =
@@ -289,10 +292,11 @@ void RobHouseGridDisplay::draw() {
     memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
 
     
-    for( int y=0; y<HOUSE_D; y++ ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
+    for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
     
-            unsigned char alphaValue = visPixels[ y * HOUSE_D + x ];
+            unsigned char alphaValue = mVisibleMap[ y * HOUSE_D * VIS_BLOWUP 
+                                                    + x ];
 
             for( int blowUpY= y * blowUpFactor; 
                  blowUpY< y * blowUpFactor + blowUpFactor; 
@@ -325,7 +329,7 @@ void RobHouseGridDisplay::draw() {
             }
         }
     
-    */
+    
     FastBoxBlurFilter filter2;
 
     for( int f=0; f<10; f++ ) {
@@ -350,7 +354,8 @@ void RobHouseGridDisplay::draw() {
     setDrawColor( 0, 0, 0, 1 );
 
     toggleLinearMagFilter( true );
-    drawSprite( visSprite, spritePos, 1.0 * 2 * mTileRadius / blowUpFactor );
+    drawSprite( visSprite, spritePos, 
+                1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
     toggleLinearMagFilter( false );
     
     freeSprite( visSprite );
@@ -467,16 +472,19 @@ void RobHouseGridDisplay::recomputeVisibility() {
 
     
     int i = 0;
-    for( int y=0; y<HOUSE_D * 4; y++ ) {
-        for( int x=0; x<HOUSE_D * 4; x++ ) {
+    for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
             
-            int flipY = HOUSE_D * 4 - y - 1;
+            int flipY = HOUSE_D * VIS_BLOWUP - y - 1;
 
             doublePair visPos = 
                 { cornerPos.x +  
-                  ( x / 4.0 ) * 2 * mTileRadius - mTileRadius,
+                  ( x / (double)VIS_BLOWUP ) 
+                  * 2 * mTileRadius - mTileRadius,
+                  
                   cornerPos.y +  
-                  ( flipY / 4.0 ) * 2 * mTileRadius - mTileRadius };
+                  ( flipY / (double)VIS_BLOWUP ) 
+                  * 2 * mTileRadius - mTileRadius };
             
 
             int visTileIndex = getTileIndex( visPos.x, visPos.y );
