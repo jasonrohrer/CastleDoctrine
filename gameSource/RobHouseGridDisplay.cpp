@@ -217,70 +217,12 @@ void RobHouseGridDisplay::draw() {
             }
         }
 
-    /*
-    unsigned char visPixels[ HOUSE_D * HOUSE_D ];
-    
-
-    int i=0;
-    for( int y=0; y<HOUSE_D; y++ ) {
-        // vertical flip
-
-        int srcY = HOUSE_D - y - 1;
-            
-        for( int x=0; x<HOUSE_D; x++ ) {
-            
-            int srcI = srcY * HOUSE_D + x;
-
-            visPixels[i] = 
-                (unsigned char)( lrint( 255 - 255 * mVisibleMap[ srcI ] ) );
-            i++;
-            }
-        }
-    */
-    /*
-    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
-        visPixels[i] = (unsigned char)( lrint( 255 - 255 * mVisibleMap[i] ) );
-        }
-    */
-    
 
     int blowUpFactor = 2;
     int blownUpSize = HOUSE_D * VIS_BLOWUP * blowUpFactor;
 
     int numBlowupPixels = blownUpSize * blownUpSize;
-    /*
-    unsigned char *fullGridChannelsBlownUpAlpha =
-        new unsigned char[ numBlowupPixels ];
 
-    int *touchIndices = new int[ numBlowupPixels ];
-    
-    int numTouched = 0;
-
-    int i = 0;
-    for( int y=0; y<HOUSE_D * 4; y++ ) {
-        for( int x=0; x<HOUSE_D * 4; x++ ) {
-            if( y > 0 && y < HOUSE_D * 4 - 1
-                &&
-                x > 0 && x < HOUSE_D * 4 - 1 ) {
-                
-                touchIndices[ numTouched ] = i;
-                numTouched++;
-
-                int visIndex = ( ( VIS_BLOWUP * y ) / 4 ) * HOUSE_D + 
-                    ( x * VIS_BLOWUP ) / 4;
-
-                fullGridChannelsBlownUpAlpha[i] = mVisibleMap[visIndex];
-                }
-            else {
-                // black borders
-                fullGridChannelsBlownUpAlpha[i] = 255;
-                }
-            i++;            
-            }
-        }
-    */
-    
-    
     // opt:  do all this processing with uchars instead of doubles
     unsigned char *fullGridChannelsBlownUpAlpha =
         new unsigned char[ numBlowupPixels ];
@@ -359,30 +301,6 @@ void RobHouseGridDisplay::draw() {
     toggleLinearMagFilter( false );
     
     freeSprite( visSprite );
-
-    /*
-    // visibility overlay
-    int i = 0;
-    for( int y=0; y<HOUSE_D; y++ ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
-
-            float visTile = mVisibleMap[i];
-            
-            
-            if( visTile < 1 ) {
-                setDrawColor( 0, 0, 0, 1 - visTile );
-                doublePair tilePos = getTilePos( i );
-                
-                drawSquare( tilePos, mTileRadius );
-                }
-            else {
-                }
-            
-            i++;
-            }
-        }
-    */
-
     }
 
 
@@ -523,71 +441,3 @@ void RobHouseGridDisplay::recomputeVisibility() {
         }
     
     }
-
-/*
-
-
-    int i = 0;
-    for( int y=0; y<HOUSE_D; y++ ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
-            
-            
-            doublePair pos = getTilePos( i );
-
-            // corners, plus center
-            // if ANY of these is visible, count
-            // whole tile as visible
-            doublePair vertOffsets[5] = 
-                { { 0, 0 },
-                  { -mTileRadius, -mTileRadius },
-                  { -mTileRadius, +mTileRadius },
-                  { +mTileRadius, +mTileRadius },
-                  { +mTileRadius, -mTileRadius } };
-            
-            char hitForAll = true;
-            
-            for( int v=0; v<5 && hitForAll; v++ ) {
-                
-                doublePair vertPos = add( pos, vertOffsets[v] );
-
-                char hit = false;
-                
-                // steps
-                int numSteps = lrint( distance( vertPos, robPos ) * 2 );
-                
-
-                for( int j=1; j<numSteps && !hit; j++ ) {
-                    double weight = j / (double)numSteps;
-                    
-                    doublePair stepPos = add( mult( vertPos, weight ), 
-                                              mult( robPos, 1 - weight ) );
-                    
-                    int stepIndex = getTileIndex( stepPos.x, stepPos.y );
-                    
-                    if( stepIndex != i && mHouseMap[stepIndex] != '0' ) {
-                        hit = true;
-                        }
-                    }
-
-                if( !hit ) {
-                    hitForAll = false;
-                    }                
-                }
-            
-
-            if( hitForAll ) {
-                if( mVisibleMap[i] == 1 ) {
-                    // start decay, since no longer visible
-                    mVisibleMap[i] = 0.99;
-                    }
-                }
-            else {
-                mVisibleMap[i] = 1;
-                }
-
-            i++;
-            }
-        }
-    
-    }
-*/
