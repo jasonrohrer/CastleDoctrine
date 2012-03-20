@@ -398,11 +398,11 @@ void RobHouseGridDisplay::recomputeVisibility() {
             doublePair visPos = 
                 { cornerPos.x +  
                   ( x / (double)VIS_BLOWUP ) 
-                  * 2 * mTileRadius - mTileRadius,
+                  * 2 * mTileRadius - mTileRadius / 2,
                   
                   cornerPos.y +  
                   ( flipY / (double)VIS_BLOWUP ) 
-                  * 2 * mTileRadius - mTileRadius };
+                  * 2 * mTileRadius - mTileRadius / 2 };
             
 
             int visTileIndex = getTileIndex( visPos.x, visPos.y );
@@ -411,7 +411,8 @@ void RobHouseGridDisplay::recomputeVisibility() {
             int numSteps = lrint( distance( visPos, robPos ) * 8 );
             char hit = false;
             
-            for( int j=1; j<numSteps && !hit; j++ ) {
+            // skip last few steps so that we show borders of visible walls
+            for( int j=1; j<numSteps - 1 && !hit; j++ ) {
                 double weight = j / (double)numSteps;
                 
                 doublePair stepPos = add( mult( visPos, weight ), 
