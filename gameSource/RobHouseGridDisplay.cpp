@@ -71,8 +71,8 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
 
-    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
-        mVisibleMap[i] = 0;
+    for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
+        mVisibleMap[i] = 255;
         }
 
     recomputeVisibility();
