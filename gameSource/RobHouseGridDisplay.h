@@ -51,10 +51,15 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mSuccess;
         
 
+        // 0 = visible (shroud transparent)
+        // 255 = invisible (shroud opaque)
         unsigned char mVisibleMap[ 
             VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
-        
+        // true/false for whether each spot wants to move towards visibility
+        // (for smooth transitions)
+        char mTargetVisibleMap[ VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+
 
         SimpleVector<char *> mMoveList;
 

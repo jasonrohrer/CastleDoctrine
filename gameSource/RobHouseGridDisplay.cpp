@@ -73,6 +73,7 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         mVisibleMap[i] = 255;
+        mTargetVisibleMap[i] = false;
         }
 
     recomputeVisibility();
@@ -201,7 +202,24 @@ void RobHouseGridDisplay::draw() {
     
     // decay each frame
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
-        if( mVisibleMap[i] != 0 ) {
+        if( mTargetVisibleMap[i] ) {
+            // wants to move toward visible
+            if( mVisibleMap[i] != 0 ) {
+                unsigned char oldValue = mVisibleMap[i];
+
+                // revealing new areas happens faster than shrouding
+                // no-longer-seen areas
+                mVisibleMap[i] -= lrint( 10 * frameRateFactor );
+                
+                // watch for wrap-around!
+                if( mVisibleMap[i] > oldValue ) {
+                    mVisibleMap[i] = 0;
+                    }
+
+                }
+            }
+        else {
+            // wants to move toward invisible
             
             if( mVisibleMap[i] != 255 ) {
                 
@@ -428,13 +446,10 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 }
             
             if( hit ) {
-                if( mVisibleMap[i] == 0 ) {
-                    // start decay, since no longer visible
-                    mVisibleMap[i] = 1;
-                    }
+                mTargetVisibleMap[i] = false;
                 }
             else {
-                mVisibleMap[i] = 0;
+                mTargetVisibleMap[i] = true;
                 }
 
             i++;
