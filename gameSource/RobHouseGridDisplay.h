@@ -49,7 +49,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mSuccess;
         
 
-        float mVisibleMap[ HOUSE_D * HOUSE_D ];
+        unsigned char mVisibleMap[ 4 * 4 * HOUSE_D * HOUSE_D ];
 
         
 

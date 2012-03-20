@@ -200,21 +200,24 @@ void RobHouseGridDisplay::draw() {
 
     
     // decay each frame
-    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
-        if( mVisibleMap[i] != 1 ) {
+    for( int i=0; i<HOUSE_D * HOUSE_D * 4 * 4; i++ ) {
+        if( mVisibleMap[i] != 0 ) {
             
-            if( mVisibleMap[i] != 0 ) {
+            if( mVisibleMap[i] != 255 ) {
                 
-                mVisibleMap[i] -= 0.02 * frameRateFactor;
+                unsigned char oldValue = mVisibleMap[i];
+
+                mVisibleMap[i] += lrint( 5 * frameRateFactor );
                 
-                if( mVisibleMap[i] < 0 ) {
-                    mVisibleMap[i] = 0;
+                // watch for wrap-around!
+                if( mVisibleMap[i] < oldValue ) {
+                    mVisibleMap[i] = 255;
                     }
                 }
             }
         }
 
-
+    /*
     unsigned char visPixels[ HOUSE_D * HOUSE_D ];
     
 
@@ -233,7 +236,7 @@ void RobHouseGridDisplay::draw() {
             i++;
             }
         }
-    
+    */
     /*
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         visPixels[i] = (unsigned char)( lrint( 255 - 255 * mVisibleMap[i] ) );
@@ -241,11 +244,39 @@ void RobHouseGridDisplay::draw() {
     */
     
 
-
     int blowUpFactor = 4;
     int blownUpSize = HOUSE_D * blowUpFactor;
 
     int numBlowupPixels = blownUpSize * blownUpSize;
+
+    unsigned char *fullGridChannelsBlownUpAlpha =
+        new unsigned char[ numBlowupPixels ];
+
+    int *touchIndices = new int[ numBlowupPixels ];
+    
+    int numTouched = 0;
+
+    int i = 0;
+    for( int y=0; y<HOUSE_D * 4; y++ ) {
+        for( int x=0; x<HOUSE_D * 4; x++ ) {
+            if( y > 0 && y < HOUSE_D * 4 - 1
+                &&
+                x > 0 && x < HOUSE_D * 4 - 1 ) {
+                
+                touchIndices[ numTouched ] = i;
+                numTouched++;
+
+                fullGridChannelsBlownUpAlpha[i] = mVisibleMap[i];
+                }
+            else {
+                // black borders
+                fullGridChannelsBlownUpAlpha[i] = 255;
+                }
+            i++;            
+            }
+        }
+    
+    /*
     
     // opt:  do all this processing with uchars instead of doubles
     unsigned char *fullGridChannelsBlownUpAlpha =
@@ -294,10 +325,9 @@ void RobHouseGridDisplay::draw() {
             }
         }
     
-    
+    */
     FastBoxBlurFilter filter2;
 
-    
     for( int f=0; f<10; f++ ) {
         
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
@@ -432,6 +462,62 @@ void RobHouseGridDisplay::recomputeVisibility() {
 
     doublePair robPos = getTilePos( mRobberIndex );
 
+    
+    doublePair cornerPos = getTilePos( 0 );
+
+    
+    int i = 0;
+    for( int y=0; y<HOUSE_D * 4; y++ ) {
+        for( int x=0; x<HOUSE_D * 4; x++ ) {
+            
+            int flipY = HOUSE_D * 4 - y - 1;
+
+            doublePair visPos = 
+                { cornerPos.x +  
+                  ( x / 4.0 ) * 2 * mTileRadius - mTileRadius,
+                  cornerPos.y +  
+                  ( flipY / 4.0 ) * 2 * mTileRadius - mTileRadius };
+            
+
+            int visTileIndex = getTileIndex( visPos.x, visPos.y );
+
+            // steps
+            int numSteps = lrint( distance( visPos, robPos ) * 8 );
+            char hit = false;
+            
+            for( int j=1; j<numSteps && !hit; j++ ) {
+                double weight = j / (double)numSteps;
+                
+                doublePair stepPos = add( mult( visPos, weight ), 
+                                          mult( robPos, 1 - weight ) );
+                
+                int stepIndex = getTileIndex( stepPos.x, stepPos.y );
+                
+                if( //stepIndex != visTileIndex && 
+                    mHouseMap[stepIndex] != '0' ) {
+                    
+                    hit = true;
+                    }
+                }
+            
+            if( hit ) {
+                if( mVisibleMap[i] == 0 ) {
+                    // start decay, since no longer visible
+                    mVisibleMap[i] = 1;
+                    }
+                }
+            else {
+                mVisibleMap[i] = 0;
+                }
+
+            i++;
+            }
+        }
+    
+    }
+
+/*
+
 
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
@@ -496,3 +582,4 @@ void RobHouseGridDisplay::recomputeVisibility() {
         }
     
     }
+*/
