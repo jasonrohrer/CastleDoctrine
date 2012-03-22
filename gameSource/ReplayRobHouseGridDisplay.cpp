@@ -160,10 +160,10 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
         // all visible during playback
 
         int i = 0;
-        for( int y=0; y<HOUSE_D; y++ ) {
-            for( int x=0; x<HOUSE_D; x++ ) {
+        for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+            for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
 
-                mVisibleMap[i] = 1;
+                mTargetVisibleMap[i] = true;
 
                 i++;
                 }
