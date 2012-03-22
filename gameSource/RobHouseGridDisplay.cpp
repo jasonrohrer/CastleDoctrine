@@ -374,7 +374,7 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
 
     mRobberIndex = newY * HOUSE_D + newX;
     
-    if( mHouseMap[ mRobberIndex ] != '0' ) {
+    if( mHouseMapIDs[ mRobberIndex ] != 0 ) {
         // hit wall, roll back to last position
         mRobberIndex = oldIndex;
         }
@@ -439,7 +439,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
                 if( //stepIndex != visTileIndex && 
-                    mHouseMap[stepIndex] != '0' ) {
+                    mHouseMapIDs[stepIndex] != 0 ) {
                     
                     hit = true;
                     }

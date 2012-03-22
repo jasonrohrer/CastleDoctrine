@@ -47,6 +47,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char *mHouseMap;
         
+        int mNumMapSpots;
+        int *mHouseMapIDs;
+
         
         int mHighlightIndex;
         

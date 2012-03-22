@@ -25,6 +25,9 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
+    if( mHouseMapIDs != NULL ) {
+        delete [] mHouseMapIDs;
+        }
     }
 
 
@@ -34,6 +37,25 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         delete [] mHouseMap;
         }
     mHouseMap = stringDuplicate( inHouseMap );
+
+    int numTokens;
+    char **tokens = split( mHouseMap, "#", &numTokens );
+    
+    if( mHouseMapIDs != NULL ) {
+        delete [] mHouseMapIDs;
+        }
+    
+    mNumMapSpots = numTokens;
+
+    mHouseMapIDs = new int[ mNumMapSpots ];
+
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        sscanf( tokens[i], "%d", &( mHouseMapIDs[i] ) );
+        
+        delete [] tokens[i];
+        }
+    
+    delete [] tokens;
     }
 
 
@@ -43,6 +65,24 @@ char *HouseGridDisplay::getHouseMap() {
         return NULL;
         }
     else {
+        
+        char **parts = new char*[ mNumMapSpots ];
+        
+
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            parts[i] = autoSprintf( "%d", mHouseMapIDs[i] );
+            }
+        
+        delete [] mHouseMap;
+        
+        mHouseMap = join( parts, mNumMapSpots, "#" );
+        
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            delete [] parts[i];
+            }
+        delete [] parts;
+        
+
         return stringDuplicate( mHouseMap );
         }
     }
@@ -119,10 +159,10 @@ void HouseGridDisplay::draw() {
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
-            char houseTile = mHouseMap[i];
+            int houseTile = mHouseMapIDs[i];
             
             
-            if( houseTile == '0' ) {
+            if( houseTile == 0 ) {
                 setDrawColor( 0.25, 0.25, 0.25, 1 );
                 }
             else {
@@ -176,14 +216,14 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
 
     if( index != -1 && index != mStartIndex && index != mGoalIndex ) {
     
-        char old = mHouseMap[ index ];
+        int old = mHouseMapIDs[ index ];
         
-        if( old == '0' ) {
-            mHouseMap[ index ] = '1';
+        if( old == 0 ) {
+            mHouseMapIDs[ index ] = 1;
             fireActionPerformed( this );
             }
-        else if( old == '1' ) {
-            mHouseMap[ index ] = '0';
+        else if( old == 1 ) {
+            mHouseMapIDs[ index ] = 0;
             fireActionPerformed( this );
             }
         }
