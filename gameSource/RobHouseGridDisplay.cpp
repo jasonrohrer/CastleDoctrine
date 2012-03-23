@@ -417,6 +417,29 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
         mRobberIndex = oldIndex;
         }
 
+    
+    if( mRobberIndex != oldIndex ) {
+        recomputeVisibility();
+
+        // a move!
+        mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
+        }
+
+    if( mRobberIndex == mGoalIndex ) {
+        mSuccess = true;
+        fireActionPerformed( this );
+        }
+    }
+
+
+
+void RobHouseGridDisplay::specialKeyUp( int inKeyCode ) {
+    }
+
+
+
+void RobHouseGridDisplay::recomputeVisibility() {
+
     // if robber too close to edge, move view to keep robber on screen
     int robSubIndex = fullToSub( mRobberIndex );
     int robSubY = robSubIndex / HOUSE_D;
@@ -499,32 +522,11 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
                 VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
         delete [] mNewVisibleMap;
         }
-    
-        
-    
-    if( mRobberIndex != oldIndex ) {
-        recomputeVisibility();
-
-        // a move!
-        mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
-        }
-
-    if( mRobberIndex == mGoalIndex ) {
-        mSuccess = true;
-        fireActionPerformed( this );
-        }
-    }
 
 
 
-void RobHouseGridDisplay::specialKeyUp( int inKeyCode ) {
-    }
 
-
-
-void RobHouseGridDisplay::recomputeVisibility() {
-
-    int robSubIndex = fullToSub( mRobberIndex );
+    robSubIndex = fullToSub( mRobberIndex );
     
     if( robSubIndex == -1 ) {
         // robber out of bounds
