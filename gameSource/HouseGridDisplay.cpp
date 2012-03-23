@@ -91,7 +91,9 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     
     delete [] tokens;
 
-    setVisibleOffset( 0, 0 );
+
+    // center vertically, far left
+    setVisibleOffset( 0, ( mFullMapD - HOUSE_D ) / 2 );
 
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     mGoalIndex = mFullMapD * ( mFullMapD / 2 ) + mFullMapD - 1;

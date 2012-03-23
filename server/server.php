@@ -1496,6 +1496,13 @@ function cd_newHouseForUser( $user_id ) {
         "0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#".
         "0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#".
         "0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0";
+
+    // blow up to 32x32 (4x bigger)
+    $house_map =
+        $house_map . "#" .
+        $house_map . "#" .
+        $house_map . "#" .
+        $house_map;
     
 
     while( !$foundName && $errorNumber == 1062 ) {
