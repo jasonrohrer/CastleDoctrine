@@ -52,6 +52,9 @@ int versionNumber = 1;
 #include "ReplayRobHousePage.h"
 
 
+#include "houseObjects.h"
+
+
 GamePage *currentGamePage = NULL;
 
 
@@ -366,6 +369,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         }
 
 
+    initHouseObjects();
+    
+
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
@@ -409,6 +415,8 @@ void freeFrameDrawer() {
     delete robberyReplayMenuPage;
     delete fetchRobberyReplayPage;
     delete replayRobHousePage;
+
+    freeHouseObjects();
 
     if( serverURL != NULL ) {
         delete [] serverURL;

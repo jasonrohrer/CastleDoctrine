@@ -8,11 +8,15 @@
 #include <math.h>
 
 
+#include "houseObjects.h"
+
 
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )
         : PageComponent( inX, inY ),
           mHouseMap( NULL ), 
+          mHouseMapIDs( NULL ),
+          mHouseMapCellStates( NULL ),
           mHighlightIndex( -1 ), mTileRadius( 0.375 ) {
 
     mStartIndex = HOUSE_D * ( HOUSE_D / 2 );
@@ -27,6 +31,9 @@ HouseGridDisplay::~HouseGridDisplay() {
         }
     if( mHouseMapIDs != NULL ) {
         delete [] mHouseMapIDs;
+        }
+    if( mHouseMapCellStates != NULL ) {
+        delete [] mHouseMapCellStates;
         }
     }
 
@@ -44,14 +51,35 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     if( mHouseMapIDs != NULL ) {
         delete [] mHouseMapIDs;
         }
+
+    if( mHouseMapCellStates != NULL ) {
+        delete [] mHouseMapCellStates;
+        }
     
     mNumMapSpots = numTokens;
 
     mHouseMapIDs = new int[ mNumMapSpots ];
-
+    mHouseMapCellStates = new int[ mNumMapSpots ];
+    
     for( int i=0; i<mNumMapSpots; i++ ) {
-        sscanf( tokens[i], "%d", &( mHouseMapIDs[i] ) );
+        int numRead = sscanf( tokens[i], "%d:%d", 
+                              &( mHouseMapIDs[i] ), 
+                              &( mHouseMapCellStates[i] ) );
         
+        if( numRead < 2 ) {
+            // no ":value" present after ID
+            // use default
+            mHouseMapCellStates[i] = 1;
+        
+            if( numRead == 0 ) {
+                // reading ID failed?
+                
+                // default
+                mHouseMapIDs[i] = 0;
+                }
+            }
+        
+
         delete [] tokens[i];
         }
     
@@ -70,7 +98,16 @@ char *HouseGridDisplay::getHouseMap() {
         
 
         for( int i=0; i<mNumMapSpots; i++ ) {
-            parts[i] = autoSprintf( "%d", mHouseMapIDs[i] );
+            if( mHouseMapCellStates[i] != 1 ) {
+                // not default state, include state
+                parts[i] = autoSprintf( "%d:%d", 
+                                        mHouseMapIDs[i],
+                                        mHouseMapCellStates[i] );
+                }
+            else {
+                // default state, skip including it
+                parts[i] = autoSprintf( "%d", mHouseMapIDs[i] );
+                }
             }
         
         delete [] mHouseMap;
@@ -162,15 +199,26 @@ void HouseGridDisplay::draw() {
             int houseTile = mHouseMapIDs[i];
             
             
+            doublePair tilePos = getTilePos( i );
+ 
+            
             if( houseTile == 0 ) {
                 setDrawColor( 0.25, 0.25, 0.25, 1 );
+                drawSquare( tilePos, mTileRadius );
                 }
             else {
-                setDrawColor( 1, 0, 0, 1 );
+                setDrawColor( 1, 1, 1, 1 );
+                
+                SpriteHandle sprite = getObjectSprite( houseTile );
+                
+                printf( "Drawing sprite with handle %d\n", (int)sprite );
+                
+                drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
-            doublePair tilePos = getTilePos( i );
+            
+            
 
-            drawSquare( tilePos, mTileRadius );
+            
             
             if( mHighlightIndex == i ) {
                 if( houseTile == '0' ) {

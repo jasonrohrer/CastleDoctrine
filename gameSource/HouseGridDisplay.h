@@ -50,6 +50,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mNumMapSpots;
         int *mHouseMapIDs;
 
+        int *mHouseMapCellStates;
+        
+
         
         int mHighlightIndex;
         
