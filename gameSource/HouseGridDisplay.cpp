@@ -91,7 +91,7 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     
     delete [] tokens;
 
-    setVisibleOffset( mSubMapOffsetX, mSubMapOffsetY );
+    setVisibleOffset( 0, 0 );
 
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     mGoalIndex = mFullMapD * ( mFullMapD / 2 ) + mFullMapD - 1;
@@ -313,10 +313,11 @@ int HouseGridDisplay::fullToSub( int inFullCellIndex ) {
     int bigX = inFullCellIndex % mFullMapD;
     int bigY = inFullCellIndex / mFullMapD;
 
-    int x = bigX - mSubMapOffsetY;
-    int y = bigY - mSubMapOffsetX;
+    int x = bigX - mSubMapOffsetX;
+    int y = bigY - mSubMapOffsetY;
 
-    if( y < HOUSE_D && x < HOUSE_D ) {
+    if( y >= 0 && y < HOUSE_D && 
+        x >= 0 && x < HOUSE_D ) {
         return y * HOUSE_D + x;
         }
     return -1;

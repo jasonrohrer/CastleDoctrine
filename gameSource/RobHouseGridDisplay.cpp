@@ -416,6 +416,57 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
         // hit wall, roll back to last position
         mRobberIndex = oldIndex;
         }
+
+    // if robber too close to edge, move view to keep robber on screen
+    int robSubIndex = fullToSub( mRobberIndex );
+    int robSubY = robSubIndex / HOUSE_D;
+    int robSubX = robSubIndex % HOUSE_D;
+    
+
+    int xExtra = 0;
+    int yExtra = 0;
+
+    if( robSubX > HOUSE_D - 3 ) {
+        xExtra = robSubX - (HOUSE_D - robSubX);
+        xExtra /= 2;
+
+        if( xExtra + mSubMapOffsetX + HOUSE_D > mFullMapD ) {
+            xExtra = mFullMapD - ( mSubMapOffsetX + HOUSE_D );
+            }
+        }
+    else if( robSubX < 2 ) {
+        xExtra = robSubX - (HOUSE_D - robSubX);
+        xExtra /= 2;
+
+        if( xExtra + mSubMapOffsetX < 0 ) {
+            xExtra = -mSubMapOffsetX;
+            }        
+        }
+    
+    if( robSubY > HOUSE_D - 3 ) {
+        yExtra = robSubY - (HOUSE_D - robSubY);
+        yExtra /= 2;
+
+        if( yExtra + mSubMapOffsetY + HOUSE_D > mFullMapD ) {
+            yExtra = mFullMapD - ( mSubMapOffsetY + HOUSE_D );
+            }        
+        }
+    else if( robSubY < 2 ) {
+        yExtra = robSubY - (HOUSE_D - robSubY);
+        yExtra /= 2;
+
+        if( yExtra + mSubMapOffsetY < 0 ) {
+            yExtra = -mSubMapOffsetY;
+            }        
+        }
+
+
+    if( xExtra != 0 || yExtra != 0 ) {
+        setVisibleOffset( mSubMapOffsetX + xExtra,
+                          mSubMapOffsetY + yExtra );
+        }
+    
+        
     
     if( mRobberIndex != oldIndex ) {
         recomputeVisibility();
