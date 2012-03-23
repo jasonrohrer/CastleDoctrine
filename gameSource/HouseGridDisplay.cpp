@@ -5,6 +5,9 @@
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 
+#include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
+
+
 #include <math.h>
 
 
@@ -97,6 +100,8 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     mGoalIndex = mFullMapD * ( mFullMapD / 2 ) + mFullMapD - 1;
+    
+    mRobberIndex = mStartIndex;
     }
 
 
@@ -258,6 +263,12 @@ void HouseGridDisplay::draw() {
         drawSquare( getTilePos( goalSubIndex ), 0.75 * mTileRadius );
         }
     
+
+    int robSubIndex = fullToSub( mRobberIndex );
+    if( robSubIndex != -1 ) {    
+        setDrawColor( 0, 0, 1, 1 );
+        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
+        }
     }
 
 
@@ -293,6 +304,115 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
             mHouseSubMapIDs[ index ] = 0;
             copySubCellBack( index );
             fireActionPerformed( this );
+            }
+        }
+    }
+
+
+
+// arrow key movement
+void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
+    
+    int oldX = mRobberIndex % mFullMapD;
+    int oldY = mRobberIndex / mFullMapD;
+    
+    
+    int newX = oldX;
+    int newY = oldY;
+    
+
+    if( inKeyCode == MG_KEY_LEFT ) {
+        if( newX > 0 ) {
+            newX--;
+            }
+        }
+    else if( inKeyCode == MG_KEY_RIGHT ) {
+        if( newX < mFullMapD - 1 ) {
+            newX++;
+            }
+        }
+    else if( inKeyCode == MG_KEY_DOWN ) {
+        if( newY > 0 ) {
+            newY--;
+            }
+        }
+    else if( inKeyCode == MG_KEY_UP ) {
+        if( newY < mFullMapD - 1 ) {
+            newY++;
+            }
+        }
+    
+    
+    
+    int newRobberIndex = newY * mFullMapD + newX;
+    
+    if( mHouseMapIDs[ newRobberIndex ] == 0 ) {
+        // did not hit wall, can actually move here
+        moveRobber( newRobberIndex );
+        }
+    
+    }
+
+
+
+void HouseGridDisplay::specialKeyUp( int inKeyCode ) {
+    }
+
+
+
+void HouseGridDisplay::moveRobber( int inNewIndex ) {
+    
+    if( mRobberIndex != inNewIndex ) {
+        
+        mRobberIndex = inNewIndex;
+
+        // if robber too close to edge, move view to keep robber on screen
+        int robSubIndex = fullToSub( mRobberIndex );
+        int robSubY = robSubIndex / HOUSE_D;
+        int robSubX = robSubIndex % HOUSE_D;
+    
+
+        int xExtra = 0;
+        int yExtra = 0;
+
+        if( robSubX > HOUSE_D - 3 ) {
+            xExtra = robSubX - (HOUSE_D - robSubX);
+            xExtra /= 2;
+
+            if( xExtra + mSubMapOffsetX + HOUSE_D > mFullMapD ) {
+                xExtra = mFullMapD - ( mSubMapOffsetX + HOUSE_D );
+                }
+            }
+        else if( robSubX < 2 ) {
+            xExtra = robSubX - (HOUSE_D - robSubX);
+            xExtra /= 2;
+
+            if( xExtra + mSubMapOffsetX < 0 ) {
+                xExtra = -mSubMapOffsetX;
+                }        
+            }
+    
+        if( robSubY > HOUSE_D - 3 ) {
+            yExtra = robSubY - (HOUSE_D - robSubY);
+            yExtra /= 2;
+
+            if( yExtra + mSubMapOffsetY + HOUSE_D > mFullMapD ) {
+                yExtra = mFullMapD - ( mSubMapOffsetY + HOUSE_D );
+                }        
+            }
+        else if( robSubY < 2 ) {
+            yExtra = robSubY - (HOUSE_D - robSubY);
+            yExtra /= 2;
+
+            if( yExtra + mSubMapOffsetY < 0 ) {
+                yExtra = -mSubMapOffsetY;
+                }        
+            }
+
+
+        if( xExtra != 0 || yExtra != 0 ) {
+            setVisibleOffset( mSubMapOffsetX + xExtra,
+                              mSubMapOffsetY + yExtra );
             }
         }
     }

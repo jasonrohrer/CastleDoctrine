@@ -31,7 +31,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *getHouseMap();
         
         
-        void setVisibleOffset( int inXOffset, int inYOffset );
+        virtual void setVisibleOffset( int inXOffset, int inYOffset );
         
 
         virtual void step();
@@ -43,10 +43,16 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         virtual void pointerDrag( float inX, float inY );
 
         virtual void pointerUp( float inX, float inY );
+
+        
+        // arrow key movement
+        virtual void specialKeyDown( int inKeyCode );
+        virtual void specialKeyUp( int inKeyCode );
         
 
     protected:
-        
+        int mRobberIndex;
+
         char *mHouseMap;
         
         int mNumMapSpots;
@@ -71,6 +77,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // copy contents of sub cell back into full map
         void copySubCellBack( int inSubCellIndex );
 
+        
+        // can be overridded to do special processing after robber moves
+        virtual void moveRobber( int inNewIndex );
+        
         
 
         

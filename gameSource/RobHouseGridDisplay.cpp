@@ -5,7 +5,6 @@
 
 #include "minorGems/util/stringUtils.h"
 
-#include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
 #include <math.h>
@@ -73,8 +72,6 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         mVisibleMap[i] = 255;
         mTargetVisibleMap[i] = false;
         }
-    
-    mRobberIndex = mStartIndex;
     
     recomputeVisibility();
     }
@@ -196,11 +193,7 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
 void RobHouseGridDisplay::draw() {
     HouseGridDisplay::draw();
 
-    int robSubIndex = fullToSub( mRobberIndex );
-    if( robSubIndex != -1 ) {    
-        setDrawColor( 0, 0, 1, 1 );
-        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
-        }
+    
     
     
     // decay each frame
@@ -374,57 +367,15 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
     }
 
 
-// arrow key movement
-void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
-    
-    int oldX = mRobberIndex % mFullMapD;
-    int oldY = mRobberIndex / mFullMapD;
-    
-    int oldIndex = mRobberIndex;
-    
-    
-    int newX = oldX;
-    int newY = oldY;
-    
 
-    if( inKeyCode == MG_KEY_LEFT ) {
-        if( newX > 0 ) {
-            newX--;
-            }
-        }
-    else if( inKeyCode == MG_KEY_RIGHT ) {
-        if( newX < mFullMapD - 1 ) {
-            newX++;
-            }
-        }
-    else if( inKeyCode == MG_KEY_DOWN ) {
-        if( newY > 0 ) {
-            newY--;
-            }
-        }
-    else if( inKeyCode == MG_KEY_UP ) {
-        if( newY < mFullMapD - 1 ) {
-            newY++;
-            }
-        }
+void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
+    HouseGridDisplay::moveRobber( inNewIndex );
     
+    recomputeVisibility();
+
+    // a move!
+    mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
     
-
-    mRobberIndex = newY * mFullMapD + newX;
-    
-    if( mHouseMapIDs[ mRobberIndex ] != 0 ) {
-        // hit wall, roll back to last position
-        mRobberIndex = oldIndex;
-        }
-
-    
-    if( mRobberIndex != oldIndex ) {
-        recomputeVisibility();
-
-        // a move!
-        mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
-        }
-
     if( mRobberIndex == mGoalIndex ) {
         mSuccess = true;
         fireActionPerformed( this );
@@ -433,61 +384,11 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
 
 
 
-void RobHouseGridDisplay::specialKeyUp( int inKeyCode ) {
-    }
-
-
-
-void RobHouseGridDisplay::recomputeVisibility() {
-
-    // if robber too close to edge, move view to keep robber on screen
-    int robSubIndex = fullToSub( mRobberIndex );
-    int robSubY = robSubIndex / HOUSE_D;
-    int robSubX = robSubIndex % HOUSE_D;
+void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
+    int xExtra = inXOffset - mSubMapOffsetX;
+    int yExtra = inYOffset - mSubMapOffsetY;
     
-
-    int xExtra = 0;
-    int yExtra = 0;
-
-    if( robSubX > HOUSE_D - 3 ) {
-        xExtra = robSubX - (HOUSE_D - robSubX);
-        xExtra /= 2;
-
-        if( xExtra + mSubMapOffsetX + HOUSE_D > mFullMapD ) {
-            xExtra = mFullMapD - ( mSubMapOffsetX + HOUSE_D );
-            }
-        }
-    else if( robSubX < 2 ) {
-        xExtra = robSubX - (HOUSE_D - robSubX);
-        xExtra /= 2;
-
-        if( xExtra + mSubMapOffsetX < 0 ) {
-            xExtra = -mSubMapOffsetX;
-            }        
-        }
-    
-    if( robSubY > HOUSE_D - 3 ) {
-        yExtra = robSubY - (HOUSE_D - robSubY);
-        yExtra /= 2;
-
-        if( yExtra + mSubMapOffsetY + HOUSE_D > mFullMapD ) {
-            yExtra = mFullMapD - ( mSubMapOffsetY + HOUSE_D );
-            }        
-        }
-    else if( robSubY < 2 ) {
-        yExtra = robSubY - (HOUSE_D - robSubY);
-        yExtra /= 2;
-
-        if( yExtra + mSubMapOffsetY < 0 ) {
-            yExtra = -mSubMapOffsetY;
-            }        
-        }
-
-
-    if( xExtra != 0 || yExtra != 0 ) {
-        setVisibleOffset( mSubMapOffsetX + xExtra,
-                          mSubMapOffsetY + yExtra );
-
+    if( xExtra != 0 || yExtra != 0 ) {        
         // slide values in visibility map
         unsigned char *mNewVisibleMap = new unsigned char[ 
             VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
@@ -522,11 +423,16 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
         delete [] mNewVisibleMap;
         }
+    
+    HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
+    }
 
 
 
 
-    robSubIndex = fullToSub( mRobberIndex );
+void RobHouseGridDisplay::recomputeVisibility() {
+
+    int robSubIndex = fullToSub( mRobberIndex );
     
     if( robSubIndex == -1 ) {
         // robber out of bounds

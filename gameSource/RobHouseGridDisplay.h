@@ -29,7 +29,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         // override to update visibility when map changes
         virtual void setHouseMap( char *inHouseMap );
-            
+
+        // override to shift visibility map too
+        virtual void setVisibleOffset( int inXOffset, int inYOffset );
+
 
         virtual void draw();
 
@@ -38,15 +41,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void pointerDown( float inX, float inY );
         virtual void pointerDrag( float inX, float inY );
         virtual void pointerUp( float inX, float inY );
-        
-        // arrow key movement
-        virtual void specialKeyDown( int inKeyCode );
-        virtual void specialKeyUp( int inKeyCode );
 
 
     protected:
-        
-        int mRobberIndex;
         
         char mSuccess;
         
@@ -65,8 +62,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         void clearMoveList();
 
-
-
+        // override to recompute visibility and check for goal reached
+        virtual void moveRobber( int inNewIndex );
+        
         virtual void recomputeVisibility();
         
     };

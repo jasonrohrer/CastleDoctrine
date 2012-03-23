@@ -101,8 +101,13 @@ void ReplayRobHouseGridDisplay::takeStep() {
         if( strlen( move ) > 0 ) {
             if( move[0] == 'm' ) {
                 // player movement to new index
+                int newIndex;
+                sscanf( move, "m%d", &newIndex );
 
-                sscanf( move, "m%d", &mRobberIndex );
+                // DON'T call RobHouseGridDisplay's moveRobber, 
+                // because it detects success condition and fires an event,
+                // which we don't want to do during replay
+                HouseGridDisplay::moveRobber( newIndex );
                 recomputeVisibility();
                 }
             }
