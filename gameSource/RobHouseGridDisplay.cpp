@@ -18,7 +18,6 @@ extern double frameRateFactor;
 
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
-          mRobberIndex( mStartIndex ),
           mSuccess( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
@@ -65,7 +64,6 @@ char *RobHouseGridDisplay::getMoveList() {
 
 
 void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
-    mRobberIndex = mStartIndex;
     mSuccess = false;
     clearMoveList();
 
@@ -75,7 +73,9 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         mVisibleMap[i] = 255;
         mTargetVisibleMap[i] = false;
         }
-
+    
+    mRobberIndex = mStartIndex;
+    
     recomputeVisibility();
     }
 
@@ -196,9 +196,12 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
 void RobHouseGridDisplay::draw() {
     HouseGridDisplay::draw();
 
-    setDrawColor( 0, 0, 1, 1 );
-    drawSquare( getTilePos( mRobberIndex ), 0.5 * mTileRadius );
-
+    int robSubIndex = fullToSub( mRobberIndex );
+    if( robSubIndex != -1 ) {    
+        setDrawColor( 0, 0, 1, 1 );
+        drawSquare( getTilePos( robSubIndex ), 0.5 * mTileRadius );
+        }
+    
     
     // decay each frame
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
@@ -239,7 +242,20 @@ void RobHouseGridDisplay::draw() {
     int blowUpFactor = 2;
     int blownUpSize = HOUSE_D * VIS_BLOWUP * blowUpFactor;
 
-    int numBlowupPixels = blownUpSize * blownUpSize;
+    double log2size = log( blownUpSize ) / log( 2 );
+    
+    int next2PowerSize = (int)( ceil( log2size  ) );
+    
+    int paddedSize = blownUpSize;
+
+    if( next2PowerSize != log2size ) {
+        paddedSize = (int)( pow( 2, next2PowerSize ) );
+        }
+    
+    int blowUpBorder = ( paddedSize - blownUpSize ) / 2;
+    
+
+    int numBlowupPixels = paddedSize * paddedSize;
 
     // opt:  do all this processing with uchars instead of doubles
     unsigned char *fullGridChannelsBlownUpAlpha =
@@ -249,31 +265,35 @@ void RobHouseGridDisplay::draw() {
 
     int numTouched = 0;
 
-    memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
+    memset( fullGridChannelsBlownUpAlpha, 255, numBlowupPixels );
 
     
     for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+        
         for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
-    
-            unsigned char alphaValue = mVisibleMap[ y * HOUSE_D * VIS_BLOWUP 
-                                                    + x ];
+            
+            unsigned char alphaValue = 
+                mVisibleMap[ y * HOUSE_D * VIS_BLOWUP + x ];
 
             for( int blowUpY= y * blowUpFactor; 
                  blowUpY< y * blowUpFactor + blowUpFactor; 
                  blowUpY++ ) {
 
+                int padY = blowUpY + blowUpBorder;
+
                 for( int blowUpX= x * blowUpFactor; 
                      blowUpX< x * blowUpFactor + blowUpFactor; 
                      blowUpX++ ) {
-                
+                    
+                    int padX = blowUpX + blowUpBorder;
 
-                    int imageIndex = blowUpY * blownUpSize + blowUpX;
+                    int imageIndex = padY * paddedSize + padX;
                     
                     fullGridChannelsBlownUpAlpha[ imageIndex ] = alphaValue;
                     
-                    if( blowUpY > 0 && blowUpY < blownUpSize - 1
+                    if( padY > 0 && padY < paddedSize - 1
                         &&
-                        blowUpX > 0 && blowUpX < blownUpSize - 1 ) {
+                        padX > 0 && padX < paddedSize - 1 ) {
                         
                         // apply blur filter to non-border pixels
                         touchIndices[numTouched] = imageIndex;
@@ -297,14 +317,32 @@ void RobHouseGridDisplay::draw() {
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                                 touchIndices,
                                 numTouched,
-                                blownUpSize, blownUpSize );
+                                paddedSize, paddedSize );
         }
     
+
+    // clear border again
+    for( int y=0; y<paddedSize; y++ ) {
+        for( int x=0; x<blowUpBorder; x++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        for( int x=paddedSize - blowUpBorder; x<paddedSize; x++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        }
+    for( int x=0; x<paddedSize; x++ ) {
+        for( int y=0; y<blowUpBorder; y++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        for( int y=paddedSize - blowUpBorder; y<paddedSize; y++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        }
 
 
     SpriteHandle visSprite = 
         fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha, 
-                             blownUpSize, blownUpSize );
+                             paddedSize, paddedSize );
     
     delete [] fullGridChannelsBlownUpAlpha;
     delete [] touchIndices;
@@ -339,8 +377,8 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 // arrow key movement
 void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
-    int oldX = mRobberIndex % HOUSE_D;
-    int oldY = mRobberIndex / HOUSE_D;
+    int oldX = mRobberIndex % mFullMapD;
+    int oldY = mRobberIndex / mFullMapD;
     
     int oldIndex = mRobberIndex;
     
@@ -355,7 +393,7 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
             }
         }
     else if( inKeyCode == MG_KEY_RIGHT ) {
-        if( newX < HOUSE_D - 1 ) {
+        if( newX < mFullMapD - 1 ) {
             newX++;
             }
         }
@@ -365,14 +403,14 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
             }
         }
     else if( inKeyCode == MG_KEY_UP ) {
-        if( newY < HOUSE_D - 1 ) {
+        if( newY < mFullMapD - 1 ) {
             newY++;
             }
         }
     
     
 
-    mRobberIndex = newY * HOUSE_D + newX;
+    mRobberIndex = newY * mFullMapD + newX;
     
     if( mHouseMapIDs[ mRobberIndex ] != 0 ) {
         // hit wall, roll back to last position
@@ -401,7 +439,19 @@ void RobHouseGridDisplay::specialKeyUp( int inKeyCode ) {
 
 void RobHouseGridDisplay::recomputeVisibility() {
 
-    doublePair robPos = getTilePos( mRobberIndex );
+    int robSubIndex = fullToSub( mRobberIndex );
+    
+    if( robSubIndex == -1 ) {
+        // robber out of bounds
+        // nothing visible
+        for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
+            mTargetVisibleMap[i] = false;
+            }
+        return;
+        }
+    
+
+    doublePair robPos = getTilePos( fullToSub( mRobberIndex ) );
 
     
     doublePair cornerPos = getTilePos( 0 );
@@ -439,7 +489,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
                 if( //stepIndex != visTileIndex && 
-                    mHouseMapIDs[stepIndex] != 0 ) {
+                    mHouseSubMapIDs[stepIndex] != 0 ) {
                     
                     hit = true;
                     }

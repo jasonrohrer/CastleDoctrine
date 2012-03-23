@@ -17,10 +17,12 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY )
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
+          mSubMapOffsetX( 0 ),
+          mSubMapOffsetY( 0 ),
+          mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
+          mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
           mHighlightIndex( -1 ), mTileRadius( 0.375 ) {
 
-    mStartIndex = HOUSE_D * ( HOUSE_D / 2 );
-    mGoalIndex = HOUSE_D * ( HOUSE_D / 2 ) + HOUSE_D - 1;
     }
 
 
@@ -35,6 +37,9 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mHouseMapCellStates != NULL ) {
         delete [] mHouseMapCellStates;
         }
+
+    delete [] mHouseSubMapIDs;
+    delete [] mHouseSubMapCellStates;
     }
 
 
@@ -57,7 +62,8 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         }
     
     mNumMapSpots = numTokens;
-
+    mFullMapD = (int)sqrt( mNumMapSpots );
+    
     mHouseMapIDs = new int[ mNumMapSpots ];
     mHouseMapCellStates = new int[ mNumMapSpots ];
     
@@ -84,6 +90,11 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         }
     
     delete [] tokens;
+
+    setVisibleOffset( mSubMapOffsetX, mSubMapOffsetY );
+
+    mStartIndex = mFullMapD * ( mFullMapD / 2 );
+    mGoalIndex = mFullMapD * ( mFullMapD / 2 ) + mFullMapD - 1;
     }
 
 
@@ -196,7 +207,7 @@ void HouseGridDisplay::draw() {
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
-            int houseTile = mHouseMapIDs[i];
+            int houseTile = mHouseSubMapIDs[i];
             
             
             doublePair tilePos = getTilePos( i );
@@ -210,8 +221,6 @@ void HouseGridDisplay::draw() {
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile );
-                
-                printf( "Drawing sprite with handle %d\n", (int)sprite );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
@@ -234,12 +243,19 @@ void HouseGridDisplay::draw() {
             }
         }
 
-    setDrawColor( 0, 1, 0, 1 );
-    drawSquare( getTilePos( mStartIndex ), 0.75 * mTileRadius );
+    int startSubIndex = fullToSub( mStartIndex );
+    if( startSubIndex != -1 ) {
+        setDrawColor( 0, 1, 0, 1 );
+        drawSquare( getTilePos( startSubIndex ), 0.75 * mTileRadius );
+        }
 
-    setDrawColor( 1, 1, 0, 1 );
-    drawSquare( getTilePos( mGoalIndex ), 0.75 * mTileRadius );
-
+    int goalSubIndex = fullToSub( mGoalIndex );
+    
+    if( goalSubIndex != -1 ) {    
+        setDrawColor( 1, 1, 0, 1 );
+        drawSquare( getTilePos( goalSubIndex ), 0.75 * mTileRadius );
+        }
+    
     }
 
 
@@ -264,15 +280,83 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
 
     if( index != -1 && index != mStartIndex && index != mGoalIndex ) {
     
-        int old = mHouseMapIDs[ index ];
+        int old = mHouseSubMapIDs[ index ];
         
         if( old == 0 ) {
-            mHouseMapIDs[ index ] = 1;
+            mHouseSubMapIDs[ index ] = 1;
+            copySubCellBack( index );
             fireActionPerformed( this );
             }
         else if( old == 1 ) {
-            mHouseMapIDs[ index ] = 0;
+            mHouseSubMapIDs[ index ] = 0;
+            copySubCellBack( index );
             fireActionPerformed( this );
             }
         }
+    }
+
+
+
+int HouseGridDisplay::subToFull( int inSubCellIndex ) {
+    int x = inSubCellIndex % HOUSE_D;
+    int y = inSubCellIndex / HOUSE_D;
+
+    int bigY = y + mSubMapOffsetY;
+    int bigX = x + mSubMapOffsetX;
+
+    return bigY * mFullMapD + bigX;
+    }
+
+
+
+int HouseGridDisplay::fullToSub( int inFullCellIndex ) {
+    int bigX = inFullCellIndex % mFullMapD;
+    int bigY = inFullCellIndex / mFullMapD;
+
+    int x = bigX - mSubMapOffsetY;
+    int y = bigY - mSubMapOffsetX;
+
+    if( y < HOUSE_D && x < HOUSE_D ) {
+        return y * HOUSE_D + x;
+        }
+    return -1;
+    }
+
+
+
+
+void HouseGridDisplay::copySubCellBack( int inSubCellIndex ) {
+    int bigIndex = subToFull( inSubCellIndex );
+    
+    mHouseMapIDs[ bigIndex ] = 
+        mHouseSubMapIDs[ inSubCellIndex ];
+            
+    mHouseMapCellStates[ bigIndex ] = 
+        mHouseSubMapCellStates[ inSubCellIndex ];
+    }
+
+
+
+
+void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
+    for( int y=0; y<HOUSE_D; y++ ) {
+        int bigY = y + inYOffset;
+
+        for( int x=0; x<HOUSE_D; x++ ) {
+            int bigX = x + inXOffset;
+
+            int subIndex = y * HOUSE_D + x;
+            
+            int bigIndex = bigY * mFullMapD + bigX;
+
+            mHouseSubMapIDs[ subIndex ] = 
+                mHouseMapIDs[ bigIndex ];
+            
+            mHouseSubMapCellStates[ subIndex ] = 
+                mHouseMapCellStates[ bigIndex ];
+            }
+        }
+    
+    mSubMapOffsetX = inXOffset;
+    mSubMapOffsetY = inYOffset;
     }

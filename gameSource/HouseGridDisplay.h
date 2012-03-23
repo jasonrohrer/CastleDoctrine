@@ -10,7 +10,7 @@
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
-#define HOUSE_D 16
+#define HOUSE_D 12
 
 
 // fires actionPerformed whenever grid contents changes
@@ -30,7 +30,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // destroyed by caller
         char *getHouseMap();
         
-            
+        
+        void setVisibleOffset( int inXOffset, int inYOffset );
+        
 
         virtual void step();
         
@@ -51,6 +53,24 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapIDs;
 
         int *mHouseMapCellStates;
+        
+        int mFullMapD;
+
+        int mSubMapOffsetX;
+        int mSubMapOffsetY;
+
+        // visible HOUSE_D x HOUSE_D sub-square of map
+        int *mHouseSubMapIDs;
+        
+        int *mHouseSubMapCellStates;
+
+        int subToFull( int inSubCellIndex );
+        // can return -1 if out of sub-square bounds
+        int fullToSub( int inFullCellIndex );
+
+        // copy contents of sub cell back into full map
+        void copySubCellBack( int inSubCellIndex );
+
         
 
         
