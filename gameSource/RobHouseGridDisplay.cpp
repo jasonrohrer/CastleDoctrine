@@ -199,7 +199,7 @@ void RobHouseGridDisplay::draw() {
     int robSubIndex = fullToSub( mRobberIndex );
     if( robSubIndex != -1 ) {    
         setDrawColor( 0, 0, 1, 1 );
-        drawSquare( getTilePos( robSubIndex ), 0.5 * mTileRadius );
+        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
         }
     
     

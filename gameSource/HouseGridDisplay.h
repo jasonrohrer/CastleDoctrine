@@ -10,7 +10,7 @@
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
-#define HOUSE_D 12
+#define HOUSE_D 13
 
 
 // fires actionPerformed whenever grid contents changes

@@ -21,7 +21,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY )
           mSubMapOffsetY( 0 ),
           mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
           mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
-          mHighlightIndex( -1 ), mTileRadius( 0.375 ) {
+          mHighlightIndex( -1 ), mTileRadius( 0.4375 ) {
 
     }
 
