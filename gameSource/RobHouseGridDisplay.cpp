@@ -464,6 +464,40 @@ void RobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
     if( xExtra != 0 || yExtra != 0 ) {
         setVisibleOffset( mSubMapOffsetX + xExtra,
                           mSubMapOffsetY + yExtra );
+
+        // slide values in visibility map
+        unsigned char *mNewVisibleMap = new unsigned char[ 
+            VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+
+        // leave black in excess area
+        memset( mNewVisibleMap, 255, 
+                VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
+
+        int visXDelta = -xExtra * VIS_BLOWUP;
+        int visYDelta = yExtra * VIS_BLOWUP;
+        
+        for( int y=0; y<VIS_BLOWUP * HOUSE_D; y++ ) {
+            int destY = y + visYDelta;
+            
+            if( destY >= 0 && destY < VIS_BLOWUP * HOUSE_D ) {
+                
+                for( int x=0; x<VIS_BLOWUP * HOUSE_D; x++ ) {
+                    
+                    int destX = x + visXDelta;
+                    
+                    if( destX >= 0 && destX < VIS_BLOWUP * HOUSE_D ) {
+                        
+                        mNewVisibleMap[ destY * VIS_BLOWUP * HOUSE_D + destX ]
+                            = mVisibleMap[ y * VIS_BLOWUP * HOUSE_D + x ];
+                        }
+                    }
+                }
+            }
+        
+        // now replace old with new
+        memcpy( mVisibleMap, mNewVisibleMap, 
+                VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
+        delete [] mNewVisibleMap;
         }
     
         
