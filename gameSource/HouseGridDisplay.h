@@ -29,6 +29,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         // destroyed by caller
         char *getHouseMap();
+
+        char isGoalSet();
         
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
@@ -97,6 +99,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         int mStartIndex;
         int mGoalIndex;
+
+        char mGoalSet;
     };
 
 

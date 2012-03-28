@@ -14,6 +14,9 @@
 #include "houseObjects.h"
 
 
+#define GOAL_ID  999
+
+
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY )
         : PageComponent( inX, inY ),
@@ -24,7 +27,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY )
           mSubMapOffsetY( 0 ),
           mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
           mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
-          mHighlightIndex( -1 ), mTileRadius( 0.4375 ) {
+          mHighlightIndex( -1 ), mTileRadius( 0.4375 ),
+          mGoalSet( false ) {
 
     }
 
@@ -88,6 +92,11 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
                 }
             }
         
+        if( mHouseMapIDs[i] == GOAL_ID ) {
+            mGoalIndex = i;
+            mGoalSet = true;
+            }
+        
 
         delete [] tokens[i];
         }
@@ -99,7 +108,6 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     setVisibleOffset( 0, ( mFullMapD - HOUSE_D ) / 2 );
 
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
-    mGoalIndex = mFullMapD * ( mFullMapD / 2 ) + mFullMapD - 1;
     
     mRobberIndex = mStartIndex;
     }
@@ -140,6 +148,12 @@ char *HouseGridDisplay::getHouseMap() {
 
         return stringDuplicate( mHouseMap );
         }
+    }
+
+
+
+char HouseGridDisplay::isGoalSet() {
+    return mGoalSet;
     }
 
     
@@ -220,10 +234,29 @@ void HouseGridDisplay::draw() {
             doublePair tilePos = getTilePos( i );
  
             
-            if( houseTile == 0 ) {
+            // draw empty floor, even under goal
+            if( houseTile == 0 || houseTile == GOAL_ID ) {
+                setDrawColor( 0.25, 0.25, 0.25, 1 );
+                drawSquare( tilePos, mTileRadius );
+
+                if( houseTile == GOAL_ID ) {
+                    // draw goal here, so highlight can draw over it
+
+                    setDrawColor( 1, 1, 0, 1 );
+                    drawSquare( tilePos, 0.75 * mTileRadius );
+                    }
+                
+                }
+            /*
+            else if( houseTile == GOAL_ID ) {
+                // goal position found
+                mGoalIndex = subToFull( i );
+
+                // draw empty floor under it
                 setDrawColor( 0.25, 0.25, 0.25, 1 );
                 drawSquare( tilePos, mTileRadius );
                 }
+            */
             else {
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -235,15 +268,27 @@ void HouseGridDisplay::draw() {
             
 
             
-            
-            if( mHighlightIndex == i ) {
-                if( houseTile == '0' ) {
-                    setDrawColor( 1, 0, 0, 0.35 );
+            // no highlight over start
+            if( mHighlightIndex == i &&
+                subToFull( i ) != mStartIndex ) {
+
+                if( !mGoalSet ) {
+                    // ghost of goal for placement
+                    setDrawColor( 1, 1, 0, 0.35 );
+                    drawSquare( tilePos, 
+                                0.75 * mTileRadius );
+                    }
+                else if( houseTile == 0 ) {
+                    setDrawColor( 1, 1, 1, 0.35 );
+                
+                    SpriteHandle sprite = getObjectSprite( 1 );
+                    
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
                 else {
                     setDrawColor( 0, 0, 0, 0.35 );
+                    drawSquare( tilePos, mTileRadius ); 
                     }
-                drawSquare( tilePos, mTileRadius ); 
                 }
 
             i++;
@@ -256,12 +301,16 @@ void HouseGridDisplay::draw() {
         drawSquare( getTilePos( startSubIndex ), 0.75 * mTileRadius );
         }
 
-    int goalSubIndex = fullToSub( mGoalIndex );
-    
-    if( goalSubIndex != -1 ) {    
-        setDrawColor( 1, 1, 0, 1 );
-        drawSquare( getTilePos( goalSubIndex ), 0.75 * mTileRadius );
+    /*
+    if( mGoalSet ) {    
+        int goalSubIndex = fullToSub( mGoalIndex );
+        
+        if( goalSubIndex != -1 ) {    
+            setDrawColor( 1, 1, 0, 1 );
+            drawSquare( getTilePos( goalSubIndex ), 0.75 * mTileRadius );
+            }
         }
+    */
     
 
     int robSubIndex = fullToSub( mRobberIndex );
@@ -291,7 +340,19 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
     
     mHighlightIndex = index;
 
-    if( index != -1 && index != mStartIndex && index != mGoalIndex ) {
+    int fullIndex = subToFull( index );
+    
+
+    if( index != -1 && !mGoalSet ) {
+        // goal set here
+        mHouseSubMapIDs[ index ] = GOAL_ID;
+        mGoalIndex = fullIndex;
+        mGoalSet = true;
+        copySubCellBack( index );
+        fireActionPerformed( this );
+        }
+    else if( index != -1 && 
+             fullIndex != mStartIndex && fullIndex != mGoalIndex ) {
     
         int old = mHouseSubMapIDs[ index ];
         
@@ -306,6 +367,14 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
             fireActionPerformed( this );
             }
         }
+    else if( mGoalSet && fullIndex == mGoalIndex ) {
+        // goal moving!
+        mHouseSubMapIDs[ index ] = 0;
+        mGoalSet = false;
+        copySubCellBack( index );
+        fireActionPerformed( this );
+        }
+    
     }
 
 
@@ -346,7 +415,8 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newRobberIndex = newY * mFullMapD + newX;
     
-    if( mHouseMapIDs[ newRobberIndex ] == 0 ) {
+    if( mHouseMapIDs[ newRobberIndex ] == 0 ||
+        mHouseMapIDs[ newRobberIndex ] == GOAL_ID ) {
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
         }

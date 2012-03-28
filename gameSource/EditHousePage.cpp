@@ -84,7 +84,11 @@ char EditHousePage::houseMapChanged() {
 
 
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
-    if( inTarget == &mDoneButton ) {
+    if( inTarget == &mGridDisplay ) {
+        // can't click DONE if house has no goal set
+        mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+        }
+    else if( inTarget == &mDoneButton ) {
         mDone = true;
         }
     }
