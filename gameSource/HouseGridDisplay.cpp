@@ -419,6 +419,8 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         mHouseMapIDs[ newRobberIndex ] == GOAL_ID ) {
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
+
+        fireActionPerformed( this );
         }
     
     }

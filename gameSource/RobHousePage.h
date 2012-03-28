@@ -61,7 +61,8 @@ class RobHousePage : public GamePage, public ActionListener {
         char mDone;
 
         char *mDescription;
-        
+
+        int mLastPingTime;
 
     };
 

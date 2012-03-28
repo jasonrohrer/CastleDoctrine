@@ -11,6 +11,9 @@
 #include "minorGems/util/stringUtils.h"
 
 
+#include <time.h>
+
+
 extern Font *mainFont;
 
 
@@ -87,6 +90,33 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
         mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+
+        // change to house map
+
+        // send ping on user activity every 30 seconds
+        if( time( NULL ) > mLastPingTime + 30 
+            &&
+            mWebRequest == -1 ) {
+            
+            char *ticketHash = getTicketHash();
+            
+            char *fullRequestURL = autoSprintf( 
+                "%s?action=ping_house&user_id=%d"
+                "&%s",
+                serverURL, userID, ticketHash );
+            delete [] ticketHash;
+            
+            mWebRequest = startWebRequest( "GET", 
+                                           fullRequestURL, 
+                                           NULL );
+            
+            printf( "Sending web request:  %s\n", fullRequestURL );
+
+            delete [] fullRequestURL;
+
+            mLastPingTime = time( NULL );
+            }
+
         }
     else if( inTarget == &mDoneButton ) {
         mDone = true;
@@ -99,39 +129,10 @@ void EditHousePage::step() {
     if( mWebRequest != -1 ) {
             
         int result = stepWebRequest( mWebRequest );
-                
-        switch( result ) {
-            case 0:
-                break;
-            case -1:
-                mStatusError = true;
-                mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
-                mWebRequest = -1;
-                break;
-            case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
-                mWebRequest = -1;
-                        
-                if( strstr( result, "DENIED" ) != NULL ) {
-                    mStatusError = true;
-                    mStatusMessageKey = "houseBeingRobbed";
-                    }
-                else {
-                    // house checked out!
-                    
-                    //int size = strlen( result );
-                    
-                    //mHouseMap = new char[ size + 1 ];
-                    
-                    //sscanf( result, "%s", mHouseMap );
-                    }
-                        
-                        
-                delete [] result;
-                }
-                break;
+          
+        if( result != 0 ) {
+            clearWebRequest( mWebRequest );
+            mWebRequest = -1;
             }
         }
     }
@@ -143,6 +144,8 @@ void EditHousePage::makeActive( char inFresh ) {
         return;
         }
     
+    mLastPingTime = time( NULL );
+
     mDone = false;
     }
         

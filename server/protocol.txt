@@ -94,7 +94,10 @@ OK
 Note:
 Proves that house is still being actively edited or robbed, keeping the
 house checked out.  Without regular pings, the house will time out
-and automatically check back in
+and automatically check back in.
+
+Note that user_id is the owner in the case of a house being edited,
+and user_id is the robber in the case of a house being robbed.
 
 
 

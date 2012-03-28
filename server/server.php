@@ -82,6 +82,7 @@ cd_connectToDatabase();
 
 // general processing whenver server.php is accessed directly
 
+cd_checkForFlush();
 
 
 
@@ -194,12 +195,19 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
     // quick (and incomplete) test to see if we should show instructions
     global $tableNamePrefix;
     
-    // check if one of our table exists
-    $tableName = $tableNamePrefix . "users";
+    // check if our tables exists
+    $allExist =
+        cd_doesTableExist( $tableNamePrefix."server_globals" ) &&
+        cd_doesTableExist( $tableNamePrefix."log" ) &&
+        cd_doesTableExist( $tableNamePrefix."users" ) &&
+        cd_doesTableExist( $tableNamePrefix."houses" ) &&
+        cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
+        cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
+        cd_doesTableExist( $tableNamePrefix."last_names" ) &&
+        cd_doesTableExist( $tableNamePrefix."first_names" );
     
-    $exists = cd_doesTableExist( $tableName );
         
-    if( $exists  ) {
+    if( $allExist  ) {
         echo "Castle Doctrine Server database setup and ready";
         }
     else {
@@ -347,6 +355,30 @@ function cd_pickFullName() {
 function cd_setupDatabase() {
     global $tableNamePrefix;
 
+
+    $tableName = $tableNamePrefix . "server_globals";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // this table contains general info about the server
+        // use INNODB engine so table can be locked
+        $query =
+            "CREATE TABLE $tableName(" .
+            "last_flush_time DATETIME NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        // create one row
+        $query = "INSERT INTO $tableName VALUES ( CURRENT_TIMESTAMP );";
+        $result = cd_queryDatabase( $query );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+    
     $tableName = $tableNamePrefix . "log";
     if( ! cd_doesTableExist( $tableName ) ) {
 
@@ -584,6 +616,105 @@ function cd_clearLog() {
         echo "DELETE operation failed?";
         }
     }
+
+
+
+
+
+
+// check if we should flush stale checkouts from the database
+// do this every 5 minutes
+function cd_checkForFlush() {
+    global $tableNamePrefix;
+
+    $tableName = "$tableNamePrefix"."server_globals";
+    
+    if( !cd_doesTableExist( $tableName ) ) {
+        return;
+        }
+    
+    
+    cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
+
+    
+    $query = "SELECT last_flush_time FROM $tableName ".
+        "WHERE last_flush_time < ".
+        "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' ) ".
+        "FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    if( mysql_numrows( $result ) > 0 ) {
+
+        // last flush time is old
+
+        global $tableNamePrefix;
+
+
+        // for each robber who quit game mid-robbery, clear robbery checkout
+        // and add entry to limbo table
+        $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
+            "WHERE rob_checkout = 1 ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' ) FOR UPDATE;";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+    
+        for( $i=0; $i<$numRows; $i++ ) {
+
+            $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
+
+            cd_processStaleRobberies( $robbing_user_id );
+            }
+        
+        
+        // now clear checkout status on stale edit checkouts
+        $query = "UPDATE $tableNamePrefix"."houses ".
+            "SET rob_checkout = 0, edit_checkout = 0 ".
+            "WHERE edit_checkout = 1 ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' );";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRowsRemoved = mysql_affected_rows();
+
+        cd_log( "Flush operation checked back in $numRowsRemoved ".
+                "stale houses." );
+
+        global $enableLog;
+        
+        if( $enableLog ) {
+            // count remaining games for log
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+                "WHERE rob_checkout = 1 OR edit_checkout = 1;";
+
+            $result = cd_queryDatabase( $query );
+
+            $count = mysql_result( $result, 0, 0 );
+
+            cd_log( "After flush, $count houses still checked out." );
+            }
+
+        
+        // set new flush time
+
+        $query = "UPDATE $tableName SET " .
+            "last_flush_time = CURRENT_TIMESTAMP;";
+    
+        $result = cd_queryDatabase( $query );
+
+    
+        }
+
+    cd_queryDatabase( "COMMIT;" );
+
+    cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
+    }
+
+
 
 
 

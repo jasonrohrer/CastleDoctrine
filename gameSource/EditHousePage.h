@@ -58,5 +58,7 @@ class EditHousePage : public GamePage, public ActionListener {
         char mDone;
         
 
+        int mLastPingTime;
+
     };
 
