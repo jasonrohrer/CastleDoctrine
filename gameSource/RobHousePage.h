@@ -1,4 +1,4 @@
-#include "GamePage.h"
+#include "LiveHousePage.h"
 
 #include "TextField.h"
 #include "TextButton.h"
@@ -10,7 +10,7 @@
 
 
 
-class RobHousePage : public GamePage, public ActionListener {
+class RobHousePage : public LiveHousePage, public ActionListener {
         
     public:
         
@@ -42,8 +42,6 @@ class RobHousePage : public GamePage, public ActionListener {
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
-        virtual void step();
-
         virtual void draw( doublePair inViewCenter, 
                    double inViewSize );
 
@@ -51,8 +49,6 @@ class RobHousePage : public GamePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-        
-        int mWebRequest;
 
 
         RobHouseGridDisplay mGridDisplay;
@@ -61,8 +57,6 @@ class RobHousePage : public GamePage, public ActionListener {
         char mDone;
 
         char *mDescription;
-
-        int mLastPingTime;
 
     };
 

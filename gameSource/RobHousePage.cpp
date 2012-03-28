@@ -1,5 +1,4 @@
 #include "RobHousePage.h"
-#include "ticketHash.h"
 
 #include "message.h"
 
@@ -13,7 +12,6 @@
 #include <time.h>
 
 
-
 extern Font *mainFont;
 
 
@@ -24,8 +22,7 @@ extern int userID;
 
 
 RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
-        : mWebRequest( -1 ),
-          mGridDisplay( 0, 0 ),
+        : mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( inDoneButtonKey ) ),
           mDescription( NULL ) {
 
@@ -80,57 +77,24 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             mDone = true;
             }
         else {
-            // send ping on user activity every 30 seconds
-            if( time( NULL ) > mLastPingTime + 30 
-                &&
-                mWebRequest == -1 ) {
-                
-                char *ticketHash = getTicketHash();
-                
-                char *fullRequestURL = autoSprintf( 
-                    "%s?action=ping_house&user_id=%d"
-                    "&%s",
-                    serverURL, userID, ticketHash );
-                delete [] ticketHash;
-                
-                mWebRequest = startWebRequest( "GET", 
-                                               fullRequestURL, 
-                                               NULL );
-
-                printf( "Sending web request:  %s\n", fullRequestURL );
-                
-                delete [] fullRequestURL;
-
-                mLastPingTime = time( NULL );
-                }
-            }
-        
-        }
-    }
-
-
-
-void RobHousePage::step() {
-    if( mWebRequest != -1 ) {
             
-        int result = stepWebRequest( mWebRequest );
-        
-        if( result != 0 ) {
-            clearWebRequest( mWebRequest );
-            mWebRequest = -1;
+            // activity on house map
+            mLastActionTime = time( NULL );
             }
+        
         }
     }
 
 
         
 void RobHousePage::makeActive( char inFresh ) {
+    LiveHousePage::makeActive( inFresh );
+    
+    
     if( !inFresh ) {
         return;
         }
     
-    mLastPingTime = time( NULL );
-
     mDone = false;
     }
 

@@ -1,4 +1,4 @@
-#include "GamePage.h"
+#include "LiveHousePage.h"
 
 #include "TextField.h"
 #include "TextButton.h"
@@ -10,7 +10,7 @@
 
 
 
-class EditHousePage : public GamePage, public ActionListener {
+class EditHousePage : public LiveHousePage, public ActionListener {
         
     public:
         
@@ -35,8 +35,6 @@ class EditHousePage : public GamePage, public ActionListener {
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
-        virtual void step();
-
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize );
         
@@ -44,9 +42,6 @@ class EditHousePage : public GamePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-        
-        int mWebRequest;
-
 
         // for change detection
         char *mStartHouseMap;
@@ -56,9 +51,6 @@ class EditHousePage : public GamePage, public ActionListener {
         TextButton mDoneButton;
         
         char mDone;
-        
-
-        int mLastPingTime;
 
     };
 

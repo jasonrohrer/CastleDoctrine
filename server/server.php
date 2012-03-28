@@ -623,7 +623,7 @@ function cd_clearLog() {
 
 
 // check if we should flush stale checkouts from the database
-// do this every 5 minutes
+// do this once every 2 minutes
 function cd_checkForFlush() {
     global $tableNamePrefix;
 
@@ -639,7 +639,7 @@ function cd_checkForFlush() {
     
     $query = "SELECT last_flush_time FROM $tableName ".
         "WHERE last_flush_time < ".
-        "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' ) ".
+        "SUBTIME( CURRENT_TIMESTAMP, '0 0:02:0.000' ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -656,7 +656,7 @@ function cd_checkForFlush() {
         $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
             "WHERE rob_checkout = 1 ".
             "AND last_ping_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' ) FOR UPDATE;";
+            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' ) FOR UPDATE;";
 
         $result = cd_queryDatabase( $query );
 
@@ -675,7 +675,7 @@ function cd_checkForFlush() {
             "SET rob_checkout = 0, edit_checkout = 0 ".
             "WHERE edit_checkout = 1 ".
             "AND last_ping_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '0 0:01:0.000' );";
+            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' );";
 
         $result = cd_queryDatabase( $query );
 

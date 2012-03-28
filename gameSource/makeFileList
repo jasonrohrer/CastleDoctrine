@@ -23,6 +23,7 @@ TextButton.cpp \
 SpriteButton.cpp \
 ticketHash.cpp \
 CheckoutHousePage.cpp \
+LiveHousePage.cpp \
 EditHousePage.cpp \
 HouseGridDisplay.cpp \
 CheckinHousePage.cpp \

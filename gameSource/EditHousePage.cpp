@@ -1,5 +1,4 @@
 #include "EditHousePage.h"
-#include "ticketHash.h"
 
 #include "message.h"
 
@@ -17,15 +16,11 @@
 extern Font *mainFont;
 
 
-extern char *serverURL;
-
-extern int userID;
 
 
 
 EditHousePage::EditHousePage() 
-        : mWebRequest( -1 ),
-          mStartHouseMap( NULL ),
+        : mStartHouseMap( NULL ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ) {
 
@@ -92,31 +87,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDoneButton.setVisible( mGridDisplay.isGoalSet() );
 
         // change to house map
-
-        // send ping on user activity every 30 seconds
-        if( time( NULL ) > mLastPingTime + 30 
-            &&
-            mWebRequest == -1 ) {
-            
-            char *ticketHash = getTicketHash();
-            
-            char *fullRequestURL = autoSprintf( 
-                "%s?action=ping_house&user_id=%d"
-                "&%s",
-                serverURL, userID, ticketHash );
-            delete [] ticketHash;
-            
-            mWebRequest = startWebRequest( "GET", 
-                                           fullRequestURL, 
-                                           NULL );
-            
-            printf( "Sending web request:  %s\n", fullRequestURL );
-
-            delete [] fullRequestURL;
-
-            mLastPingTime = time( NULL );
-            }
-
+        mLastActionTime = time( NULL );
         }
     else if( inTarget == &mDoneButton ) {
         mDone = true;
@@ -125,27 +96,16 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
 
 
-void EditHousePage::step() {
-    if( mWebRequest != -1 ) {
-            
-        int result = stepWebRequest( mWebRequest );
-          
-        if( result != 0 ) {
-            clearWebRequest( mWebRequest );
-            mWebRequest = -1;
-            }
-        }
-    }
 
 
         
 void EditHousePage::makeActive( char inFresh ) {
+    LiveHousePage::makeActive( inFresh );
+    
     if( !inFresh ) {
         return;
         }
     
-    mLastPingTime = time( NULL );
-
     mDone = false;
     }
         
