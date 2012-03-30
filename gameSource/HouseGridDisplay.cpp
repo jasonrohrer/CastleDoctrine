@@ -236,9 +236,13 @@ void HouseGridDisplay::draw() {
             
             // draw empty floor, even under goal
             if( houseTile == 0 || houseTile == GOAL_ID ) {
-                setDrawColor( 0.25, 0.25, 0.25, 1 );
-                drawSquare( tilePos, mTileRadius );
-
+                
+                setDrawColor( 1, 1, 1, 1 );
+                
+                SpriteHandle sprite = getObjectSprite( 0 );
+                
+                drawSprite( sprite, tilePos, 1.0/16.0 );
+                
                 if( houseTile == GOAL_ID ) {
                     // draw goal here, so highlight can draw over it
 
