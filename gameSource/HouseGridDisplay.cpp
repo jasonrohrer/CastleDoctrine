@@ -208,6 +208,34 @@ doublePair HouseGridDisplay::getTilePos( int inIndex ) {
 
 
 
+int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
+    int fullIndex = subToFull( inIndex );
+    
+    int fullY = fullIndex / mFullMapD;
+    int fullX = fullIndex % mFullMapD;
+    
+    int dX[4] = { 0, 1, 0, -1 };
+    int dY[4] = { 1, 0, -1, 0 };
+
+    int nY = fullY + dY[ inNeighbor ];
+
+    int nX = fullX + dX[ inNeighbor ];
+    
+    
+    if( nY < 0 || nY >= mFullMapD
+        ||
+        nX < 0 || nX >= mFullMapD ) {
+        
+        // out of bounds, exterior wall
+        return 998;
+        }
+
+    return mHouseMapIDs[ nY * mFullMapD + nX ];
+    }
+
+
+
+
 
 
 void HouseGridDisplay::draw() {
@@ -233,13 +261,65 @@ void HouseGridDisplay::draw() {
             
             doublePair tilePos = getTilePos( i );
  
+            int numOrientations = 0;
+            
+            int orientationIndex = 0;
+
+            if( houseTile != GOAL_ID ) {
+                
+                numOrientations = getNumOrientations( houseTile, 0 );
+                
+                }
+            
+            
+                
+            if( numOrientations == 16 ) {
+                // full binary LBRT flags based on neighbors of same type 
+                
+                int neighborsEqual[4] = { 0, 0, 0, 0 };
+                
+                for( int n=0; n<4; n++ ) {
+                    if( getTileNeighbor( i, n ) == houseTile ) {
+                        neighborsEqual[n] = 1;
+                        }
+                    }
+                
+                orientationIndex = 
+                    neighborsEqual[3] << 3 |
+                    neighborsEqual[2] << 2 |
+                    neighborsEqual[1] << 1 |
+                    neighborsEqual[0];
+                }
+            else if( numOrientations == 2 ) {
+                
+                if( getTileNeighbor( i, 1 ) != 0 && 
+                    getTileNeighbor( i, 3 ) != 0 ) {
+                    // blocked on top and bottom
+                
+                    // vertical orientation
+                    orientationIndex = 0;
+                    }
+                else {
+                    // horizontal 
+                    orientationIndex = 1;
+                    }
+                }
+            else if( numOrientations == 1 ) {
+                orientationIndex = 0;
+                }
+            
+            
+
+                
+
             
             // draw empty floor, even under goal
             if( houseTile == 0 || houseTile == GOAL_ID ) {
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
-                SpriteHandle sprite = getObjectSprite( 0 );
+                SpriteHandle sprite = 
+                    getObjectSprite( 0, orientationIndex, 0 );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 
@@ -264,7 +344,8 @@ void HouseGridDisplay::draw() {
             else {
                 setDrawColor( 1, 1, 1, 1 );
                 
-                SpriteHandle sprite = getObjectSprite( houseTile );
+                SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                       orientationIndex, 0 );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
@@ -285,7 +366,9 @@ void HouseGridDisplay::draw() {
                 else if( houseTile == 0 ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
-                    SpriteHandle sprite = getObjectSprite( 1 );
+                    SpriteHandle sprite = getObjectSprite( 1, 
+                                                           orientationIndex,
+                                                           0 );
                     
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }

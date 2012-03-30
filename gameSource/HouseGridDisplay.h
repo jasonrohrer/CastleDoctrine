@@ -101,6 +101,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mGoalIndex;
 
         char mGoalSet;
+
+
+        // inIndex is tile's sub-map index
+        // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
+        int getTileNeighbor( int inIndex, int inNeighbor );
+        
     };
 
 

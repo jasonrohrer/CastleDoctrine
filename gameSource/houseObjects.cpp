@@ -6,9 +6,14 @@
 
 
 
+
 typedef struct houseObjectState {
-        // can be NULL if state not present
-        SpriteHandle stateSprite;
+
+        // can be 0 if state not present
+        int numOrientations;
+        
+        SpriteHandle stateSprite[ MAX_ORIENTATIONS ];
+
     } houseObjectState;
 
 
@@ -23,8 +28,9 @@ typedef struct houseObjectRecord {
         int numStates;
         
         
-        // sprites inside can be NULL for certain entries if state IDs 
+        // sprites can be absent for certain entries if state IDs 
         // are sparsely distributed
+        // (absent sprites have 0 orientations)
         //
         // MUST have at least 0 defined
         houseObjectState *states;
@@ -72,10 +78,46 @@ static houseObjectState readState( File *inStateDir ) {
 
     
     houseObjectState state;
+
+    state.numOrientations = 0;
+    
+
+    if( tgaPath == NULL ) {
+        return state;
+        }
+    
     
     printf( "Trying to read tga from %s\n", tgaPath );
+
+    Image *image = readTGAFileBase( tgaPath );
+
+    if( image == NULL ) {
+        delete [] tgaPath;
+        
+        return state;
+        }
     
-    state.stateSprite = loadSpriteBase( tgaPath, transCorner );
+
+    int fullH = image->getHeight();
+    int fullW = image->getWidth();
+
+    int tileH = fullW;
+
+    state.numOrientations = fullH / tileH;
+    
+    printf( "  Reading %d orientations\n", state.numOrientations );
+
+    for( int o=0; o<state.numOrientations; o++ ) {
+        
+        Image *subImage = image->getSubImage( 0, tileH * o,
+                                              fullW, tileH );
+        
+        state.stateSprite[o] = fillSprite( subImage, transCorner );
+        
+        delete subImage;
+        }
+
+    delete image;
     
     delete [] tgaPath;
     
@@ -200,6 +242,9 @@ void initHouseObjects() {
                         
                         s++;
                         }
+                    else {
+                        
+                        }
                     delete stateDirs[c];
                     }
                 delete [] stateDirs;
@@ -252,9 +297,9 @@ void freeHouseObjects() {
         delete [] r.description;
         
         for( int s=0; s<r.numStates; s++ ) {
-            
-            if( r.states[s].stateSprite != NULL ) {
-                freeSprite( r.states[s].stateSprite );
+
+            for( int o=0; o<r.states[s].numOrientations; o++ ) {
+                freeSprite( r.states[s].stateSprite[o] );
                 }
             }
         delete [] r.states;
@@ -271,7 +316,7 @@ void freeHouseObjects() {
 
 
 
-SpriteHandle getObjectSprite( int inID, int inState ) {
+SpriteHandle getObjectSprite( int inID, int inOrientation, int inState ) {
     
 
     int index = idToIndexMap[inID];
@@ -283,12 +328,27 @@ SpriteHandle getObjectSprite( int inID, int inState ) {
         inState = 0;
         }
 
-    SpriteHandle h = r->states[inState].stateSprite;
+    if( r->states[inState].numOrientations == 0 ) {
+        return r->states[0].stateSprite[0];
+        }
+    
 
-    if( h == NULL ) {
-        return r->states[0].stateSprite;
+    return r->states[inState].stateSprite[inOrientation];
+    }
+
+
+
+int getNumOrientations( int inID, int inState ) {
+    
+    int index = idToIndexMap[inID];
+    
+    houseObjectRecord *r = objects.getElement( index );
+
+    if( inState >= r->numStates ) {
+        // switch to default state
+        inState = 0;
         }
 
-    return h;
+    return r->states[inState].numOrientations;
     }
 
