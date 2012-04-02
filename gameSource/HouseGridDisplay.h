@@ -10,6 +10,9 @@
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
+#include "minorGems/game/gameGraphics.h"
+
+
 #define HOUSE_D 13
 
 
@@ -106,6 +109,15 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // inIndex is tile's sub-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
         int getTileNeighbor( int inIndex, int inNeighbor );
+        
+
+        SpriteHandle mWallShadowSprite;
+        
+        
+        void drawTiles( char inFloorOnly );
+        
+
+        void recomputeWallShadows();
         
     };
 

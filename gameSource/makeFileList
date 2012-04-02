@@ -25,6 +25,7 @@ ticketHash.cpp \
 CheckoutHousePage.cpp \
 LiveHousePage.cpp \
 EditHousePage.cpp \
+FastBoxBlurFilter.cpp \
 HouseGridDisplay.cpp \
 CheckinHousePage.cpp \
 MenuPage.cpp \

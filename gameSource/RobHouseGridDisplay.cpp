@@ -6,6 +6,8 @@
 #include "minorGems/util/stringUtils.h"
 
 
+#include "FastBoxBlurFilter.h"
+
 
 #include <math.h>
 
@@ -79,106 +81,6 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
 
 
-/**
- * Blur convolution filter that uses a box for averaging.
- *
- * Faster accumulative implementation, as suggested by Gamasutra.
- *
- * For speed, does NOT handle edge pixels correctly
- *
- * For even more speed, does not support multiple radii (only radius=1)
- *
- *
- * Also, changed to process uchar channels (instead of doubles) for speed
- *
- * @author Jason Rohrer 
- */
-class FastBoxBlurFilter { 
-	
-	public:
-		
-		/**
-		 * Constructs a box filter.
-		 */
-		FastBoxBlurFilter();
-		
-		// implements the ChannelFilter interface 
-        // (but for uchars and sub-regions, and a subset of pixels in that
-        //  region)
-		void applySubRegion( unsigned char *inChannel,
-                             int *inTouchPixelIndices,
-                             int inNumTouchPixels,
-                             int inWidth, int inHeight );
-
-	};
-	
-	
-	
-FastBoxBlurFilter::FastBoxBlurFilter() {	
-	
-	}
-
-
-
-
-
-void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
-                                        int *inTouchPixelIndices,
-                                        int inNumTouchPixels,
-                                        int inWidth, int inHeight ) {
-
-    
-
-
-    // use pointer tricks to walk through neighbor box of each pixel
-
-    // four "corners" around box in accumulation table used to compute
-    // box total
-    // these are offsets to current accumulation pointer
-    int cornerOffsetA = inWidth + 1;
-    int cornerOffsetB = -inWidth + 1;
-    int cornerOffsetC = inWidth - 1;
-    int cornerOffsetD = -inWidth - 1;
-
-    // sides around box
-    int sideOffsetA = inWidth;
-    int sideOffsetB = -inWidth;
-    int sideOffsetC = 1;
-    int sideOffsetD = -1;
-
-    unsigned char *sourceData = new unsigned char[ inWidth * inHeight ];
-    
-    memcpy( sourceData, inChannel, inWidth * inHeight );
-    
-    
-    
-    // sum boxes right into passed-in channel
-
-    for( int i=0; i<inNumTouchPixels; i++ ) {
-
-        int pixelIndex = inTouchPixelIndices[ i ];
-        
-
-        unsigned char *sourcePointer = &( sourceData[ pixelIndex ] );
-
-        inChannel[ pixelIndex ] =
-            ( sourcePointer[ 0 ] +
-              sourcePointer[ cornerOffsetA ] +
-              sourcePointer[ cornerOffsetB ] +
-              sourcePointer[ cornerOffsetC ] +
-              sourcePointer[ cornerOffsetD ] +
-              sourcePointer[ sideOffsetA ] +
-              sourcePointer[ sideOffsetB ] +
-              sourcePointer[ sideOffsetC ] +
-              sourcePointer[ sideOffsetD ]
-              ) / 9;
-        }
-
-    delete [] sourceData;
-    
-
-    return;
-    }
 
 
 

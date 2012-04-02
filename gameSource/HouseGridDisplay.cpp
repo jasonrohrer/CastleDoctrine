@@ -28,7 +28,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY )
           mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
           mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
           mHighlightIndex( -1 ), mTileRadius( 0.4375 ),
-          mGoalSet( false ) {
+          mGoalSet( false ),
+          mWallShadowSprite( NULL ) {
 
     }
 
@@ -47,6 +48,11 @@ HouseGridDisplay::~HouseGridDisplay() {
 
     delete [] mHouseSubMapIDs;
     delete [] mHouseSubMapCellStates;
+
+    if( mWallShadowSprite != NULL ) {
+        freeSprite( mWallShadowSprite );
+        mWallShadowSprite = NULL;
+        }
     }
 
 
@@ -237,26 +243,23 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
-
-void HouseGridDisplay::draw() {
-    if( mHouseMap == NULL ) {
-        return;
-        }
-
-    
-    // draw border
-    doublePair center = { 0, 0 };
-    
-    setDrawColor( 1, 1, 1, 1 );
-    drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
-    
-
-    // draw house
+void HouseGridDisplay::drawTiles( char inFloorOnly ) {
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
             int houseTile = mHouseSubMapIDs[i];
+            
+            if( inFloorOnly && houseTile != 0 ) {
+                // skip this tile non-floor tile
+                i++;
+                continue;
+                }
+            else if( ! inFloorOnly && houseTile == 0 ) {
+                // skip this floor tile
+                i++;
+                continue;
+                }
             
             
             doublePair tilePos = getTilePos( i );
@@ -381,6 +384,41 @@ void HouseGridDisplay::draw() {
             i++;
             }
         }
+
+    }
+
+
+
+
+
+
+void HouseGridDisplay::draw() {
+    if( mHouseMap == NULL ) {
+        return;
+        }
+
+    
+    // draw border
+    doublePair center = { 0, 0 };
+    
+    setDrawColor( 1, 1, 1, 1 );
+    drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
+    
+    
+    // draw house
+    drawTiles( true );
+    
+    setDrawColor( 0, 0, 0, 0.75 );
+
+    toggleLinearMagFilter( true );
+    // draw wall shadows over floor
+    drawSprite( mWallShadowSprite, center, 
+                1.0 * 2 * mTileRadius / 4.0 );
+    toggleLinearMagFilter( false );
+
+    drawTiles( false );
+    
+
 
     int startSubIndex = fullToSub( mStartIndex );
     if( startSubIndex != -1 ) {
@@ -615,6 +653,8 @@ void HouseGridDisplay::copySubCellBack( int inSubCellIndex ) {
             
     mHouseMapCellStates[ bigIndex ] = 
         mHouseSubMapCellStates[ inSubCellIndex ];
+    
+    recomputeWallShadows();
     }
 
 
@@ -641,4 +681,217 @@ void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
     
     mSubMapOffsetX = inXOffset;
     mSubMapOffsetY = inYOffset;
+
+    recomputeWallShadows();
+    }
+
+
+
+
+#include "FastBoxBlurFilter.h"
+
+
+
+void HouseGridDisplay::recomputeWallShadows() {
+    if( mWallShadowSprite != NULL ) {
+        freeSprite( mWallShadowSprite );
+        mWallShadowSprite = NULL;
+        }
+    
+
+
+
+    int blowUpFactor = 4;
+    int blownUpSize = HOUSE_D * blowUpFactor;
+
+    double log2size = log( blownUpSize ) / log( 2 );
+    
+    int next2PowerSize = (int)( ceil( log2size  ) );
+    
+    int paddedSize = blownUpSize;
+
+    if( next2PowerSize != log2size ) {
+        paddedSize = (int)( pow( 2, next2PowerSize ) );
+        }
+    
+    int blowUpBorder = ( paddedSize - blownUpSize ) / 2;
+    
+
+    int numBlowupPixels = paddedSize * paddedSize;
+
+    // opt:  do all this processing with uchars instead of doubles
+    unsigned char *fullGridChannelsBlownUpAlpha =
+        new unsigned char[ numBlowupPixels ];
+
+    int *touchIndices = new int[ numBlowupPixels ];
+
+    int numTouched = 0;
+
+    memset( fullGridChannelsBlownUpAlpha, 255, numBlowupPixels );
+
+    
+    for( int y=0; y<HOUSE_D; y++ ) {
+        
+        for( int x=0; x<HOUSE_D; x++ ) {
+            
+            unsigned char alphaValue = 0;
+            
+            int flipY = HOUSE_D - y - 1;
+            
+            if( mHouseSubMapIDs[ flipY * HOUSE_D + x ] != 0 ) {
+                // not floor
+                alphaValue = 255;
+                }
+            
+            for( int blowUpY= y * blowUpFactor; 
+                 blowUpY< y * blowUpFactor + blowUpFactor; 
+                 blowUpY++ ) {
+
+                int padY = blowUpY + blowUpBorder;
+
+                for( int blowUpX= x * blowUpFactor; 
+                     blowUpX< x * blowUpFactor + blowUpFactor; 
+                     blowUpX++ ) {
+                    
+                    int padX = blowUpX + blowUpBorder;
+
+                    int imageIndex = padY * paddedSize + padX;
+                    
+                    fullGridChannelsBlownUpAlpha[ imageIndex ] = alphaValue;
+                    
+                    if( padY > 0 && padY < paddedSize - 1
+                        &&
+                        padX > 0 && padX < paddedSize - 1 ) {
+                        
+                        // apply blur filter to non-border pixels
+                        touchIndices[numTouched] = imageIndex;
+                        numTouched++;
+                        }
+                    else {
+                        // set all border pixels to black
+                        // and don't apply blur filter to those
+                        fullGridChannelsBlownUpAlpha[ imageIndex ] = 255;
+                        }
+                    }
+                }
+            }
+        }
+
+    
+
+    FastBoxBlurFilter filter2;
+
+    for( int f=0; f<3; f++ ) {
+        
+        filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                touchIndices,
+                                numTouched,
+                                paddedSize, paddedSize );
+        }
+    
+    
+    // clear border again
+    for( int y=0; y<paddedSize; y++ ) {
+        for( int x=0; x<blowUpBorder; x++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        for( int x=paddedSize - blowUpBorder; x<paddedSize; x++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        }
+    for( int x=0; x<paddedSize; x++ ) {
+        for( int y=0; y<blowUpBorder; y++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        for( int y=paddedSize - blowUpBorder; y<paddedSize; y++ ) {
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            }
+        }
+        
+    mWallShadowSprite = 
+        fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha, 
+                             paddedSize, paddedSize );
+    
+    delete [] fullGridChannelsBlownUpAlpha;
+    delete [] touchIndices;
+
+
+
+
+
+
+    /*
+    int blowUpFactor = 4;
+    int blownUpSize = HOUSE_D * blowUpFactor;
+
+    int numBlowupPixels = blownUpSize * blownUpSize;
+    
+    // opt:  no need to operate on all four channels
+    // just process alpha channel now
+
+    // opt:  do all this processing with uchars instead of doubles
+    unsigned char *fullGridChannelsBlownUpAlpha =
+        new unsigned char[ numBlowupPixels ];
+
+    memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
+    
+
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            
+            char hit = ( mHouseSubMapIDs[ y * HOUSE_D + x ] != 0 );
+            
+
+            if( hit ) {
+                
+                for( int by = y * blowUpFactor; 
+                     by < (y+1) * blowUpFactor; by++ ) {
+                    for( int bx = x * blowUpFactor; 
+                         bx < (x+1) * blowUpFactor; bx++ ) {
+                        
+                        fullGridChannelsBlownUpAlpha[ by * blownUpSize + bx ]
+                            = 255;
+                        }
+                    }
+                }
+            }
+        }
+    
+    int numTouchedPixels = ( blownUpSize - 2 ) * ( blownUpSize - 2 );
+    
+    int *touchedPixels = new int[ numTouchedPixels ];
+    
+    int i = 0;
+    for( int y=0; y<blownUpSize; y++ ) {
+        for( int x=0; x<blownUpSize; x++ ) {
+    
+            if( y > 1 && y < blownUpSize - 1
+                &&
+                x > 1 && x < blownUpSize - 1 ) {
+                
+                // apply blur to all but edge pixels
+                touchedPixels[ i ] = y * blownUpSize + x;
+                i++;
+                }
+            else {
+                // set edges to black
+                fullGridChannelsBlownUpAlpha[ y * blownUpSize + x ] = 255;
+                }
+            }
+        }
+
+    FastBoxBlurFilter blur;
+    
+    blur.applySubRegion( fullGridChannelsBlownUpAlpha,
+                         touchedPixels,
+                         numTouchedPixels,
+                         blownUpSize, blownUpSize );
+    
+    
+    mWallShadowSprite = fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha,
+                                             blownUpSize, 
+                                             blownUpSize );
+
+    delete [] fullGridChannelsBlownUpAlpha;
+    */
     }
