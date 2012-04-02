@@ -216,20 +216,20 @@ void RobHouseGridDisplay::draw() {
         }
     
 
-    // clear border again
+    // clear border again, but leave one extra pixel for map-edge shrouding
     for( int y=0; y<paddedSize; y++ ) {
-        for( int x=0; x<blowUpBorder; x++ ) {
+        for( int x=0; x<blowUpBorder-1; x++ ) {
             fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
             }
-        for( int x=paddedSize - blowUpBorder; x<paddedSize; x++ ) {
+        for( int x=paddedSize - blowUpBorder + 1; x<paddedSize; x++ ) {
             fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
             }
         }
     for( int x=0; x<paddedSize; x++ ) {
-        for( int y=0; y<blowUpBorder; y++ ) {
+        for( int y=0; y<blowUpBorder-1; y++ ) {
             fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
             }
-        for( int y=paddedSize - blowUpBorder; y<paddedSize; y++ ) {
+        for( int y=paddedSize - blowUpBorder + 1; y<paddedSize; y++ ) {
             fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
             }
         }
