@@ -413,7 +413,7 @@ void HouseGridDisplay::draw() {
     toggleLinearMagFilter( true );
     // draw wall shadows over floor
     drawSprite( mWallShadowSprite, center, 
-                1.0 * 2 * mTileRadius / 4.0 );
+                1.0 * 2 * mTileRadius / 8.0 );
     toggleLinearMagFilter( false );
 
     drawTiles( false );
@@ -701,7 +701,7 @@ void HouseGridDisplay::recomputeWallShadows() {
 
 
 
-    int blowUpFactor = 4;
+    int blowUpFactor = 8;
     int blownUpSize = HOUSE_D * blowUpFactor;
 
     double log2size = log( blownUpSize ) / log( 2 );
@@ -781,7 +781,7 @@ void HouseGridDisplay::recomputeWallShadows() {
 
     FastBoxBlurFilter filter2;
 
-    for( int f=0; f<3; f++ ) {
+    for( int f=0; f<8; f++ ) {
         
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                                 touchIndices,
