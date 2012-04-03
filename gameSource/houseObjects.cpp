@@ -6,6 +6,29 @@
 
 
 
+// redefine F so that it expands each name into a string constant
+#undef F
+#define F(inName) #inName
+
+const char *propertyIDNames[] = {
+	PROPERTY_NAMES
+    };
+
+
+
+// returns endPropertyID if mapping fails
+static propertyID mapNameToID( const char *inName ) {
+    for( int i = 0; i < endPropertyID; i++ ) {
+        
+        if( strcmp( inName, propertyIDNames[i] ) == 0 ) {
+            return (propertyID)i;
+            }    
+        }
+
+    return endPropertyID;
+    }
+
+
 
 typedef struct houseObjectState {
 
@@ -13,6 +36,8 @@ typedef struct houseObjectState {
         int numOrientations;
         
         SpriteHandle stateSprite[ MAX_ORIENTATIONS ];
+        
+        char properties[ endPropertyID ];
 
     } houseObjectState;
 
@@ -55,6 +80,8 @@ static houseObjectState readState( File *inStateDir ) {
     File **childFiles = inStateDir->getChildFiles( &numChildFiles );
     
     char *tgaPath = NULL;
+    char *propertiesContents = NULL;
+
     char transCorner = true;
 
     for( int i=0; i<numChildFiles; i++ ) {
@@ -70,6 +97,13 @@ static houseObjectState readState( File *inStateDir ) {
                 }
             tgaPath = f->getFullFileName();
             }
+        else if( strcmp( name, "properties.txt" ) == 0 ) {
+            if( propertiesContents != NULL ) {
+                delete [] propertiesContents;
+                }
+            propertiesContents = f->readFileContents();
+            }
+        
         delete [] name;
 
         delete childFiles[i];
@@ -81,6 +115,41 @@ static houseObjectState readState( File *inStateDir ) {
 
     state.numOrientations = 0;
     
+
+
+    // init property array, all off
+    for( int p=0; p<endPropertyID; p++ ) {
+        state.properties[p] = false;
+        }
+    
+    // next, read properties.txt file and set flags
+    
+    if( propertiesContents != NULL ) {
+        
+        
+        SimpleVector<char *> *tokens = 
+            tokenizeString( propertiesContents );
+        
+        
+        for( int t=0; t<tokens->size(); t++ ) {
+            char *name = *( tokens->getElement(t) );
+            
+            propertyID p = mapNameToID( name );
+            
+            if( p != endPropertyID ) {
+                state.properties[p] = true;
+                }
+
+            delete [] name;    
+            }
+        delete tokens;
+
+
+        delete [] propertiesContents;
+        }
+    
+
+
 
     if( tgaPath == NULL ) {
         return state;
@@ -121,6 +190,10 @@ static houseObjectState readState( File *inStateDir ) {
     
     delete [] tgaPath;
     
+
+
+    
+
     return state;
     }
 
@@ -316,31 +389,9 @@ void freeHouseObjects() {
 
 
 
-SpriteHandle getObjectSprite( int inID, int inOrientation, int inState ) {
-    
+static houseObjectState *getObjectState( int inObjectID, int inState ) {
 
-    int index = idToIndexMap[inID];
-    
-    houseObjectRecord *r = objects.getElement( index );
-
-    if( inState >= r->numStates ) {
-        // switch to default state
-        inState = 0;
-        }
-
-    if( r->states[inState].numOrientations == 0 ) {
-        return r->states[0].stateSprite[0];
-        }
-    
-
-    return r->states[inState].stateSprite[inOrientation];
-    }
-
-
-
-int getNumOrientations( int inID, int inState ) {
-    
-    int index = idToIndexMap[inID];
+    int index = idToIndexMap[inObjectID];
     
     houseObjectRecord *r = objects.getElement( index );
 
@@ -349,6 +400,46 @@ int getNumOrientations( int inID, int inState ) {
         inState = 0;
         }
 
-    return r->states[inState].numOrientations;
+    return &( r->states[inState] );
     }
+
+
+
+
+
+
+SpriteHandle getObjectSprite( int inObjectID, 
+                              int inOrientation, int inState ) {
+    
+    houseObjectState *state = getObjectState( inObjectID, inState );
+    
+
+    if( state->numOrientations == 0 ) {
+        
+        state = getObjectState( inObjectID, 0 );
+
+        return state->stateSprite[0];
+        }
+    
+
+    return state->stateSprite[inOrientation];
+    }
+
+
+
+int getNumOrientations( int inObjectID, int inState ) {
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    return state->numOrientations;
+    }
+
+
+
+char isPropertySet( int inObjectID, int inState, propertyID inProperty ) {
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    
+    return state->properties[ inProperty ];
+    }
+
 

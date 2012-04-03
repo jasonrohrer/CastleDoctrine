@@ -249,9 +249,16 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
             int houseTile = mHouseSubMapIDs[i];
+            int tileState = mHouseSubMapCellStates[i];
             
-            if( inFloorOnly && houseTile != 0 ) {
+            char blockingProperty = isPropertySet( houseTile,
+                                                   tileState, blocking );
+                                                   
+
+            if( inFloorOnly && houseTile != 0 && blockingProperty ) {
                 // skip this tile non-floor tile
+                
+                // but draw floor UNDER any non-blocking tiles
                 i++;
                 continue;
                 }
@@ -316,8 +323,9 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
                 
 
             
-            // draw empty floor, even under goal
-            if( houseTile == 0 || houseTile == GOAL_ID ) {
+            // draw empty floor, even under non-blocking objects
+            if( inFloorOnly && 
+                ( houseTile == 0 || !blockingProperty )  ) {
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -326,13 +334,14 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 
+                /*
                 if( houseTile == GOAL_ID ) {
                     // draw goal here, so highlight can draw over it
 
                     setDrawColor( 1, 1, 0, 1 );
                     drawSquare( tilePos, 0.75 * mTileRadius );
                     }
-                
+                */
                 }
             /*
             else if( houseTile == GOAL_ID ) {
@@ -344,7 +353,7 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
                 drawSquare( tilePos, mTileRadius );
                 }
             */
-            else {
+            else if( !inFloorOnly && houseTile != 0 ) {
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
@@ -362,9 +371,13 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
 
                 if( !mGoalSet ) {
                     // ghost of goal for placement
-                    setDrawColor( 1, 1, 0, 0.35 );
-                    drawSquare( tilePos, 
-                                0.75 * mTileRadius );
+                    setDrawColor( 1, 1, 1, 0.35 );
+
+                    SpriteHandle sprite = getObjectSprite( GOAL_ID, 
+                                                           0, 
+                                                           0 );
+                
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
                 else if( houseTile == 0 ) {
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -377,7 +390,12 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
                     }
                 else {
                     setDrawColor( 0, 0, 0, 0.35 );
-                    drawSquare( tilePos, mTileRadius ); 
+                    
+                    SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                           orientationIndex, 
+                                                           0 );
+                
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
                 }
 
@@ -540,8 +558,10 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newRobberIndex = newY * mFullMapD + newX;
     
-    if( mHouseMapIDs[ newRobberIndex ] == 0 ||
-        mHouseMapIDs[ newRobberIndex ] == GOAL_ID ) {
+    if( ! isPropertySet( mHouseMapIDs[ newRobberIndex ],
+                       mHouseMapCellStates[ newRobberIndex ],
+                         blocking ) ) {
+        
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
 
