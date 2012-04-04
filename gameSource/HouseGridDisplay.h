@@ -117,7 +117,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         SpriteHandle mWallShadowSprite;
         
         
-        void drawTiles( char inFloorOnly );
+        void drawTiles( char inNonBlockingOnly );
         
 
         void recomputeWallShadows();

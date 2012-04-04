@@ -244,7 +244,7 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
-void HouseGridDisplay::drawTiles( char inFloorOnly ) {
+void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
@@ -254,15 +254,14 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
             char blockingProperty = isSubMapPropertySet( i, blocking );
                                                    
 
-            if( inFloorOnly && houseTile != 0 && blockingProperty ) {
-                // skip this tile non-floor tile
+            if( inNonBlockingOnly && blockingProperty ) {
+                // skip this blocking tile
                 
-                // but draw floor UNDER any non-blocking tiles
                 i++;
                 continue;
                 }
-            else if( ! inFloorOnly && houseTile == 0 ) {
-                // skip this floor tile
+            else if( ! inNonBlockingOnly && ! blockingProperty ) {
+                // skip this non-blocking tile
                 i++;
                 continue;
                 }
@@ -323,8 +322,7 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
 
             
             // draw empty floor, even under non-blocking objects
-            if( inFloorOnly && 
-                ( houseTile == 0 || !blockingProperty )  ) {
+            if( inNonBlockingOnly && !blockingProperty  ) {
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -352,7 +350,20 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
                 drawSquare( tilePos, mTileRadius );
                 }
             */
-            else if( !inFloorOnly && houseTile != 0 ) {
+            if( inNonBlockingOnly && 
+                ! blockingProperty && 
+                houseTile != 0 ) {
+                
+                // now draw tile itself, on top of floor
+                setDrawColor( 1, 1, 1, 1 );
+                
+                SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                       orientationIndex, 0 );
+                
+                drawSprite( sprite, tilePos, 1.0/16.0 );
+                }
+            else if( !inNonBlockingOnly && houseTile != 0 ) {
+                // now draw non-blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
