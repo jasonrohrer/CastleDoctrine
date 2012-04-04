@@ -758,8 +758,13 @@ void HouseGridDisplay::recomputeWallShadows() {
             
             int flipY = HOUSE_D - y - 1;
             
-            if( mHouseSubMapIDs[ flipY * HOUSE_D + x ] != 0 ) {
-                // not floor
+            int subIndex = flipY * HOUSE_D + x;
+            
+
+            if( isPropertySet( mHouseSubMapIDs[ subIndex ],
+                               mHouseSubMapCellStates[ subIndex ],
+                               blocking ) ) {
+                // all blocking objects leave shadows
                 alphaValue = 255;
                 }
             
