@@ -375,9 +375,11 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
             
 
             
-            // no highlight over start or permanents
+            // no highlight over start, robber, or permanents
+            int fullI = subToFull( i );
             if( mHighlightIndex == i &&
-                subToFull( i ) != mStartIndex &&
+                fullI != mStartIndex &&
+                fullI != mRobberIndex &&
                 ! isSubMapPropertySet( i, permanent ) ) {
 
                 if( !mGoalSet ) {
@@ -509,6 +511,12 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         // ignore mouse activity on permanent tiles
         return;
         }
+
+    if( subToFull( index ) == mRobberIndex ) {
+        // don't allow clicks on current robber position
+        return;
+        }
+    
         
     mHighlightIndex = index;
 
