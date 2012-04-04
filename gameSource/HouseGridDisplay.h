@@ -7,6 +7,8 @@
 
 #include "PageComponent.h"
 
+#include "houseObjects.h"
+
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
@@ -87,6 +89,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         virtual void moveRobber( int inNewIndex );
         
         
+        char isSubMapPropertySet( int inSubCellIndex, propertyID inProperty );
 
         
         int mHighlightIndex;

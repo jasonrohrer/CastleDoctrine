@@ -249,10 +249,8 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
             int houseTile = mHouseSubMapIDs[i];
-            int tileState = mHouseSubMapCellStates[i];
             
-            char blockingProperty = isPropertySet( houseTile,
-                                                   tileState, blocking );
+            char blockingProperty = isSubMapPropertySet( i, blocking );
                                                    
 
             if( inFloorOnly && houseTile != 0 && blockingProperty ) {
@@ -481,12 +479,21 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
 
     int index = getTileIndex( inX, inY );
     
+    if( index == -1 ) {
+        return;
+        }
+    
+    if( isSubMapPropertySet( index, permanent ) ) {
+        // ignore mouse activity on permanent tiles
+        return;
+        }
+        
     mHighlightIndex = index;
 
     int fullIndex = subToFull( index );
     
 
-    if( index != -1 && !mGoalSet ) {
+    if( !mGoalSet ) {
         // goal set here
         mHouseSubMapIDs[ index ] = GOAL_ID;
         mGoalIndex = fullIndex;
@@ -494,8 +501,7 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         copySubCellBack( index );
         fireActionPerformed( this );
         }
-    else if( index != -1 && 
-             fullIndex != mStartIndex && fullIndex != mGoalIndex ) {
+    else if( fullIndex != mStartIndex && fullIndex != mGoalIndex ) {
     
         int old = mHouseSubMapIDs[ index ];
         
@@ -558,9 +564,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newRobberIndex = newY * mFullMapD + newX;
     
-    if( ! isPropertySet( mHouseMapIDs[ newRobberIndex ],
-                       mHouseMapCellStates[ newRobberIndex ],
-                         blocking ) ) {
+    if( ! isSubMapPropertySet( newRobberIndex, blocking ) ) {
         
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
@@ -632,6 +636,15 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
                               mSubMapOffsetY + yExtra );
             }
         }
+    }
+
+
+
+char HouseGridDisplay::isSubMapPropertySet( int inSubCellIndex, 
+                                            propertyID inProperty ) {
+    return isPropertySet( mHouseSubMapIDs[ inSubCellIndex ],
+                          mHouseSubMapCellStates[ inSubCellIndex ],
+                          inProperty );
     }
 
 
@@ -761,9 +774,7 @@ void HouseGridDisplay::recomputeWallShadows() {
             int subIndex = flipY * HOUSE_D + x;
             
 
-            if( isPropertySet( mHouseSubMapIDs[ subIndex ],
-                               mHouseSubMapCellStates[ subIndex ],
-                               blocking ) ) {
+            if( isSubMapPropertySet( subIndex, blocking ) ) {
                 // all blocking objects leave shadows
                 alphaValue = 255;
                 }

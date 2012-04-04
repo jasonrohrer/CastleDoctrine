@@ -1,3 +1,7 @@
+#ifndef HOUSE_OBJECTS_INCLUDED
+#define HOUSE_OBJECTS_INCLUDED
+
+
 #include "minorGems/game/gameGraphics.h"
 
 
@@ -22,6 +26,7 @@ void freeHouseObjects();
 #endif
 
 #define PROPERTY_NAMES \
+    F(permanent), \
     F(blocking), \
     F(deadly), \
     F(destroyed), \
@@ -63,4 +68,7 @@ int getNumOrientations( int inObjectID, int inState );
 // flags
 SpriteHandle getObjectSprite( int inObjectID, int inOrientation, int inState );
 
+
+
+#endif
 
