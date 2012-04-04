@@ -273,11 +273,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
             
             int orientationIndex = 0;
 
-            if( houseTile != GOAL_ID ) {
-                
-                numOrientations = getNumOrientations( houseTile, 0 );
-                
-                }
+            numOrientations = getNumOrientations( houseTile, 0 );
             
             
                 
@@ -327,7 +323,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = 
-                    getObjectSprite( 0, orientationIndex, 0 );
+                    getObjectSprite( 0, 0, 0 );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 
