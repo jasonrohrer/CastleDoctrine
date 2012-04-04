@@ -242,6 +242,105 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
+int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
+    int numOrientations = 0;
+    
+    int orientationIndex = 0;
+    
+    numOrientations = getNumOrientations( inTileID, 0 );            
+            
+                
+    if( numOrientations == 16 ) {
+        // full binary LBRT flags based on neighbors of same type 
+                
+        int neighborsEqual[4] = { 0, 0, 0, 0 };
+                
+        for( int n=0; n<4; n++ ) {
+            if( getTileNeighbor( inIndex, n ) == inTileID ) {
+                neighborsEqual[n] = 1;
+                }
+            }
+                
+        orientationIndex = 
+            neighborsEqual[3] << 3 |
+            neighborsEqual[2] << 2 |
+            neighborsEqual[1] << 1 |
+            neighborsEqual[0];
+        }
+    else if( numOrientations == 4 ) {
+                
+        int numBlockedNeighbors = 0;
+
+        char neighborsBlocked[4] = { false, false, false, false };
+                
+        int oneBlockedIndex = 0;
+
+        for( int n=0; n<4; n++ ) {
+            if( getTileNeighbor( inIndex, n ) != 0 ) {
+                numBlockedNeighbors ++;
+                        
+                neighborsBlocked[n] = true;
+                        
+                oneBlockedIndex = n;
+                }
+            }
+                
+        if( numBlockedNeighbors == 0 || numBlockedNeighbors == 4 ) {
+            // default to left-facing when none/all are blocked
+            orientationIndex = 3;
+            }
+        else if( numBlockedNeighbors == 1 ) {
+            // face away from only blockage
+            switch( oneBlockedIndex ) {
+                case 0:
+                    orientationIndex = 2;
+                    break;
+                case 1:
+                    orientationIndex = 3;
+                    break;
+                case 2:
+                    orientationIndex = 0;
+                    break;
+                case 3:
+                    orientationIndex = 1;
+                    break;
+                }                            
+            }
+        else {
+            // blocked on multiple sides
+            // face whatever direction is open
+                    
+            for( int n=0; n<4; n++ ) {
+                if( !neighborsBlocked[n] ) {
+                    orientationIndex = n;
+                    }
+                }
+            }
+        }
+    else if( numOrientations == 2 ) {
+                
+        if( getTileNeighbor( inIndex, 0 ) != 0 && 
+            getTileNeighbor( inIndex, 2 ) != 0 ) {
+            // blocked on top and bottom
+                
+            // vertical orientation
+            orientationIndex = 0;
+            }
+        else {
+            // horizontal 
+            orientationIndex = 1;
+            }
+        }
+    else if( numOrientations == 1 ) {
+        orientationIndex = 0;
+        }
+
+    return orientationIndex;
+    }
+
+
+
+
 
 
 void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
@@ -269,100 +368,8 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
             
             doublePair tilePos = getTilePos( i );
  
-            int numOrientations = 0;
             
-            int orientationIndex = 0;
-
-            numOrientations = getNumOrientations( houseTile, 0 );
-            
-            
-                
-            if( numOrientations == 16 ) {
-                // full binary LBRT flags based on neighbors of same type 
-                
-                int neighborsEqual[4] = { 0, 0, 0, 0 };
-                
-                for( int n=0; n<4; n++ ) {
-                    if( getTileNeighbor( i, n ) == houseTile ) {
-                        neighborsEqual[n] = 1;
-                        }
-                    }
-                
-                orientationIndex = 
-                    neighborsEqual[3] << 3 |
-                    neighborsEqual[2] << 2 |
-                    neighborsEqual[1] << 1 |
-                    neighborsEqual[0];
-                }
-            else if( numOrientations == 4 ) {
-                
-                int numBlockedNeighbors = 0;
-
-                char neighborsBlocked[4] = { false, false, false, false };
-                
-                int oneBlockedIndex = 0;
-
-                for( int n=0; n<4; n++ ) {
-                    if( getTileNeighbor( i, n ) != 0 ) {
-                        numBlockedNeighbors ++;
-                        
-                        neighborsBlocked[n] = true;
-                        
-                        oneBlockedIndex = n;
-                        }
-                    }
-                
-                if( numBlockedNeighbors == 0 || numBlockedNeighbors == 4 ) {
-                    // default to left-facing when none/all are blocked
-                    orientationIndex = 3;
-                    }
-                else if( numBlockedNeighbors == 1 ) {
-                    // face away from only blockage
-                    switch( oneBlockedIndex ) {
-                        case 0:
-                            orientationIndex = 2;
-                            break;
-                        case 1:
-                            orientationIndex = 3;
-                            break;
-                        case 2:
-                            orientationIndex = 0;
-                            break;
-                        case 3:
-                            orientationIndex = 1;
-                            break;
-                        }                            
-                    }
-                else {
-                    // blocked on multiple sides
-                    // face whatever direction is open
-                    
-                    for( int n=0; n<4; n++ ) {
-                        if( !neighborsBlocked[n] ) {
-                            orientationIndex = n;
-                            }
-                        }
-                    }
-                }
-            else if( numOrientations == 2 ) {
-                
-                if( getTileNeighbor( i, 0 ) != 0 && 
-                    getTileNeighbor( i, 2 ) != 0 ) {
-                    // blocked on top and bottom
-                
-                    // vertical orientation
-                    orientationIndex = 0;
-                    }
-                else {
-                    // horizontal 
-                    orientationIndex = 1;
-                    }
-                }
-            else if( numOrientations == 1 ) {
-                orientationIndex = 0;
-                }
-            
-            
+            int orientationIndex = getOrientationIndex( i, houseTile );
 
                 
 
@@ -432,8 +439,10 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                     // ghost of goal for placement
                     setDrawColor( 1, 1, 1, 0.35 );
 
+                    int ghostOrientation = getOrientationIndex( i, GOAL_ID );
+                    
                     SpriteHandle sprite = getObjectSprite( GOAL_ID, 
-                                                           0, 
+                                                           ghostOrientation, 
                                                            0 );
                 
                     drawSprite( sprite, tilePos, 1.0/16.0 );
@@ -441,8 +450,10 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 else if( houseTile == 0 ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
+                    int ghostOrientation = getOrientationIndex( i, 1 );
+
                     SpriteHandle sprite = getObjectSprite( 1, 
-                                                           orientationIndex,
+                                                           ghostOrientation,
                                                            0 );
                     
                     drawSprite( sprite, tilePos, 1.0/16.0 );

@@ -113,6 +113,14 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
         int getTileNeighbor( int inIndex, int inNeighbor );
         
+        
+        // inIndex is tile's sub-map index
+        // inTileID might be different from what's actually in the map
+        //   at inIndex (so getOrientationIndex can be used for orienting
+        //   a ghost tile before placement)
+        int getOrientationIndex( int inIndex, int inTileID );
+        
+
 
         SpriteHandle mWallShadowSprite;
         
