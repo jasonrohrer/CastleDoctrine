@@ -351,11 +351,24 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
             int houseTile = mHouseSubMapIDs[i];
             
             char blockingProperty = isSubMapPropertySet( i, blocking );
-                                                   
+            
+            
+            
+            doublePair tilePos = getTilePos( i );
+ 
 
             if( inNonBlockingOnly && blockingProperty ) {
                 // skip this blocking tile
                 
+                // but draw floor under it!
+
+                setDrawColor( 1, 1, 1, 1 );
+                
+                SpriteHandle sprite = 
+                    getObjectSprite( 0, 0, 0 );
+                
+                drawSprite( sprite, tilePos, 1.0/16.0 );
+
                 i++;
                 continue;
                 }
@@ -365,9 +378,6 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 continue;
                 }
             
-            
-            doublePair tilePos = getTilePos( i );
- 
             
             int orientationIndex = getOrientationIndex( i, houseTile );
 
