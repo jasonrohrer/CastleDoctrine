@@ -369,8 +369,6 @@ void RobHouseGridDisplay::recomputeVisibility() {
                   * 2 * mTileRadius - mTileRadius / 2 };
             
 
-            int visTileIndex = getTileIndex( visPos.x, visPos.y );
-
             // steps
             int numSteps = lrint( distance( visPos, robPos ) * 8 );
             char hit = false;
@@ -384,8 +382,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
-                if( //stepIndex != visTileIndex && 
-                    isPropertySet( mHouseSubMapIDs[stepIndex],
+                if( isPropertySet( mHouseSubMapIDs[stepIndex],
                                    mHouseSubMapCellStates[stepIndex],
                                    blocking ) ) {
                     
