@@ -7,6 +7,7 @@
 
 
 #include "FastBoxBlurFilter.h"
+#include "houseObjects.h"
 
 
 #include <math.h>
@@ -384,7 +385,9 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
                 if( //stepIndex != visTileIndex && 
-                    mHouseSubMapIDs[stepIndex] != 0 ) {
+                    isPropertySet( mHouseSubMapIDs[stepIndex],
+                                   mHouseSubMapCellStates[stepIndex],
+                                   blocking ) ) {
                     
                     hit = true;
                     }
