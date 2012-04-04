@@ -15,6 +15,7 @@
 
 
 #define GOAL_ID  999
+#define START_ID  997
 
 
 
@@ -424,6 +425,20 @@ void HouseGridDisplay::draw() {
     
     // draw house
     drawTiles( true );
+
+    
+    // draw start under shadows
+    int startSubIndex = fullToSub( mStartIndex );
+    if( startSubIndex != -1 ) {
+        setDrawColor( 1, 1, 1, 1 );
+
+        SpriteHandle sprite = getObjectSprite( START_ID, 
+                                               0, 
+                                               0 );
+        drawSprite( sprite, getTilePos( startSubIndex ), 1.0/16.0 );
+        }
+
+
     
     setDrawColor( 0, 0, 0, 0.75 );
 
@@ -437,11 +452,6 @@ void HouseGridDisplay::draw() {
     
 
 
-    int startSubIndex = fullToSub( mStartIndex );
-    if( startSubIndex != -1 ) {
-        setDrawColor( 0, 1, 0, 1 );
-        drawSquare( getTilePos( startSubIndex ), 0.75 * mTileRadius );
-        }
 
     /*
     if( mGoalSet ) {    
