@@ -294,10 +294,60 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                     neighborsEqual[1] << 1 |
                     neighborsEqual[0];
                 }
+            else if( numOrientations == 4 ) {
+                
+                int numBlockedNeighbors = 0;
+
+                char neighborsBlocked[4] = { false, false, false, false };
+                
+                int oneBlockedIndex = 0;
+
+                for( int n=0; n<4; n++ ) {
+                    if( getTileNeighbor( i, n ) != 0 ) {
+                        numBlockedNeighbors ++;
+                        
+                        neighborsBlocked[n] = true;
+                        
+                        oneBlockedIndex = n;
+                        }
+                    }
+                
+                if( numBlockedNeighbors == 0 || numBlockedNeighbors == 4 ) {
+                    // default to left-facing when none/all are blocked
+                    orientationIndex = 3;
+                    }
+                else if( numBlockedNeighbors == 1 ) {
+                    // face away from only blockage
+                    switch( oneBlockedIndex ) {
+                        case 0:
+                            orientationIndex = 2;
+                            break;
+                        case 1:
+                            orientationIndex = 3;
+                            break;
+                        case 2:
+                            orientationIndex = 0;
+                            break;
+                        case 3:
+                            orientationIndex = 1;
+                            break;
+                        }                            
+                    }
+                else {
+                    // blocked on multiple sides
+                    // face whatever direction is open
+                    
+                    for( int n=0; n<4; n++ ) {
+                        if( !neighborsBlocked[n] ) {
+                            orientationIndex = n;
+                            }
+                        }
+                    }
+                }
             else if( numOrientations == 2 ) {
                 
-                if( getTileNeighbor( i, 1 ) != 0 && 
-                    getTileNeighbor( i, 3 ) != 0 ) {
+                if( getTileNeighbor( i, 0 ) != 0 && 
+                    getTileNeighbor( i, 2 ) != 0 ) {
                     // blocked on top and bottom
                 
                     // vertical orientation
