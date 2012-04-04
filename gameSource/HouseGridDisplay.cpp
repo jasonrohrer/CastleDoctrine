@@ -363,9 +363,10 @@ void HouseGridDisplay::drawTiles( char inFloorOnly ) {
             
 
             
-            // no highlight over start
+            // no highlight over start or permanents
             if( mHighlightIndex == i &&
-                subToFull( i ) != mStartIndex ) {
+                subToFull( i ) != mStartIndex &&
+                ! isSubMapPropertySet( i, permanent ) ) {
 
                 if( !mGoalSet ) {
                     // ghost of goal for placement
@@ -564,7 +565,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newRobberIndex = newY * mFullMapD + newX;
     
-    if( ! isSubMapPropertySet( newRobberIndex, blocking ) ) {
+    if( ! isSubMapPropertySet( fullToSub( newRobberIndex ), blocking ) ) {
         
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
