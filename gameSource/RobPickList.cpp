@@ -263,12 +263,12 @@ void RobPickList::step() {
                             r.characterName = 
                                 trimName(
                                     replaceAll( parts[1], "_", " ", &found ),
-                                    lineWidthLeft);
+                                    lineWidthLeft - 0.125 );
                             
                             r.lastRobberName = 
                                 trimName (
                                     replaceAll( parts[2], "_", " ", &found ),
-                                    lineWidthLeft );
+                                    lineWidthLeft - 0.125 );
                             
 
                             sscanf( parts[3], "%d", &( r.lootValue ) );
