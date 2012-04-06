@@ -235,6 +235,8 @@ void RobPickList::step() {
                     double topOffset = ( linesPerPage * lineHeight ) / 2 
                         - lineHeight / 2;
 
+                    char badParse = false;
+
                     for( int i=0; i<lines->size(); i++ ) {
                         char *line = *( lines->getElement( i ) );
                         
@@ -244,6 +246,7 @@ void RobPickList::step() {
                         if( numParts != 5 ) {
                             printf( "Unexpected number of parts on house "
                                     "list line: %d\n", numParts );
+                            badParse = true;
                             }
                         else {
                             HouseRecord r;
@@ -284,6 +287,12 @@ void RobPickList::step() {
                         }
 
                     delete lines;
+
+                    
+                    if( badParse ) {
+                        clearHouseList();
+                        mParentPage->setStatus( "listFetchFailed", true );
+                        }
                     }
                         
                         

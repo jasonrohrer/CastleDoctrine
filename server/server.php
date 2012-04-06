@@ -112,7 +112,12 @@ if( isset( $_SERVER[ "REMOTE_ADDR" ] ) ) {
     }
 
 
-
+// for debugging of bad server responses
+if( false ) {
+    echo "BLAHH";
+    cd_closeDatabase();
+    die();
+    }
 
 if( $action == "version" ) {
     global $cd_version;
