@@ -85,12 +85,7 @@ void CheckinHousePage::step() {
                      
                 printf( "Web result = %s\n", result );
    
-                if( strstr( result, "DENIED" ) != NULL ) {
-                    mStatusError = true;
-                    mStatusMessageKey = "houseCheckInFailed";
-                    mMenuButton.setVisible( true );
-                    }
-                else {
+                if( strstr( result, "OK" ) != NULL ) {
                     // house checked in!
                     
 
@@ -98,6 +93,12 @@ void CheckinHousePage::step() {
                     mStatusMessageKey = "houseCheckedIn";
                     mReturnToMenu = true;
                     }
+                else {
+                    mStatusError = true;
+                    mStatusMessageKey = "houseCheckInFailed";
+                    mMenuButton.setVisible( true );
+                    }
+                
                         
                         
                 delete [] result;
