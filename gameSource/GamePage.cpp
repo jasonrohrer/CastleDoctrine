@@ -12,7 +12,9 @@ GamePage::GamePage()
         : PageComponent( 0, 0 ),
           mStatusError( false ),
           mStatusMessageKey( NULL ),
-          mStatusMessage( NULL ) {
+          mStatusMessage( NULL ),
+          mTipKey( NULL ),
+          mTip( NULL ) {
     }
 
 
@@ -20,6 +22,9 @@ GamePage::GamePage()
 GamePage::~GamePage() {
     if( mStatusMessage != NULL ) {
         delete [] mStatusMessage;
+        }
+    if( mTip != NULL ) {
+        delete [] mTip;
         }
     }
 
@@ -54,6 +59,32 @@ void GamePage::setStatusDirect( char *inStatusMessage, char inError ) {
 
 
 
+void GamePage::setToolTip( const char *inTipKey ) {
+    mTipKey = inTipKey;
+
+    if( mTip != NULL ) {
+        delete [] mTip;
+        mTip = NULL;
+        }
+    }
+
+
+
+void GamePage::setToolTipDirect( char *inTip ) {
+    if( mTip != NULL ) {
+        delete [] mTip;
+        mTip = NULL;
+        }
+    
+    if( inTip != NULL ) {
+        mTip = stringDuplicate( inTip );
+        
+        mTipKey = NULL;
+        }
+    }
+
+
+
 void GamePage::base_draw( doublePair inViewCenter, 
                           double inViewSize ){
     
@@ -69,6 +100,18 @@ void GamePage::base_draw( doublePair inViewCenter,
         doublePair labelPos = { 0, -5 };
         
         drawMessage( mStatusMessage, labelPos, mStatusError );
+        }
+
+
+    if( mTipKey != NULL ) {
+        doublePair labelPos = { 0, -7 };
+        
+        drawMessage( mTipKey, labelPos );
+        }
+    else if( mTip != NULL ) {
+        doublePair labelPos = { 0, -7 };
+        
+        drawMessage( mTip, labelPos );
         }
 
     draw( inViewCenter, inViewSize );

@@ -20,8 +20,10 @@
 
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY,
+                                    GamePage *inParentPage,
                                     HouseObjectPicker *inPicker )
         : PageComponent( inX, inY ),
+          mParentPage( inParentPage ),
           mPicker( inPicker ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
@@ -564,20 +566,33 @@ void HouseGridDisplay::draw() {
 
 
 
-void HouseGridDisplay::pointerMove( float inX, float inY ) {
+void HouseGridDisplay::pointerOver( float inX, float inY ) {
     mHighlightIndex = getTileIndex( inX, inY );
+
+    if( mHighlightIndex != -1 && mParentPage != NULL ) {
+        mParentPage->setToolTipDirect( 
+            (char *)getObjectDescription( 
+                mHouseSubMapIDs[ mHighlightIndex ] ) );
+        }
+    }
+
+
+
+void HouseGridDisplay::pointerMove( float inX, float inY ) {
+    pointerOver( inX, inY );
     }
 
 void HouseGridDisplay::pointerDown( float inX, float inY ) {
+    pointerOver( inX, inY );
     mHighlightIndex = getTileIndex( inX, inY );
     }
 
 void HouseGridDisplay::pointerDrag( float inX, float inY ) {
+    pointerOver( inX, inY );
     mHighlightIndex = getTileIndex( inX, inY );
     }
 
 void HouseGridDisplay::pointerUp( float inX, float inY ) {
-
     int index = getTileIndex( inX, inY );
     
     if( index == -1 ) {
@@ -594,8 +609,6 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         return;
         }
     
-        
-    mHighlightIndex = index;
 
     int fullIndex = subToFull( index );
     
@@ -640,6 +653,7 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         fireActionPerformed( this );
         }
     
+    pointerOver( inX, inY );
     }
 
 

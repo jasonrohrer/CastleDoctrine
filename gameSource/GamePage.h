@@ -20,6 +20,12 @@ class GamePage : public PageComponent {
         // inStatusMessage destroyed by caller
         void setStatusDirect( char *inStatusMessage, char inError );
 
+        
+        void setToolTip( const char *inTipKey );
+        
+        // inTipMessage destroyed by caller
+        void setToolTipDirect( char *inTipMessage );
+        
 
         
         // inFresh set to true when returning to this page
@@ -93,7 +99,10 @@ class GamePage : public PageComponent {
         char mStatusError;
         const char *mStatusMessageKey;
         char *mStatusMessage;
+        
 
+        const char *mTipKey;
+        char *mTip;
     };
 
 

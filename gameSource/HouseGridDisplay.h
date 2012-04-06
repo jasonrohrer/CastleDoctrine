@@ -27,6 +27,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
     public:
 
         HouseGridDisplay( double inX, double inY,
+                          GamePage *inParentPage = NULL,
                           HouseObjectPicker *inPicker = NULL );
         
         virtual ~HouseGridDisplay();
@@ -62,6 +63,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
     protected:
+        GamePage *mParentPage;
         HouseObjectPicker *mPicker;
 
         int mRobberIndex;
@@ -126,6 +128,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         //   a ghost tile before placement)
         int getOrientationIndex( int inIndex, int inTileID );
         
+        
+        void pointerOver( float inX, float inY );
 
 
         SpriteHandle mWallShadowSprite;

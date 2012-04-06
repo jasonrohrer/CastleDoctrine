@@ -22,7 +22,7 @@ extern Font *mainFont;
 EditHousePage::EditHousePage() 
         : mStartHouseMap( NULL ),
           mObjectPicker( 8, 5, this ),
-          mGridDisplay( 0, 0, &mObjectPicker ),
+          mGridDisplay( 0, 0, this, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ) {
 
     addComponent( &mDoneButton );

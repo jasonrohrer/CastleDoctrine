@@ -97,20 +97,33 @@ HouseObjectPicker::~HouseObjectPicker() {
 
 
 void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
+    char change = false;
+    
     if( inTarget == &mUpButton ) {
         mSelectedIndex --;
         if( mSelectedIndex < 0 ) {
             mSelectedIndex = mObjectList.size() - 1;
             }
-        fireActionPerformed( this );
+        change = true;
         }
     else if( inTarget == &mDownButton ) {
         mSelectedIndex ++;
         if( mSelectedIndex > mObjectList.size() - 1 ) {
             mSelectedIndex = 0;
             }
+        change = true;    
+        }
+
+    
+    if( change ) {
+        
+        mParentPage->setToolTipDirect( 
+            (char *)getObjectDescription( 
+                mObjectList.getElement( mSelectedIndex )->id ) );
+        
         fireActionPerformed( this );
         }
+    
     }
 
 
