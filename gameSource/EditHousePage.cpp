@@ -21,11 +21,13 @@ extern Font *mainFont;
 
 EditHousePage::EditHousePage() 
         : mStartHouseMap( NULL ),
-          mGridDisplay( 0, 0 ),
+          mObjectPicker( 8, 5, this ),
+          mGridDisplay( 0, 0, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
+    addComponent( &mObjectPicker );
 
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );

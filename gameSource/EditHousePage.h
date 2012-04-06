@@ -4,6 +4,7 @@
 #include "TextButton.h"
 
 #include "HouseGridDisplay.h"
+#include "HouseObjectPicker.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
@@ -47,6 +48,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *mStartHouseMap;
         
 
+        HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
         

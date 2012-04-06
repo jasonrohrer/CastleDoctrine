@@ -19,8 +19,10 @@
 
 
 
-HouseGridDisplay::HouseGridDisplay( double inX, double inY )
+HouseGridDisplay::HouseGridDisplay( double inX, double inY,
+                                    HouseObjectPicker *inPicker )
         : PageComponent( inX, inY ),
+          mPicker( inPicker ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
@@ -445,6 +447,13 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 fullI != mRobberIndex &&
                 ! isSubMapPropertySet( i, permanent ) ) {
 
+                int pick = 0;
+                
+                if( mPicker != NULL ) {
+                    pick = mPicker->getSelectedObject();
+                    }
+                
+
                 if( !mGoalSet ) {
                     // ghost of goal for placement
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -457,24 +466,25 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
-                else if( houseTile == 0 ) {
-                    setDrawColor( 1, 1, 1, 0.35 );
-                
-                    int ghostOrientation = getOrientationIndex( i, 1 );
-
-                    SpriteHandle sprite = getObjectSprite( 1, 
-                                                           ghostOrientation,
-                                                           0 );
-                    
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
-                    }
-                else {
+                else if( houseTile == pick || houseTile == GOAL_ID ) {
+                    // darken existing tile to imply removal on click
                     setDrawColor( 0, 0, 0, 0.35 );
-                    
+
                     SpriteHandle sprite = getObjectSprite( houseTile, 
                                                            orientationIndex, 
                                                            0 );
                 
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    }
+                else if( houseTile != pick ) {
+                    setDrawColor( 1, 1, 1, 0.35 );
+                
+                    int ghostOrientation = getOrientationIndex( i, pick );
+
+                    SpriteHandle sprite = getObjectSprite( pick, 
+                                                           ghostOrientation,
+                                                           0 );
+                    
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
                 }
@@ -600,17 +610,26 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         }
     else if( fullIndex != mStartIndex && fullIndex != mGoalIndex ) {
     
-        int old = mHouseSubMapIDs[ index ];
+        if( mPicker != NULL ) {
+            
         
-        if( old == 0 ) {
-            mHouseSubMapIDs[ index ] = 1;
-            copySubCellBack( index );
-            fireActionPerformed( this );
-            }
-        else if( old == 1 ) {
-            mHouseSubMapIDs[ index ] = 0;
-            copySubCellBack( index );
-            fireActionPerformed( this );
+            int old = mHouseSubMapIDs[ index ];
+
+            int picked = mPicker->getSelectedObject();
+            
+        
+            if( old != picked ) {
+                // place mode (or replace mode)
+                mHouseSubMapIDs[ index ] = picked;
+                copySubCellBack( index );
+                fireActionPerformed( this );
+                }
+            else {
+                // erase mode
+                mHouseSubMapIDs[ index ] = 0;
+                copySubCellBack( index );
+                fireActionPerformed( this );
+                }
             }
         }
     else if( mGoalSet && fullIndex == mGoalIndex ) {

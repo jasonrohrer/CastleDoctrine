@@ -9,6 +9,9 @@
 
 #include "houseObjects.h"
 
+#include "HouseObjectPicker.h"
+
+
 #include "minorGems/ui/event/ActionListenerList.h"
 
 
@@ -23,7 +26,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
     
     public:
 
-        HouseGridDisplay( double inX, double inY );
+        HouseGridDisplay( double inX, double inY,
+                          HouseObjectPicker *inPicker = NULL );
         
         virtual ~HouseGridDisplay();
         
@@ -58,6 +62,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
     protected:
+        HouseObjectPicker *mPicker;
+
         int mRobberIndex;
 
         char *mHouseMap;

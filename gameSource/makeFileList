@@ -40,6 +40,8 @@ ReplayRobHouseGridDisplay.cpp \
 ReplayRobHousePage.cpp \
 nameProcessing.cpp \
 houseObjects.cpp \
+HouseObjectPicker.cpp \
+
 
 
 

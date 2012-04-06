@@ -13,6 +13,20 @@ void freeHouseObjects();
 
 
 
+// gets full list of IDs that have been loaded
+// result destroyed by caller
+int *getFullObjectIDList( int *outNumIDs );
+
+
+// gets the internal name of an object, example:  "wall_wood"
+const char *getObjectName( int inObjectID );
+
+
+// gets the human-readable description, example:  "Wooden Wall"
+const char *getObjectDescription( int inObjectID );
+
+
+
 
 // macro trick that allows us to define this list only once and use
 // it in both the enum and to create the string array.

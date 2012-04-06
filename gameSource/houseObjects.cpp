@@ -389,6 +389,40 @@ void freeHouseObjects() {
 
 
 
+int *getFullObjectIDList( int *outNumIDs ) {
+    *outNumIDs = objects.size();
+    
+    int *returnList = new int[ *outNumIDs ];
+    
+    
+    for( int i=0; i<*outNumIDs; i++ ) {
+        houseObjectRecord *r = objects.getElement( i );
+    
+        returnList[i] = r->id;
+        }
+    
+    return returnList;
+    }
+
+
+
+const char *getObjectName( int inObjectID ) {
+    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
+    
+    return r->name;
+    }
+
+
+
+const char *getObjectDescription( int inObjectID ) {
+    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
+    
+    return r->description;
+    }
+
+
+
+
 static houseObjectState *getObjectState( int inObjectID, int inState ) {
 
     int index = idToIndexMap[inObjectID];
