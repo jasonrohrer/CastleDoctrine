@@ -438,6 +438,7 @@ function cd_setupDatabase() {
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
             "house_map LONGTEXT NOT NULL," .
+            "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
             "rob_checkout TINYINT NOT NULL,".
@@ -943,7 +944,8 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+    $query = "SELECT user_id, edit_count ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
 
@@ -957,7 +959,10 @@ function cd_endEditHouse() {
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
+    $edit_count = $row[ "edit_count" ];
 
+    $edit_count ++;
+    
     $house_map = "";
     if( isset( $_REQUEST[ "house_map" ] ) ) {
         $house_map = $_REQUEST[ "house_map" ];
@@ -965,7 +970,8 @@ function cd_endEditHouse() {
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "edit_checkout = 0, house_map='$house_map' ".
+        "edit_checkout = 0, house_map='$house_map', ".
+        "edit_count='$edit_count' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -1038,7 +1044,8 @@ function cd_listHouses() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery and limbo houses for this user
+    // out for robbery and houses that haven't been edited yet and
+    // limbo houses for this user
 
     // join to include last robber name for each result
     // (maps each robbing_user_id to the corresponding character_name
@@ -1054,6 +1061,7 @@ function cd_listHouses() {
         "ON houses.robbing_user_id = robbers.user_id ".
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
+        "AND houses.edit_count > 0 ".        
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
         "  WHERE user_id = $user_id ) ".
@@ -1668,7 +1676,8 @@ function cd_newHouseForUser( $user_id ) {
         
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '$house_map', 1000, 0, 0, 0, 0, ".
+            " $user_id, '$character_name', '$house_map', 0, ".
+            "1000, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
