@@ -102,7 +102,7 @@ void TextField::setText( const char *inText ) {
     
     mText = stringDuplicate( inText );
     
-    mCursorPosition = 0;
+    mCursorPosition = strlen( mText );
 
     // hold-downs broken
     mHoldDeleteSteps = -1;
