@@ -133,7 +133,9 @@ void FetchRobberyReplayPage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 6 ) {
+                    if( tokens->size() != 7 ||
+                        strcmp( *( tokens->getElement( 6 ) ), "OK" ) != 0 ) {
+
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -155,6 +157,7 @@ void FetchRobberyReplayPage::step() {
                                 "%d", &( mLogRecord.lootValue ) );
                         
                         delete [] *( tokens->getElement( 5 ) );
+                        delete [] *( tokens->getElement( 6 ) );
 
                         mRecordReady = true;
                         }

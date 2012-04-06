@@ -116,11 +116,14 @@ void LoginPage::step() {
                         else {
                             int minClientVersion;
                             
-                            int numRead = sscanf( result, "%d %d %d",
+                            char endString[10];
+                            
+                            int numRead = sscanf( result, "%d %d %d %9s",
                                                   &minClientVersion,
                                                   &userID,
-                                                  &serverSequenceNumber );
-                            if( numRead != 3 ) {
+                                                  &serverSequenceNumber,
+                                                  endString );
+                            if( numRead != 4 ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "err_badServerResponse";
                                 printf( "Server response: %s\n", result );
@@ -133,8 +136,9 @@ void LoginPage::step() {
                                 acceptInput();
                                 mLoginButton.setVisible( true );
                                 }
-                            else {
+                            else if( strcmp( endString, "OK" ) == 0 ) {
                                 // good email, good client version!
+                                // good response (ends with OK)
 
                                 // need separate server call
                                 // from checking out a house
@@ -164,6 +168,14 @@ void LoginPage::step() {
                                         fullRequestURL );
 
                                 delete [] fullRequestURL;
+                                }
+                            else {
+                                // doesn't end with OK
+                                mStatusError = true;
+                                mStatusMessageKey = "err_badServerResponse";
+                                printf( "Server response: %s\n", result );
+                                acceptInput();
+                                mLoginButton.setVisible( true );
                                 }
                             }
                         

@@ -827,7 +827,7 @@ function cd_checkUser() {
 
     global $cd_minClientVersion;
     
-    echo "$cd_minClientVersion $user_id $sequence_number";
+    echo "$cd_minClientVersion $user_id $sequence_number OK";
     }
 
 
@@ -919,7 +919,8 @@ function cd_startEditHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
-    echo $house_map;    
+    echo $house_map;
+    echo "\nOK";
     }
 
 
@@ -1084,6 +1085,7 @@ function cd_listHouses() {
         echo "$house_user_id#$character_name#$robber_name".
             "#$loot_value#$rob_attempts\n";
         }
+    echo "OK";
     }
 
 
@@ -1148,7 +1150,8 @@ function cd_startRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo "$character_name\n";
-    echo $house_map;    
+    echo $house_map;
+    echo "\nOK";
     }
 
 
@@ -1291,8 +1294,8 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
-    echo "OK\n";
     echo $amountTaken;
+    echo "\nOK";
     }
 
 
@@ -1374,6 +1377,7 @@ function cd_listLoggedRobberies() {
         echo "$log_id#$victim_name#$robber_name".
             "#$loot_value#$rob_attempts\n";
         }
+    echo "OK";
     }
 
 
@@ -1434,7 +1438,8 @@ function cd_getRobberyLog() {
     echo $row[ "house_start_map" ] . "\n";    
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";
-    echo $row[ "loot_value" ];    
+    echo $row[ "loot_value" ] . "\n";
+    echo "OK";
     }
 
 

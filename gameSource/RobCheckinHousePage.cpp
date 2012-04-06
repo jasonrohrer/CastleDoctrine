@@ -130,7 +130,8 @@ void RobCheckinHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 2 ) {
+                    if( tokens->size() != 2 ||
+                        strcmp( *( tokens->getElement( 1 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );                    
@@ -138,7 +139,7 @@ void RobCheckinHousePage::step() {
                     else {
                         int value;
 
-                        sscanf( *( tokens->getElement( 1 ) ), 
+                        sscanf( *( tokens->getElement( 0 ) ), 
                                 "%d", &value );
                         
 

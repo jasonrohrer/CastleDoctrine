@@ -118,7 +118,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 2 ) {
+                    if( tokens->size() != 3 ||
+                        strcmp( *( tokens->getElement( 2 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -133,6 +134,8 @@ void RobCheckoutHousePage::step() {
                         
                         printf( "OwnerName = %s\n", mOwnerName );
                         printf( "HouseMap = %s\n", mHouseMap );
+                        
+                        delete [] *( tokens->getElement( 2 ) );
                         }
                     
                     delete tokens;

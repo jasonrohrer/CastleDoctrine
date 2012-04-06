@@ -237,7 +237,8 @@ void RobPickList::step() {
 
                     char badParse = false;
 
-                    for( int i=0; i<lines->size(); i++ ) {
+                    // last line should be OK
+                    for( int i=0; i<lines->size() - 1; i++ ) {
                         char *line = *( lines->getElement( i ) );
                         
                         int numParts;
@@ -285,6 +286,25 @@ void RobPickList::step() {
                         
                         delete [] line;
                         }
+                    
+                    if( lines->size() > 0 ) {
+                        
+                        char *line = 
+                            *( lines->getElement( lines->size() -1  ) );
+                    
+                        if( strcmp( line, "OK" ) != 0 ) {
+                            badParse = true;
+                            }
+                        
+                        delete [] line;
+                        }
+                    else {
+                        // list could be empty, but it still must have OK
+                        // at the end
+                        badParse = true;
+                        }
+                    
+                    
 
                     delete lines;
 

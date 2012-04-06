@@ -14,6 +14,7 @@ Returns:
 minVersionNumber
 userID
 sequenceNumber
+OK
 
 Where:
 minVersionNumber = minimum client version number compatible with this server
@@ -63,6 +64,7 @@ server.php?action=start_edit_house&user_id=[id number]
                                   &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
 houseMap
+OK
 
 Where:
 houseMap = ASCII string representing the house layout
@@ -115,6 +117,7 @@ user_id#character_name#last_robber_name#loot_value#rob_attempts
 user_id#character_name#last_robber_name#loot_value#rob_attempts
 user_id#character_name#last_robber_name#loot_value#rob_attempts
 ....
+OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
@@ -136,6 +139,7 @@ server.php?action=start_rob_house&user_id=[id number]
 Returns:
 character_name
 houseMap
+OK
 
 Where:
 character_name has spaces repaced by "_"
@@ -155,8 +159,8 @@ server.php?action=end_rob_house&user_id=[id number]
                                &move_list=[move list as ASCII string]
                                &house_map=[house map ASCII string]
 Returns:
-OK
 dollar_value
+OK
 
 
 Note:
@@ -177,6 +181,7 @@ log_id#character_name#last_robber_name#loot_value#rob_attempts
 log_id#character_name#last_robber_name#loot_value#rob_attempts
 log_id#character_name#last_robber_name#loot_value#rob_attempts
 ....
+OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
@@ -202,6 +207,7 @@ houseMap
 loadout
 moveList
 loot_value
+OK
 
 Where:
 robber_name and victim_name have spaces repaced by "_"

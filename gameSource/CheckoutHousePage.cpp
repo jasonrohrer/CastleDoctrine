@@ -93,13 +93,29 @@ void CheckoutHousePage::step() {
                     }
                 else {
                     // house checked out!
+
+                    SimpleVector<char *> *lines = 
+                        tokenizeString( result );
                     
-                    int size = strlen( result );
+                    if( lines->size() != 2
+                        ||
+                        strcmp( *( lines->getElement( 1 ) ), "OK" ) != 0 ) {
+
+                        setStatus( "err_badServerResponse", true );
+                        mMenuButton.setVisible( true );
                     
-                    mHouseMap = new char[ size + 1 ];
+                        for( int i=0; i<lines->size(); i++ ) {
+                            delete [] *( lines->getElement( i ) );
+                            }
+                        }
+                    else {
+                        mHouseMap = *( lines->getElement( 0 ) );
                     
-                    sscanf( result, "%s", mHouseMap );
-                    printf( "HouseMap = %s\n", mHouseMap );
+                        delete [] *( lines->getElement( 1 ) );
+                        
+                        printf( "HouseMap = %s\n", mHouseMap );
+                        }
+                    delete lines;
                     }
                         
                         
