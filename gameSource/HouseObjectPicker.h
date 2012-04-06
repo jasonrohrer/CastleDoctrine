@@ -57,6 +57,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         int mSelectedIndex;
         
+        double mPixWidth;
+
         SpriteButton mUpButton;
         SpriteButton mDownButton;
 
