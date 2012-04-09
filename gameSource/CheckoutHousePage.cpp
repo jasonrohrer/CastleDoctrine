@@ -21,6 +21,7 @@ extern int userID;
 CheckoutHousePage::CheckoutHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mPriceList( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -36,6 +37,9 @@ CheckoutHousePage::~CheckoutHousePage() {
         }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
+        }
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
         }
     }
 
@@ -53,6 +57,17 @@ char *CheckoutHousePage::getHouseMap() {
         }
     else {
         return stringDuplicate( mHouseMap );
+        }
+    }
+
+
+
+char *CheckoutHousePage::getPriceList() {
+    if( mPriceList == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mPriceList );
         }
     }
 
@@ -97,9 +112,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 2
+                    if( lines->size() != 3
                         ||
-                        strcmp( *( lines->getElement( 1 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 2 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -110,10 +125,12 @@ void CheckoutHousePage::step() {
                         }
                     else {
                         mHouseMap = *( lines->getElement( 0 ) );
-                    
-                        delete [] *( lines->getElement( 1 ) );
+                        mPriceList = *( lines->getElement( 1 ) );
+                        
+                        delete [] *( lines->getElement( 2 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
+                        printf( "PriceList = %s\n", mPriceList );
                         }
                     delete lines;
                     }
@@ -137,6 +154,11 @@ void CheckoutHousePage::makeActive( char inFresh ) {
         delete [] mHouseMap;
         }
     mHouseMap = NULL;
+
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
+        }
+    mPriceList = NULL;
     
     char *ticketHash = getTicketHash();
 

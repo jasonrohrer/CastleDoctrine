@@ -24,6 +24,12 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void setHouseMap( char *inHouseMap );
         char *getHouseMap();
         
+        // destroyed by caller
+        void setPriceList( char *inPriceList );
+        char *getPriceList();
+        
+        
+
         // true if map changed since last setHouseMap call
         char houseMapChanged();
         
@@ -47,6 +53,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // for change detection
         char *mStartHouseMap;
         
+        char *mPriceList;
 
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;

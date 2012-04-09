@@ -422,6 +422,21 @@ const char *getObjectDescription( int inObjectID ) {
 
 
 
+int getObjectID( const char *inName ) {
+    for( int i=0; i<objects.size(); i++ ) {
+        houseObjectRecord *r = objects.getElement( i );
+        
+        if( strcmp( r->name, inName ) == 0 ) {
+            return r->id;
+            }
+        } 
+
+    return -1;
+    }
+
+
+
+
 
 static houseObjectState *getObjectState( int inObjectID, int inState ) {
 

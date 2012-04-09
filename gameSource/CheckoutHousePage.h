@@ -20,6 +20,9 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         
         // destroyed by caller if not NULL
         virtual char *getHouseMap();
+
+        // destroyed by caller if not NULL
+        virtual char *getPriceList();
         
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -33,7 +36,7 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         int mWebRequest;
 
         char *mHouseMap;
-
+        char *mPriceList;
 
         TextButton mMenuButton;
 

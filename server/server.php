@@ -975,10 +975,72 @@ function cd_startEditHouse() {
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
+
+    
+    $query = "SELECT last_price_list_number FROM $tableNamePrefix"."users ".
+        " WHERE user_id = '$user_id' FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $last_price_list_number = $row[ "last_price_list_number" ];
+
+
+    $last_price_list_number ++;
+
+
+    $query = "UPDATE $tableNamePrefix"."users SET ".
+        "last_price_list_number = '$last_price_list_number' ".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    
+    
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+
+    $query = "SELECT object_name, price FROM $tableNamePrefix"."prices;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $priceListBody = "";
+
+    $firstRow = true;
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        if( !$firstRow ) {
+            $priceListBody = $priceListBody . "#";
+            }
+        $firstRow = false;
+            
+        $object_name = mysql_result( $result, $i, "object_name" );
+        $price = mysql_result( $result, $i, "price" );
+
+        $priceListBody = $priceListBody . "$object_name"."@"."$price";
+        }
+
+    global $serverSecretKey;
+    
+    $signature =
+        sha1( $last_price_list_number . $priceListBody . $serverSecretKey );
+
+    
+        
+        
+    
     echo $house_map;
+    echo "\n";
+    echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
     echo "\nOK";
     }
 

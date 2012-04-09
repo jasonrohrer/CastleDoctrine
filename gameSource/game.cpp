@@ -835,13 +835,26 @@ void drawFrame( char inUpdate ) {
                 }
             else {
                 char *houseMap = checkoutHousePage->getHouseMap();
+                char *priceList = checkoutHousePage->getPriceList();
                 
-                if( houseMap != NULL ) {
+                if( houseMap != NULL && priceList != NULL ) {
                     
                     editHousePage->setHouseMap( houseMap );
+                    editHousePage->setPriceList( priceList );
+
                     delete [] houseMap;
+                    delete [] priceList;
+
                     currentGamePage = editHousePage;
                     currentGamePage->base_makeActive( true );
+                    }
+                else {
+                    if( houseMap != NULL ) {
+                        delete [] houseMap;
+                        }
+                    if( priceList != NULL ) {
+                        delete [] priceList;
+                        }
                     }
                 }
             }

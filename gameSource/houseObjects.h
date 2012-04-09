@@ -26,6 +26,10 @@ const char *getObjectName( int inObjectID );
 const char *getObjectDescription( int inObjectID );
 
 
+// returns -1 on failure
+int getObjectID( const char *inName );
+
+
 
 
 // macro trick that allows us to define this list only once and use

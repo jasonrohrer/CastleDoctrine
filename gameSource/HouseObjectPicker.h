@@ -31,14 +31,25 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         
         virtual void actionPerformed( GUIComponent *inTarget );
-
-        
-        // fetch new prices from server
-        virtual void refreshPrices();
         
         
         virtual int getSelectedObject();
         
+        // gets list of object IDs that are actually shown on picker
+        // (doesn't included unplaceable objects)
+        // destroyed by caller
+        virtual int *getIDList( int *outNumIDs );
+        
+        
+        // inRecords destroyed by caller
+        // the records in this list determine what is shown on picker
+        // (Can be a subset of what is returned by getIDList)
+        // Thus, price list from server can override what objects are
+        // shown in picker (by pairing down list only, not adding to it).
+        virtual void setPrices( ObjectPriceRecord *inRecords, 
+                                int inNumRecords );
+        
+
 
         virtual void step();
         
@@ -51,9 +62,9 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         GamePage *mParentPage;
 
 
-        int mWebRequest;
-
         SimpleVector<ObjectPriceRecord> mObjectList;
+        // to block server-listed objects that we don't have locally
+        SimpleVector<int> mLocalPresentIDs;
         
         int mSelectedIndex;
         

@@ -64,12 +64,23 @@ server.php?action=start_edit_house&user_id=[id number]
                                   &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
 houseMap
+price_list
 OK
 
 Where:
 houseMap = ASCII string representing the house layout
+price_list = ASCII string containing name/price pairs, like:
 
+LIST_NUMBER:wall_wood@10#wall_metal@20#wall_brick@25:SIGNATURE
 
+Where SIGNATURE is computed as follows:
+
+sha1( LIST_NUMBER . list_body . server_secret )
+
+Where "." is concatonate.
+
+Each LIST_NUMBER can only be used once by a given user in a house 
+modification, and then it becomes stale.
 
 
 

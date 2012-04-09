@@ -21,6 +21,7 @@ extern Font *mainFont;
 
 EditHousePage::EditHousePage() 
         : mStartHouseMap( NULL ),
+          mPriceList( NULL ),
           mObjectPicker( 8, 5, this ),
           mGridDisplay( 0, 0, this, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ) {
@@ -43,6 +44,9 @@ EditHousePage::~EditHousePage() {
     if( mStartHouseMap != NULL ) {
         delete [] mStartHouseMap;
         }
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
+        }
     }
 
 
@@ -60,6 +64,65 @@ void EditHousePage::setHouseMap( char *inHouseMap ) {
 
 char *EditHousePage::getHouseMap() {
     return mGridDisplay.getHouseMap();
+    }
+
+
+
+void EditHousePage::setPriceList( char *inPriceList ) {
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
+        }
+    mPriceList = stringDuplicate( inPriceList );
+
+    // parse it
+    int numBigParts;
+    char **bigParts = split( mPriceList, ":", &numBigParts );
+    
+    if( numBigParts == 3 ) {
+        
+        char *listBody = bigParts[1];
+        
+        int numPairs;
+        char **pairs = split( listBody, "#", &numPairs );
+        
+        ObjectPriceRecord *records = new ObjectPriceRecord[ numPairs ];
+        
+        for( int i=0; i<numPairs; i++ ) {
+            int numParts;
+            char **parts = split( pairs[i], "@", &numParts );
+            
+            if( numParts == 2 ) {
+                records[i].id = getObjectID( parts[0] );
+                
+                // default in case scan fails
+                records[i].price = 1;
+
+                sscanf( parts[1], "%d", &( records[i].price ) );
+                }
+            
+            for( int p=0; p<numParts; p++ ) {
+                delete [] parts[p];
+                }
+            delete [] parts;
+
+            delete [] pairs[i];
+            }
+        delete [] pairs;
+
+        mObjectPicker.setPrices( records, numPairs );
+        delete [] records;
+        }
+    
+    for( int i=0; i<numBigParts; i++ ) {
+        delete [] bigParts[i];
+        }
+    delete [] bigParts;
+    }
+
+
+
+char *EditHousePage::getPriceList() {
+    return stringDuplicate( mPriceList );
     }
 
 
