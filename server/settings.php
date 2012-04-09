@@ -18,6 +18,11 @@ $fullServerURL = "http://localhost/jcr13/castleServer/server.php";
 $mainSiteURL = "http://FIXME";
 
 
+// used by server for signing price lists to verify
+// that prices are valid later
+$serverSecretKey = "mySecret";
+
+
 
 // End Basic settings
 
@@ -42,6 +47,15 @@ $enableLog = 1;
 
 // for web-based admin access
 $accessPasswords = array( "secret", "secret2" );
+
+
+
+
+// prices that are loaded when database is first setup
+// they can be changed manually later from the admin page
+$defaultPrices = array(
+    "wall_wood" => 10,
+    "wall_metal" => 20 );
 
 
 

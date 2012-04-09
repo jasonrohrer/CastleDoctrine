@@ -168,6 +168,15 @@ else if( $action == "show_detail" ) {
 else if( $action == "block_user_id" ) {
     cd_blockUserID();
     }
+else if( $action == "update_prices" ) {
+    cd_updatePrices();
+    }
+else if( $action == "default_prices" ) {
+    cd_defaultPrices();
+    }
+else if( $action == "delete_price" ) {
+    cd_deletePrice();
+    }
 else if( $action == "cd_setup" ) {
     global $setup_header, $setup_footer;
     echo $setup_header; 
@@ -208,6 +217,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
+        cd_doesTableExist( $tableNamePrefix."prices" ) &&
         cd_doesTableExist( $tableNamePrefix."last_names" ) &&
         cd_doesTableExist( $tableNamePrefix."first_names" );
     
@@ -349,6 +359,30 @@ function cd_pickFullName() {
 
 
 
+function cd_restoreDefaultPrices() {
+    // default prices
+
+    
+    global $tableNamePrefix, $defaultPrices;
+    
+    $tableName = $tableNamePrefix . "prices";
+
+    // clear old
+    $query = "DELETE FROM $tableName";
+    cd_queryDatabase( $query );
+
+    
+    foreach( $defaultPrices as $object_name => $price ) {
+        $query = "INSERT INTO $tableName ".
+            "VALUES ( '$object_name', '$price' )";
+
+        cd_queryDatabase( $query );
+        }
+    
+    }
+
+
+
 
 
 
@@ -415,6 +449,7 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
             "sequence_number INT NOT NULL," .
+            "last_price_list_number INT NOT NULL," .
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -517,6 +552,28 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }    
 
+
+
+    $tableName = $tableNamePrefix . "prices";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // this table contains general info about each user's house
+        // EVERY user has EXACTLY ONE house
+        $query =
+            "CREATE TABLE $tableName(" .
+            "object_name VARCHAR(255) NOT NULL PRIMARY KEY," .
+            "price INT NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        cd_restoreDefaultPrices();
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+    
     
 
     $tableName = $tableNamePrefix . "last_names";
@@ -788,8 +845,9 @@ function cd_checkUser() {
 
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
-            "(ticket_id, sequence_number, blocked) VALUES(" .
-            " '$ticket_id', 0, 0 );";
+            "(ticket_id, sequence_number, last_price_list_number, blocked) ".
+            "VALUES(" .
+            " '$ticket_id', 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -1923,6 +1981,84 @@ function cd_showData() {
     echo "<hr>";
 
 
+    $query = "SELECT object_name, price ".
+        "FROM $tableNamePrefix"."prices;";
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+?>
+    <br>
+    <a name="priceList">      
+    <FORM ACTION="server.php#priceList" METHOD="post">
+    <INPUT TYPE="Submit" VALUE="Update Prices">
+    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
+    <INPUT TYPE="hidden" NAME="action" VALUE="update_prices">
+    <INPUT TYPE="hidden" NAME="num_prices" VALUE="<?php echo $numRows;?>">
+<?php
+
+    echo "<table border=1>\n";
+
+    $bgColor = "#EEEEEE";
+    $altBGColor = "#CCCCCC";
+                 
+    for( $i=0; $i<$numRows; $i++ ) {
+        $object_name = mysql_result( $result, $i, "object_name" );
+        $price = mysql_result( $result, $i, "price" );
+
+        echo "<tr>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Name: <b>$object_name</b>".
+            "<INPUT TYPE='hidden' NAME='name_$i' VALUE='$object_name'></td>\n";
+        echo "<td bgcolor=$bgColor>Price: $<INPUT TYPE='text' ".
+                          "MAXLENGTH=40 SIZE=20 NAME='price_$i' ".
+                          "VALUE='$price'></td>\n";
+        echo "<td bgcolor=$bgColor>[<a href='server.php?action=delete_price".
+                           "&object_name=$object_name".
+                           "&password=$password#priceList'>delete]</td>\n";
+        echo "</tr>\n\n";
+
+        $temp = $bgColor;
+        $bgColor = $altBGColor;
+        $altBGColor = $temp;
+        }
+    
+    echo "<tr>\n";
+    echo "<td colspan=3>New Price:</td><tr>\n";
+    echo "<tr>\n";
+    echo "<td>Name: <INPUT TYPE='text' MAXLENGTH=40 SIZE=20 NAME='name_NEW'
+             VALUE=''></td>\n";
+    echo "<td>Price: $<INPUT TYPE='text' ".
+        "MAXLENGTH=40 SIZE=20 NAME='price_NEW' ".
+        "VALUE=''></td>\n";
+    echo "<td></td>\n";
+    echo "</tr>\n\n";
+    
+    echo "</table>\n";
+?>    
+    <INPUT TYPE="Submit" VALUE="Update Prices">
+    </FORM>
+    <br>
+    <br>
+
+         
+    <FORM ACTION="server.php#priceList" METHOD="post">
+    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
+    <INPUT TYPE="hidden" NAME="action" VALUE="default_prices">
+    <table border=1>
+    <tr>
+    <td><INPUT TYPE="Submit" VALUE="Restore Default Prices"></td>
+    <td><INPUT TYPE="checkbox" NAME="confirm1" VALUE=1> Sure?<br>
+    <INPUT TYPE="checkbox" NAME="confirm2" VALUE=1> Really sure?<td>
+    </tr>
+    </table>     
+    </FORM>
+         
+<?php
+    
+    
+    echo "<hr>";
+
     echo "<a href=\"server.php?action=show_log&password=$password\">".
         "Show log</a>";
     echo "<hr>";
@@ -2046,6 +2182,162 @@ function cd_blockUserID() {
 
         echo "$user_id not found";
         }    
+    }
+
+
+
+
+function cd_defaultPrices() {
+    $password = cd_checkPassword( "default_prices" );
+
+
+    global $tableNamePrefix;
+    global $remoteIP;
+
+    $confirm1 = "";
+    
+    if( isset( $_REQUEST[ "confirm1" ] ) ) {
+        $confirm1 = $_REQUEST[ "confirm1" ];
+        }
+
+    $confirm2 = "";
+    if( isset( $_REQUEST[ "confirm2" ] ) ) {
+        $confirm2 = $_REQUEST[ "confirm2" ];
+        }
+    
+    if( $confirm1 == 1 && $confirm2 == 1 ) {
+
+        cd_restoreDefaultPrices();
+
+        cd_log( "Default prices restored by $remoteIP" );
+    
+        cd_showData();
+        }
+    else {
+        cd_nonFatalError( "Double confirmation boxes not checked to restore ".
+                          "default prices" );
+        }
+    }
+
+
+
+
+
+
+function cd_updatePrices() {
+    $password = cd_checkPassword( "update_prices" );
+
+
+    global $tableNamePrefix;
+    global $remoteIP;
+
+    
+    
+    $num_prices = "";
+    if( isset( $_REQUEST[ "num_prices" ] ) ) {
+        $num_prices = $_REQUEST[ "num_prices" ];
+        }
+
+    $blocked = "";
+    if( isset( $_REQUEST[ "blocked" ] ) ) {
+        $blocked = $_REQUEST[ "blocked" ];
+        }
+
+    if( $num_prices > 0 ) {
+        
+
+        for( $i=0; $i<$num_prices; $i++ ) {
+            $name = "";
+            if( isset( $_REQUEST[ "name_$i" ] ) ) {
+                $name = $_REQUEST[ "name_$i" ];
+                }
+            $price = "";
+            if( isset( $_REQUEST[ "price_$i" ] ) ) {
+                $price = $_REQUEST[ "price_$i" ];
+                }
+            $query = "UPDATE $tableNamePrefix"."prices SET " .
+                "price = '$price' " .
+                "WHERE object_name = '$name';";
+            
+            $result = cd_queryDatabase( $query );
+            }
+        
+        cd_log( "Prices updated by $remoteIP" );
+        }
+
+    // new one to insert?
+
+    $name = "";
+    if( isset( $_REQUEST[ "name_NEW" ] ) ) {
+        $name = $_REQUEST[ "name_NEW" ];
+        }
+    $price = "";
+    if( isset( $_REQUEST[ "price_NEW" ] ) ) {
+        $price = $_REQUEST[ "price_NEW" ];
+        }
+    
+    if( $name != "" && $price != "" ) {
+        // first, make sure it doesn't already exist
+        $query = "SELECT COUNT(object_name) FROM $tableNamePrefix"."prices ".
+            "WHERE object_name = '$name';";
+        $result = cd_queryDatabase( $query );
+
+        $count = mysql_result( $result, 0, 0 );
+        if( $count != 0 ) {
+
+            cd_nonFatalError( "Price already exists for '$name'" );            
+            }
+        
+        
+        $query = "INSERT INTO $tableNamePrefix"."prices VALUES ( " .
+            "'$name', '$price' );";
+        $result = cd_queryDatabase( $query );
+
+        if( $result ) {
+            cd_log( "New price ($name, $price) created by $remoteIP" );
+            }
+        
+        }
+    
+
+
+    
+    cd_showData();
+    }
+
+
+
+
+function cd_deletePrice() {
+    $password = cd_checkPassword( "delete_price" );
+
+
+    global $tableNamePrefix;
+    global $remoteIP;
+
+
+    $success = false;
+    
+    $object_name = "";
+    if( isset( $_REQUEST[ "object_name" ] ) ) {
+        $object_name = $_REQUEST[ "object_name" ];
+
+        $query = "DELETE FROM $tableNamePrefix"."prices " .
+            "WHERE object_name = '$object_name';";
+        
+        $result = cd_queryDatabase( $query );
+
+        if( $result && mysql_affected_rows() == 1 ) {
+            cd_log( "Price for $object_name deleted by $remoteIP" );
+            $success = true;
+            }
+        }
+
+    if( ! $success ) {
+        cd_nonFatalError( "Failed to delete price for '$object_name'" );
+        }
+    
+    cd_showData();
     }
 
 
@@ -2184,6 +2476,33 @@ function cd_operationError( $message ) {
     echo( "ERROR:  $message" );
     die();
     }
+
+
+
+/**
+ * Displays the non-fatal error page and dies.
+ *
+ * @param $message the error message to display on the error page.
+ */
+function cd_nonFatalError( $message ) {
+
+    $password = cd_checkPassword( "nonFatalError" );
+    
+     echo "[<a href=\"server.php?action=show_data&password=$password" .
+         "\">Main</a>]<br><br><br>";
+    
+    // for now, just print error message
+    $logMessage = "Error:  $message";
+    
+    echo( $logMessage );
+
+    cd_log( $logMessage );
+    
+    die();
+    }
+
+
+
 
 
 /**
