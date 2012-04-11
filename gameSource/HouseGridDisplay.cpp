@@ -596,18 +596,95 @@ void HouseGridDisplay::pointerMove( float inX, float inY ) {
     pointerOver( inX, inY );
     }
 
-void HouseGridDisplay::pointerDown( float inX, float inY ) {
+void HouseGridDisplay::pointerUp( float inX, float inY ) {
     pointerOver( inX, inY );
-    mHighlightIndex = getTileIndex( inX, inY );
+
+    int index = getTileIndex( inX, inY );
+    
+    mHighlightIndex = index;
+    
+    if( index != -1 && 
+        mPointerDownIndex != -1 &&
+        mDraggedAway ) {
+    
+        // pointer dropped on grid after being dragged somewhere else
+        int fullIndex = subToFull( index );
+        
+        
+        if( !mGoalSet && 
+            fullIndex != mStartIndex &&
+            fullIndex != mRobberIndex ) {
+            // goal dragged/dropped here
+            mHouseSubMapIDs[ index ] = GOAL_ID;
+            mGoalIndex = fullIndex;
+            mGoalSet = true;
+            mLastPlacedObject = GOAL_ID;
+            copySubCellBack( index );
+            fireActionPerformed( this );
+            }
+
+        }
+    
     }
+
+
 
 void HouseGridDisplay::pointerDrag( float inX, float inY ) {
     pointerOver( inX, inY );
-    mHighlightIndex = getTileIndex( inX, inY );
+    int index = getTileIndex( inX, inY );
+
+    mHighlightIndex = index;
+
+    if( index != -1 && 
+        mPointerDownIndex != -1 &&
+        index != mPointerDownIndex  ) {
+
+        mDraggedAway = true;
+
+        int fullIndex = subToFull( index );
+
+        if( fullIndex != mStartIndex &&
+            fullIndex != mGoalIndex &&
+            fullIndex != mRobberIndex &&
+            mPointerDownObjectID != -1 ) {
+            
+            int old = mHouseSubMapIDs[ index ];
+
+            if( mPlaceOnDrag && 
+                old != mPointerDownObjectID ) {
+                
+                // drag-place
+                if( mAllowPlacement ) {
+                    mHouseSubMapIDs[ index ] = mPointerDownObjectID;
+                    mLastPlacedObject = mPointerDownObjectID;
+
+                    copySubCellBack( index );
+                    fireActionPerformed( this );
+                    }
+                }
+            else if( !mPlaceOnDrag && old == mPointerDownObjectID ) {
+                // drag-erase of like-objects
+                mHouseSubMapIDs[ index ] = 0;
+                mLastPlacedObject = 0;
+
+                copySubCellBack( index );
+                fireActionPerformed( this );
+                }
+            
+            
+            }
+
+        }
     }
 
-void HouseGridDisplay::pointerUp( float inX, float inY ) {
+
+
+void HouseGridDisplay::pointerDown( float inX, float inY ) {
     int index = getTileIndex( inX, inY );
+    
+    mPointerDownIndex = index;
+    mDraggedAway = false;
+    mPointerDownObjectID = -1;
     
     if( index == -1 ) {
         return;
@@ -618,16 +695,18 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         return;
         }
 
-    if( subToFull( index ) == mRobberIndex ) {
+    int fullIndex = subToFull( index );
+
+    if( fullIndex == mRobberIndex ) {
         // don't allow clicks on current robber position
         return;
         }
     
 
-    int fullIndex = subToFull( index );
+    
     
 
-    if( !mGoalSet ) {
+    if( !mGoalSet && fullIndex != mStartIndex ) {
         // goal set here
         mHouseSubMapIDs[ index ] = GOAL_ID;
         mGoalIndex = fullIndex;
@@ -651,6 +730,9 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
                 if( mAllowPlacement ) {
                     mHouseSubMapIDs[ index ] = picked;
                     mLastPlacedObject = picked;
+                    mPointerDownObjectID = picked;
+                    mPlaceOnDrag = true;
+
                     copySubCellBack( index );
                     fireActionPerformed( this );
                     }
@@ -659,6 +741,11 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
                 // erase mode
                 mHouseSubMapIDs[ index ] = 0;
                 mLastPlacedObject = 0;
+                
+                // only allow erase of this object ID on drag
+                mPointerDownObjectID = picked;
+                mPlaceOnDrag = false;
+
                 copySubCellBack( index );
                 fireActionPerformed( this );
                 }
@@ -718,7 +805,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
-
+        mLastPlacedObject = 0;
         fireActionPerformed( this );
         }
     

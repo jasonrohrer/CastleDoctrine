@@ -108,6 +108,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         int mHighlightIndex;
         
+
+        int mPointerDownIndex;
+        char mDraggedAway;
+        
+        int mPointerDownObjectID;
+        // false if erase on drag
+        char mPlaceOnDrag;
         
         // get tile at relative position inX, inY
         int getTileIndex( double inX, double inY );
