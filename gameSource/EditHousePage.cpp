@@ -32,6 +32,7 @@ EditHousePage::EditHousePage()
 
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
+    mObjectPicker.addActionListener( this );
     }
 
 
@@ -129,6 +130,25 @@ char *EditHousePage::getPriceList() {
 
 void EditHousePage::setLootValue( int inLootValue ) {
     mLootValue = inLootValue;
+    checkIfPlacementAllowed();
+    }
+
+
+
+void EditHousePage::checkIfPlacementAllowed() {
+    int placementCost = 
+        mObjectPicker.getPrice( mObjectPicker.getSelectedObject() );
+    
+    if( placementCost == -1 ) {
+        mGridDisplay.allowPlacement( true );
+        }
+    else if( mLootValue >= placementCost ) {
+        mGridDisplay.allowPlacement( true );
+        }
+    else {
+        // not enough money
+        mGridDisplay.allowPlacement( false );
+        }
     }
 
 
@@ -162,6 +182,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         
         if( cost != -1 ) {
             mLootValue -= cost;
+            checkIfPlacementAllowed();
             }
         
 
@@ -170,6 +191,10 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mDoneButton ) {
         mDone = true;
+        }
+    else if( inTarget == &mObjectPicker ) {
+        // change in picked object
+        checkIfPlacementAllowed();
         }
     }
 

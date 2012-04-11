@@ -43,6 +43,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char isGoalSet();
         
 
+        // disable placement... for example, if out of money
+        void allowPlacement( char inAllow );
+        
         int getLastPlacedObject();
         
         
@@ -143,8 +146,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         void recomputeWallShadows();
 
-
-
+        
+        char mAllowPlacement;
         int mLastPlacedObject;
     };
 

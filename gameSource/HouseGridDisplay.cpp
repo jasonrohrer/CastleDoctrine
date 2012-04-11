@@ -35,6 +35,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHighlightIndex( -1 ), mTileRadius( 0.4375 ),
           mGoalSet( false ),
           mWallShadowSprite( NULL ),
+          mAllowPlacement( true ),
           mLastPlacedObject( 0 ) {
 
     }
@@ -166,6 +167,12 @@ char *HouseGridDisplay::getHouseMap() {
 
 char HouseGridDisplay::isGoalSet() {
     return mGoalSet;
+    }
+
+
+
+void HouseGridDisplay::allowPlacement( char inAllow ) {
+    mAllowPlacement = inAllow;
     }
 
 
@@ -641,10 +648,12 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         
             if( old != picked ) {
                 // place mode (or replace mode)
-                mHouseSubMapIDs[ index ] = picked;
-                mLastPlacedObject = picked;
-                copySubCellBack( index );
-                fireActionPerformed( this );
+                if( mAllowPlacement ) {
+                    mHouseSubMapIDs[ index ] = picked;
+                    mLastPlacedObject = picked;
+                    copySubCellBack( index );
+                    fireActionPerformed( this );
+                    }
                 }
             else {
                 // erase mode

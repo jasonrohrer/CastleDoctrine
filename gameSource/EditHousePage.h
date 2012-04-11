@@ -65,5 +65,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         char mDone;
 
+
+        void checkIfPlacementAllowed();
+
     };
 
