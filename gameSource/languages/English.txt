@@ -37,6 +37,8 @@ editDescription "Work on your house:"
 
 doneEdit "Done"
 
+undo "Undo"
+
 editBalance "Balance:"
 
 

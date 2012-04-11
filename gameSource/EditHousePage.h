@@ -2,6 +2,7 @@
 
 #include "TextField.h"
 #include "TextButton.h"
+#include "KeyEquivalentTextButton.h"
 
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
@@ -62,6 +63,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
+        KeyEquivalentTextButton mUndoButton;
         
         char mDone;
 

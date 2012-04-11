@@ -20,6 +20,7 @@ LoginPage.cpp \
 TextField.cpp \
 Button.cpp \
 TextButton.cpp \
+KeyEquivalentTextButton.cpp \
 SpriteButton.cpp \
 ticketHash.cpp \
 CheckoutHousePage.cpp \

@@ -14,11 +14,28 @@
 
 #include "minorGems/ui/event/ActionListenerList.h"
 
+#include "minorGems/util/SimpleVector.h"
+
 
 #include "minorGems/game/gameGraphics.h"
 
 
 #define HOUSE_D 13
+
+
+// for undo history
+typedef struct GridChangeRecord {
+        // index of change
+        int fullIndex;
+        int oldID;
+        int oldState;
+        int newID;
+
+        int robberIndex;
+        int subMapOffsetX, subMapOffsetY;
+        
+    } ObjectPlacementRecord;
+
 
 
 // fires actionPerformed whenever grid contents changes
@@ -47,6 +64,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void allowPlacement( char inAllow );
         
         int getLastPlacedObject();
+        
+
+        char canUndo();
+        
+        // returns cost of change that was undone
+        int undo();
         
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
@@ -156,6 +179,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char mAllowPlacement;
         int mLastPlacedObject;
+
+
+        SimpleVector<GridChangeRecord> mEditHistory;
+
+        // call this BEFORE setting edit in full grid
+        void logEdit( int inFullIndex, int inNewID );
+        
     };
 
 

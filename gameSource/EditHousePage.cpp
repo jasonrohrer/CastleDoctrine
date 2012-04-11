@@ -24,13 +24,17 @@ EditHousePage::EditHousePage()
           mPriceList( NULL ),
           mObjectPicker( 8, 5, this ),
           mGridDisplay( 0, 0, this, &mObjectPicker ),
-          mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ) {
+          mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
+          mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ) {
 
     addComponent( &mDoneButton );
+    addComponent( &mUndoButton );
     addComponent( &mGridDisplay );
     addComponent( &mObjectPicker );
 
     mDoneButton.addActionListener( this );
+    mUndoButton.addActionListener( this );
+    mUndoButton.setVisible( false );
     mGridDisplay.addActionListener( this );
     mObjectPicker.addActionListener( this );
     }
@@ -184,7 +188,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
             mLootValue -= cost;
             checkIfPlacementAllowed();
             }
-        
+        mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         // change to house map
         mLastActionTime = time( NULL );
@@ -196,6 +200,17 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         // change in picked object
         checkIfPlacementAllowed();
         }
+    else if( inTarget == &mUndoButton ) {
+        
+        int cost = mGridDisplay.undo();
+        
+        mLootValue += cost;
+        
+        checkIfPlacementAllowed();
+
+        mUndoButton.setVisible( mGridDisplay.canUndo() );
+        }
+    
     }
 
 

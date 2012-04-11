@@ -123,6 +123,8 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     
     mRobberIndex = mStartIndex;
+
+    mEditHistory.deleteAll();
     }
 
 
@@ -619,6 +621,12 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
             mGoalIndex = fullIndex;
             mGoalSet = true;
             mLastPlacedObject = GOAL_ID;
+            
+            logEdit( fullIndex, GOAL_ID );
+
+            // changes reset state
+            mHouseSubMapCellStates[ index ] = 0;
+
             copySubCellBack( index );
             fireActionPerformed( this );
             }
@@ -658,6 +666,11 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                     mHouseSubMapIDs[ index ] = mPointerDownObjectID;
                     mLastPlacedObject = mPointerDownObjectID;
 
+                    logEdit( fullIndex, mPointerDownObjectID );
+                    
+                    // changes reset state
+                    mHouseSubMapCellStates[ index ] = 0;
+                    
                     copySubCellBack( index );
                     fireActionPerformed( this );
                     }
@@ -666,6 +679,11 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                 // drag-erase of like-objects
                 mHouseSubMapIDs[ index ] = 0;
                 mLastPlacedObject = 0;
+
+                logEdit( fullIndex, 0 );
+
+                // changes reset state
+                mHouseSubMapCellStates[ index ] = 0;
 
                 copySubCellBack( index );
                 fireActionPerformed( this );
@@ -712,6 +730,12 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         mGoalIndex = fullIndex;
         mGoalSet = true;
         mLastPlacedObject = GOAL_ID;
+        
+        logEdit( fullIndex, GOAL_ID );
+
+        // changes reset state
+        mHouseSubMapCellStates[ index ] = 0;
+
         copySubCellBack( index );
         fireActionPerformed( this );
         }
@@ -733,6 +757,11 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                     mPointerDownObjectID = picked;
                     mPlaceOnDrag = true;
 
+                    logEdit( fullIndex, picked );
+                    
+                    // changes reset state
+                    mHouseSubMapCellStates[ index ] = 0;
+
                     copySubCellBack( index );
                     fireActionPerformed( this );
                     }
@@ -745,6 +774,11 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                 // only allow erase of this object ID on drag
                 mPointerDownObjectID = picked;
                 mPlaceOnDrag = false;
+                
+                logEdit( fullIndex, 0 );
+
+                // changes reset state
+                mHouseSubMapCellStates[ index ] = 0;
 
                 copySubCellBack( index );
                 fireActionPerformed( this );
@@ -756,6 +790,12 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         mHouseSubMapIDs[ index ] = 0;
         mGoalSet = false;
         mLastPlacedObject = 0;
+
+        logEdit( fullIndex, 0 );
+
+        // changes reset state
+        mHouseSubMapCellStates[ index ] = 0;
+
         copySubCellBack( index );
         fireActionPerformed( this );
         }
@@ -1168,3 +1208,74 @@ void HouseGridDisplay::recomputeWallShadows() {
     delete [] fullGridChannelsBlownUpAlpha;
     */
     }
+
+
+
+
+void HouseGridDisplay::logEdit( int inFullIndex, int inNewID ) {
+    GridChangeRecord r;
+    
+    r.fullIndex = inFullIndex;
+    r.oldID = mHouseMapIDs[ inFullIndex ];
+    r.oldState = mHouseMapCellStates[ inFullIndex ];
+    r.newID = inNewID;
+    r.robberIndex = mRobberIndex;
+    
+    r.subMapOffsetX = mSubMapOffsetX;
+    r.subMapOffsetY = mSubMapOffsetY;
+
+    mEditHistory.push_back( r );
+    }
+
+
+
+char HouseGridDisplay::canUndo() {
+    return ( mEditHistory.size() > 0 );
+    }
+
+        
+// returns cost of change that was undone
+int HouseGridDisplay::undo() {
+    int numSteps = mEditHistory.size();
+    
+    if( numSteps == 0 ) {
+        return 0;
+        }
+    
+
+    GridChangeRecord *r = mEditHistory.getElement( numSteps - 1 );
+    
+    
+    mHouseMapIDs[ r->fullIndex ] = r->oldID;
+    mHouseMapCellStates[ r->fullIndex ] = r->oldState;
+    
+    mRobberIndex = r->robberIndex;
+    
+    if( r->newID == GOAL_ID ) {
+        // this change set the goal
+        // undoing it means goal not set
+        mGoalSet = false;
+        }
+    else if( r->oldID == GOAL_ID ) {
+        // rolling back to a placed goal
+        mGoalSet = true;
+        mGoalIndex = r->fullIndex;
+        }
+    
+    // force copy-back and shadow recompute, plus possible view move
+    setVisibleOffset( r->subMapOffsetX, r->subMapOffsetY );
+    
+
+    int cost = mPicker->getPrice( r->newID );
+    
+    if( cost == -1 ) {
+        cost = 0;
+        }
+    
+    
+
+    mEditHistory.deleteElement( numSteps - 1 );
+
+    return cost;
+    }
+
