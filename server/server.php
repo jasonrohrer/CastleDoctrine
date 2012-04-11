@@ -952,7 +952,7 @@ function cd_startEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT house_map FROM $tableNamePrefix"."houses ".
+    $query = "SELECT house_map, loot_value FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -967,6 +967,7 @@ function cd_startEditHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $house_map = $row[ "house_map" ];
+    $loot_value = $row[ "loot_value" ];
 
 
     
@@ -1041,6 +1042,8 @@ function cd_startEditHouse() {
     echo $house_map;
     echo "\n";
     echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
+    echo "\n";
+    echo $loot_value;
     echo "\nOK";
     }
 

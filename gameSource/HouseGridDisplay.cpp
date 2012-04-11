@@ -34,7 +34,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
           mHighlightIndex( -1 ), mTileRadius( 0.4375 ),
           mGoalSet( false ),
-          mWallShadowSprite( NULL ) {
+          mWallShadowSprite( NULL ),
+          mLastPlacedObject( 0 ) {
 
     }
 
@@ -165,6 +166,12 @@ char *HouseGridDisplay::getHouseMap() {
 
 char HouseGridDisplay::isGoalSet() {
     return mGoalSet;
+    }
+
+
+
+int HouseGridDisplay::getLastPlacedObject() {
+    return mLastPlacedObject;
     }
 
     
@@ -618,6 +625,7 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         mHouseSubMapIDs[ index ] = GOAL_ID;
         mGoalIndex = fullIndex;
         mGoalSet = true;
+        mLastPlacedObject = GOAL_ID;
         copySubCellBack( index );
         fireActionPerformed( this );
         }
@@ -634,12 +642,14 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
             if( old != picked ) {
                 // place mode (or replace mode)
                 mHouseSubMapIDs[ index ] = picked;
+                mLastPlacedObject = picked;
                 copySubCellBack( index );
                 fireActionPerformed( this );
                 }
             else {
                 // erase mode
                 mHouseSubMapIDs[ index ] = 0;
+                mLastPlacedObject = 0;
                 copySubCellBack( index );
                 fireActionPerformed( this );
                 }
@@ -649,6 +659,7 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         // goal moving!
         mHouseSubMapIDs[ index ] = 0;
         mGoalSet = false;
+        mLastPlacedObject = 0;
         copySubCellBack( index );
         fireActionPerformed( this );
         }

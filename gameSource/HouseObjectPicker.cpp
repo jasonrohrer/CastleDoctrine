@@ -218,3 +218,20 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
     }
 
 
+
+int HouseObjectPicker::getPrice( int inObjectID ) {
+    int numIDs = mObjectList.size();
+    
+    for( int i=0; i<numIDs; i++ ) {
+        ObjectPriceRecord *r = mObjectList.getElement( i );
+        
+        if( r->id == inObjectID ) {
+            return r->price;
+            }
+        }
+
+    return -1;
+    }
+
+
+

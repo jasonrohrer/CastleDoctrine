@@ -72,6 +72,13 @@ char *CheckoutHousePage::getPriceList() {
     }
 
 
+
+int CheckoutHousePage::getLootValue() {
+    return mLootValue;
+    }
+
+
+
 void CheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
         mReturnToMenu = true;
@@ -112,9 +119,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 3
+                    if( lines->size() != 4
                         ||
-                        strcmp( *( lines->getElement( 2 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 3 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -127,10 +134,16 @@ void CheckoutHousePage::step() {
                         mHouseMap = *( lines->getElement( 0 ) );
                         mPriceList = *( lines->getElement( 1 ) );
                         
+                        mLootValue = 0;
+                        sscanf( *( lines->getElement( 2 ) ),
+                                "%d", &mLootValue );
+
                         delete [] *( lines->getElement( 2 ) );
+                        delete [] *( lines->getElement( 3 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "PriceList = %s\n", mPriceList );
+                        printf( "LootValue = %d\n", mLootValue );
                         }
                     delete lines;
                     }

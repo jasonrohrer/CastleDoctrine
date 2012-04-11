@@ -37,6 +37,8 @@ editDescription "Work on your house:"
 
 doneEdit "Done"
 
+editBalance "Balance:"
+
 
 selfTestDescription "Prove that your house is fair:"
 

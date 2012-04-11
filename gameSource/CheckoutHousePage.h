@@ -23,6 +23,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         // destroyed by caller if not NULL
         virtual char *getPriceList();
+
+        virtual int getLootValue();
         
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -37,6 +39,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         char *mHouseMap;
         char *mPriceList;
+        
+        int mLootValue;
 
         TextButton mMenuButton;
 

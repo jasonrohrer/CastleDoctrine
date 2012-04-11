@@ -48,7 +48,11 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         // shown in picker (by pairing down list only, not adding to it).
         virtual void setPrices( ObjectPriceRecord *inRecords, 
                                 int inNumRecords );
-        
+
+
+        // returns -1 if no price set
+        virtual int getPrice( int inObjectID );
+
 
 
         virtual void step();

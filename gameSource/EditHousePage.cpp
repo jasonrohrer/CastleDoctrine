@@ -127,6 +127,12 @@ char *EditHousePage::getPriceList() {
 
 
 
+void EditHousePage::setLootValue( int inLootValue ) {
+    mLootValue = inLootValue;
+    }
+
+
+
 char EditHousePage::houseMapChanged() {
     if( mStartHouseMap == NULL ) {
         return true;
@@ -150,6 +156,14 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
         mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+
+        int cost = 
+            mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
+        
+        if( cost != -1 ) {
+            mLootValue -= cost;
+            }
+        
 
         // change to house map
         mLastActionTime = time( NULL );
@@ -183,4 +197,19 @@ void EditHousePage::draw( doublePair inViewCenter,
     doublePair labelPos = { 0, 6.75 };
     
     drawMessage( translate( "editDescription" ), labelPos, false );
+    
+
+
+    labelPos.x = 8;
+    labelPos.y = 2;
+    
+    drawMessage( translate( "editBalance" ), labelPos, false );
+    
+    labelPos.y = 1.25;
+
+    char *balanceMessage = autoSprintf( "$%d", mLootValue );
+    
+    drawMessage( balanceMessage, labelPos, false );
+    
+    delete [] balanceMessage;
     }

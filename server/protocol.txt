@@ -65,6 +65,7 @@ server.php?action=start_edit_house&user_id=[id number]
 Returns:
 houseMap
 price_list
+current_balance
 OK
 
 Where:
@@ -81,6 +82,10 @@ Where "." is concatonate.
 
 Each LIST_NUMBER can only be used once by a given user in a house 
 modification, and then it becomes stale.
+
+And:
+current_balance = player's current money balance in whole dollars.
+
 
 
 

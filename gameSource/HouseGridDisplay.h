@@ -42,6 +42,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         char isGoalSet();
         
+
+        int getLastPlacedObject();
+        
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
         
@@ -139,7 +142,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
         void recomputeWallShadows();
-        
+
+
+
+        int mLastPlacedObject;
     };
 
 

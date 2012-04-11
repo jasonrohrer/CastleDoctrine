@@ -836,12 +836,14 @@ void drawFrame( char inUpdate ) {
             else {
                 char *houseMap = checkoutHousePage->getHouseMap();
                 char *priceList = checkoutHousePage->getPriceList();
+                int lootValue = checkoutHousePage->getLootValue();
                 
                 if( houseMap != NULL && priceList != NULL ) {
                     
                     editHousePage->setHouseMap( houseMap );
                     editHousePage->setPriceList( priceList );
-
+                    editHousePage->setLootValue( lootValue );
+                    
                     delete [] houseMap;
                     delete [] priceList;
 

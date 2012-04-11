@@ -29,6 +29,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *getPriceList();
         
         
+        void setLootValue( int inLootValue );
+        
 
         // true if map changed since last setHouseMap call
         char houseMapChanged();
@@ -54,6 +56,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *mStartHouseMap;
         
         char *mPriceList;
+        
+        int mLootValue;
 
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;
