@@ -70,9 +70,9 @@ OK
 
 Where:
 houseMap = ASCII string representing the house layout
-price_list = ASCII string containing name/price pairs, like:
+price_list = ASCII string containing ID/price pairs, like:
 
-LIST_NUMBER:wall_wood@10#wall_metal@20#wall_brick@25:SIGNATURE
+LIST_NUMBER:1@10#2@20#5@25:SIGNATURE
 
 Where SIGNATURE is computed as follows:
 

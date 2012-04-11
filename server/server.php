@@ -372,9 +372,9 @@ function cd_restoreDefaultPrices() {
     cd_queryDatabase( $query );
 
     
-    foreach( $defaultPrices as $object_name => $price ) {
+    foreach( $defaultPrices as $object_id => $price ) {
         $query = "INSERT INTO $tableName ".
-            "VALUES ( '$object_name', '$price' )";
+            "VALUES ( '$object_id', '$price' )";
 
         cd_queryDatabase( $query );
         }
@@ -561,7 +561,7 @@ function cd_setupDatabase() {
         // EVERY user has EXACTLY ONE house
         $query =
             "CREATE TABLE $tableName(" .
-            "object_name VARCHAR(255) NOT NULL PRIMARY KEY," .
+            "object_id INT NOT NULL PRIMARY KEY," .
             "price INT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -1008,7 +1008,7 @@ function cd_startEditHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
-    $query = "SELECT object_name, price FROM $tableNamePrefix"."prices;";
+    $query = "SELECT object_id, price FROM $tableNamePrefix"."prices;";
 
     $result = cd_queryDatabase( $query );
 
@@ -1024,10 +1024,10 @@ function cd_startEditHouse() {
             }
         $firstRow = false;
             
-        $object_name = mysql_result( $result, $i, "object_name" );
+        $object_id = mysql_result( $result, $i, "object_id" );
         $price = mysql_result( $result, $i, "price" );
 
-        $priceListBody = $priceListBody . "$object_name"."@"."$price";
+        $priceListBody = $priceListBody . "$object_id"."@"."$price";
         }
 
     global $serverSecretKey;
@@ -2046,7 +2046,7 @@ function cd_showData() {
     echo "<hr>";
 
 
-    $query = "SELECT object_name, price ".
+    $query = "SELECT object_id, price ".
         "FROM $tableNamePrefix"."prices;";
     $result = cd_queryDatabase( $query );
     
@@ -2068,18 +2068,18 @@ function cd_showData() {
     $altBGColor = "#CCCCCC";
                  
     for( $i=0; $i<$numRows; $i++ ) {
-        $object_name = mysql_result( $result, $i, "object_name" );
+        $object_id = mysql_result( $result, $i, "object_id" );
         $price = mysql_result( $result, $i, "price" );
 
         echo "<tr>\n";
         echo "<td bgcolor=$bgColor>".
-            "Name: <b>$object_name</b>".
-            "<INPUT TYPE='hidden' NAME='name_$i' VALUE='$object_name'></td>\n";
+            "Object ID: <b>$object_id</b>".
+            "<INPUT TYPE='hidden' NAME='id_$i' VALUE='$object_id'></td>\n";
         echo "<td bgcolor=$bgColor>Price: $<INPUT TYPE='text' ".
                           "MAXLENGTH=40 SIZE=20 NAME='price_$i' ".
                           "VALUE='$price'></td>\n";
         echo "<td bgcolor=$bgColor>[<a href='server.php?action=delete_price".
-                           "&object_name=$object_name".
+                           "&object_id=$object_id".
                            "&password=$password#priceList'>delete]</td>\n";
         echo "</tr>\n\n";
 
@@ -2091,7 +2091,7 @@ function cd_showData() {
     echo "<tr>\n";
     echo "<td colspan=3>New Price:</td><tr>\n";
     echo "<tr>\n";
-    echo "<td>Name: <INPUT TYPE='text' MAXLENGTH=40 SIZE=20 NAME='name_NEW'
+    echo "<td>Object ID: <INPUT TYPE='text' MAXLENGTH=40 SIZE=20 NAME='id_NEW'
              VALUE=''></td>\n";
     echo "<td>Price: $<INPUT TYPE='text' ".
         "MAXLENGTH=40 SIZE=20 NAME='price_NEW' ".
@@ -2312,9 +2312,9 @@ function cd_updatePrices() {
         
 
         for( $i=0; $i<$num_prices; $i++ ) {
-            $name = "";
-            if( isset( $_REQUEST[ "name_$i" ] ) ) {
-                $name = $_REQUEST[ "name_$i" ];
+            $id = "";
+            if( isset( $_REQUEST[ "id_$i" ] ) ) {
+                $id = $_REQUEST[ "id_$i" ];
                 }
             $price = "";
             if( isset( $_REQUEST[ "price_$i" ] ) ) {
@@ -2322,7 +2322,7 @@ function cd_updatePrices() {
                 }
             $query = "UPDATE $tableNamePrefix"."prices SET " .
                 "price = '$price' " .
-                "WHERE object_name = '$name';";
+                "WHERE object_id = '$id';";
             
             $result = cd_queryDatabase( $query );
             }
@@ -2332,34 +2332,34 @@ function cd_updatePrices() {
 
     // new one to insert?
 
-    $name = "";
-    if( isset( $_REQUEST[ "name_NEW" ] ) ) {
-        $name = $_REQUEST[ "name_NEW" ];
+    $id = "";
+    if( isset( $_REQUEST[ "id_NEW" ] ) ) {
+        $id = $_REQUEST[ "id_NEW" ];
         }
     $price = "";
     if( isset( $_REQUEST[ "price_NEW" ] ) ) {
         $price = $_REQUEST[ "price_NEW" ];
         }
     
-    if( $name != "" && $price != "" ) {
+    if( $id != "" && $price != "" ) {
         // first, make sure it doesn't already exist
-        $query = "SELECT COUNT(object_name) FROM $tableNamePrefix"."prices ".
-            "WHERE object_name = '$name';";
+        $query = "SELECT COUNT(object_id) FROM $tableNamePrefix"."prices ".
+            "WHERE object_id = '$id';";
         $result = cd_queryDatabase( $query );
 
         $count = mysql_result( $result, 0, 0 );
         if( $count != 0 ) {
 
-            cd_nonFatalError( "Price already exists for '$name'" );            
+            cd_nonFatalError( "Price already exists for '$id'" );            
             }
         
         
         $query = "INSERT INTO $tableNamePrefix"."prices VALUES ( " .
-            "'$name', '$price' );";
+            "'$id', '$price' );";
         $result = cd_queryDatabase( $query );
 
         if( $result ) {
-            cd_log( "New price ($name, $price) created by $remoteIP" );
+            cd_log( "New price ($id, \$$price) created by $remoteIP" );
             }
         
         }
@@ -2383,23 +2383,23 @@ function cd_deletePrice() {
 
     $success = false;
     
-    $object_name = "";
-    if( isset( $_REQUEST[ "object_name" ] ) ) {
-        $object_name = $_REQUEST[ "object_name" ];
+    $object_id = "";
+    if( isset( $_REQUEST[ "object_id" ] ) ) {
+        $object_id = $_REQUEST[ "object_id" ];
 
         $query = "DELETE FROM $tableNamePrefix"."prices " .
-            "WHERE object_name = '$object_name';";
+            "WHERE object_id = '$object_id';";
         
         $result = cd_queryDatabase( $query );
 
         if( $result && mysql_affected_rows() == 1 ) {
-            cd_log( "Price for $object_name deleted by $remoteIP" );
+            cd_log( "Price for $object_id deleted by $remoteIP" );
             $success = true;
             }
         }
 
     if( ! $success ) {
-        cd_nonFatalError( "Failed to delete price for '$object_name'" );
+        cd_nonFatalError( "Failed to delete price for '$object_id'" );
         }
     
     cd_showData();

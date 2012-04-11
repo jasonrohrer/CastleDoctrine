@@ -97,10 +97,12 @@ void EditHousePage::setPriceList( char *inPriceList ) {
             char **parts = split( pairs[i], "@", &numParts );
             
             if( numParts == 2 ) {
-                records[i].id = getObjectID( parts[0] );
                 
                 // default in case scan fails
+                records[i].id = -1;
                 records[i].price = 1;
+
+                sscanf( parts[0], "%d", &( records[i].id ) );
 
                 sscanf( parts[1], "%d", &( records[i].price ) );
                 }

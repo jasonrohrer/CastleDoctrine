@@ -54,8 +54,8 @@ $accessPasswords = array( "secret", "secret2" );
 // prices that are loaded when database is first setup
 // they can be changed manually later from the admin page
 $defaultPrices = array(
-    "wall_wood" => 10,
-    "wall_metal" => 20 );
+    1 => 10,
+    2 => 20 );
 
 
 
