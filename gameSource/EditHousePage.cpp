@@ -216,6 +216,8 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         checkIfPlacementAllowed();
 
         mUndoButton.setVisible( mGridDisplay.canUndo() );
+
+        mDoneButton.setVisible( mGridDisplay.isGoalSet() );
         }
     
     }
