@@ -1185,7 +1185,7 @@ function cd_endEditHouse() {
     // check 0:
     // house map is 32x32
     if( $numHouseCells != 32 * 32 ) {
-        cd_log( "House check-in with $numHouseCells denied" );
+        cd_log( "House check-in with $numHouseCells map cells denied" );
         cd_transactionDeny();
         return;
         }
@@ -1296,12 +1296,20 @@ function cd_endEditHouse() {
     $numEdits = count( $editArray );
 
 
+    if( $edit_list == "" ) {
+        // split on empty string returns array with 1 element, which screws
+        // up loop below
+        $numEdits = 0;
+        }
+    
+
     for( $i=0; $i<$numEdits; $i++ ) {
 
         // object_id@index
         $editParts = preg_split( "/@/", $editArray[$i] );
 
         if( count( $editParts ) != 2 ) {
+            cd_log( "House check-in with badly-formatted edit list denied" );
             cd_transactionDeny();
             return;
             }
@@ -1344,8 +1352,6 @@ function cd_endEditHouse() {
     if( $edited_house_map != $house_map ) {
         // edits + old map don't add up to the map that was submitted
         cd_log( "House check-in with map and edits mismatch denied" );
-        cd_log( "Map = $house_map" );
-        cd_log( "Edited Map = $edited_house_map" );
         
         cd_transactionDeny();
         return;
@@ -2759,9 +2765,15 @@ function cd_doesTableExist( $inTableName ) {
 function cd_log( $message ) {
     global $enableLog, $tableNamePrefix;
 
-    $slashedMessage = addslashes( $message );
-    
     if( $enableLog ) {
+        if( isset( $_REQUEST[ "user_id" ] ) ) {
+            $user_id = $_REQUEST[ "user_id" ];
+
+            $message = "[user_id = $user_id] " . $message;
+            }
+
+        $slashedMessage = addslashes( $message );
+        
         $query = "INSERT INTO $tableNamePrefix"."log VALUES ( " .
             "'$slashedMessage', CURRENT_TIMESTAMP );";
         $result = cd_queryDatabase( $query );
