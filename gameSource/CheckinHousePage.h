@@ -18,8 +18,10 @@ class CheckinHousePage : public GamePage, public ActionListener {
         virtual char getReturnToMenu();
         
         // destroyed by caller
-        virtual void setHouseMap( char *inHouseMap );
-
+        virtual void setHouseMap( char *inHouseMap );        
+        virtual void setEditList( char *inEditList );
+        virtual void setPriceList( char *inPriceList );
+        
 
         virtual void actionPerformed( GUIComponent *inTarget );
         
@@ -36,6 +38,8 @@ class CheckinHousePage : public GamePage, public ActionListener {
         int mWebRequest;
 
         char *mHouseMap;
+        char *mEditList;
+        char *mPriceList;
         
 
         TextButton mMenuButton;

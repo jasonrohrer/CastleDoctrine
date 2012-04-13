@@ -56,7 +56,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         // destroyed by caller
         char *getHouseMap();
-
+        char *getEditList();
+        
         char isGoalSet();
         
 

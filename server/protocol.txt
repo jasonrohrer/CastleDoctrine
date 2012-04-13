@@ -69,7 +69,17 @@ current_balance
 OK
 
 Where:
-houseMap = ASCII string representing the house layout
+houseMap = ASCII string representing the house layout, like:
+
+object_id#object_id#object_id#object_id
+
+OR
+
+object_id:state#object_id:state#object_id#object_id
+
+If ":state" not present, then default state is implied
+
+
 price_list = ASCII string containing ID/price pairs, like:
 
 LIST_NUMBER:1@10#2@20#5@25:SIGNATURE
@@ -95,8 +105,22 @@ server.php?action=end_edit_house&user_id=[id number]
                                 &sequence_number=[number]
                                 &ticket_hash=[sha1 hash, hex-encoded]
                                 &house_map=[house map ASCII string]
+                                &price_list=[price list ASCII string]
+                                &edit_list=[edit list ASCII string
 Returns:
 OK
+
+
+Where:
+
+price_list is the list returned by start_edit_house
+
+edit_list is encoded as follows:
+
+object_id@index#object_id@index#object_id@index#object_id@index
+
+Where object_id is the id of the object placed, and index is the position
+in the house map.
 
 
 

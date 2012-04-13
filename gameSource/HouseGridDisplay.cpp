@@ -95,7 +95,7 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         if( numRead < 2 ) {
             // no ":value" present after ID
             // use default
-            mHouseMapCellStates[i] = 1;
+            mHouseMapCellStates[i] = 0;
         
             if( numRead == 0 ) {
                 // reading ID failed?
@@ -139,7 +139,7 @@ char *HouseGridDisplay::getHouseMap() {
         
 
         for( int i=0; i<mNumMapSpots; i++ ) {
-            if( mHouseMapCellStates[i] != 1 ) {
+            if( mHouseMapCellStates[i] != 0 ) {
                 // not default state, include state
                 parts[i] = autoSprintf( "%d:%d", 
                                         mHouseMapIDs[i],
@@ -163,6 +163,38 @@ char *HouseGridDisplay::getHouseMap() {
 
         return stringDuplicate( mHouseMap );
         }
+    }
+
+
+
+char *HouseGridDisplay::getEditList() {
+    int numEdits = mEditHistory.size();
+
+    if( numEdits == 0 ) {
+        return stringDuplicate( "" );
+        }
+    
+    
+    SimpleVector<char*> listAccum;
+    
+    for( int i=0; i<numEdits; i++ ) {
+        GridChangeRecord *r = mEditHistory.getElement( i );
+        
+        char *editString = autoSprintf( "%d@%d", r->newID, r->fullIndex );
+    
+        listAccum.push_back( editString );
+        }
+    
+    char **listStrings = listAccum.getElementArray();
+    
+    char *editList = join( listStrings, numEdits, "#" );
+
+    for( int i=0; i<numEdits; i++ ) {
+        delete [] listStrings[i];
+        }
+    delete [] listStrings;
+
+    return editList;
     }
 
 

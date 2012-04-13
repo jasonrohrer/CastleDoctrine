@@ -72,6 +72,11 @@ char *EditHousePage::getHouseMap() {
     }
 
 
+char *EditHousePage::getEditList() {
+    return mGridDisplay.getEditList();
+    }
+
+
 
 void EditHousePage::setPriceList( char *inPriceList ) {
     if( mPriceList != NULL ) {

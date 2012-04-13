@@ -24,6 +24,11 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // destroyed by caller
         void setHouseMap( char *inHouseMap );
         char *getHouseMap();
+
+
+        // destroyed by caller
+        char *getEditList();
+        
         
         // destroyed by caller
         void setPriceList( char *inPriceList );

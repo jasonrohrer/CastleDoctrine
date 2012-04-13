@@ -1067,7 +1067,7 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT user_id, edit_count ".
+    $query = "SELECT user_id, edit_count, loot_value, house_map ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -1083,18 +1083,282 @@ function cd_endEditHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $edit_count = $row[ "edit_count" ];
-
+    $loot_value = $row[ "loot_value" ];
+    $old_house_map = $row[ "house_map" ];
+    
     $edit_count ++;
     
     $house_map = "";
     if( isset( $_REQUEST[ "house_map" ] ) ) {
         $house_map = $_REQUEST[ "house_map" ];
         }
+
+    $price_list = "";
+    if( isset( $_REQUEST[ "price_list" ] ) ) {
+        $price_list = $_REQUEST[ "price_list" ];
+        }
+
+    $edit_list = "";
+    if( isset( $_REQUEST[ "edit_list" ] ) ) {
+        $edit_list = $_REQUEST[ "edit_list" ];
+        }
+
+
+
+    $query = "SELECT last_price_list_number ".
+        "FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $last_price_list_number = $row[ "last_price_list_number" ];
+
+
+    $priceListParts = preg_split( "/:/", $price_list );
+
+
+    if( count( $priceListParts ) != 3 ) {
+        cd_log( "House check-in with badly-formatted price list denied" );
+        cd_transactionDeny();
+        return;
+        }
+
+    if( $last_price_list_number != $priceListParts[0] ) {
+        cd_log( "House check-in with stale price list denied" );
+        cd_transactionDeny();
+        return;
+        }
+
+    $priceListBody = $priceListParts[1];
+    $sig = $priceListParts[2];
+    
+    global $serverSecretKey;
+    
+    $true_sig =
+        sha1( $last_price_list_number . $priceListBody . $serverSecretKey );
+
+    if( $true_sig != $sig ) {
+        cd_log( "House check-in with badly-signed price list denied" );
+        cd_transactionDeny();
+        return;
+        }
+
+
+    // valid, fresh price list, signed by this server!
+
+    
+    $priceList = preg_split( "/#/", $priceListBody );
+
+    // build an array mapping object_id => price
+    $priceArray = array();
+
+    $numPrices = count( $priceList );
+
+
+    for( $i=0; $i<$numPrices; $i++ ) {
+        $priceParts = preg_split( "/@/", $priceList[$i] );
+        
+        $priceArray[ $priceParts[0] ] = $priceParts[1];
+        }
+
+    // finally, stick 0 prices for vault placement and floor placement
+    // (floor placement is erasing---free)
+    $priceArray[ 999 ] = 0;
+    $priceArray[ 0 ] = 0;
+    
+    
+
+    // now we need to check new house map to make sure it is a valid edit
+
+    $houseArray = preg_split( "/#/", $house_map );
+
+    $numHouseCells = count( $houseArray );
+
+    // check 0:
+    // house map is 32x32
+    if( $numHouseCells != 32 * 32 ) {
+        cd_log( "House check-in with $numHouseCells denied" );
+        cd_transactionDeny();
+        return;
+        }
+    
+    
+    // check 1:
+    // make sure it has exactly 1 vault and correct number of ext walls
+    
+    $vaultCount = 0;
+    $extWallCount = 0;
+    for( $i=0; $i<$numHouseCells; $i++ ) {
+        if( $houseArray[$i] == 999 ) {
+            $vaultCount++;
+            }
+        else if( $houseArray[$i] == 998 ) {
+            $extWallCount++;
+            }
+        }
+
+    if( $vaultCount != 1 ||
+        $extWallCount !=
+        // top row, bottom row
+        32 + 32 +
+        // edges between top and bottom
+        2 * 30
+        // empty spot on left edge for start position
+        - 1 ) {
+
+        cd_log(
+            "House check-in with bad vault count ($vaultCount) ".
+            "or ext wall count ($extWallCount) denied" );
+
+        cd_transactionDeny();
+        return;
+        }
+
+
+    // check 2:
+    // make sure the start location is empty
+
+    // row 16, column 0
+    $startIndex = 16 * 32 + 0;
+
+    if( $houseArray[ $startIndex ] != 0 ) {
+        cd_log( "House check-in with bad start location on map denied" );
+        cd_transactionDeny();
+        return;
+        }
+
+    
+    // check 3:
+    // all edges must be exterior walls (or blank for start spot)
+
+    // top row
+    for( $i=0; $i<32; $i++ ) {
+        if( $houseArray[$i] != 998 ) {
+            cd_log( "House check-in with bad ext wall placement denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+
+    // bottom row
+    for( $i=31*32; $i<32*32; $i++ ) {
+        if( $houseArray[$i] != 998 ) {
+            cd_log( "House check-in with bad ext wall placement denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+
+    // sides in between top and bottom rows
+    for( $y=1; $y<31; $y++ ) {
+
+        $left = $y * 32;
+
+        if( $houseArray[$left] != 998 ) {
+            // start location is one exception
+            if( $y != 16 ) {
+                cd_log( "House check-in with bad ext wall placement denied" );
+                cd_transactionDeny();
+                return;
+                }
+            }
+        
+        
+        $right = $y * 32 + 31;
+        if( $houseArray[$right] != 998 ) {
+            cd_log( "House check-in with bad ext wall placement denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+    
+    
+    
+    
+    
+    // now walk through edit list, totalling cost, and making sure
+    // that changes result in new, submitted house map
+
+    $oldHouseArray = preg_split( "/#/", $old_house_map );
+
+    $editArray = preg_split( "/#/", $edit_list );
+    
+    $editedHouseArray = $oldHouseArray;
+
+    $numEdits = count( $editArray );
+
+
+    for( $i=0; $i<$numEdits; $i++ ) {
+
+        // object_id@index
+        $editParts = preg_split( "/@/", $editArray[$i] );
+
+        if( count( $editParts ) != 2 ) {
+            cd_transactionDeny();
+            return;
+            }
+
+        $id = $editParts[0];
+        $mapIndex = $editParts[1];
+        
+        if( $mapIndex >= 32 * 32 || $mapIndex < 0 ) {
+            // out of bounds
+            cd_log( "House check-in with out-of-bounds edit denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+
+        if( ! array_key_exists( "$id", $priceArray ) ) {
+            // id's not on the price list can't be placed!
+            cd_log( "House check-in with unplaceable object in edit denied" );
+            cd_transactionDeny();
+            return;
+            }
+        
+        
+        $editedHouseArray[ $editParts[1] ] = $id;
+
+        $loot_value -= $priceArray[ "$id" ];
+
+        if( $loot_value < 0 ) {
+            // more edits than they could afford
+            cd_log( "House check-in with exceeded player budget denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+
+    // all edits applied
+    $edited_house_map = implode( "#", $editedHouseArray );
+
+
+    if( $edited_house_map != $house_map ) {
+        // edits + old map don't add up to the map that was submitted
+        cd_log( "House check-in with map and edits mismatch denied" );
+        cd_log( "Map = $house_map" );
+        cd_log( "Edited Map = $edited_house_map" );
+        
+        cd_transactionDeny();
+        return;
+        }
+    
+
+    // Well...
+    // if we get here, then we have a valid, edited house map.
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 0, house_map='$house_map', ".
-        "edit_count='$edit_count' ".
+        "edit_count='$edit_count', loot_value='$loot_value' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -1750,6 +2014,7 @@ function cd_newHouseForUser( $user_id ) {
     // default house map, 32x32 map
     // impenetrable walls around exterior
     // goal in place
+    // default state for each cell (no ":state" part)
     $house_map =
         "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#".
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".

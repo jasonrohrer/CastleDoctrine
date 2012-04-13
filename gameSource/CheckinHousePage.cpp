@@ -21,6 +21,8 @@ extern int userID;
 CheckinHousePage::CheckinHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mEditList( NULL ),
+          mPriceList( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -37,6 +39,12 @@ CheckinHousePage::~CheckinHousePage() {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
+    if( mEditList != NULL ) {
+        delete [] mEditList;
+        }
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
+        }
     }
 
 
@@ -52,6 +60,24 @@ void CheckinHousePage::setHouseMap( char *inHouseMap ) {
         delete [] mHouseMap;
         }
     mHouseMap = stringDuplicate( inHouseMap );
+    }
+
+
+
+void CheckinHousePage::setEditList( char *inEditList ) {
+    if( mEditList != NULL ) {
+        delete [] mEditList;
+        }
+    mEditList = stringDuplicate( inEditList );
+    }
+
+
+
+void CheckinHousePage::setPriceList( char *inPriceList ) {
+    if( mPriceList != NULL ) {
+        delete [] mPriceList;
+        }
+    mPriceList = stringDuplicate( inPriceList );
     }
 
 
@@ -123,8 +149,8 @@ void CheckinHousePage::makeActive( char inFresh ) {
     
     char *actionString = autoSprintf( 
         "action=end_edit_house&user_id=%d"
-        "&%s&house_map=%s",
-        userID, ticketHash, mHouseMap );
+        "&%s&house_map=%s&price_list=%s&edit_list=%s",
+        userID, ticketHash, mHouseMap, mPriceList, mEditList );
     delete [] ticketHash;
             
     

@@ -864,6 +864,8 @@ void drawFrame( char inUpdate ) {
             if( editHousePage->getDone() ) {
 
                 char *houseMap = editHousePage->getHouseMap();
+                char *editList = editHousePage->getEditList();
+                char *priceList = editHousePage->getPriceList();
                 
                 if( editHousePage->houseMapChanged() ) {
                     // force player to test own house first
@@ -879,23 +881,31 @@ void drawFrame( char inUpdate ) {
                     // not changed, check it right in
                 
                     checkinHousePage->setHouseMap( houseMap );
+                    checkinHousePage->setEditList( editList );
+                    checkinHousePage->setPriceList( priceList );
                     
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
                     }
 
                 delete [] houseMap;
+                delete [] editList;
+                delete [] priceList;
                 }
             }
         else if( currentGamePage == selfHouseTestPage ) {
             if( selfHouseTestPage->getDone() ) {
                 char *houseMap = selfHouseTestPage->getHouseMap();
+                char *editList = editHousePage->getEditList();
+                char *priceList = editHousePage->getPriceList();
                 
                 if( selfHouseTestPage->getSuccess() ) {
                     
                     // house passed by owner, okay to check in
                     checkinHousePage->setHouseMap( houseMap );
-                    
+                    checkinHousePage->setEditList( editList );
+                    checkinHousePage->setPriceList( priceList );
+
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
                     }
@@ -911,6 +921,8 @@ void drawFrame( char inUpdate ) {
                     currentGamePage->base_makeActive( true );
                     }
                 delete [] houseMap;
+                delete [] editList;
+                delete [] priceList;
                 }
             }
         else if( currentGamePage == checkinHousePage ) {
