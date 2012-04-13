@@ -63,6 +63,8 @@ void EditHousePage::setHouseMap( char *inHouseMap ) {
     mStartHouseMap = stringDuplicate( inHouseMap );
     
     mGridDisplay.setHouseMap( inHouseMap );
+
+    mUndoButton.setVisible( mGridDisplay.canUndo() );
     }
 
 
