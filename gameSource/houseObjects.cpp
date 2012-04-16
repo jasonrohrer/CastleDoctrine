@@ -290,38 +290,72 @@ void initHouseObjects() {
                 
                 // read states
 
-                int numStates;
-                File **stateDirs = f->getChildFiles( &numStates );
-                
-                int dirCount = 0;
-                for( int c=0; c<numStates; c++ ) {
-                    if( stateDirs[c]->isDirectory() ) {
-                        dirCount++;
-                        }
-                    }
-                
-                
-                r.numStates = dirCount;
-                
+                int numStateDirs;
+                File **stateDirs = f->getChildFiles( &numStateDirs );
 
-                r.states = new houseObjectState[ r.numStates ];
-                
-                
-                int s = 0;
-                for( int c=0; c<numStates; c++ ) {
+                // look for maximum defined state directory
+                // then make a sparsely-filled array of states
+                // that's big enough to contain that max index number
+                int maxStateNumber = 0;
+
+                for( int c=0; c<numStateDirs; c++ ) {
                     if( stateDirs[c]->isDirectory() ) {
                         
-                        r.states[s] = readState( stateDirs[c] );
+                        char *dirName = stateDirs[c]->getFileName();
                         
-                        s++;
-                        }
-                    else {
+                        int number;
                         
+                        int numRead = sscanf( dirName, "%d", &number );
+                        
+                        if( numRead == 1 ) {
+                            
+                            // make sure that dir name is pure state number
+                            // skip it, otherwise (i.e., skip:  "test0")
+
+                            char *checkDirName = autoSprintf( "%d", number );
+                            
+                            if( strcmp( checkDirName, dirName ) == 0 ) {
+                                
+
+                                if( maxStateNumber < number ) {
+                                    maxStateNumber = number;
+                                    }
+                                }
+                            delete [] checkDirName;
+                            }
+                        delete [] dirName;
                         }
                     delete stateDirs[c];
                     }
                 delete [] stateDirs;
+                
+                
+                r.numStates = maxStateNumber + 1;
+                
+                r.states = new houseObjectState[ r.numStates ];
+                
 
+                for( int s=0; s<r.numStates; s++ ) {
+                    // some indexed states might not be present
+                    
+                    // set numOrientations to zero to mark non-present states
+                    r.states[s].numOrientations = 0;
+                    
+                    char *stateDirName = autoSprintf( "%d", s );
+                    
+                    File *stateDir = f->getChildFile( stateDirName );
+                    
+                    
+                    if( stateDir->exists() && stateDir->isDirectory() ) {
+                        
+                        r.states[s] = readState( stateDir );
+                        }
+
+                    delete stateDir;
+
+                    delete [] stateDirName;                    
+                    }
+                
                 
                 if( r.id >= idSpaceSize ) {
                     idSpaceSize = r.id + 1;

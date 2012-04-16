@@ -55,7 +55,8 @@ $accessPasswords = array( "secret", "secret2" );
 // they can be changed manually later from the admin page
 $defaultPrices = array(
     1 => 10,
-    2 => 20 );
+    2 => 20,
+    100 => 100 );
 
 
 
