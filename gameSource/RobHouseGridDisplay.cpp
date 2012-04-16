@@ -21,7 +21,8 @@ extern double frameRateFactor;
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
           mSuccess( false ),
-          mDead( false ) {
+          mDead( false ),
+          mDeathSourceID( -1 ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
@@ -53,6 +54,12 @@ char RobHouseGridDisplay::getSuccess() {
 
 char RobHouseGridDisplay::getDead() {
     return mDead;
+    }
+
+
+
+int RobHouseGridDisplay::getDeathSourceID() {
+    return mDeathSourceID;
     }
 
 
@@ -294,6 +301,11 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 
 void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
+    if( mDead ) {
+        // can't move anymore
+        return;
+        }
+
     HouseGridDisplay::moveRobber( inNewIndex );
 
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
@@ -305,6 +317,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
         
         // robber killed
         mDead = true;
+        mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
         mSuccess = false;
         }
     

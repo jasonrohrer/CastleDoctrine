@@ -24,6 +24,7 @@ extern int userID;
 RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
         : mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( inDoneButtonKey ) ),
+          mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );
@@ -77,7 +78,16 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             mDone = true;
             }
         else if( mGridDisplay.getDead() ) {
-            mDone = true;
+            char *deathMessage = 
+                autoSprintf( 
+                    "%s  %s",
+                    translate( "killedBy" ),
+                    getObjectDescription( mGridDisplay.getDeathSourceID() ) );
+            
+            setToolTipDirect( deathMessage );
+            delete [] deathMessage;
+
+            mDoneButton.setLabelText( translate( "doneRobDead" ) );
             }
         else {
             
@@ -99,6 +109,9 @@ void RobHousePage::makeActive( char inFresh ) {
         }
     
     mDone = false;
+
+    // back to default button text
+    mDoneButton.setLabelText( translate( mDoneButtonKey ) );
     }
 
 

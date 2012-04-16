@@ -19,7 +19,10 @@ class TextButton : public Button {
                     const char *inLabelText );
 
         virtual ~TextButton();
-
+        
+        // copied internally
+        void setLabelText( const char *inLabelText );
+        
 
     protected:
         Font *mFont;

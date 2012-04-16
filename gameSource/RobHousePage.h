@@ -53,6 +53,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
 
         RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
+
+        const char *mDoneButtonKey;
         
         char mDone;
 

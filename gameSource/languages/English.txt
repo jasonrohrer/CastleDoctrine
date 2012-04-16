@@ -61,6 +61,12 @@ doneRob "Suicide"
 
 doneRobTest "Give Up"
 
+doneRobDead "Accept"
+
+
+killedBy "You were killed by:"
+
+
 
 deathMessage "You died."
 
