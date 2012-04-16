@@ -1004,13 +1004,12 @@ void HouseGridDisplay::copySubCellBack( int inSubCellIndex ) {
 
 
 
-
-void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
+void HouseGridDisplay::copyAllIntoSubCells() {
     for( int y=0; y<HOUSE_D; y++ ) {
-        int bigY = y + inYOffset;
+        int bigY = y + mSubMapOffsetY;
 
         for( int x=0; x<HOUSE_D; x++ ) {
-            int bigX = x + inXOffset;
+            int bigX = x + mSubMapOffsetX;
 
             int subIndex = y * HOUSE_D + x;
             
@@ -1023,9 +1022,16 @@ void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
                 mHouseMapCellStates[ bigIndex ];
             }
         }
+    }
+
+
+
+void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
     
     mSubMapOffsetX = inXOffset;
     mSubMapOffsetY = inYOffset;
+
+    copyAllIntoSubCells();
 
     recomputeWallShadows();
     }

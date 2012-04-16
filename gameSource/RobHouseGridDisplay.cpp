@@ -8,7 +8,7 @@
 
 #include "FastBoxBlurFilter.h"
 #include "houseObjects.h"
-
+#include "houseTransitions.h"
 
 #include <math.h>
 
@@ -81,8 +81,7 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         // robbery, but not repaired by owner yet
         }
     
-    // re-set visible offset to force copy-back of cell states into sub-map
-    setVisibleOffset( mSubMapOffsetX, mSubMapOffsetY );
+    copyAllIntoSubCells();
 
 
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
@@ -287,7 +286,11 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     HouseGridDisplay::moveRobber( inNewIndex );
-    
+
+    applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
+                      mRobberIndex );
+    copyAllIntoSubCells();
+
     recomputeVisibility();
 
     // a move!

@@ -53,6 +53,7 @@ int versionNumber = 1;
 
 
 #include "houseObjects.h"
+#include "houseTransitions.h"
 
 
 GamePage *currentGamePage = NULL;
@@ -370,6 +371,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     initHouseObjects();
+    initHouseTransitions();
     
 
     loginPage = new LoginPage();
@@ -417,7 +419,8 @@ void freeFrameDrawer() {
     delete replayRobHousePage;
 
     freeHouseObjects();
-
+    freeHouseTransitions();
+    
     if( serverURL != NULL ) {
         delete [] serverURL;
         serverURL = NULL;

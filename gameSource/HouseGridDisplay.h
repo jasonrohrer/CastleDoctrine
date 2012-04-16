@@ -121,7 +121,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // copy contents of sub cell back into full map
         void copySubCellBack( int inSubCellIndex );
-
+        
+        // copy contents of all cells back into sub map
+        void copyAllIntoSubCells();
+        
         
         // can be overridded to do special processing after robber moves
         virtual void moveRobber( int inNewIndex );

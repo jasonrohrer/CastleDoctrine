@@ -42,7 +42,7 @@ ReplayRobHousePage.cpp \
 nameProcessing.cpp \
 houseObjects.cpp \
 HouseObjectPicker.cpp \
-
+houseTransitions.cpp \
 
 
 
