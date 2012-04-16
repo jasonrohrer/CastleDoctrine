@@ -21,6 +21,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
 
         char getSuccess();
+        char getDead();
+        
 
         // list as a whitespace-free string
         // destroyed by caller
@@ -46,6 +48,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
     protected:
         
         char mSuccess;
+        char mDead;
         
 
         // 0 = visible (shroud transparent)

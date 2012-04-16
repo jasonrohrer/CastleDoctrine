@@ -20,7 +20,8 @@ extern double frameRateFactor;
 
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
-          mSuccess( false ) {
+          mSuccess( false ),
+          mDead( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
@@ -50,6 +51,12 @@ char RobHouseGridDisplay::getSuccess() {
 
 
 
+char RobHouseGridDisplay::getDead() {
+    return mDead;
+    }
+
+
+
 char *RobHouseGridDisplay::getMoveList() {
     if( mMoveList.size() == 0 ) {
         return stringDuplicate( "" );
@@ -67,6 +74,8 @@ char *RobHouseGridDisplay::getMoveList() {
 
 void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     mSuccess = false;
+    mDead = false;
+
     clearMoveList();
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
@@ -290,6 +299,15 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
                       mRobberIndex );
     copyAllIntoSubCells();
+
+    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
+                       mHouseMapCellStates[ mRobberIndex ], deadly ) ) {
+        
+        // robber killed
+        mDead = true;
+        mSuccess = false;
+        }
+    
 
     recomputeVisibility();
 

@@ -76,6 +76,9 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         if( mGridDisplay.getSuccess() ) {
             mDone = true;
             }
+        else if( mGridDisplay.getDead() ) {
+            mDone = true;
+            }
         else {
             
             // activity on house map
