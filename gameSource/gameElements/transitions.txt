@@ -1,0 +1,5 @@
+
+player   #   floor_trap:1   =>  2
+
+
+power   #   wall_wood:1   =>  2
