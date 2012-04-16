@@ -139,14 +139,14 @@ char *HouseGridDisplay::getHouseMap() {
         
 
         for( int i=0; i<mNumMapSpots; i++ ) {
-            if( mHouseMapCellStates[i] != 0 ) {
+            if( mHouseMapCellStates[i] != 0 && mHouseMapCellStates[i] != 1 ) {
                 // not default state, include state
                 parts[i] = autoSprintf( "%d:%d", 
                                         mHouseMapIDs[i],
                                         mHouseMapCellStates[i] );
                 }
             else {
-                // default state, skip including it
+                // one of two default states, skip including it
                 parts[i] = autoSprintf( "%d", mHouseMapIDs[i] );
                 }
             }
@@ -401,6 +401,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
             int houseTile = mHouseSubMapIDs[i];
+            int houseTileState = mHouseSubMapCellStates[i];
             
             char blockingProperty = isSubMapPropertySet( i, blocking );
             
@@ -473,16 +474,18 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                       orientationIndex, 0 );
+                                                       orientationIndex, 
+                                                       houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
             else if( !inNonBlockingOnly && houseTile != 0 ) {
-                // now draw non-blocking objects on top of floor
+                // now draw blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                       orientationIndex, 0 );
+                                                       orientationIndex, 
+                                                       houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }

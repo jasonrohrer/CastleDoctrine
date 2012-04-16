@@ -71,6 +71,20 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
 
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        // switch all 0-states to "1" for presentation to robber
+        if( mHouseMapCellStates[i] == 0 ) {
+            mHouseMapCellStates[i] = 1;
+            }
+        // leave other, non-default states alone
+        // example:  walls that were burned down during a previous, successful
+        // robbery, but not repaired by owner yet
+        }
+    
+    // re-set visible offset to force copy-back of cell states into sub-map
+    setVisibleOffset( mSubMapOffsetX, mSubMapOffsetY );
+
+
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         mVisibleMap[i] = 255;
         mTargetVisibleMap[i] = false;
