@@ -473,6 +473,7 @@ function cd_setupDatabase() {
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
             "house_map LONGTEXT NOT NULL," .
+            // times edited since last successful robbery
             "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
@@ -1688,7 +1689,8 @@ function cd_endRobHouse() {
         
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0, house_map='$house_map', loot_value = $house_money ".
+        "rob_checkout = 0, edit_count = 0, house_map='$house_map', ".
+        "loot_value = $house_money ".
         "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
     cd_queryDatabase( $query );
 
