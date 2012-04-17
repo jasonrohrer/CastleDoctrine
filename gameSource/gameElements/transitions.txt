@@ -2,4 +2,9 @@
 player   #   floor_trap:1   =>  2
 
 
+player   #   toggle_switch:1   =>  2
+
+player   #   toggle_switch:2   =>  1
+
+
 power   #   wall_wood:1   =>  2

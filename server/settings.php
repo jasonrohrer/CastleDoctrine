@@ -56,7 +56,9 @@ $accessPasswords = array( "secret", "secret2" );
 $defaultPrices = array(
     1 => 10,
     2 => 20,
-    100 => 100 );
+    100 => 100,
+    101 => 50
+    );
 
 
 
