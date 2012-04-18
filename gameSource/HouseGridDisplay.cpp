@@ -295,7 +295,8 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
-int HouseGridDisplay::getTileNeighborBlocking( int inIndex, int inNeighbor ) {
+int HouseGridDisplay::getTileNeighborStructural( int inIndex, 
+                                                 int inNeighbor ) {
     int fullIndex = subToFull( inIndex );
     
     int fullY = fullIndex / mFullMapD;
@@ -321,7 +322,7 @@ int HouseGridDisplay::getTileNeighborBlocking( int inIndex, int inNeighbor ) {
 
     return isPropertySet( mHouseMapIDs[ nIndex ],
                           mHouseMapCellStates[ nIndex ], 
-                          blocking );
+                          structural );
     }
 
 
@@ -360,7 +361,7 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
         int oneBlockedIndex = 0;
 
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighborBlocking( inIndex, n ) ) {
+            if( getTileNeighborStructural( inIndex, n ) ) {
                 numBlockedNeighbors ++;
                         
                 neighborsBlocked[n] = true;
@@ -403,28 +404,28 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
         }
     else if( numOrientations == 2 ) {
                 
-        if( getTileNeighborBlocking( inIndex, 0 ) && 
-            getTileNeighborBlocking( inIndex, 2 ) ) {
+        if( getTileNeighborStructural( inIndex, 0 ) && 
+            getTileNeighborStructural( inIndex, 2 ) ) {
             // blocked on top and bottom
                 
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborBlocking( inIndex, 1 ) && 
-                 getTileNeighborBlocking( inIndex, 3 ) ) {
+        else if( getTileNeighborStructural( inIndex, 1 ) && 
+                 getTileNeighborStructural( inIndex, 3 ) ) {
             /// blocked on left and right
             // horizontal 
             orientationIndex = 1;
             }
-        else if( getTileNeighborBlocking( inIndex, 0 ) || 
-                 getTileNeighborBlocking( inIndex, 2 ) ) {
+        else if( getTileNeighborStructural( inIndex, 0 ) || 
+                 getTileNeighborStructural( inIndex, 2 ) ) {
             // top OR bottom block
             
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborBlocking( inIndex, 1 ) || 
-                 getTileNeighborBlocking( inIndex, 3 ) ) {
+        else if( getTileNeighborStructural( inIndex, 1 ) || 
+                 getTileNeighborStructural( inIndex, 3 ) ) {
             /// blocked on left OR right
             // horizontal 
             orientationIndex = 1;
@@ -446,7 +447,7 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
 
 
 
-void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
+void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
@@ -454,14 +455,14 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
             int houseTile = mHouseSubMapIDs[i];
             int houseTileState = mHouseSubMapCellStates[i];
             
-            char blockingProperty = isSubMapPropertySet( i, blocking );
+            char structuralProperty = isSubMapPropertySet( i, structural );
             
             
             
             doublePair tilePos = getTilePos( i );
  
 
-            if( inNonBlockingOnly && blockingProperty ) {
+            if( inNonStructuralOnly && structuralProperty ) {
                 // skip this blocking tile
                 
                 // but draw floor under it!
@@ -476,7 +477,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 i++;
                 continue;
                 }
-            else if( ! inNonBlockingOnly && ! blockingProperty ) {
+            else if( ! inNonStructuralOnly && ! structuralProperty ) {
                 // skip this non-blocking tile
                 i++;
                 continue;
@@ -489,7 +490,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
 
             
             // draw empty floor, even under non-blocking objects
-            if( inNonBlockingOnly && !blockingProperty  ) {
+            if( inNonStructuralOnly && !structuralProperty  ) {
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -517,8 +518,8 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 drawSquare( tilePos, mTileRadius );
                 }
             */
-            if( inNonBlockingOnly && 
-                ! blockingProperty && 
+            if( inNonStructuralOnly && 
+                ! structuralProperty && 
                 houseTile != 0 ) {
                 
                 // now draw tile itself, on top of floor
@@ -530,7 +531,7 @@ void HouseGridDisplay::drawTiles( char inNonBlockingOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
-            else if( !inNonBlockingOnly && houseTile != 0 ) {
+            else if( !inNonStructuralOnly && houseTile != 0 ) {
                 // now draw blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -617,7 +618,7 @@ void HouseGridDisplay::draw() {
     drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
     
     
-    // draw house parts that are under shadows (non-blocking parts)
+    // draw house parts that are under shadows (non-structural parts)
     drawTiles( true );
 
     
@@ -642,6 +643,8 @@ void HouseGridDisplay::draw() {
                 1.0 * 2 * mTileRadius / 8.0 );
     toggleLinearMagFilter( false );
 
+
+    // draw structural tiles above shadows
     drawTiles( false );
     
 

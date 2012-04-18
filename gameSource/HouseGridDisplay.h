@@ -161,8 +161,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
         // returns object ID
         int getTileNeighbor( int inIndex, int inNeighbor );
-        // checks blocking property of neighbor
-        int getTileNeighborBlocking( int inIndex, int inNeighbor );
+        // checks structural property of neighbor
+        int getTileNeighborStructural( int inIndex, int inNeighbor );
         
         
         // inIndex is tile's sub-map index
@@ -178,7 +178,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         SpriteHandle mWallShadowSprite;
         
         
-        void drawTiles( char inNonBlockingOnly );
+        void drawTiles( char inNonStructuralOnly );
         
 
         void recomputeWallShadows();
