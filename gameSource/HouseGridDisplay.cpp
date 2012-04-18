@@ -566,7 +566,7 @@ void HouseGridDisplay::draw() {
     drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
     
     
-    // draw house
+    // draw house parts that are under shadows (non-blocking parts)
     drawTiles( true );
 
     
@@ -1092,8 +1092,7 @@ void HouseGridDisplay::recomputeWallShadows() {
             int subIndex = flipY * HOUSE_D + x;
             
 
-            if( isSubMapPropertySet( subIndex, blocking ) ) {
-                // all blocking objects leave shadows
+            if( isSubMapPropertySet( subIndex, shadowMaking ) ) {
                 alphaValue = 255;
                 }
             

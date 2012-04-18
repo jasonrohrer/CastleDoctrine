@@ -47,6 +47,7 @@ int getObjectID( const char *inName );
     F(permanent), \
     F(blocking), \
     F(visionBlocking), \
+    F(shadowMaking), \
     F(deadly), \
     F(destroyed), \
     F(powered), \
