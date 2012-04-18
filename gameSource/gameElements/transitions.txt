@@ -7,4 +7,6 @@ player   #   toggle_switch:1   =>  2
 player   #   toggle_switch:2   =>  1
 
 
-power   #   wall_wood:1   =>  2
+power   #   wire:1   =>  2
+
+noPower   #   wire:2   =>  1

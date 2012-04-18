@@ -46,11 +46,12 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 2
+#define NUM_BUILT_IN_TRIGGERS 3
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
     "player",
-    "power"
+    "power",
+    "noPower"
     };
                                               
     
@@ -295,5 +296,98 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
             inMapStates[ inRobberIndex ] = transRecord->targetEndState;
             }
         }
+
+    int numCells = inMapW * inMapH;
+
+    char *powerMap = new char[ numCells ];
+    memset( powerMap, false, numCells );
+    
+
+    char change = false;
+    
+    // first, start power at cells that are powered currently
+
+    for( int i=0; i<numCells; i++ ) {
+        if( isPropertySet( inMapIDs[i], inMapStates[i], powered ) ) {
+            powerMap[i] = true;
+            change = true;
+            }
+        }
+
+    while( change ) {
+        // keep propagating power through conductive materials
+        change = false;
+        
+        for( int i=0; i<numCells; i++ ) {
+            if( ! powerMap[i] &&
+                isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ) {
+                // look for neighbors with power
+                // break as soon as one found
+                
+                int y = i / inMapW;
+                int x = i % inMapW;
+                
+                if( y > 0 &&
+                    powerMap[ i - inMapW ] ) {
+                    powerMap[i] = true;
+                    change = true;
+                    break;
+                    }
+                if( y < inMapH - 1 &&
+                    powerMap[ i + inMapW ] ) {
+                    powerMap[i] = true;
+                    change = true;
+                    break;
+                    }
+                if( x > 0 &&
+                    powerMap[ i - 1 ] ) {
+                    powerMap[i] = true;
+                    change = true;
+                    break;
+                    }            
+                if( x < inMapW - 1 &&
+                    powerMap[ i + 1 ] ) {
+                    powerMap[i] = true;
+                    change = true;
+                    break;
+                    }
+                }
+            }
+        }
+    
+    
+    // now execute transitions for cells based on power or noPower
+
+    for( int i=0; i<numCells; i++ ) {
+        
+        TransitionTriggerRecord *triggerRecord;
+        
+        if( powerMap[i]  ) {
+            triggerRecord = 
+                &( triggerRecords[ getTriggerID( (char*)"power" ) ] );
+            }
+        else {
+            triggerRecord = 
+                &( triggerRecords[ getTriggerID( (char*)"noPower" ) ] );
+            }
+        
+        for( int j=0; j<triggerRecords->numTransitions; j++ ) {
+        
+            TransitionRecord *transRecord = 
+                &( triggerRecord->transitions[j] );
+            
+            if( transRecord->targetID == inMapIDs[i]
+                &&
+                transRecord->targetStartState == inMapStates[i] 
+                &&
+                transRecord->targetEndState != inMapStates[i] ) {
+                
+                inMapStates[ i ] = transRecord->targetEndState;
+                }
+            }
+        }
+
+
+    delete [] powerMap;
     }
 

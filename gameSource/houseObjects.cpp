@@ -483,7 +483,16 @@ static houseObjectState *getObjectState( int inObjectID, int inState ) {
         inState = 0;
         }
 
-    return &( r->states[inState] );
+    houseObjectState *returnState = &( r->states[inState] );
+    
+    if( returnState->numOrientations == 0 ) {
+        // not actually present (sparse array), switch to default
+
+        returnState = &( r->states[0] );
+        }
+    
+
+    return returnState;
     }
 
 
@@ -495,15 +504,11 @@ SpriteHandle getObjectSprite( int inObjectID,
                               int inOrientation, int inState ) {
     
     houseObjectState *state = getObjectState( inObjectID, inState );
-    
 
-    if( state->numOrientations == 0 ) {
-        
-        state = getObjectState( inObjectID, 0 );
-
-        return state->stateSprite[0];
-        }
-    
+    if( inOrientation >= state->numOrientations ) {
+        // default
+        inOrientation = 0;
+        }    
 
     return state->stateSprite[inOrientation];
     }
