@@ -430,7 +430,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
-                if( isSubMapPropertySet( stepIndex, blocking ) ) {
+                if( isSubMapPropertySet( stepIndex, visionBlocking ) ) {
                     
                     hit = true;
                     }
