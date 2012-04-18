@@ -378,10 +378,29 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
             // vertical orientation
             orientationIndex = 0;
             }
-        else {
+        else if( getTileNeighbor( inIndex, 1 ) != 0 && 
+                 getTileNeighbor( inIndex, 3 ) != 0 ) {
+            /// blocked on left and right
             // horizontal 
             orientationIndex = 1;
             }
+        else if( getTileNeighbor( inIndex, 0 ) != 0 || 
+                 getTileNeighbor( inIndex, 2 ) != 0 ) {
+            // top OR bottom block
+            
+            // vertical orientation
+            orientationIndex = 0;
+            }
+        else if( getTileNeighbor( inIndex, 1 ) != 0 || 
+                 getTileNeighbor( inIndex, 3 ) != 0 ) {
+            /// blocked on left OR right
+            // horizontal 
+            orientationIndex = 1;
+            }
+        else {
+            // default when not blocked at all, vertical
+            orientationIndex = 0;
+            }    
         }
     else if( numOrientations == 1 ) {
         orientationIndex = 0;
