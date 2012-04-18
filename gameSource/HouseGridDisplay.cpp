@@ -294,6 +294,38 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
+
+int HouseGridDisplay::getTileNeighborBlocking( int inIndex, int inNeighbor ) {
+    int fullIndex = subToFull( inIndex );
+    
+    int fullY = fullIndex / mFullMapD;
+    int fullX = fullIndex % mFullMapD;
+    
+    int dX[4] = { 0, 1, 0, -1 };
+    int dY[4] = { 1, 0, -1, 0 };
+
+    int nY = fullY + dY[ inNeighbor ];
+
+    int nX = fullX + dX[ inNeighbor ];
+    
+    
+    if( nY < 0 || nY >= mFullMapD
+        ||
+        nX < 0 || nX >= mFullMapD ) {
+        
+        // out of bounds, exterior wall
+        return true;
+        }
+
+    int nIndex = nY * mFullMapD + nX;
+
+    return isPropertySet( mHouseMapIDs[ nIndex ],
+                          mHouseMapCellStates[ nIndex ], 
+                          blocking );
+    }
+
+
+
 int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
     int numOrientations = 0;
     
@@ -328,7 +360,7 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
         int oneBlockedIndex = 0;
 
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighbor( inIndex, n ) != 0 ) {
+            if( getTileNeighborBlocking( inIndex, n ) ) {
                 numBlockedNeighbors ++;
                         
                 neighborsBlocked[n] = true;
@@ -371,28 +403,28 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
         }
     else if( numOrientations == 2 ) {
                 
-        if( getTileNeighbor( inIndex, 0 ) != 0 && 
-            getTileNeighbor( inIndex, 2 ) != 0 ) {
+        if( getTileNeighborBlocking( inIndex, 0 ) && 
+            getTileNeighborBlocking( inIndex, 2 ) ) {
             // blocked on top and bottom
                 
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighbor( inIndex, 1 ) != 0 && 
-                 getTileNeighbor( inIndex, 3 ) != 0 ) {
+        else if( getTileNeighborBlocking( inIndex, 1 ) && 
+                 getTileNeighborBlocking( inIndex, 3 ) ) {
             /// blocked on left and right
             // horizontal 
             orientationIndex = 1;
             }
-        else if( getTileNeighbor( inIndex, 0 ) != 0 || 
-                 getTileNeighbor( inIndex, 2 ) != 0 ) {
+        else if( getTileNeighborBlocking( inIndex, 0 ) || 
+                 getTileNeighborBlocking( inIndex, 2 ) ) {
             // top OR bottom block
             
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighbor( inIndex, 1 ) != 0 || 
-                 getTileNeighbor( inIndex, 3 ) != 0 ) {
+        else if( getTileNeighborBlocking( inIndex, 1 ) || 
+                 getTileNeighborBlocking( inIndex, 3 ) ) {
             /// blocked on left OR right
             // horizontal 
             orientationIndex = 1;

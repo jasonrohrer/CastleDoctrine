@@ -159,7 +159,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // inIndex is tile's sub-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
+        // returns object ID
         int getTileNeighbor( int inIndex, int inNeighbor );
+        // checks blocking property of neighbor
+        int getTileNeighborBlocking( int inIndex, int inNeighbor );
         
         
         // inIndex is tile's sub-map index
