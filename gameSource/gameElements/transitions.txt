@@ -10,3 +10,8 @@ player   #   toggle_switch:2   =>  1
 power   #   wire:1   =>  2
 
 noPower   #   wire:2   =>  1
+
+
+power   #   power_door:1   =>  2
+
+noPower   #   power_door:2   =>  1
