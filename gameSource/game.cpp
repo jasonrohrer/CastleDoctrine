@@ -898,7 +898,7 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == selfHouseTestPage ) {
             if( selfHouseTestPage->getDone() ) {
-                char *houseMap = selfHouseTestPage->getHouseMap();
+                char *houseMap = editHousePage->getHouseMap();
                 char *editList = editHousePage->getEditList();
                 char *priceList = editHousePage->getPriceList();
                 
