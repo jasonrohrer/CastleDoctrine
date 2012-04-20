@@ -803,7 +803,8 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         }
 
     int fullIndex = subToFull( index );
-
+    printf( "pointer down at full index %d\n", fullIndex );
+    
     if( fullIndex == mRobberIndex ) {
         // don't allow clicks on current robber position
         return;

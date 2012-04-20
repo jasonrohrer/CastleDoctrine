@@ -282,8 +282,13 @@ static char applyPowerTransitions( int *inMapIDs,
     memset( powerMap, false, numCells );
 
     // separately track whether each cell is passing power only left-to-right
+    // or only top-to-bottom (can be both!)
+    // fully conductive cells that become powered have both of these set
     char *leftRightPowerMap = new char[numCells];
     memset( leftRightPowerMap, false, numCells );
+
+    char *topBottomPowerMap = new char[numCells];
+    memset( topBottomPowerMap, false, numCells );
 
 
     char change = false;
@@ -302,55 +307,122 @@ static char applyPowerTransitions( int *inMapIDs,
         change = false;
         
         for( int i=0; i<numCells; i++ ) {
-            if( ! powerMap[i] &&
-                isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ) {
+            if( powerMap[i] &&
+                leftRightPowerMap[i] &&
+                topBottomPowerMap[i] ) {
+                // ignore cells already fully powered
+                continue;
+                }
+            
+            if( i == 292 || i == 324 ) {
+                printf( "Here\n" );
+                }
+            
+
+            if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ) {
                 // look for neighbors with power
-                // break as soon as one found
+                // continue as soon as one found
                 
                 int y = i / inMapW;
                 int x = i % inMapW;
                 
                 if( y > 0 &&
                     powerMap[ i - inMapW ] &&
-                    ! leftRightPowerMap[ i - inMapW ] ) {
+                    ( ! leftRightPowerMap[ i - inMapW ]
+                      || topBottomPowerMap[ i - inMapW ] ) ) {
                     powerMap[i] = true;
+                    leftRightPowerMap[i] = true;
+                    topBottomPowerMap[i] = true;
                     change = true;
-                    break;
+                    continue;
                     }
                 if( y < inMapH - 1 &&
                     powerMap[ i + inMapW ] &&
-                    ! leftRightPowerMap[ i + inMapW ] ) {
-                    powerMap[i] = true;
-                    change = true;
-                    break;
-                    }
-                if( x > 0 &&
-                    powerMap[ i - 1 ] ) {
-                    powerMap[i] = true;
-                    change = true;
-                    break;
-                    }            
-                if( x < inMapW - 1 &&
-                    powerMap[ i + 1 ] ) {
-                    powerMap[i] = true;
-                    change = true;
-                    break;
-                    }
-                }
-            else if( ! powerMap[i] &&
-                 isPropertySet( inMapIDs[i], inMapStates[i], 
-                                conductiveLeftToRight ) ) {
-            
-                // look for left neighbor with power
-                int x = i % inMapW;
-
-                if( x > 0 &&
-                    powerMap[ i - 1 ] ) {
-                    
+                    ( ! leftRightPowerMap[ i + inMapW ]
+                      || topBottomPowerMap[ i + inMapW ] ) ) {
                     powerMap[i] = true;
                     leftRightPowerMap[i] = true;
+                    topBottomPowerMap[i] = true;
                     change = true;
+                    continue;
                     }
+                if( x > 0 &&
+                    powerMap[ i - 1 ] &&
+                    ( leftRightPowerMap[ i - 1 ]
+                      || ! topBottomPowerMap[ i - 1 ] ) ) {
+                    powerMap[i] = true;
+                    leftRightPowerMap[i] = true;
+                    topBottomPowerMap[i] = true;
+                    change = true;
+                    continue;
+                    }            
+                if( x < inMapW - 1 &&
+                    powerMap[ i + 1 ] &&
+                    ( leftRightPowerMap[ i + 1 ]
+                      || ! topBottomPowerMap[ i + 1 ] ) ) {
+                    powerMap[i] = true;
+                    leftRightPowerMap[i] = true;
+                    topBottomPowerMap[i] = true;
+                    change = true;
+                    continue;
+                    }
+                }
+            else {
+                if( !leftRightPowerMap[i] &&
+                    isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveLeftToRight ) ) {
+            
+                    // look for left or right neighbor with power
+                    int x = i % inMapW;
+                    
+                    if( x > 0 &&
+                        powerMap[ i - 1 ] &&
+                        ( leftRightPowerMap[ i - 1 ]
+                          || ! topBottomPowerMap[ i - 1 ] )  ) {
+                        
+                        powerMap[i] = true;
+                        leftRightPowerMap[i] = true;
+                        change = true;
+                        }
+                    if( x < inMapW - 1 &&
+                        powerMap[ i + 1 ] &&
+                        ( leftRightPowerMap[ i + 1 ]
+                          || ! topBottomPowerMap[ i + 1 ] ) ) {
+                        
+                        powerMap[i] = true;
+                        leftRightPowerMap[i] = true;
+                        change = true;
+                        }
+                    }
+                
+
+                if( !topBottomPowerMap[i] &&
+                    isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveTopToBottom ) ) {
+            
+                    // look for top or bottom neighbor with power
+                    int y = i / inMapW;
+                    
+                    if( y > 0 &&
+                        powerMap[ i - inMapW ] &&
+                        ( ! leftRightPowerMap[ i - inMapW ]
+                          || topBottomPowerMap[ i - inMapW ] ) ) {
+                        
+                        powerMap[i] = true;
+                        topBottomPowerMap[i] = true;
+                        change = true;
+                        }
+                    if( y < inMapH - 1 &&
+                        powerMap[ i + inMapW ] &&
+                        ( ! leftRightPowerMap[ i + inMapW ]
+                          || topBottomPowerMap[ i + inMapW ] ) ) {
+                        
+                        powerMap[i] = true;
+                        topBottomPowerMap[i] = true;
+                        change = true;
+                        }
+                    }
+                
                 }
             }
         }
@@ -436,7 +508,8 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
     delete [] powerMap;
-    
+    delete [] leftRightPowerMap;
+    delete [] topBottomPowerMap;
 
     return transitionHappened;
     }

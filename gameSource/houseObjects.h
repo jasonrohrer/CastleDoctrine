@@ -54,6 +54,7 @@ int getObjectID( const char *inName );
     F(powered), \
     F(conductive), \
     F(conductiveLeftToRight), \
+    F(conductiveTopToBottom), \
     F(playerSeeking) \
 
                 
