@@ -1,6 +1,9 @@
 #include "CheckoutHousePage.h"
 #include "ticketHash.h"
 #include "message.h"
+#include "LiveHousePage.h"
+
+#include <time.h>
 
 
 #include "minorGems/game/Font.h"
@@ -144,6 +147,10 @@ void CheckoutHousePage::step() {
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "PriceList = %s\n", mPriceList );
                         printf( "LootValue = %d\n", mLootValue );
+
+                        // reset ping time, because house check-out
+                        // counts as a ping
+                        LiveHousePage::sLastPingTime = time( NULL );
                         }
                     delete lines;
                     }

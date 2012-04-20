@@ -2,7 +2,9 @@
 #include "ticketHash.h"
 #include "message.h"
 #include "nameProcessing.h"
+#include "LiveHousePage.h"
 
+#include <time.h>
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -136,6 +138,10 @@ void RobCheckoutHousePage::step() {
                         printf( "HouseMap = %s\n", mHouseMap );
                         
                         delete [] *( tokens->getElement( 2 ) );
+
+                        // reset ping time, because house check-out
+                        // counts as a ping
+                        LiveHousePage::sLastPingTime = time( NULL );
                         }
                     
                     delete tokens;

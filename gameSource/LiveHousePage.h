@@ -22,15 +22,18 @@ class LiveHousePage : public GamePage {
 
         virtual void makeActive( char inFresh );
 
-    protected:
-        
-        int mWebRequest;
 
         // track this globally
         // User only has one house checked out at a time, but they
         // might move from Page to Page while having that same house checked
         // out.  
         static int sLastPingTime;
+
+
+    protected:
+        
+        int mWebRequest;
+
 
 
         // subclass should update this every time a user action happens
