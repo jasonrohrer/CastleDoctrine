@@ -314,10 +314,6 @@ static char applyPowerTransitions( int *inMapIDs,
                 continue;
                 }
             
-            if( i == 292 || i == 324 ) {
-                printf( "Here\n" );
-                }
-            
 
             if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ) {
                 // look for neighbors with power
