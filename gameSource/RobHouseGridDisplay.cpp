@@ -97,13 +97,32 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         // robbery, but not repaired by owner yet
         }
     
-    copyAllIntoSubCells();
-
-
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         mVisibleMap[i] = 255;
         mTargetVisibleMap[i] = false;
         }
+
+    // initial transitions (like for power that starts out on, etc)
+    applyTransitionsAndProcess();
+    }
+
+
+
+void RobHouseGridDisplay::applyTransitionsAndProcess() {
+    applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
+                      mRobberIndex );
+
+    copyAllIntoSubCells();
+
+    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
+                       mHouseMapCellStates[ mRobberIndex ], deadly ) ) {
+        
+        // robber killed
+        mDead = true;
+        mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
+        mSuccess = false;
+        }
+    
     
     recomputeVisibility();
     }
@@ -308,22 +327,8 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
     HouseGridDisplay::moveRobber( inNewIndex );
 
-    applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
-                      mRobberIndex );
-    copyAllIntoSubCells();
-
-    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
-                       mHouseMapCellStates[ mRobberIndex ], deadly ) ) {
-        
-        // robber killed
-        mDead = true;
-        mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
-        mSuccess = false;
-        }
+    applyTransitionsAndProcess();
     
-
-    recomputeVisibility();
-
     // a move!
     mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
     

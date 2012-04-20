@@ -71,6 +71,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
         virtual void recomputeVisibility();
         
+
+        void applyTransitionsAndProcess();
     };
 
 
