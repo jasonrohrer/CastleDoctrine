@@ -46,12 +46,14 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 3
+#define NUM_BUILT_IN_TRIGGERS 5
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
     "player",
     "power",
-    "noPower"
+    "noPower",
+    "powerNorth",
+    "noPowerNorth",
     };
                                               
     
@@ -270,38 +272,19 @@ void freeHouseTransitions() {
 
 
 
-void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
-                       int inRobberIndex ) {
-
-    int playerTileID = inMapIDs[ inRobberIndex ];
-    int playerTileState = inMapStates[ inRobberIndex ];
-    
-
-
-    TransitionTriggerRecord *triggerRecord = 
-            &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
-
-    for( int i=0; i<triggerRecords->numTransitions; i++ ) {
-        
-        TransitionRecord *transRecord = &( triggerRecord->transitions[i] );
-        
-        if( transRecord->targetID == playerTileID
-            &&
-            transRecord->targetStartState == playerTileState 
-            &&
-            transRecord->targetEndState != playerTileState ) {
-            
-            printf( "Transition hit\n" );
-
-            inMapStates[ inRobberIndex ] = transRecord->targetEndState;
-            }
-        }
-
+// returns true if something changed, which might require an additional
+// transition step for propagation
+static char applyPowerTransitions( int *inMapIDs, 
+                                   int *inMapStates, int inMapW, int inMapH ) {
     int numCells = inMapW * inMapH;
 
     char *powerMap = new char[ numCells ];
     memset( powerMap, false, numCells );
-    
+
+    // separately track whether each cell is passing power only left-to-right
+    char *leftRightPowerMap = new char[numCells];
+    memset( leftRightPowerMap, false, numCells );
+
 
     char change = false;
     
@@ -328,13 +311,15 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
                 int x = i % inMapW;
                 
                 if( y > 0 &&
-                    powerMap[ i - inMapW ] ) {
+                    powerMap[ i - inMapW ] &&
+                    ! leftRightPowerMap[ i - inMapW ] ) {
                     powerMap[i] = true;
                     change = true;
                     break;
                     }
                 if( y < inMapH - 1 &&
-                    powerMap[ i + inMapW ] ) {
+                    powerMap[ i + inMapW ] &&
+                    ! leftRightPowerMap[ i + inMapW ] ) {
                     powerMap[i] = true;
                     change = true;
                     break;
@@ -352,42 +337,146 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
                     break;
                     }
                 }
+            else if( ! powerMap[i] &&
+                 isPropertySet( inMapIDs[i], inMapStates[i], 
+                                conductiveLeftToRight ) ) {
+            
+                // look for left neighbor with power
+                int x = i % inMapW;
+
+                if( x > 0 &&
+                    powerMap[ i - 1 ] ) {
+                    
+                    powerMap[i] = true;
+                    leftRightPowerMap[i] = true;
+                    change = true;
+                    }
+                }
             }
         }
     
     
     // now execute transitions for cells based on power or noPower
+    
+    char transitionHappened = false;
+    
 
     for( int i=0; i<numCells; i++ ) {
         
-        TransitionTriggerRecord *triggerRecord;
+        TransitionTriggerRecord *r;
         
+        SimpleVector<TransitionTriggerRecord *> applicableTriggers;
+        
+
         if( powerMap[i]  ) {
-            triggerRecord = 
+            // this cell is powered
+            r = 
                 &( triggerRecords[ getTriggerID( (char*)"power" ) ] );
-            }
-        else {
-            triggerRecord = 
-                &( triggerRecords[ getTriggerID( (char*)"noPower" ) ] );
-            }
-        
-        for( int j=0; j<triggerRecords->numTransitions; j++ ) {
-        
-            TransitionRecord *transRecord = 
-                &( triggerRecord->transitions[j] );
             
-            if( transRecord->targetID == inMapIDs[i]
-                &&
-                transRecord->targetStartState == inMapStates[i] 
-                &&
-                transRecord->targetEndState != inMapStates[i] ) {
-                
-                inMapStates[ i ] = transRecord->targetEndState;
+            applicableTriggers.push_back( r );
+            }
+        else {            
+            // this cell itself isn't powered
+            r = 
+                &( triggerRecords[ getTriggerID( (char*)"noPower" ) ] );
+            
+            applicableTriggers.push_back( r );
+            }
+        
+            
+        // check if it's northern neighbor is powered
+        int y = i / inMapW;
+
+        char powerNorth = false;
+            
+        if( y < inMapH - 1 ) {
+            // check above
+            
+            if( powerMap[ i + inMapW ] ) {
+                powerNorth = true;
                 }
             }
+        
+        if( powerNorth ) {
+            r = 
+                &( triggerRecords[ getTriggerID( (char*)"powerNorth" ) ] );
+            applicableTriggers.push_back( r );
+            }
+        else {
+            r = 
+                &( triggerRecords[ getTriggerID( (char*)"noPowerNorth" ) ] );
+            
+            applicableTriggers.push_back( r );
+            }
+        
+        
+        for( int a=0; a<applicableTriggers.size(); a++ ) {
+            TransitionTriggerRecord *r = 
+                *( applicableTriggers.getElement( a ) );
+        
+            for( int j=0; j<r->numTransitions; j++ ) {
+        
+                TransitionRecord *transRecord = 
+                    &( r->transitions[j] );
+            
+                if( transRecord->targetID == inMapIDs[i]
+                    &&
+                    transRecord->targetStartState == inMapStates[i] 
+                    &&
+                    transRecord->targetEndState != inMapStates[i] ) {
+                
+                    inMapStates[ i ] = transRecord->targetEndState;
+
+                    transitionHappened = true;
+                    }
+                }
+            }
+        
         }
 
 
     delete [] powerMap;
+    
+
+    return transitionHappened;
+    }
+
+
+
+
+
+void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
+                       int inRobberIndex ) {
+
+    int playerTileID = inMapIDs[ inRobberIndex ];
+    int playerTileState = inMapStates[ inRobberIndex ];
+    
+
+
+    TransitionTriggerRecord *r = 
+            &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+
+    for( int i=0; i<r->numTransitions; i++ ) {
+        
+        TransitionRecord *transRecord = &( r->transitions[i] );
+        
+        if( transRecord->targetID == playerTileID
+            &&
+            transRecord->targetStartState == playerTileState 
+            &&
+            transRecord->targetEndState != playerTileState ) {
+            
+            printf( "Transition hit\n" );
+
+            inMapStates[ inRobberIndex ] = transRecord->targetEndState;
+            }
+        }
+    
+    char transitionHappened = true;
+    while( transitionHappened ) {
+        transitionHappened = 
+            applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+        }
+
     }
 

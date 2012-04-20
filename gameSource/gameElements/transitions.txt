@@ -15,3 +15,8 @@ noPower   #   wire:2   =>  1
 power   #   power_door:1   =>  2
 
 noPower   #   power_door:2   =>  1
+
+
+powerNorth   #   power_relay:1   =>  2
+
+noPowerNorth   #   power_relay:2   =>  1
