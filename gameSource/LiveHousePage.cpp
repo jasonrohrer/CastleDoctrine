@@ -15,10 +15,15 @@ extern char *serverURL;
 extern int userID;
 
 
+// static init
+// assume ping sent at startup, because no house checked out at startup,
+// and checking out a house automatically pings it
+int LiveHousePage::sLastPingTime = time( NULL );
+
+
 
 LiveHousePage::LiveHousePage()
         : mWebRequest( -1 ),
-          mLastPingTime( time( NULL ) ),
           mLastActionTime( time( NULL ) ) {
     }
 
@@ -36,9 +41,9 @@ void LiveHousePage::makeActive( char inFresh ) {
     if( !inFresh ) {
         return;
         }
-    
-    mLastPingTime = time( NULL );
-    mLastActionTime = mLastPingTime;
+
+    // this page becoming active is an action
+    mLastActionTime = time( NULL );
     }
 
 
@@ -56,7 +61,7 @@ void LiveHousePage::step() {
     else {
         int currentTime = time( NULL );
         
-        if( currentTime > mLastPingTime + 60 * 4 ) {
+        if( currentTime > sLastPingTime + 60 * 4 ) {
             // getting close to five minute timeout mark
             
             if( currentTime - mLastActionTime < 60 * 5 ) {
@@ -80,7 +85,7 @@ void LiveHousePage::step() {
                 
                 delete [] fullRequestURL;
                 
-                mLastPingTime = currentTime;
+                sLastPingTime = currentTime;
                 }
             }
         
