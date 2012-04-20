@@ -11,6 +11,8 @@
 #include "minorGems/io/file/File.h"
 
 
+
+
 // describes a transition
 typedef struct TransitionRecord {
         int triggerID;
@@ -268,6 +270,22 @@ void freeHouseTransitions() {
     delete [] triggerRecords;
     triggerRecords = NULL;
     numTriggerRecords = 0;    
+    }
+
+
+
+#include "minorGems/crypto/hashes/sha1.h"
+
+// computes a digest of a map state
+// resulting string destroyed by caller
+static char *getMapStateChecksum( int *inMapStates, int inMapW, int inMapH ) {
+    
+    int numCells = inMapW * inMapH;
+        
+    return
+        computeSHA1Digest( (unsigned char*)inMapStates, 
+                           numCells * sizeof( int ) );
+    
     }
 
 
@@ -542,10 +560,39 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
         }
     
     char transitionHappened = true;
-    while( transitionHappened ) {
+    char loopDetected = false;
+    
+    // track checksums of states seen so far so that we can avoid a loop
+    SimpleVector<char *> seenStates;
+    
+    // add start state
+    seenStates.push_back( getMapStateChecksum( inMapStates, inMapW, inMapH ) );
+    
+
+    while( transitionHappened && ! loopDetected ) {
         transitionHappened = 
             applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+
+        if( transitionHappened ) {
+            char *newChecksum = 
+                getMapStateChecksum( inMapStates, inMapW, inMapH );
+            
+            for( int i=0; i<seenStates.size(); i++ ) {
+                char *oldChecksum = *( seenStates.getElement( i ) );
+            
+                if( strcmp( oldChecksum, newChecksum ) == 0 ) {
+                    loopDetected = true;
+                    }
+                }
+            
+            seenStates.push_back( newChecksum );
+            }
         }
 
+
+    for( int i=0; i<seenStates.size(); i++ ) {
+        delete [] *( seenStates.getElement( i ) );
+        }
+    
     }
 
