@@ -290,10 +290,11 @@ static char *getMapStateChecksum( int *inMapStates, int inMapW, int inMapH ) {
 
 
 
-// returns true if something changed, which might require an additional
-// transition step for propagation
-static char applyPowerTransitions( int *inMapIDs, 
-                                   int *inMapStates, int inMapW, int inMapH ) {
+
+// returns power map with (inMapW * inMapH) cells
+static char *propagatePower(  int *inMapIDs, 
+                              int *inMapStates, int inMapW, int inMapH ) {
+    
     int numCells = inMapW * inMapH;
 
     char *powerMap = new char[ numCells ];
@@ -440,7 +441,26 @@ static char applyPowerTransitions( int *inMapIDs,
                 }
             }
         }
+
+    delete [] leftRightPowerMap;
+    delete [] topBottomPowerMap;
+
+    return powerMap;
+    }
+
+
+
+// returns true if something changed, which might require an additional
+// transition step for propagation
+static char applyPowerTransitions( int *inMapIDs, 
+                                   int *inMapStates, int inMapW, int inMapH ) {
     
+    
+    char *powerMap = propagatePower( inMapIDs, inMapStates, inMapW, inMapH );
+    
+
+    int numCells = inMapW * inMapH;
+
     
     // now execute transitions for cells based on power or noPower
     
@@ -522,8 +542,6 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
     delete [] powerMap;
-    delete [] leftRightPowerMap;
-    delete [] topBottomPowerMap;
 
     return transitionHappened;
     }
@@ -588,6 +606,57 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
             seenStates.push_back( newChecksum );
             }
         }
+    
+    if( loopDetected ) {
+        // make sure that all looping elements "settle down" into a 
+        // consistent state (otherwise, we see various flip-flops due
+        // to propagation times elsewhere in the map)
+        
+        // in case of looping, all elements involved in the loop settle
+        // down into the lowest-seen state number that they encounter 
+        // during execution of the loop
+        
+        int numCells = inMapW * inMapH;
+        
+        int *lowestSeenStates = new int[ numCells ];
+        
+        memcpy( lowestSeenStates, inMapStates, numCells * sizeof( int ) );
+        
+        // run one more time until we return to this state
+        char *returnToChecksum = 
+            getMapStateChecksum( inMapStates, inMapW, inMapH );
+        
+
+        applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+        char *lastChecksum = 
+            getMapStateChecksum( inMapStates, inMapW, inMapH );
+        
+        while( strcmp( lastChecksum, returnToChecksum ) != 0 ) {
+            // a mid-loop state
+            
+            for( int i=0; i<numCells; i++ ) {
+                
+                if( inMapStates[i] < lowestSeenStates[i] ) {
+                    // a lower state number seen for this cell
+                    lowestSeenStates[i] = inMapStates[i];
+                    }
+                }
+            delete [] lastChecksum;
+
+            applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+            lastChecksum = 
+                getMapStateChecksum( inMapStates, inMapW, inMapH );
+            }
+
+        // returned to start-of-loop state
+        delete [] lastChecksum;
+        delete [] returnToChecksum;
+
+        // set all cells in map to lowest-seen states from the loop
+        memcpy( inMapStates, lowestSeenStates, numCells * sizeof( int ) );
+        delete [] lowestSeenStates;
+        }
+    
 
 
     for( int i=0; i<seenStates.size(); i++ ) {
