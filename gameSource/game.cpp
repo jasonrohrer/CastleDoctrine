@@ -26,6 +26,10 @@ int versionNumber = 1;
 #include "minorGems/util/random/CustomRandomSource.h"
 
 
+CustomRandomSource randSource;
+
+
+
 #include "minorGems/util/log/AppLog.h"
 
 #include "minorGems/system/Time.h"

@@ -23,6 +23,9 @@
 #define HOUSE_D 13
 
 
+#define NUM_NOISE_TILES 100
+
+
 // for undo history
 typedef struct GridChangeRecord {
         // index of change
@@ -106,6 +109,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapCellStates;
         
         int mFullMapD;
+
+        // maps each cell to a noise overlay sprite
+        int *mHouseMapNoiseTileIndices;
+        
 
         int mSubMapOffsetX;
         int mSubMapOffsetY;
@@ -193,6 +200,16 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // call this BEFORE setting edit in full grid
         void logEdit( int inFullIndex, int inNewID );
         
+
+        // maintain one bank of noise tiles for all instances
+        // (to prevent noise tiles jumping when we switch views)
+        static char sInstanceCount;
+        static char sNoiseTileBankPopulated;
+        static SpriteHandle sNoiseTileBank[ NUM_NOISE_TILES ];
+
+        // track one set of static cell-to-noise-tile mappings
+        // as long as house map never changes, all instances will copy this
+        static int *sHouseMapNoiseTileIndices;
     };
 
 

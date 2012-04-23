@@ -18,6 +18,20 @@
 #define START_ID  997
 
 
+#include "minorGems/util/random/CustomRandomSource.h"
+
+extern CustomRandomSource randSource;
+
+
+char HouseGridDisplay::sInstanceCount = 0;
+
+char HouseGridDisplay::sNoiseTileBankPopulated = false;
+
+SpriteHandle HouseGridDisplay::sNoiseTileBank[ NUM_NOISE_TILES ];
+
+int *HouseGridDisplay::sHouseMapNoiseTileIndices = NULL;
+
+
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY,
                                     GamePage *inParentPage,
@@ -28,6 +42,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
+          mHouseMapNoiseTileIndices( NULL ),
           mSubMapOffsetX( 0 ),
           mSubMapOffsetY( 0 ),
           mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
@@ -38,6 +53,35 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ) {
 
+
+    if( !sNoiseTileBankPopulated ) {
+        
+
+        unsigned char noisePixels[ 16 * 16 ];
+    
+        for( int i=0; i<NUM_NOISE_TILES; i++ ) {
+            for( int p=0; p<16*16; p++ ) {
+        
+                // edges of tiles are transparent
+                int x = p % 16;
+                int y = p / 16;
+            
+                if( x == 0 || x == 15 ||
+                    y == 0 || y == 15 ) {
+                    noisePixels[p] = 0;
+                    }
+                else {
+                    noisePixels[p] = randSource.getRandomBoundedInt( 0, 255 );
+                    }
+            
+                }
+        
+            sNoiseTileBank[i] = fillSpriteAlphaOnly( noisePixels, 16, 16 );
+            }
+        sNoiseTileBankPopulated = true;
+        }
+    
+    sInstanceCount++;
     }
 
 
@@ -52,6 +96,10 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mHouseMapCellStates != NULL ) {
         delete [] mHouseMapCellStates;
         }
+    if( mHouseMapNoiseTileIndices != NULL ) {
+        delete [] mHouseMapNoiseTileIndices;
+        }
+    
 
     delete [] mHouseSubMapIDs;
     delete [] mHouseSubMapCellStates;
@@ -59,6 +107,21 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mWallShadowSprite != NULL ) {
         freeSprite( mWallShadowSprite );
         mWallShadowSprite = NULL;
+        }
+    
+    sInstanceCount--;
+    
+    if( sInstanceCount == 0 && sNoiseTileBankPopulated ) {
+        
+        for( int i=0; i<NUM_NOISE_TILES; i++ ) {
+            freeSprite( sNoiseTileBank[i] );
+            }
+        sNoiseTileBankPopulated = false;
+
+        if( sHouseMapNoiseTileIndices != NULL ) {
+            delete [] sHouseMapNoiseTileIndices;
+            sHouseMapNoiseTileIndices = NULL;
+            }
         }
     }
 
@@ -80,12 +143,17 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     if( mHouseMapCellStates != NULL ) {
         delete [] mHouseMapCellStates;
         }
+
+    if( mHouseMapNoiseTileIndices != NULL ) {
+        delete [] mHouseMapNoiseTileIndices;
+        }
     
     mNumMapSpots = numTokens;
     mFullMapD = (int)sqrt( mNumMapSpots );
     
     mHouseMapIDs = new int[ mNumMapSpots ];
     mHouseMapCellStates = new int[ mNumMapSpots ];
+    mHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
     
     for( int i=0; i<mNumMapSpots; i++ ) {
         int numRead = sscanf( tokens[i], "%d:%d", 
@@ -112,9 +180,26 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         
 
         delete [] tokens[i];
+        
+        if( sHouseMapNoiseTileIndices == NULL ) {
+            
+            mHouseMapNoiseTileIndices[i] = 
+                randSource.getRandomBoundedInt( 0, NUM_NOISE_TILES - 1 );
+            }
+        else {
+            mHouseMapNoiseTileIndices[i] = sHouseMapNoiseTileIndices[i];
+            }
         }
     
     delete [] tokens;
+
+
+    if( sHouseMapNoiseTileIndices == NULL ) {
+        sHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
+
+        memcpy( sHouseMapNoiseTileIndices, mHouseMapNoiseTileIndices,
+                mNumMapSpots * sizeof( int ) );
+        }
 
 
     // center vertically, far left
@@ -647,8 +732,22 @@ void HouseGridDisplay::draw() {
     // draw structural tiles above shadows
     drawTiles( false );
     
+    
+    int i = 0;
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            int fullI = subToFull( i );
 
+            doublePair tilePos = getTilePos( i );
 
+            setDrawColor( 1, 1, 1, 0.0625 );
+            drawSprite( sNoiseTileBank[ mHouseMapNoiseTileIndices[fullI] ],
+                        tilePos, 1.0/16.0 );
+            
+            i++;
+            }
+        }
+            
 
     /*
     if( mGoalSet ) {    
