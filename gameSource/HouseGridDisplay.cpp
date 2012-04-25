@@ -968,6 +968,10 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
             // changes reset state
             mHouseSubMapCellStates[ index ] = 0;
 
+            // clear mobile objects
+            mHouseMapMobileIDs[ fullIndex ] = 0;
+            mHouseMapMobileCellStates[ fullIndex ] = 0;
+
             copySubCellBack( index );
             fireActionPerformed( this );
             }
@@ -1011,6 +1015,10 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                     
                     // changes reset state
                     mHouseSubMapCellStates[ index ] = 0;
+
+                    // clear mobile objects
+                    mHouseMapMobileIDs[ fullIndex ] = 0;
+                    mHouseMapMobileCellStates[ fullIndex ] = 0;
                     
                     copySubCellBack( index );
                     fireActionPerformed( this );
@@ -1025,6 +1033,10 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
 
                 // changes reset state
                 mHouseSubMapCellStates[ index ] = 0;
+
+                // clear mobile objects
+                mHouseMapMobileIDs[ fullIndex ] = 0;
+                mHouseMapMobileCellStates[ fullIndex ] = 0;
 
                 copySubCellBack( index );
                 fireActionPerformed( this );
@@ -1078,6 +1090,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         // changes reset state
         mHouseSubMapCellStates[ index ] = 0;
 
+        // clear mobile objects
+        mHouseMapMobileIDs[ fullIndex ] = 0;
+        mHouseMapMobileCellStates[ fullIndex ] = 0;
+
         copySubCellBack( index );
         fireActionPerformed( this );
         }
@@ -1104,6 +1120,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                     // changes reset state
                     mHouseSubMapCellStates[ index ] = 0;
 
+                    // clear mobile objects
+                    mHouseMapMobileIDs[ fullIndex ] = 0;
+                    mHouseMapMobileCellStates[ fullIndex ] = 0;
+
                     copySubCellBack( index );
                     fireActionPerformed( this );
                     }
@@ -1122,6 +1142,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                 // changes reset state
                 mHouseSubMapCellStates[ index ] = 0;
 
+                // clear mobile objects
+                mHouseMapMobileIDs[ fullIndex ] = 0;
+                mHouseMapMobileCellStates[ fullIndex ] = 0;
+
                 copySubCellBack( index );
                 fireActionPerformed( this );
                 }
@@ -1137,6 +1161,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
 
         // changes reset state
         mHouseSubMapCellStates[ index ] = 0;
+
+        // clear mobile objects
+        mHouseMapMobileIDs[ fullIndex ] = 0;
+        mHouseMapMobileCellStates[ fullIndex ] = 0;
 
         copySubCellBack( index );
         fireActionPerformed( this );
@@ -1565,6 +1593,10 @@ void HouseGridDisplay::logEdit( int inFullIndex, int inNewID ) {
     r.fullIndex = inFullIndex;
     r.oldID = mHouseMapIDs[ inFullIndex ];
     r.oldState = mHouseMapCellStates[ inFullIndex ];
+
+    r.oldMobileID = mHouseMapMobileIDs[ inFullIndex ];
+    r.oldMobileState = mHouseMapMobileCellStates[ inFullIndex ];
+
     r.newID = inNewID;
     r.robberIndex = mRobberIndex;
     
@@ -1595,6 +1627,9 @@ int HouseGridDisplay::undo() {
     
     mHouseMapIDs[ r->fullIndex ] = r->oldID;
     mHouseMapCellStates[ r->fullIndex ] = r->oldState;
+
+    mHouseMapMobileIDs[ r->fullIndex ] = r->oldMobileID;
+    mHouseMapMobileCellStates[ r->fullIndex ] = r->oldMobileState;
     
     mRobberIndex = r->robberIndex;
     

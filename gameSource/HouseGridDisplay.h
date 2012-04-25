@@ -30,8 +30,13 @@
 typedef struct GridChangeRecord {
         // index of change
         int fullIndex;
+        
         int oldID;
         int oldState;
+
+        int oldMobileID;
+        int oldMobileState;
+        
         int newID;
 
         int robberIndex;
