@@ -108,7 +108,8 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 // because it detects success condition and fires an event,
                 // which we don't want to do during replay
                 HouseGridDisplay::moveRobber( newIndex );
-                recomputeVisibility();
+                
+                applyTransitionsAndProcess();
                 }
             }
         delete [] move;
