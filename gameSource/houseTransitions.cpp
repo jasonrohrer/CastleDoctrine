@@ -11,6 +11,7 @@
 #include "minorGems/io/file/File.h"
 
 
+#include <stdlib.h>
 
 
 // describes a transition
@@ -661,6 +662,79 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
 
     for( int i=0; i<seenStates.size(); i++ ) {
         delete [] *( seenStates.getElement( i ) );
+        }
+
+
+
+    // process playerSeeking properties
+
+    int numCells = inMapW * inMapH;    
+
+    int robberX = inRobberIndex % inMapW;
+    int robberY = inRobberIndex / inMapW;
+
+    char *moveHappened = new char[ numCells ];
+    
+
+    memset( moveHappened, false, numCells );
+    
+    
+    int emptyID = getObjectID( "floor" );
+
+    for( int i=0; i<numCells; i++ ) {
+        if( !moveHappened[i] &&
+            isPropertySet( inMapIDs[i], inMapStates[i], playerSeeking ) ) {
+            
+            int x = i % inMapW;
+            int y = i / inMapW;
+            
+            int dX = robberX - x;
+            int dY = robberY - y;
+            
+            if( dX == 0 && dY == 0 ) {
+                continue;
+                }
+
+            int destX = x;
+            int destY = y;
+
+            if( abs( dX ) > abs( dY ) ) {
+                // x move
+                
+                if( dX < 0 ) {
+                    destX--;
+                    }
+                else {
+                    destX++;
+                    }
+                }
+            else {
+                // y move
+
+                if( dY < 0 ) {
+                    destY--;
+                    }
+                else {
+                    destY++;
+                    }
+                }
+
+            int destI = destY * inMapW + destX;
+            
+            
+            if( inMapIDs[destI] == emptyID ) {
+                
+                inMapIDs[destI] = inMapIDs[i];
+                inMapStates[destI] = inMapStates[i];
+                
+                inMapIDs[i] = emptyID;
+                inMapStates[i] = 0;
+
+                // don't keep moving it if we encounter it later in loop
+                moveHappened[destI] = true;
+                }
+            
+            }
         }
     
     }
