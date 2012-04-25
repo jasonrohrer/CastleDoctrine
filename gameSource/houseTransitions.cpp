@@ -637,31 +637,56 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
 
 
 
+    // now process trigger-transitions (switch plates, etc) caused by the 
+    // presensce of a mobile object
 
-
-    int playerTileID = inMapIDs[ inRobberIndex ];
-    int playerTileState = inMapStates[ inRobberIndex ];
+    SimpleVector<int> mobileIndices;
+    
+    // player is a mobile object
+    mobileIndices.push_back( inRobberIndex );
+    
+    for( int i=0; i<numCells; i++ ) {
+        if( inMapMobileIDs[i] != 0 ) {
+            mobileIndices.push_back( i );
+            }
+        }
     
 
     // player is a mobile object
     TransitionTriggerRecord *r = 
             &( triggerRecords[ getTriggerID( (char*)"mobile" ) ] );
 
-    for( int i=0; i<r->numTransitions; i++ ) {
+    
+    for( int j=0; j<mobileIndices.size(); j++ ) {
+        int mobIndex = *( mobileIndices.getElement( j ) );
         
-        TransitionRecord *transRecord = &( r->transitions[i] );
-        
-        if( transRecord->targetID == playerTileID
-            &&
-            transRecord->targetStartState == playerTileState 
-            &&
-            transRecord->targetEndState != playerTileState ) {
-            
-            printf( "Player-triggered transition hit\n" );
+        int mobOverTileID = inMapIDs[ mobIndex ];
+        int mobOverTileState = inMapStates[ mobIndex ];
 
-            inMapStates[ inRobberIndex ] = transRecord->targetEndState;
+        for( int i=0; i<r->numTransitions; i++ ) {
+        
+            TransitionRecord *transRecord = &( r->transitions[i] );
+        
+            if( transRecord->targetID == mobOverTileID
+                &&
+                transRecord->targetStartState == mobOverTileState 
+                &&
+                transRecord->targetEndState != mobOverTileState ) {
+                
+                printf( "Mobile-triggered transition hit\n" );
+
+                inMapStates[ mobIndex ] = transRecord->targetEndState;
+                
+                // only allow one transition triggered per mobile object
+                break;
+                }
             }
         }
+    
+
+    
+    // now process power transitions
+
     
     char transitionHappened = true;
     char loopDetected = false;
