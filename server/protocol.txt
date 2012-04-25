@@ -79,6 +79,18 @@ object_id:state#object_id:state#object_id#object_id
 
 If ":state" not present, then default state is implied
 
+Cells are separated by "#"
+
+Multiple objects can be present in each cell, separated by commas, like this:
+
+object_id:state#object_id:state,object_id:state#object_id#object_id,object_id
+
+Note that this is used to encode the presense of mobile objects (which can
+ share a cell with non-mobile, non-blocking objects)
+
+
+
+
 
 price_list = ASCII string containing ID/price pairs, like:
 

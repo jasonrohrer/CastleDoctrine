@@ -107,6 +107,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapIDs;
 
         int *mHouseMapCellStates;
+
+        int *mHouseMapMobileIDs;
+        int *mHouseMapMobileCellStates;
         
         int mFullMapD;
 
@@ -176,7 +179,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // inTileID might be different from what's actually in the map
         //   at inIndex (so getOrientationIndex can be used for orienting
         //   a ghost tile before placement)
-        int getOrientationIndex( int inIndex, int inTileID );
+        int getOrientationIndex( int inIndex, int inTileID, int inTileState );
         
         
         void pointerOver( float inX, float inY );

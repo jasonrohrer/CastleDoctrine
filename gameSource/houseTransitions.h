@@ -10,7 +10,9 @@ void freeHouseTransitions();
 
 
 // applies transition rules to transform inMapIDs and inMapStates
-void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
+void applyTransitions( int *inMapIDs, int *inMapStates, 
+                       int *inMapMobileIDs, int *inMapMobileStates,
+                       int inMapW, int inMapH,
                        int inRobberIndex );
 
 

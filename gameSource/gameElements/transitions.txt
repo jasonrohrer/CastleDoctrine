@@ -1,10 +1,10 @@
 
-player   #   floor_trap:1   =>  2
+mobile   #   floor_trap:1   =>  2
 
 
-player   #   toggle_switch:1   =>  2
+mobile   #   toggle_switch:1   =>  2
 
-player   #   toggle_switch:2   =>  1
+mobile   #   toggle_switch:2   =>  1
 
 
 power   #   wire:1   =>  2

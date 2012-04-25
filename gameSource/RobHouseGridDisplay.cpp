@@ -109,7 +109,9 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
 
 void RobHouseGridDisplay::applyTransitionsAndProcess() {
-    applyTransitions( mHouseMapIDs, mHouseMapCellStates, mFullMapD, mFullMapD,
+    applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
+                      mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                      mFullMapD, mFullMapD,
                       mRobberIndex );
 
     copyAllIntoSubCells();
@@ -117,11 +119,21 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
     if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
                        mHouseMapCellStates[ mRobberIndex ], deadly ) ) {
         
-        // robber killed
+        // robber killed by static object
         mDead = true;
         mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
         mSuccess = false;
         }
+    else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
+                            mHouseMapMobileCellStates[ mRobberIndex ], 
+                            deadly ) ) {
+
+        // robber killed by mobile
+        mDead = true;
+        mDeathSourceID = mHouseMapMobileIDs[ mRobberIndex ];
+        mSuccess = false;
+        }
+
     
     
     recomputeVisibility();

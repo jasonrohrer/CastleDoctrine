@@ -42,6 +42,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
+          mHouseMapMobileIDs( NULL ),
+          mHouseMapMobileCellStates( NULL ),
           mHouseMapNoiseTileIndices( NULL ),
           mSubMapOffsetX( 0 ),
           mSubMapOffsetY( 0 ),
@@ -96,6 +98,14 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mHouseMapCellStates != NULL ) {
         delete [] mHouseMapCellStates;
         }
+
+    if( mHouseMapMobileIDs != NULL ) {
+        delete [] mHouseMapMobileIDs;
+        }
+    if( mHouseMapMobileCellStates != NULL ) {
+        delete [] mHouseMapMobileCellStates;
+        }
+
     if( mHouseMapNoiseTileIndices != NULL ) {
         delete [] mHouseMapNoiseTileIndices;
         }
@@ -144,6 +154,14 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
         delete [] mHouseMapCellStates;
         }
 
+    if( mHouseMapMobileIDs != NULL ) {
+        delete [] mHouseMapMobileIDs;
+        }
+
+    if( mHouseMapMobileCellStates != NULL ) {
+        delete [] mHouseMapMobileCellStates;
+        }
+
     if( mHouseMapNoiseTileIndices != NULL ) {
         delete [] mHouseMapNoiseTileIndices;
         }
@@ -153,30 +171,62 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     
     mHouseMapIDs = new int[ mNumMapSpots ];
     mHouseMapCellStates = new int[ mNumMapSpots ];
+    mHouseMapMobileIDs = new int[ mNumMapSpots ];
+    mHouseMapMobileCellStates = new int[ mNumMapSpots ];
     mHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
     
     for( int i=0; i<mNumMapSpots; i++ ) {
-        int numRead = sscanf( tokens[i], "%d:%d", 
-                              &( mHouseMapIDs[i] ), 
-                              &( mHouseMapCellStates[i] ) );
         
-        if( numRead < 2 ) {
-            // no ":value" present after ID
-            // use default
-            mHouseMapCellStates[i] = 0;
+        mHouseMapIDs[i] = 0;
+        mHouseMapMobileIDs[i] = 0;
+        mHouseMapCellStates[i] = 0;
+        mHouseMapMobileCellStates[i] = 0;
         
-            if( numRead == 0 ) {
-                // reading ID failed?
-                
-                // default
-                mHouseMapIDs[i] = 0;
+
+        int numObjects;
+        char **objectStrings = split( tokens[i], ",", &numObjects );
+
+        // ignore all but two objects
+        // second object is mobile object, if present
+
+        for( int j=0; j<numObjects; j++ ) {
+            
+            int id, state;
+                    
+            int numRead = sscanf( objectStrings[j], "%d:%d", 
+                                  &id, 
+                                  &state );
+        
+            if( numRead < 2 ) {
+                // no ":value" present after ID
+                // use default
+                state = 0;
+        
+                if( numRead == 0 ) {
+                    // reading ID failed?
+                    
+                    // default
+                    id = 0;
+                    }
                 }
-            }
         
-        if( mHouseMapIDs[i] == GOAL_ID ) {
-            mGoalIndex = i;
-            mGoalSet = true;
+            if( id == GOAL_ID ) {
+                mGoalIndex = i;
+                mGoalSet = true;
+                }
+
+            if( isPropertySet( id, state, mobile ) ) {
+                mHouseMapMobileIDs[i] = id;
+                mHouseMapMobileCellStates[i] = state;
+                }
+            else {
+                // non-mobile
+                mHouseMapIDs[i] = id;
+                mHouseMapCellStates[i] = state;
+                }
+            delete [] objectStrings[j];
             }
+        delete [] objectStrings;
         
 
         delete [] tokens[i];
@@ -224,15 +274,48 @@ char *HouseGridDisplay::getHouseMap() {
         
 
         for( int i=0; i<mNumMapSpots; i++ ) {
+            char *mobilePart = NULL;
+            char *nonMobilePart = NULL;
+            
+            
             if( mHouseMapCellStates[i] != 0 && mHouseMapCellStates[i] != 1 ) {
                 // not default state, include state
-                parts[i] = autoSprintf( "%d:%d", 
-                                        mHouseMapIDs[i],
-                                        mHouseMapCellStates[i] );
+                nonMobilePart = autoSprintf( "%d:%d", 
+                                             mHouseMapIDs[i],
+                                             mHouseMapCellStates[i] );
                 }
             else {
                 // one of two default states, skip including it
-                parts[i] = autoSprintf( "%d", mHouseMapIDs[i] );
+                nonMobilePart = autoSprintf( "%d", mHouseMapIDs[i] );
+                }
+
+            if( mHouseMapMobileIDs[i] != 0 ) {
+                // mobile object present
+                
+                if( mHouseMapMobileCellStates[i] != 0 && 
+                    mHouseMapMobileCellStates[i] != 1 ) {
+
+                    // not default state, include state
+                    mobilePart = 
+                        autoSprintf( "%d:%d", 
+                                     mHouseMapMobileIDs[i],
+                                     mHouseMapMobileCellStates[i] );
+                    }
+                else {
+                    // one of two default states, skip including it
+                    mobilePart = autoSprintf( "%d", mHouseMapMobileIDs[i] );
+                    }
+
+                }
+
+            if( mobilePart == NULL ) {
+                parts[i] = nonMobilePart;
+                }
+            else {
+                // comma-separated parts
+                parts[i] = autoSprintf( "%s,%s", nonMobilePart, mobilePart );
+                delete [] nonMobilePart;
+                delete [] mobilePart;
                 }
             }
         
@@ -412,7 +495,8 @@ int HouseGridDisplay::getTileNeighborStructural( int inIndex,
 
 
 
-int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
+int HouseGridDisplay::getOrientationIndex( int inIndex, 
+                                           int inTileID, int inTileState ) {
     int numOrientations = 0;
     
     int orientationIndex = 0;
@@ -486,6 +570,50 @@ int HouseGridDisplay::getOrientationIndex( int inIndex, int inTileID ) {
                     }
                 }
             }
+
+
+
+        if( isPropertySet( inTileID, inTileState, playerSeeking ) ) {
+            // face player
+            int fullI = subToFull( inIndex );
+            
+            int x = fullI % mFullMapD;
+            int y = fullI / mFullMapD;
+            
+            int robberX = mRobberIndex % mFullMapD;
+            int robberY = mRobberIndex / mFullMapD;
+            
+            int dX = robberX - x;
+            int dY = robberY - y;
+            
+            if( dX == 0 && dY == 0 ) {
+                // leave environment-based orientation
+                }
+            else {
+                if( abs( dX ) > abs( dY ) ) {
+                    // x facing
+                
+                    if( dX < 0 ) {
+                        orientationIndex = 3;
+                        }
+                    else {
+                        orientationIndex = 1;
+                        }
+                    }
+                else {
+                    // y facing
+
+                    if( dY < 0 ) {
+                        orientationIndex = 2;
+                        }
+                    else {
+                        orientationIndex = 0;
+                        }
+                    }
+                }
+            }
+
+
         }
     else if( numOrientations == 2 ) {
                 
@@ -569,7 +697,8 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 }
             
             
-            int orientationIndex = getOrientationIndex( i, houseTile );
+            int orientationIndex = getOrientationIndex( i, houseTile,
+                                                        houseTileState );
 
                 
 
@@ -626,12 +755,35 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
+
             
+            int fullI = subToFull( i );
+            
+            if( inNonStructuralOnly ) {
+                
+                if( mHouseMapMobileIDs[fullI] != 0 ) {
+                    // mobile object here
+                    
+                    int mobID = mHouseMapMobileIDs[fullI];
+                    int mobState = mHouseMapMobileCellStates[fullI];
+
+                    int mobOrientation = getOrientationIndex( i, mobID,
+                                                              mobState );
+
+                    setDrawColor( 1, 1, 1, 1 );
+                
+                    SpriteHandle sprite = 
+                        getObjectSprite( mobID, 
+                                         mobOrientation, 
+                                         mobState );
+                
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    }
+                }
             
 
             
             // no highlight over start, robber, or permanents
-            int fullI = subToFull( i );
             if( mHighlightIndex == i &&
                 fullI != mStartIndex &&
                 fullI != mRobberIndex &&
@@ -648,7 +800,8 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                     // ghost of goal for placement
                     setDrawColor( 1, 1, 1, 0.35 );
 
-                    int ghostOrientation = getOrientationIndex( i, GOAL_ID );
+                    int ghostOrientation = getOrientationIndex( i, GOAL_ID,
+                                                                0 );
                     
                     SpriteHandle sprite = getObjectSprite( GOAL_ID, 
                                                            ghostOrientation, 
@@ -669,7 +822,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 else if( houseTile != pick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
-                    int ghostOrientation = getOrientationIndex( i, pick );
+                    int ghostOrientation = getOrientationIndex( i, pick, 0 );
 
                     SpriteHandle sprite = getObjectSprite( pick, 
                                                            ghostOrientation,

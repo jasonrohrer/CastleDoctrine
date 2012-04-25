@@ -49,10 +49,10 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 5
+#define NUM_BUILT_IN_TRIGGERS 6
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
-    "player",
+    "mobile",
     "power",
     "noPower",
     "powerNorth",
@@ -551,16 +551,101 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
 
-void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
+void applyTransitions( int *inMapIDs, int *inMapStates, 
+                       int *inMapMobileIDs, int *inMapMobileStates,
+                       int inMapW, int inMapH,
                        int inRobberIndex ) {
+
+
+    
+    // first, move mobile objects around
+
+    
+    // process playerSeeking properties
+
+    int numCells = inMapW * inMapH;    
+
+    int robberX = inRobberIndex % inMapW;
+    int robberY = inRobberIndex / inMapW;
+
+    char *moveHappened = new char[ numCells ];
+    
+
+    memset( moveHappened, false, numCells );
+    
+
+    for( int i=0; i<numCells; i++ ) {
+        if( !moveHappened[i] &&
+            isPropertySet( inMapMobileIDs[i], 
+                           inMapMobileStates[i], playerSeeking ) ) {
+            
+            int x = i % inMapW;
+            int y = i / inMapW;
+            
+            int dX = robberX - x;
+            int dY = robberY - y;
+            
+            if( dX == 0 && dY == 0 ) {
+                continue;
+                }
+
+            int destX = x;
+            int destY = y;
+
+            if( abs( dX ) > abs( dY ) ) {
+                // x move
+                
+                if( dX < 0 ) {
+                    destX--;
+                    }
+                else {
+                    destX++;
+                    }
+                }
+            else {
+                // y move
+
+                if( dY < 0 ) {
+                    destY--;
+                    }
+                else {
+                    destY++;
+                    }
+                }
+
+            int destI = destY * inMapW + destX;
+            
+            
+            if( inMapMobileIDs[destI] == 0 &&
+                ! isPropertySet( inMapIDs[destI], inMapStates[destI],
+                                 blocking ) ) {
+                
+                inMapMobileIDs[destI] = inMapMobileIDs[i];
+                inMapMobileStates[destI] = inMapMobileStates[i];
+                
+                inMapMobileIDs[i] = 0;
+                inMapMobileStates[i] = 0;
+
+                // don't keep moving it if we encounter it later in loop
+                moveHappened[destI] = true;
+                }
+            
+            }
+        }
+    
+
+
+
+
+
 
     int playerTileID = inMapIDs[ inRobberIndex ];
     int playerTileState = inMapStates[ inRobberIndex ];
     
 
-
+    // player is a mobile object
     TransitionTriggerRecord *r = 
-            &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+            &( triggerRecords[ getTriggerID( (char*)"mobile" ) ] );
 
     for( int i=0; i<r->numTransitions; i++ ) {
         
@@ -572,7 +657,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
             &&
             transRecord->targetEndState != playerTileState ) {
             
-            printf( "Transition hit\n" );
+            printf( "Player-triggered transition hit\n" );
 
             inMapStates[ inRobberIndex ] = transRecord->targetEndState;
             }
@@ -665,77 +750,5 @@ void applyTransitions( int *inMapIDs, int *inMapStates, int inMapW, int inMapH,
         }
 
 
-
-    // process playerSeeking properties
-
-    int numCells = inMapW * inMapH;    
-
-    int robberX = inRobberIndex % inMapW;
-    int robberY = inRobberIndex / inMapW;
-
-    char *moveHappened = new char[ numCells ];
-    
-
-    memset( moveHappened, false, numCells );
-    
-    
-    int emptyID = getObjectID( "floor" );
-
-    for( int i=0; i<numCells; i++ ) {
-        if( !moveHappened[i] &&
-            isPropertySet( inMapIDs[i], inMapStates[i], playerSeeking ) ) {
-            
-            int x = i % inMapW;
-            int y = i / inMapW;
-            
-            int dX = robberX - x;
-            int dY = robberY - y;
-            
-            if( dX == 0 && dY == 0 ) {
-                continue;
-                }
-
-            int destX = x;
-            int destY = y;
-
-            if( abs( dX ) > abs( dY ) ) {
-                // x move
-                
-                if( dX < 0 ) {
-                    destX--;
-                    }
-                else {
-                    destX++;
-                    }
-                }
-            else {
-                // y move
-
-                if( dY < 0 ) {
-                    destY--;
-                    }
-                else {
-                    destY++;
-                    }
-                }
-
-            int destI = destY * inMapW + destX;
-            
-            
-            if( inMapIDs[destI] == emptyID ) {
-                
-                inMapIDs[destI] = inMapIDs[i];
-                inMapStates[destI] = inMapStates[i];
-                
-                inMapIDs[i] = emptyID;
-                inMapStates[i] = 0;
-
-                // don't keep moving it if we encounter it later in loop
-                moveHappened[destI] = true;
-                }
-            
-            }
-        }
-    
     }
 
