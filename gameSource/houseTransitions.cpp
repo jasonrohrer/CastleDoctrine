@@ -49,7 +49,7 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 6
+#define NUM_BUILT_IN_TRIGGERS 5
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
     "mobile",
@@ -61,14 +61,18 @@ static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = {
                                               
     
 
+// built-in trigger IDs start at 10000
+// other trigger IDs match objectIDs
 static int getTriggerID( char *inTriggerName ) {
     for( int i=0; i<NUM_BUILT_IN_TRIGGERS; i++ ) {
         
         if( strcmp( builtInTriggerNames[i], inTriggerName ) == 0 ) {
-            return i;
+            return i + 10000;
             }
         }
-    return -1;
+
+    
+    return getObjectID( inTriggerName );
     }
 
 
@@ -773,6 +777,54 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     for( int i=0; i<seenStates.size(); i++ ) {
         delete [] *( seenStates.getElement( i ) );
         }
+
+
+
+
+    // finally, apply transitions to mobile objects based on where they
+    // are standing
+
+    // indices might have changed
+    mobileIndices.deleteAll();
+
+    for( int i=0; i<numCells; i++ ) {
+        if( inMapMobileIDs[i] != 0 ) {
+            mobileIndices.push_back( i );
+            }
+        }
+
+    for( int j=0; j<mobileIndices.size(); j++ ) {
+        int mobIndex = *( mobileIndices.getElement( j ) );
+        
+        int mobID = inMapMobileIDs[ mobIndex ];
+        int mobState = inMapMobileStates[ mobIndex ];
+        
+
+        int mobOverTileID = inMapIDs[ mobIndex ];
+        
+        // all transitions triggered by this underlying tile
+        TransitionTriggerRecord *r = &( triggerRecords[ mobOverTileID ] );
+        
+        for( int i=0; i<r->numTransitions; i++ ) {
+        
+            TransitionRecord *transRecord = &( r->transitions[i] );
+        
+            if( transRecord->targetID == mobID
+                &&
+                transRecord->targetStartState == mobState 
+                &&
+                transRecord->targetEndState != mobState ) {
+                
+                printf( "Mobile object transitioned by underlying tile\n" );
+                
+                inMapMobileStates[ mobIndex ] = transRecord->targetEndState;
+                
+                // apply only one transition to each mobile object
+                break;
+                }
+            }
+        }
+    
 
 
     }

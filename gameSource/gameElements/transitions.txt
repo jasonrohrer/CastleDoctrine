@@ -7,6 +7,10 @@ mobile   #   toggle_switch:1   =>  2
 mobile   #   toggle_switch:2   =>  1
 
 
+floor_trap   #   pitbull:1   =>   2
+
+
+
 power   #   wire:1   =>  2
 
 noPower   #   wire:2   =>  1

@@ -92,6 +92,11 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         if( mHouseMapCellStates[i] == 0 ) {
             mHouseMapCellStates[i] = 1;
             }
+        if( mHouseMapMobileIDs[i] != 0 &&
+            mHouseMapMobileCellStates[i] == 0 ) {
+            
+            mHouseMapMobileCellStates[i] = 1;
+            }
         // leave other, non-default states alone
         // example:  walls that were burned down during a previous, successful
         // robbery, but not repaired by owner yet
