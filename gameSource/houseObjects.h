@@ -51,6 +51,7 @@ int getObjectID( const char *inName );
     F(structural), \
     F(deadly), \
     F(destroyed), \
+    F(stuck), \
     F(powered), \
     F(conductive), \
     F(conductiveLeftToRight), \

@@ -88,16 +88,34 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     HouseGridDisplay::setHouseMap( inHouseMap );    
 
     for( int i=0; i<mNumMapSpots; i++ ) {
-        // switch all 0-states to "1" for presentation to robber
-        if( mHouseMapCellStates[i] == 0 ) {
+        
+        if( ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                             destroyed )
+            &&
+            ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                             stuck ) ) {
+            
+            // switch all unstuck, not-destroyed objects
+            // to "1" state for presentation to robber
+    
             mHouseMapCellStates[i] = 1;
             }
-        if( mHouseMapMobileIDs[i] != 0 &&
-            mHouseMapMobileCellStates[i] == 0 ) {
+
+        // same for mobile objects
+        if( mHouseMapMobileIDs[i] != 0 
+            &&
+            ! isPropertySet( mHouseMapMobileIDs[i], 
+                             mHouseMapMobileCellStates[i],
+                             destroyed )
+            &&
+            ! isPropertySet( mHouseMapMobileIDs[i], 
+                             mHouseMapMobileCellStates[i],
+                             stuck ) ) {
             
             mHouseMapMobileCellStates[i] = 1;
             }
-        // leave other, non-default states alone
+        
+        // leave other states alone
         // example:  walls that were burned down during a previous, successful
         // robbery, but not repaired by owner yet
         }
