@@ -661,9 +661,10 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
 
 
 void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
-    int i = 0;
-    for( int y=0; y<HOUSE_D; y++ ) {
+    for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
+
+            int i = y * HOUSE_D + x;
 
             int houseTile = mHouseSubMapIDs[i];
             int houseTileState = mHouseSubMapCellStates[i];
@@ -1067,7 +1068,8 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         }
 
     int fullIndex = subToFull( index );
-    printf( "pointer down at full index %d\n", fullIndex );
+    printf( "pointer down at full index %d (%d,%d)\n", fullIndex,
+            index % HOUSE_D, index / HOUSE_D );
     
     if( fullIndex == mRobberIndex ) {
         // don't allow clicks on current robber position
