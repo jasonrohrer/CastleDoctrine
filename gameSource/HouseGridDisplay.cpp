@@ -435,11 +435,32 @@ doublePair HouseGridDisplay::getTilePos( int inIndex ) {
 
 
 
-int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
-    int fullIndex = subToFull( inIndex );
+doublePair HouseGridDisplay::getTilePosFull( int inFullIndex ) {
+
+    int fullX = inFullIndex % mFullMapD;
+    int fullY = inFullIndex / mFullMapD;
     
-    int fullY = fullIndex / mFullMapD;
-    int fullX = fullIndex % mFullMapD;
+    
+
+    int xOffsetFromZero = fullX - mSubMapOffsetX;
+    int yOffsetFromZero = fullY - mSubMapOffsetY;
+    
+    
+    doublePair tilePos = getTilePos( 0 );
+    
+    tilePos.x += xOffsetFromZero * 2 * mTileRadius;
+    tilePos.y += yOffsetFromZero * 2 * mTileRadius;
+    
+
+    return tilePos;
+    }
+
+
+
+int HouseGridDisplay::getTileNeighbor( int inFullIndex, int inNeighbor ) {
+    
+    int fullY = inFullIndex / mFullMapD;
+    int fullX = inFullIndex % mFullMapD;
     
     int dX[4] = { 0, 1, 0, -1 };
     int dY[4] = { 1, 0, -1, 0 };
@@ -453,8 +474,8 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
         ||
         nX < 0 || nX >= mFullMapD ) {
         
-        // out of bounds, exterior wall
-        return 998;
+        // out of bounds, empty floor
+        return 0;
         }
 
     return mHouseMapIDs[ nY * mFullMapD + nX ];
@@ -463,12 +484,10 @@ int HouseGridDisplay::getTileNeighbor( int inIndex, int inNeighbor ) {
 
 
 
-int HouseGridDisplay::getTileNeighborStructural( int inIndex, 
+int HouseGridDisplay::getTileNeighborStructural( int inFullIndex, 
                                                  int inNeighbor ) {
-    int fullIndex = subToFull( inIndex );
-    
-    int fullY = fullIndex / mFullMapD;
-    int fullX = fullIndex % mFullMapD;
+    int fullY = inFullIndex / mFullMapD;
+    int fullX = inFullIndex % mFullMapD;
     
     int dX[4] = { 0, 1, 0, -1 };
     int dY[4] = { 1, 0, -1, 0 };
@@ -482,8 +501,8 @@ int HouseGridDisplay::getTileNeighborStructural( int inIndex,
         ||
         nX < 0 || nX >= mFullMapD ) {
         
-        // out of bounds, exterior wall
-        return true;
+        // out of bounds, empty floor
+        return false;
         }
 
     int nIndex = nY * mFullMapD + nX;
@@ -495,8 +514,9 @@ int HouseGridDisplay::getTileNeighborStructural( int inIndex,
 
 
 
-int HouseGridDisplay::getOrientationIndex( int inIndex, 
-                                           int inTileID, int inTileState ) {
+int HouseGridDisplay::getOrientationIndex( int inFullIndex, 
+                                           int inTileID, int inTileState,
+                                           char *outSouthButt ) {
     int numOrientations = 0;
     
     int orientationIndex = 0;
@@ -508,12 +528,31 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
         // full binary LBRT flags based on neighbors of same type 
                 
         int neighborsEqual[4] = { 0, 0, 0, 0 };
-                
+
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighbor( inIndex, n ) == inTileID ) {
+            if( getTileNeighbor( inFullIndex, n ) == inTileID ) {
                 neighborsEqual[n] = 1;
                 }
             }
+
+
+        if( isPropertySet( inTileID, inTileState, structural ) ) {
+            // structural tiles treat BOTTOM-side structural neighbors as 
+            // "same type" (to prevent appearance of tile gaps in oblique
+            // projections where to different types of structural tiles meet)
+            
+            if( getTileNeighbor( inFullIndex, 2 ) != inTileID
+                &&
+                getTileNeighborStructural( inFullIndex, 2 ) ) {
+                // special case when they butt up below...
+                
+                // see a neighbor below
+                neighborsEqual[2] = 1;
+                
+                *outSouthButt = true;
+                }
+            }
+        
                 
         orientationIndex = 
             neighborsEqual[3] << 3 |
@@ -530,7 +569,7 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
         int oneBlockedIndex = 0;
 
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighborStructural( inIndex, n ) ) {
+            if( getTileNeighborStructural( inFullIndex, n ) ) {
                 numBlockedNeighbors ++;
                         
                 neighborsBlocked[n] = true;
@@ -574,11 +613,8 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
 
 
         if( isPropertySet( inTileID, inTileState, playerSeeking ) ) {
-            // face player
-            int fullI = subToFull( inIndex );
-            
-            int x = fullI % mFullMapD;
-            int y = fullI / mFullMapD;
+            int x = inFullIndex % mFullMapD;
+            int y = inFullIndex / mFullMapD;
             
             int robberX = mRobberIndex % mFullMapD;
             int robberY = mRobberIndex / mFullMapD;
@@ -617,28 +653,28 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
         }
     else if( numOrientations == 2 ) {
                 
-        if( getTileNeighborStructural( inIndex, 0 ) && 
-            getTileNeighborStructural( inIndex, 2 ) ) {
+        if( getTileNeighborStructural( inFullIndex, 0 ) && 
+            getTileNeighborStructural( inFullIndex, 2 ) ) {
             // blocked on top and bottom
                 
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborStructural( inIndex, 1 ) && 
-                 getTileNeighborStructural( inIndex, 3 ) ) {
+        else if( getTileNeighborStructural( inFullIndex, 1 ) && 
+                 getTileNeighborStructural( inFullIndex, 3 ) ) {
             /// blocked on left and right
             // horizontal 
             orientationIndex = 1;
             }
-        else if( getTileNeighborStructural( inIndex, 0 ) || 
-                 getTileNeighborStructural( inIndex, 2 ) ) {
+        else if( getTileNeighborStructural( inFullIndex, 0 ) || 
+                 getTileNeighborStructural( inFullIndex, 2 ) ) {
             // top OR bottom block
             
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborStructural( inIndex, 1 ) || 
-                 getTileNeighborStructural( inIndex, 3 ) ) {
+        else if( getTileNeighborStructural( inFullIndex, 1 ) || 
+                 getTileNeighborStructural( inFullIndex, 3 ) ) {
             /// blocked on left OR right
             // horizontal 
             orientationIndex = 1;
@@ -658,6 +694,83 @@ int HouseGridDisplay::getOrientationIndex( int inIndex,
 
 
 
+int HouseGridDisplay::getOrientationIndexSouthButt( int inFullIndex, 
+                                                    int inTileID, 
+                                                    int inTileState ) {
+    int orientationIndex = 0;
+    // full binary LBRT flags based on neighbors of same type 
+                
+    int neighborsEqual[4] = { 0, 0, 0, 0 };
+    
+    for( int n=0; n<4; n++ ) {
+        if( getTileNeighbor( inFullIndex, n ) == inTileID ) {
+            neighborsEqual[n] = 1;
+            }
+        }
+
+    if( !neighborsEqual[1] ) {
+        // right neighbor not equal to us
+
+        // but it might also be a south-butt tile
+        // check!
+
+        int x = inFullIndex % mFullMapD;
+        
+        if( x < mFullMapD - 1 ) {
+            
+            int rightAboveI = inFullIndex + mFullMapD + 1;
+            
+            if( mHouseMapIDs[ rightAboveI ] == inTileID ) {
+
+                char rightSouthButt = false;
+                getOrientationIndex( rightAboveI, inTileID, inTileState,
+                                     &rightSouthButt );
+            
+                if( rightSouthButt ) {
+                    neighborsEqual[1] = 1;
+                    }
+                }
+            }
+        }
+    if( !neighborsEqual[3] ) {
+        // left neighbor not equal to us
+
+        // but it might also be a south-butt tile
+        // check!
+
+        int x = inFullIndex % mFullMapD;
+        
+        if( x > 0 ) {
+
+            int leftAboveI = inFullIndex + mFullMapD - 1;
+
+            if( mHouseMapIDs[ leftAboveI ] == inTileID ) {
+                
+
+                char leftSouthButt = false;
+                getOrientationIndex( leftAboveI, inTileID, inTileState,
+                                     &leftSouthButt );
+            
+                if( leftSouthButt ) {
+                    neighborsEqual[3] = 1;
+                    }
+                }
+            }
+        }
+        
+                
+    orientationIndex = 
+        neighborsEqual[3] << 3 |
+        neighborsEqual[2] << 2 |
+        neighborsEqual[1] << 1 |
+        neighborsEqual[0];
+    
+    return orientationIndex;
+    }
+
+
+
+
 
 
 void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
@@ -665,6 +778,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
             int i = y * HOUSE_D + x;
+            int fullI = subToFull( i );
 
             int houseTile = mHouseSubMapIDs[i];
             int houseTileState = mHouseSubMapCellStates[i];
@@ -697,9 +811,12 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 continue;
                 }
             
+
+            char southButt = false;
             
-            int orientationIndex = getOrientationIndex( i, houseTile,
-                                                        houseTileState );
+            int orientationIndex = getOrientationIndex( fullI, houseTile,
+                                                        houseTileState,
+                                                        &southButt );
 
                 
 
@@ -750,15 +867,68 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 // now draw blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
+
                 SpriteHandle sprite = getObjectSprite( houseTile, 
                                                        orientationIndex, 
                                                        houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
+
+
+                if( southButt ) {
+                    // can't draw color too, or else sprite masks are ignored
+                    startAddingToStencil( false, true );
+                    
+                    // draw again to define part of stencil
+
+                    // but use orientation 0, which is a full block, 
+                    // for stencil shape
+                    sprite = getObjectSprite( houseTile, 
+                                              0, 
+                                              houseTileState );
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
+
+
+                    int southI = fullI - mFullMapD;
+                    
+                    doublePair southTilePos = getTilePosFull( southI );
+                    
+
+                    
+                    // now stencil is set up:
+
+                    // only can draw through mask created by our target
+                    // tile and the tile to the south of it
+
+                    startDrawingThroughStencil();
+                    
+                    
+                    // finally, draw our "helper tile" to the south,
+                    // through the stencil
+                    // It will be covered up later as true south-side tile
+                    // is drawn
+                    
+                    // (but its border extensions, which we need to complete
+                    //  the butted tile, will remain)
+                    int helperOrientationIndex = 
+                        getOrientationIndexSouthButt( southI, houseTile,
+                                                      houseTileState );
+                    
+                    sprite = getObjectSprite( 
+                        houseTile, 
+                        helperOrientationIndex, 
+                        houseTileState );
+                
+                    drawSprite( sprite, southTilePos, 1.0/16.0 );
+
+                    
+                    disableStencil();
+                    }
+                
+
                 }
 
             
-            int fullI = subToFull( i );
             
             if( inNonStructuralOnly ) {
                 
@@ -768,8 +938,9 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                     int mobID = mHouseMapMobileIDs[fullI];
                     int mobState = mHouseMapMobileCellStates[fullI];
 
-                    int mobOrientation = getOrientationIndex( i, mobID,
-                                                              mobState );
+                    int mobOrientation = getOrientationIndex( fullI, mobID,
+                                                              mobState,
+                                                              &southButt );
 
                     setDrawColor( 1, 1, 1, 1 );
                 
@@ -801,8 +972,9 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                     // ghost of goal for placement
                     setDrawColor( 1, 1, 1, 0.35 );
 
-                    int ghostOrientation = getOrientationIndex( i, GOAL_ID,
-                                                                0 );
+                    int ghostOrientation = getOrientationIndex( fullI, GOAL_ID,
+                                                                0,
+                                                                &southButt );
                     
                     SpriteHandle sprite = getObjectSprite( GOAL_ID, 
                                                            ghostOrientation, 
@@ -823,7 +995,8 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 else if( houseTile != pick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
-                    int ghostOrientation = getOrientationIndex( i, pick, 0 );
+                    int ghostOrientation = getOrientationIndex( fullI, pick, 0,
+                                                                &southButt );
 
                     SpriteHandle sprite = getObjectSprite( pick, 
                                                            ghostOrientation,
@@ -837,6 +1010,8 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
             }
         }
 
+    // clear stencil buffer now
+    stopStencil();
     }
 
 

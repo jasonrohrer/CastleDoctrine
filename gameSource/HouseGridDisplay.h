@@ -163,6 +163,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // get relative position of tile inIndex
         doublePair getTilePos( int inIndex );
+
+        // get relative position of tile at full-map index inFullIndex
+        doublePair getTilePosFull( int inFullIndex );
+
         
         double mTileRadius;
 
@@ -172,20 +176,32 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char mGoalSet;
 
 
-        // inIndex is tile's sub-map index
+        // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
         // returns object ID
-        int getTileNeighbor( int inIndex, int inNeighbor );
+        int getTileNeighbor( int inFullIndex, int inNeighbor );
         // checks structural property of neighbor
-        int getTileNeighborStructural( int inIndex, int inNeighbor );
+        int getTileNeighborStructural( int inFullIndex, int inNeighbor );
         
         
-        // inIndex is tile's sub-map index
+        // inFullIndex is tile's full-map index
         // inTileID might be different from what's actually in the map
         //   at inIndex (so getOrientationIndex can be used for orienting
         //   a ghost tile before placement)
-        int getOrientationIndex( int inIndex, int inTileID, int inTileState );
+        //
+        // outSouthButt is set to TRUE if butt-up-against-south-structure
+        //   condition occurs
+        int getOrientationIndex( int inFullIndex, 
+                                 int inTileID, int inTileState,
+                                 char *outSouthButt );
         
+        // special case for checking orientations of south-butt helper tiles
+        // (assumes that inTileID and inTileState pick a tile with 16 
+        //  orientations)
+        int getOrientationIndexSouthButt( int inIndex, 
+                                          int inTileID, 
+                                          int inTileState );
+
         
         void pointerOver( float inX, float inY );
 
