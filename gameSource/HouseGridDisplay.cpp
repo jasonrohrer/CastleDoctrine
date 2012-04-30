@@ -773,7 +773,7 @@ int HouseGridDisplay::getOrientationIndexSouthButt( int inFullIndex,
 
 
 
-void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
+void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
     for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
 
@@ -783,14 +783,16 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
             int houseTile = mHouseSubMapIDs[i];
             int houseTileState = mHouseSubMapCellStates[i];
             
-            char structuralProperty = isSubMapPropertySet( i, structural );
-            
+            char aboveShadows = 
+                isSubMapPropertySet( i, structural ) ||
+                isSubMapPropertySet( i, shadowMaking );
+                        
             
             
             doublePair tilePos = getTilePos( i );
  
 
-            if( inNonStructuralOnly && structuralProperty ) {
+            if( inBeneathShadowsOnly && aboveShadows ) {
                 // skip this blocking tile
                 
                 // but draw floor under it!
@@ -805,7 +807,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 i++;
                 continue;
                 }
-            else if( ! inNonStructuralOnly && ! structuralProperty ) {
+            else if( ! inBeneathShadowsOnly && ! aboveShadows ) {
                 // skip this non-blocking tile
                 i++;
                 continue;
@@ -822,7 +824,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
 
             
             // draw empty floor, even under non-blocking objects
-            if( inNonStructuralOnly && !structuralProperty  ) {
+            if( inBeneathShadowsOnly && !aboveShadows  ) {
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -850,8 +852,8 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 drawSquare( tilePos, mTileRadius );
                 }
             */
-            if( inNonStructuralOnly && 
-                ! structuralProperty && 
+            if( inBeneathShadowsOnly && 
+                ! aboveShadows && 
                 houseTile != 0 ) {
                 
                 // now draw tile itself, on top of floor
@@ -863,7 +865,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
-            else if( !inNonStructuralOnly && houseTile != 0 ) {
+            else if( !inBeneathShadowsOnly && houseTile != 0 ) {
                 // now draw blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -930,7 +932,7 @@ void HouseGridDisplay::drawTiles( char inNonStructuralOnly ) {
 
             
             
-            if( inNonStructuralOnly ) {
+            if( inBeneathShadowsOnly ) {
                 
                 if( mHouseMapMobileIDs[fullI] != 0 ) {
                     // mobile object here

@@ -209,7 +209,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         SpriteHandle mWallShadowSprite;
         
         
-        void drawTiles( char inNonStructuralOnly );
+        void drawTiles( char inBeneathShadowsOnly );
         
 
         void recomputeWallShadows();
