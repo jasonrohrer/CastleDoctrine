@@ -1029,8 +1029,14 @@ void HouseGridDisplay::draw() {
     doublePair center = { 0, 0 };
     
     setDrawColor( 1, 1, 1, 1 );
-    drawSquare( center, HOUSE_D * mTileRadius + mTileRadius / 4 );
+    drawSquare( center, HOUSE_D * mTileRadius + .125 );
+
     
+    enableScissor( -HOUSE_D * mTileRadius,
+                   -HOUSE_D * mTileRadius,
+                   2 * ( HOUSE_D * mTileRadius ),
+                   2 * ( HOUSE_D * mTileRadius ) );
+
     
     // draw house parts that are under shadows (non-structural parts)
     drawTiles( true );
@@ -1095,6 +1101,9 @@ void HouseGridDisplay::draw() {
         setDrawColor( 0, 0, 1, 1 );
         drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
         }
+    
+
+    disableScissor();
     }
 
 

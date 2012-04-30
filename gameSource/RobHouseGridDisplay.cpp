@@ -180,6 +180,11 @@ void RobHouseGridDisplay::draw() {
     HouseGridDisplay::draw();
 
     
+    // apply same scissor region to visibility overlay
+    enableScissor( -HOUSE_D * mTileRadius,
+                   -HOUSE_D * mTileRadius,
+                   2 * ( HOUSE_D * mTileRadius ),
+                   2 * ( HOUSE_D * mTileRadius ) );
     
     
     // decay each frame
@@ -336,6 +341,9 @@ void RobHouseGridDisplay::draw() {
     toggleLinearMagFilter( false );
     
     freeSprite( visSprite );
+
+
+    disableScissor();
     }
 
 
