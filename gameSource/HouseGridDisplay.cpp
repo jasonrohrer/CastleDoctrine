@@ -705,13 +705,20 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
 
-                i++;
-                continue;
+                if( mHighlightIndex != i ) {
+                    // nothing left to draw, if no highlight is here
+                    i++;
+                    continue;
+                    }
                 }
             else if( ! inBeneathShadowsOnly && ! aboveShadows ) {
                 // skip this non-blocking tile
-                i++;
-                continue;
+
+                if( mHighlightIndex != i ) {
+                    // nothing left to draw, if no highlight is here
+                    i++;
+                    continue;
+                    }
                 }
             
 
@@ -802,18 +809,35 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             
             // no highlight over start, robber, or permanents
+            int highlightPick = 0;
+            
             if( mHighlightIndex == i &&
                 fullI != mStartIndex &&
                 fullI != mRobberIndex &&
                 ! isSubMapPropertySet( i, permanent ) ) {
-
-                int pick = 0;
                 
                 if( mPicker != NULL ) {
-                    pick = mPicker->getSelectedObject();
+                    highlightPick = mPicker->getSelectedObject();
                     }
                 
+                char highlightAboveShadows = 
+                    isPropertySet( highlightPick, 0, structural ) ||
+                    isPropertySet( highlightPick, 0, shadowMaking );
 
+                if( highlightAboveShadows && inBeneathShadowsOnly 
+                    ||
+                    ! highlightAboveShadows && ! inBeneathShadowsOnly ) {
+                    
+                    // only draw each highlight once (along with other objects
+                    // that share its shadow-casting status)
+                    
+                    highlightPick = 0;
+                    }
+                }
+
+
+            if( highlightPick != 0 ) {
+                    
                 if( !mGoalSet ) {
                     // ghost of goal for placement
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -827,7 +851,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
-                else if( houseTile == pick || houseTile == GOAL_ID ) {
+                else if( houseTile == highlightPick || houseTile == GOAL_ID ) {
                     // darken existing tile to imply removal on click
                     setDrawColor( 0, 0, 0, 0.35 );
 
@@ -837,13 +861,14 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
-                else if( houseTile != pick ) {
+                else if( houseTile != highlightPick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
-                    int ghostOrientation = getOrientationIndex( fullI, pick, 
+                    int ghostOrientation = getOrientationIndex( fullI, 
+                                                                highlightPick, 
                                                                 0 );
 
-                    SpriteHandle sprite = getObjectSprite( pick, 
+                    SpriteHandle sprite = getObjectSprite( highlightPick, 
                                                            ghostOrientation,
                                                            0 );
                     
@@ -854,9 +879,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             i++;
             }
         }
-
-    // clear stencil buffer now
-    stopStencil();
     }
 
 
