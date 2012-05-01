@@ -515,8 +515,7 @@ int HouseGridDisplay::getTileNeighborStructural( int inFullIndex,
 
 
 int HouseGridDisplay::getOrientationIndex( int inFullIndex, 
-                                           int inTileID, int inTileState,
-                                           char *outSouthButt ) {
+                                           int inTileID, int inTileState ) {
     int numOrientations = 0;
     
     int orientationIndex = 0;
@@ -533,26 +532,7 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
             if( getTileNeighbor( inFullIndex, n ) == inTileID ) {
                 neighborsEqual[n] = 1;
                 }
-            }
-
-
-        if( isPropertySet( inTileID, inTileState, structural ) ) {
-            // structural tiles treat BOTTOM-side structural neighbors as 
-            // "same type" (to prevent appearance of tile gaps in oblique
-            // projections where to different types of structural tiles meet)
-            
-            if( getTileNeighbor( inFullIndex, 2 ) != inTileID
-                &&
-                getTileNeighborStructural( inFullIndex, 2 ) ) {
-                // special case when they butt up below...
-                
-                // see a neighbor below
-                neighborsEqual[2] = 1;
-                
-                *outSouthButt = true;
-                }
-            }
-        
+            }                
                 
         orientationIndex = 
             neighborsEqual[3] << 3 |
@@ -694,85 +674,6 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
 
 
 
-int HouseGridDisplay::getOrientationIndexSouthButt( int inFullIndex, 
-                                                    int inTileID, 
-                                                    int inTileState ) {
-    int orientationIndex = 0;
-    // full binary LBRT flags based on neighbors of same type 
-                
-    int neighborsEqual[4] = { 0, 0, 0, 0 };
-    
-    for( int n=0; n<4; n++ ) {
-        if( getTileNeighbor( inFullIndex, n ) == inTileID ) {
-            neighborsEqual[n] = 1;
-            }
-        }
-
-    if( !neighborsEqual[1] ) {
-        // right neighbor not equal to us
-
-        // but it might also be a south-butt tile
-        // check!
-
-        int x = inFullIndex % mFullMapD;
-        
-        if( x < mFullMapD - 1 ) {
-            
-            int rightAboveI = inFullIndex + mFullMapD + 1;
-            
-            if( mHouseMapIDs[ rightAboveI ] == inTileID ) {
-
-                char rightSouthButt = false;
-                getOrientationIndex( rightAboveI, inTileID, inTileState,
-                                     &rightSouthButt );
-            
-                if( rightSouthButt ) {
-                    neighborsEqual[1] = 1;
-                    }
-                }
-            }
-        }
-    if( !neighborsEqual[3] ) {
-        // left neighbor not equal to us
-
-        // but it might also be a south-butt tile
-        // check!
-
-        int x = inFullIndex % mFullMapD;
-        
-        if( x > 0 ) {
-
-            int leftAboveI = inFullIndex + mFullMapD - 1;
-
-            if( mHouseMapIDs[ leftAboveI ] == inTileID ) {
-                
-
-                char leftSouthButt = false;
-                getOrientationIndex( leftAboveI, inTileID, inTileState,
-                                     &leftSouthButt );
-            
-                if( leftSouthButt ) {
-                    neighborsEqual[3] = 1;
-                    }
-                }
-            }
-        }
-        
-                
-    orientationIndex = 
-        neighborsEqual[3] << 3 |
-        neighborsEqual[2] << 2 |
-        neighborsEqual[1] << 1 |
-        neighborsEqual[0];
-    
-    return orientationIndex;
-    }
-
-
-
-
-
-
 void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
     for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
@@ -814,11 +715,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
             
 
-            char southButt = false;
-            
             int orientationIndex = getOrientationIndex( fullI, houseTile,
-                                                        houseTileState,
-                                                        &southButt );
+                                                        houseTileState );
 
                 
 
@@ -875,59 +773,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                        houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
-
-
-                if( southButt ) {
-                    // can't draw color too, or else sprite masks are ignored
-                    startAddingToStencil( false, true );
-                    
-                    // draw again to define part of stencil
-
-                    // but use orientation 0, which is a full block, 
-                    // for stencil shape
-                    sprite = getObjectSprite( houseTile, 
-                                              0, 
-                                              houseTileState );
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
-
-
-                    int southI = fullI - mFullMapD;
-                    
-                    doublePair southTilePos = getTilePosFull( southI );
-                    
-
-                    
-                    // now stencil is set up:
-
-                    // only can draw through mask created by our target
-                    // tile and the tile to the south of it
-
-                    startDrawingThroughStencil();
-                    
-                    
-                    // finally, draw our "helper tile" to the south,
-                    // through the stencil
-                    // It will be covered up later as true south-side tile
-                    // is drawn
-                    
-                    // (but its border extensions, which we need to complete
-                    //  the butted tile, will remain)
-                    int helperOrientationIndex = 
-                        getOrientationIndexSouthButt( southI, houseTile,
-                                                      houseTileState );
-                    
-                    sprite = getObjectSprite( 
-                        houseTile, 
-                        helperOrientationIndex, 
-                        houseTileState );
-                
-                    drawSprite( sprite, southTilePos, 1.0/16.0 );
-
-                    
-                    disableStencil();
-                    }
-                
-
                 }
 
             
@@ -941,8 +786,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int mobState = mHouseMapMobileCellStates[fullI];
 
                     int mobOrientation = getOrientationIndex( fullI, mobID,
-                                                              mobState,
-                                                              &southButt );
+                                                              mobState );
 
                     setDrawColor( 1, 1, 1, 1 );
                 
@@ -975,8 +819,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     setDrawColor( 1, 1, 1, 0.35 );
 
                     int ghostOrientation = getOrientationIndex( fullI, GOAL_ID,
-                                                                0,
-                                                                &southButt );
+                                                                0 );
                     
                     SpriteHandle sprite = getObjectSprite( GOAL_ID, 
                                                            ghostOrientation, 
@@ -997,8 +840,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 else if( houseTile != pick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
                 
-                    int ghostOrientation = getOrientationIndex( fullI, pick, 0,
-                                                                &southButt );
+                    int ghostOrientation = getOrientationIndex( fullI, pick, 
+                                                                0 );
 
                     SpriteHandle sprite = getObjectSprite( pick, 
                                                            ghostOrientation,
