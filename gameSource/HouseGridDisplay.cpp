@@ -930,6 +930,15 @@ void HouseGridDisplay::draw() {
                 1.0 * 2 * mTileRadius / 8.0 );
     toggleLinearMagFilter( false );
 
+    
+    // robber above shadows, behind structural tiles (for now)
+    int robSubIndex = fullToSub( mRobberIndex );
+    if( robSubIndex != -1 ) {    
+        setDrawColor( 0, 0, 1, 1 );
+        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
+        }
+
+
 
     // draw structural tiles above shadows
     drawTiles( false );
@@ -998,11 +1007,6 @@ void HouseGridDisplay::draw() {
     */
     
 
-    int robSubIndex = fullToSub( mRobberIndex );
-    if( robSubIndex != -1 ) {    
-        setDrawColor( 0, 0, 1, 1 );
-        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
-        }
     
 
     disableScissor();
