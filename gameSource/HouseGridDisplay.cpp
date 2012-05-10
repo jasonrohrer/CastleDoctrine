@@ -312,10 +312,20 @@ char *HouseGridDisplay::getHouseMap() {
                 parts[i] = nonMobilePart;
                 }
             else {
-                // comma-separated parts
-                parts[i] = autoSprintf( "%s,%s", nonMobilePart, mobilePart );
-                delete [] nonMobilePart;
-                delete [] mobilePart;
+                if( mHouseMapIDs[i] == 0 && mHouseMapCellStates[i] == 0 ) {
+                    // only mobile part present, above empty floor
+
+                    parts[i] = mobilePart;
+                    }
+                else {
+                    // both mobile and non-mobile
+
+                    // comma-separated parts
+                    parts[i] = autoSprintf( "%s,%s", 
+                                            nonMobilePart, mobilePart );
+                    delete [] nonMobilePart;
+                    delete [] mobilePart;
+                    }
                 }
             }
         
