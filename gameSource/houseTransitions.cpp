@@ -229,6 +229,8 @@ void initHouseTransitions() {
     triggerRecords = new TransitionTriggerRecord[ numTriggerRecords ];
     
     for( int i=0; i<numTriggerRecords; i++ ) {
+        triggerRecords[i].triggerID = i;
+        triggerRecords[i].numTransitions = 0;
         triggerRecords[i].transitions = NULL;
         }
     
