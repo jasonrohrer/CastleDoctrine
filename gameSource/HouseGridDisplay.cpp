@@ -724,7 +724,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             else if( ! inBeneathShadowsOnly && ! aboveShadows ) {
                 // skip this non-blocking tile
 
-                if( mHighlightIndex != i ) {
+                if( mHighlightIndex != i && fullI != mRobberIndex ) {
                     // nothing left to draw, if no highlight is here
                     i++;
                     continue;
@@ -767,6 +767,23 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 drawSquare( tilePos, mTileRadius );
                 }
             */
+
+            
+            // robber above shadows, behind structural tiles in current row 
+            // only
+            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {    
+                setDrawColor( 0, 0, 1, 1 );
+
+                doublePair robberPos = tilePos;
+        
+                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                
+                robberPos.y += 0.875 * mTileRadius;
+                
+                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                }
+
+
             if( inBeneathShadowsOnly && 
                 ! aboveShadows && 
                 houseTile != 0 ) {
@@ -780,7 +797,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
-            else if( !inBeneathShadowsOnly && houseTile != 0 ) {
+            else if( !inBeneathShadowsOnly && aboveShadows 
+                     && houseTile != 0 ) {
                 // now draw blocking objects on top of floor
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -941,12 +959,6 @@ void HouseGridDisplay::draw() {
     toggleLinearMagFilter( false );
 
     
-    // robber above shadows, behind structural tiles (for now)
-    int robSubIndex = fullToSub( mRobberIndex );
-    if( robSubIndex != -1 ) {    
-        setDrawColor( 0, 0, 1, 1 );
-        drawSquare( getTilePos( robSubIndex ), (4/7.0 ) * mTileRadius );
-        }
 
 
 
