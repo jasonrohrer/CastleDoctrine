@@ -769,7 +769,30 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
             */
 
+
+            // draw "behind" parts of structural tiles before drawing
+            // a robber or mobile object in this row
+            if( !inBeneathShadowsOnly && aboveShadows 
+                && houseTile != 0 ) {
+                
+                if( isBehindSpritePresent( houseTile, 
+                                           houseTileState ) ) {
+                    
+                    setDrawColor( 1, 1, 1, 1 );
+                    
+                    
+                    SpriteHandle sprite = 
+                        getObjectSpriteBehind( houseTile, 
+                                               orientationIndex, 
+                                               houseTileState );
+                
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    }
+                }
             
+
+
+
             // robber above shadows, behind structural tiles in current row 
             // only
             if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {    

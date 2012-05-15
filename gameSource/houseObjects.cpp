@@ -37,6 +37,10 @@ typedef struct houseObjectState {
         
         SpriteHandle stateSprite[ MAX_ORIENTATIONS ];
         
+        char behindSpritePresent;
+
+        SpriteHandle stateSpriteBehind[ MAX_ORIENTATIONS ];
+        
         char properties[ endPropertyID ];
 
     } houseObjectState;
@@ -80,6 +84,7 @@ static houseObjectState readState( File *inStateDir ) {
     File **childFiles = inStateDir->getChildFiles( &numChildFiles );
     
     char *tgaPath = NULL;
+    char *behindTgaPath = NULL;
     char *propertiesContents = NULL;
 
     char transCorner = true;
@@ -89,9 +94,14 @@ static houseObjectState readState( File *inStateDir ) {
         File *f = childFiles[i];
         
         char *name = f->getFileName();
-        
-        if( strstr( name, ".tga" ) != NULL ) {
-            
+
+        if( strstr( name, "_behind.tga" ) != NULL ) {
+            if( behindTgaPath != NULL ) {
+                delete [] behindTgaPath;
+                }
+            behindTgaPath = f->getFullFileName();
+            }
+        else if( strstr( name, ".tga" ) != NULL ) {
             if( tgaPath != NULL ) {
                 delete [] tgaPath;
                 }
@@ -114,7 +124,7 @@ static houseObjectState readState( File *inStateDir ) {
     houseObjectState state;
 
     state.numOrientations = 0;
-    
+    state.behindSpritePresent = false;
 
 
     // init property array, all off
@@ -159,10 +169,9 @@ static houseObjectState readState( File *inStateDir ) {
     printf( "Trying to read tga from %s\n", tgaPath );
 
     Image *image = readTGAFileBase( tgaPath );
+    delete [] tgaPath;
 
-    if( image == NULL ) {
-        delete [] tgaPath;
-        
+    if( image == NULL ) {    
         return state;
         }
     
@@ -188,9 +197,56 @@ static houseObjectState readState( File *inStateDir ) {
 
     delete image;
     
-    delete [] tgaPath;
+
     
 
+    if( behindTgaPath == NULL ) {
+        return state;
+        }
+    
+
+
+    printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
+
+    image = readTGAFileBase( behindTgaPath );
+
+    delete [] behindTgaPath;
+
+    if( image == NULL ) {
+        return state;
+        }
+    
+
+    fullH = image->getHeight();
+    fullW = image->getWidth();
+
+    tileH = fullW;
+
+    int numOrientationsPresent = fullH / tileH;
+    
+    if( numOrientationsPresent != state.numOrientations ) {
+        printf( "  Orientations (%d) doesn't match "
+                "what is in front TGA (%d)\n",
+                numOrientationsPresent, state.numOrientations );
+        delete image;
+        return state;
+        }
+
+    printf( "  Reading %d orientations\n", state.numOrientations );
+
+    for( int o=0; o<state.numOrientations; o++ ) {
+        
+        Image *subImage = image->getSubImage( 0, tileH * o,
+                                              fullW, tileH );
+        
+        state.stateSpriteBehind[o] = fillSprite( subImage, transCorner );
+        
+        delete subImage;
+        }
+
+    delete image;
+
+    state.behindSpritePresent = true;
 
     
 
@@ -407,6 +463,9 @@ void freeHouseObjects() {
 
             for( int o=0; o<r.states[s].numOrientations; o++ ) {
                 freeSprite( r.states[s].stateSprite[o] );
+                if( r.states[s].behindSpritePresent ) {
+                    freeSprite( r.states[s].stateSpriteBehind[o] );
+                    }
                 }
             }
         delete [] r.states;
@@ -515,10 +574,34 @@ SpriteHandle getObjectSprite( int inObjectID,
 
 
 
+SpriteHandle getObjectSpriteBehind( int inObjectID, 
+                                    int inOrientation, int inState ) {
+    
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    if( inOrientation >= state->numOrientations ) {
+        // default
+        inOrientation = 0;
+        }    
+
+    return state->stateSpriteBehind[inOrientation];
+    }
+
+
+
+
 int getNumOrientations( int inObjectID, int inState ) {
     houseObjectState *state = getObjectState( inObjectID, inState );
 
     return state->numOrientations;
+    }
+
+
+
+char isBehindSpritePresent( int inObjectID, int inState ) {
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    return state->behindSpritePresent;
     }
 
 

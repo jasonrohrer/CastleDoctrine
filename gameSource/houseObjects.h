@@ -87,11 +87,15 @@ char isPropertySet( int inObjectID, int inState, propertyID inProperty );
 
 int getNumOrientations( int inObjectID, int inState );
 
+char isBehindSpritePresent( int inObjectID, int inState );
 
 
 // orientations based on binary interpretation of LBRT "neighbor present"
 // flags
 SpriteHandle getObjectSprite( int inObjectID, int inOrientation, int inState );
+
+SpriteHandle getObjectSpriteBehind( int inObjectID, int inOrientation, 
+                                    int inState );
 
 
 
