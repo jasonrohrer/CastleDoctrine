@@ -653,11 +653,17 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     SimpleVector<int> mobileIndices;
     
     // player is a mobile object
+    // and it ALWAYS moves (player movement triggers transitions, for now)
     mobileIndices.push_back( inRobberIndex );
-    
+
     for( int i=0; i<numCells; i++ ) {
         if( inMapMobileIDs[i] != 0 ) {
-            mobileIndices.push_back( i );
+            // ignore other mobiles that didn't move just now
+            // (so we don't trigger same switch over and over with a stationary
+            //  mobile)
+            if( moveHappened[i] ) {
+                mobileIndices.push_back( i );
+                }
             }
         }
     
