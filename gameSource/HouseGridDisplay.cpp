@@ -724,7 +724,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             else if( ! inBeneathShadowsOnly && ! aboveShadows ) {
                 // skip this non-blocking tile
 
-                if( mHighlightIndex != i && fullI != mRobberIndex ) {
+                if( mHighlightIndex != i && fullI != mRobberIndex 
+                    && mHouseMapMobileIDs[ fullI ] == 0 ) {
                     // nothing left to draw, if no highlight is here
                     i++;
                     continue;
@@ -782,7 +783,30 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 drawSquare( robberPos, (4/7.0 ) * mTileRadius );
                 }
+            
+            // same for other mobile objects
+            if( ! inBeneathShadowsOnly ) {
+                
+                if( mHouseMapMobileIDs[fullI] != 0 ) {
+                    // mobile object here
+                    
+                    int mobID = mHouseMapMobileIDs[fullI];
+                    int mobState = mHouseMapMobileCellStates[fullI];
 
+                    int mobOrientation = getOrientationIndex( fullI, mobID,
+                                                              mobState );
+
+                    setDrawColor( 1, 1, 1, 1 );
+                
+                    SpriteHandle sprite = 
+                        getObjectSprite( mobID, 
+                                         mobOrientation, 
+                                         mobState );
+                
+                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    }
+                }
+            
 
             if( inBeneathShadowsOnly && 
                 ! aboveShadows && 
@@ -812,27 +836,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             
             
-            if( inBeneathShadowsOnly ) {
-                
-                if( mHouseMapMobileIDs[fullI] != 0 ) {
-                    // mobile object here
-                    
-                    int mobID = mHouseMapMobileIDs[fullI];
-                    int mobState = mHouseMapMobileCellStates[fullI];
-
-                    int mobOrientation = getOrientationIndex( fullI, mobID,
-                                                              mobState );
-
-                    setDrawColor( 1, 1, 1, 1 );
-                
-                    SpriteHandle sprite = 
-                        getObjectSprite( mobID, 
-                                         mobOrientation, 
-                                         mobState );
-                
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
-                    }
-                }
             
 
             
