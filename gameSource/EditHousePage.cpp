@@ -174,12 +174,21 @@ char EditHousePage::houseMapChanged() {
     char *newMap = mGridDisplay.getHouseMap();
 
     int comp = strcmp( newMap, mStartHouseMap );
+
+    if( comp != 0 ) {
+        
+        printf( "House maps differ.  Old:\n%s\n\nNew:\n%s\n\n", mStartHouseMap,
+                newMap );
+        }
+    
     
     delete [] newMap;
     
     if( comp == 0 ) {
         return false;
         }
+
+
     return true;
     }
 

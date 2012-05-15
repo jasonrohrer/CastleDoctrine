@@ -312,7 +312,9 @@ char *HouseGridDisplay::getHouseMap() {
                 parts[i] = nonMobilePart;
                 }
             else {
-                if( mHouseMapIDs[i] == 0 && mHouseMapCellStates[i] == 0 ) {
+                if( mHouseMapIDs[i] == 0 && 
+                    ( mHouseMapCellStates[i] == 0 || 
+                      mHouseMapCellStates[i] == 1 )  ) {
                     // only mobile part present, above empty floor
 
                     parts[i] = mobilePart;
