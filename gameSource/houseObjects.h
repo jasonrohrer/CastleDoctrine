@@ -50,7 +50,6 @@ int getObjectID( const char *inName );
     F(shadowMaking), \
     F(structural), \
     F(deadly), \
-    F(destroyed), \
     F(stuck), \
     F(powered), \
     F(conductive), \

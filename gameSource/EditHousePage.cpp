@@ -212,6 +212,17 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mLastActionTime = time( NULL );
         }
     else if( inTarget == &mDoneButton ) {
+        
+        // Reset any states
+        // that were toggled by the last robber.
+
+        // We show the house-as-robbed view to the owner once,
+        // until they perform their first complete edit, and THEN toggle
+        // everything back.
+
+        mGridDisplay.resetToggledStates( 0 );
+
+
         mDone = true;
         }
     else if( inTarget == &mObjectPicker ) {

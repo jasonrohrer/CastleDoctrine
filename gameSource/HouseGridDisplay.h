@@ -79,6 +79,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         // returns cost of change that was undone
         int undo();
+
+
+        // resets all non-stuck objects to inTargetState
+        // (example:  reset to 1 for presentation to robber, or 0 for 
+        //    presentation to owner)
+        void resetToggledStates( int inTargetState );
+
         
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
@@ -213,6 +220,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // call this BEFORE setting edit in full grid
         void logEdit( int inFullIndex, int inNewID );
         
+
+
+
 
         // maintain one bank of noise tiles for all instances
         // (to prevent noise tiles jumping when we switch views)

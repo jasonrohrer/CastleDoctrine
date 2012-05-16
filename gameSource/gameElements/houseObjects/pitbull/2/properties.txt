@@ -1,2 +1,2 @@
-destroyed
+stuck
 mobile

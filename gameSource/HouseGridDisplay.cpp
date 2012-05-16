@@ -264,12 +264,46 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
 
 
+void HouseGridDisplay::resetToggledStates( int inTargetState ) {
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        
+        if( ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                             stuck ) ) {
+            
+    
+            mHouseMapCellStates[i] = inTargetState;
+            }
+
+        // same for mobile objects
+        if( mHouseMapMobileIDs[i] != 0 
+            &&
+            ! isPropertySet( mHouseMapMobileIDs[i], 
+                             mHouseMapMobileCellStates[i],
+                             stuck ) ) {
+            
+            mHouseMapMobileCellStates[i] = inTargetState;
+            }
+        
+        // leave other states alone
+        // example:  walls that were burned down during a previous, successful
+        // robbery, but not repaired by owner yet
+        }
+    
+    copyAllIntoSubCells();
+
+    recomputeWallShadows();
+    }
+
+
+
 char *HouseGridDisplay::getHouseMap() {
     if( mHouseMap == NULL ) {
         return NULL;
         }
     else {
         
+
+
         char **parts = new char*[ mNumMapSpots ];
         
 
@@ -279,10 +313,18 @@ char *HouseGridDisplay::getHouseMap() {
             
             
             if( mHouseMapCellStates[i] != 0 && mHouseMapCellStates[i] != 1 ) {
+                const char *stuckFlag = "";
+                
+                if( isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                                   stuck ) ) {
+                    stuckFlag = "!";
+                    }
+
                 // not default state, include state
-                nonMobilePart = autoSprintf( "%d:%d", 
+                nonMobilePart = autoSprintf( "%d:%d%s", 
                                              mHouseMapIDs[i],
-                                             mHouseMapCellStates[i] );
+                                             mHouseMapCellStates[i],
+                                             stuckFlag );
                 }
             else {
                 // one of two default states, skip including it
@@ -294,12 +336,22 @@ char *HouseGridDisplay::getHouseMap() {
                 
                 if( mHouseMapMobileCellStates[i] != 0 && 
                     mHouseMapMobileCellStates[i] != 1 ) {
+                    
+                    const char *stuckFlag = "";
+                    
+                    if( isPropertySet( mHouseMapMobileIDs[i], 
+                                       mHouseMapMobileCellStates[i],
+                                       stuck ) ) {
+                        stuckFlag = "!";
+                        }
+
 
                     // not default state, include state
                     mobilePart = 
-                        autoSprintf( "%d:%d", 
+                        autoSprintf( "%d:%d%s", 
                                      mHouseMapMobileIDs[i],
-                                     mHouseMapMobileCellStates[i] );
+                                     mHouseMapMobileCellStates[i],
+                                     stuckFlag );
                     }
                 else {
                     // one of two default states, skip including it

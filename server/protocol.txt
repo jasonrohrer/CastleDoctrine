@@ -78,6 +78,8 @@ OR
 object_id:state#object_id:state#object_id#object_id
 
 If ":state" not present, then default state is implied
+If ":state" includes "!" at the end, that marks a stuck state.
+Example:  100:2!#10:3!#5#3:0
 
 Cells are separated by "#"
 

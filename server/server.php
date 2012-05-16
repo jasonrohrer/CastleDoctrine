@@ -1347,6 +1347,46 @@ function cd_endEditHouse() {
         }
 
     // all edits applied
+
+
+    // auto-reset any object states to 0 that aren't stuck
+    // these may be left over from previous robbery (switches that are toggled,
+    //  etc)
+    // (client does this every time an edit completes)
+
+    for( $i=0; $i<$numHouseCells; $i++ ) {
+
+        $cellObjects = preg_split( "/,/", $editedHouseArray[$i] );
+
+        $numObjects = count( $cellObjects );
+
+        for( $j=0; $j<$numObjects; $j++ ) {
+
+            $objectParts = preg_split( "/:/", $cellObjects[$j] );
+
+            if( count( $objectParts ) > 1 ) {
+
+                // second part is state
+
+                if( strstr( $objectParts[1], "!" ) ) {
+                    // stuck, don't change state
+                    }
+                else {
+                    // set state back to 0, which means state is simply left
+                    // off (implied ":0")
+                    // so drop second part of object, including ":" separator
+                    
+                    $cellObjects[$j] = $objectParts[0];
+                    }
+                }
+            }
+
+        $editedHouseArray[$i] = implode( ",", $cellObjects );        
+        }
+    
+
+    
+    
     $edited_house_map = implode( "#", $editedHouseArray );
 
 
