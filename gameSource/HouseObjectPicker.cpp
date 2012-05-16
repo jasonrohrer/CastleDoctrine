@@ -116,7 +116,7 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
         
         mParentPage->setToolTipDirect( 
             (char *)getObjectDescription( 
-                mObjectList.getElement( mSelectedIndex )->id ) );
+                mObjectList.getElement( mSelectedIndex )->id, 0 ) );
         
         fireActionPerformed( this );
         }

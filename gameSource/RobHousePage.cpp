@@ -82,7 +82,9 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                 autoSprintf( 
                     "%s  %s",
                     translate( "killedBy" ),
-                    getObjectDescription( mGridDisplay.getDeathSourceID() ) );
+                    getObjectDescription( 
+                        mGridDisplay.getDeathSourceID(),
+                        mGridDisplay.getDeathSourceState() ) );
             
             setToolTipDirect( deathMessage );
             delete [] deathMessage;

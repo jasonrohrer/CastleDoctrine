@@ -22,7 +22,8 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         : HouseGridDisplay( inX, inY ),
           mSuccess( false ),
           mDead( false ),
-          mDeathSourceID( -1 ) {
+          mDeathSourceID( -1 ),
+          mDeathSourceState( 1 ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
@@ -60,6 +61,11 @@ char RobHouseGridDisplay::getDead() {
 
 int RobHouseGridDisplay::getDeathSourceID() {
     return mDeathSourceID;
+    }
+
+
+int RobHouseGridDisplay::getDeathSourceState() {
+    return mDeathSourceState;
     }
 
 
@@ -116,6 +122,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         // robber killed by static object
         mDead = true;
         mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
+        mDeathSourceState = mHouseMapCellStates[ mRobberIndex ];
         mSuccess = false;
         }
     else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
@@ -125,6 +132,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         // robber killed by mobile
         mDead = true;
         mDeathSourceID = mHouseMapMobileIDs[ mRobberIndex ];
+        mDeathSourceState = mHouseMapMobileCellStates[ mRobberIndex ];
         mSuccess = false;
         }
 

@@ -1127,7 +1127,8 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
     if( mHighlightIndex != -1 && mParentPage != NULL ) {
         mParentPage->setToolTipDirect( 
             (char *)getObjectDescription( 
-                mHouseSubMapIDs[ mHighlightIndex ] ) );
+                mHouseSubMapIDs[ mHighlightIndex ],
+                mHouseSubMapCellStates[ mHighlightIndex ] ) );
         }
     }
 

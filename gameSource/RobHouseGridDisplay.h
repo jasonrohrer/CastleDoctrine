@@ -23,6 +23,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char getSuccess();
         char getDead();
         int getDeathSourceID();
+        int getDeathSourceState();
 
         // list as a whitespace-free string
         // destroyed by caller
@@ -50,7 +51,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mSuccess;
         char mDead;
         char mDeathSourceID;
-        
+        char mDeathSourceState;
 
         // 0 = visible (shroud transparent)
         // 255 = invisible (shroud opaque)

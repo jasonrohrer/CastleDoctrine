@@ -23,7 +23,8 @@ const char *getObjectName( int inObjectID );
 
 
 // gets the human-readable description, example:  "Wooden Wall"
-const char *getObjectDescription( int inObjectID );
+const char *getObjectDescription( int inObjectID,
+                                  int inState );
 
 
 // returns -1 on failure

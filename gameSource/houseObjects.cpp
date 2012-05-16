@@ -43,6 +43,8 @@ typedef struct houseObjectState {
         
         char properties[ endPropertyID ];
 
+        char *subDescription;
+
     } houseObjectState;
 
 
@@ -86,6 +88,7 @@ static houseObjectState readState( File *inStateDir ) {
     char *tgaPath = NULL;
     char *behindTgaPath = NULL;
     char *propertiesContents = NULL;
+    char *subInfoContents = NULL;
 
     char transCorner = true;
 
@@ -113,6 +116,12 @@ static houseObjectState readState( File *inStateDir ) {
                 }
             propertiesContents = f->readFileContents();
             }
+        else if( strcmp( name, "subInfo.txt" ) == 0 ) {
+            if( subInfoContents != NULL ) {
+                delete [] subInfoContents;
+                }
+            subInfoContents = f->readFileContents();
+            }
         
         delete [] name;
 
@@ -125,7 +134,7 @@ static houseObjectState readState( File *inStateDir ) {
 
     state.numOrientations = 0;
     state.behindSpritePresent = false;
-
+    state.subDescription = NULL;
 
     // init property array, all off
     for( int p=0; p<endPropertyID; p++ ) {
@@ -157,8 +166,35 @@ static houseObjectState readState( File *inStateDir ) {
 
         delete [] propertiesContents;
         }
-    
 
+
+    
+    if( subInfoContents != NULL ) {
+        char *info = subInfoContents;
+        
+        // skip the first "
+        int readChar = ' ';
+
+        while( readChar != '"' && readChar != '\0' ) {
+            readChar = info[0];
+            info = &( info[1] );
+            }
+
+                
+        char *descriptionString = new char[1000];
+        // scan a string of up to 999 characters, stopping
+        // at the first " character
+        int numRead = sscanf( info, "%999[^\"]",
+                              descriptionString );
+        
+        if( numRead == 1 ) {
+            state.subDescription = stringDuplicate( descriptionString );
+            }
+
+        delete [] descriptionString;
+        
+        delete [] subInfoContents;
+        }
 
 
     if( tgaPath == NULL ) {
@@ -507,11 +543,25 @@ const char *getObjectName( int inObjectID ) {
 
 
 
-const char *getObjectDescription( int inObjectID ) {
+const char *getObjectDescription( int inObjectID, int inState ) {
     houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
     
-    return r->description;
+    if( inState >= r->numStates ) {
+        // switch to default state
+        inState = 0;
+        }
+
+    houseObjectState *chosenState = &( r->states[inState] );
+
+    if( chosenState->subDescription != NULL ) {
+        return chosenState->subDescription;
+        }
+    else {
+        return r->description;
+        }
+
     }
+
 
 
 
