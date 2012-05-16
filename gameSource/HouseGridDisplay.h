@@ -221,6 +221,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void logEdit( int inFullIndex, int inNewID );
         
 
+        // internal version of resetToggledStates (above)
+        // does not perform sub-map copy-back or shadow recomputation
+        void resetToggledStatesInternal( int inTargetState );
 
 
 

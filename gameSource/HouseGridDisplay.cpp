@@ -264,7 +264,7 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
 
 
 
-void HouseGridDisplay::resetToggledStates( int inTargetState ) {
+void HouseGridDisplay::resetToggledStatesInternal( int inTargetState ) {
     for( int i=0; i<mNumMapSpots; i++ ) {
         
         if( ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
@@ -288,6 +288,12 @@ void HouseGridDisplay::resetToggledStates( int inTargetState ) {
         // example:  walls that were burned down during a previous, successful
         // robbery, but not repaired by owner yet
         }
+    }
+
+
+
+void HouseGridDisplay::resetToggledStates( int inTargetState ) {
+    resetToggledStatesInternal( inTargetState );
     
     copyAllIntoSubCells();
 
@@ -1825,6 +1831,19 @@ int HouseGridDisplay::undo() {
     mHouseMapMobileIDs[ r->fullIndex ] = r->oldMobileID;
     mHouseMapMobileCellStates[ r->fullIndex ] = r->oldMobileState;
     
+
+    
+
+    // reset to 0 state (owner presentation) for all
+    // non-stuck objects
+    // NOT just object that was touched by Undo
+    
+    // as things are changing around during edits, all bets are off after
+    // an undo, and it's best to revert everything back to state-0 to ensure
+    // consistency
+    resetToggledStatesInternal( 0 );
+    
+
     mRobberIndex = r->robberIndex;
     
     if( r->newID == GOAL_ID ) {
