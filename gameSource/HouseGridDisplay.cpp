@@ -851,23 +851,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
             
 
-
-
-            // robber above shadows, behind structural tiles in current row 
-            // only
-            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {    
-                setDrawColor( 0, 0, 1, 1 );
-
-                doublePair robberPos = tilePos;
-        
-                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
-                
-                robberPos.y += 0.875 * mTileRadius;
-                
-                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
-                }
-            
-            // same for other mobile objects
+            // mobile objects above shadows, behind structural tiles in 
+            // current row only
             if( ! inBeneathShadowsOnly ) {
                 
                 if( mHouseMapMobileIDs[fullI] != 0 ) {
@@ -889,7 +874,21 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     drawSprite( sprite, tilePos, 1.0/16.0 );
                     }
                 }
-            
+
+            // same for robber
+            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {    
+                setDrawColor( 0, 0, 1, 1 );
+
+                doublePair robberPos = tilePos;
+        
+                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                
+                robberPos.y += 0.875 * mTileRadius;
+                
+                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                }
+
+
 
             if( inBeneathShadowsOnly && 
                 ! aboveShadows && 
