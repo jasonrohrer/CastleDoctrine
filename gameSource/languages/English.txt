@@ -55,6 +55,9 @@ startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 
 
+startTileDescription "Welcome Mat"
+
+
 robDescription "Robbing %s house"
 
 doneRob "Suicide"

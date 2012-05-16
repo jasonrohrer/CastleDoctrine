@@ -2,6 +2,7 @@
 
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 
@@ -1125,10 +1126,41 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
     mHighlightIndex = getTileIndex( inX, inY );
 
     if( mHighlightIndex != -1 && mParentPage != NULL ) {
-        mParentPage->setToolTipDirect( 
-            (char *)getObjectDescription( 
-                mHouseSubMapIDs[ mHighlightIndex ],
-                mHouseSubMapCellStates[ mHighlightIndex ] ) );
+
+        int fullI = subToFull( mHighlightIndex );
+        
+        
+        const char *nonMobileDescription; 
+
+        if( fullI == mStartIndex ) {
+            nonMobileDescription = translate( "startTileDescription" );
+            }
+        else {    
+            nonMobileDescription = 
+                getObjectDescription( 
+                    mHouseSubMapIDs[ mHighlightIndex ],
+                    mHouseSubMapCellStates[ mHighlightIndex ] );
+            }
+        
+
+        if( mHouseMapMobileIDs[ fullI ] != 0 ) {
+            
+            const char *mobileDescription = 
+                getObjectDescription( 
+                    mHouseMapMobileIDs[ fullI ],
+                    mHouseMapMobileCellStates[ fullI ] );
+        
+            char *tip = autoSprintf( "%s  /  %s",
+                                     nonMobileDescription, mobileDescription );
+            
+            mParentPage->setToolTipDirect( tip );
+            
+            delete [] tip;
+            }
+        else {
+            mParentPage->setToolTipDirect( (char*)nonMobileDescription );
+            }
+        
         }
     }
 
