@@ -535,51 +535,6 @@ int *getFullObjectIDList( int *outNumIDs ) {
 
 
 
-const char *getObjectName( int inObjectID ) {
-    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
-    
-    return r->name;
-    }
-
-
-
-const char *getObjectDescription( int inObjectID, int inState ) {
-    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
-    
-    if( inState >= r->numStates ) {
-        // switch to default state
-        inState = 0;
-        }
-
-    houseObjectState *chosenState = &( r->states[inState] );
-
-    if( chosenState->subDescription != NULL ) {
-        return chosenState->subDescription;
-        }
-    else {
-        return r->description;
-        }
-
-    }
-
-
-
-
-int getObjectID( const char *inName ) {
-    for( int i=0; i<objects.size(); i++ ) {
-        houseObjectRecord *r = objects.getElement( i );
-        
-        if( strcmp( r->name, inName ) == 0 ) {
-            return r->id;
-            }
-        } 
-
-    return -1;
-    }
-
-
-
-
 
 static houseObjectState *getObjectState( int inObjectID, int inState ) {
 
@@ -603,6 +558,49 @@ static houseObjectState *getObjectState( int inObjectID, int inState ) {
 
     return returnState;
     }
+
+
+
+
+const char *getObjectName( int inObjectID ) {
+    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
+    
+    return r->name;
+    }
+
+
+
+const char *getObjectDescription( int inObjectID, int inState ) {
+    houseObjectState *state = getObjectState( inObjectID, inState );
+    
+    if( state->subDescription != NULL ) {
+        // state-specific description present
+        return state->subDescription;
+        }
+    else {
+        // default, universal description
+        houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
+        
+        return r->description;
+        }
+
+    }
+
+
+
+
+int getObjectID( const char *inName ) {
+    for( int i=0; i<objects.size(); i++ ) {
+        houseObjectRecord *r = objects.getElement( i );
+        
+        if( strcmp( r->name, inName ) == 0 ) {
+            return r->id;
+            }
+        } 
+
+    return -1;
+    }
+
 
 
 
