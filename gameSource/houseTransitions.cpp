@@ -667,6 +667,8 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
             }
         }
     
+    delete [] moveHappened;
+
 
     // player is a mobile object
     TransitionTriggerRecord *r = 

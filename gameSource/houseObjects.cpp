@@ -502,6 +502,9 @@ void freeHouseObjects() {
                 if( r.states[s].behindSpritePresent ) {
                     freeSprite( r.states[s].stateSpriteBehind[o] );
                     }
+                if( r.states[s].subDescription != NULL ) {
+                    delete [] r.states[s].subDescription;
+                    }
                 }
             }
         delete [] r.states;
