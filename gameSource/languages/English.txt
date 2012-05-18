@@ -102,7 +102,7 @@ step "Step"
 play "Play"
 stop "Stop"
 
-toggleVisibility "Toggle Visibility"
+toggleVisibility "Visibility"
 
 
 
