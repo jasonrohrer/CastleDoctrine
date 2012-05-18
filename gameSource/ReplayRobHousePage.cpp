@@ -123,7 +123,7 @@ void ReplayRobHousePage::draw( doublePair inViewCenter,
                                double inViewSize ) {
         
     if( mDescription != NULL ) {
-        doublePair labelPos = { 0, 7.25 };
+        doublePair labelPos = { 0, 7 };
         
         drawMessage( mDescription, labelPos, false );
         }
