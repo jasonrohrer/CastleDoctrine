@@ -22,7 +22,7 @@ extern int userID;
 
 
 RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
-        : mGridDisplay( 0, 0 ),
+        : mGridDisplay( 0, 0, this ),
           mDoneButton( mainFont, 8, -5, translate( inDoneButtonKey ) ),
           mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ) {

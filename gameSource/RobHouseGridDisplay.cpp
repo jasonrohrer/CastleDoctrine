@@ -18,8 +18,9 @@ extern double frameRateFactor;
 
 
 
-RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
-        : HouseGridDisplay( inX, inY ),
+RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY,
+                                          GamePage *inParentPage )
+        : HouseGridDisplay( inX, inY, inParentPage ),
           mSuccess( false ),
           mDead( false ),
           mDeathSourceID( -1 ),
@@ -326,17 +327,31 @@ void RobHouseGridDisplay::draw() {
     }
 
 
-// override so that they do nothing
+void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
+    // base behavior (display tool tip)
+    HouseGridDisplay::pointerOver( inX, inY );
+    
+    // but override so that highlight is never shown
+    mHighlightIndex = -1;
+    }
+
+
+
+// override so that they do nothing but display tool tips
 void RobHouseGridDisplay::pointerMove( float inX, float inY ) {
+    pointerOver( inX, inY );
     }
 
 void RobHouseGridDisplay::pointerDown( float inX, float inY ) {
+    pointerOver( inX, inY );
     }
 
 void RobHouseGridDisplay::pointerDrag( float inX, float inY ) {
+    pointerOver( inX, inY );
     }
 
 void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
+    pointerOver( inX, inY );
     }
 
 

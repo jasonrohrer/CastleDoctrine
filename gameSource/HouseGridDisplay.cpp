@@ -1135,7 +1135,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
         if( fullI == mStartIndex ) {
             nonMobileDescription = translate( "startTileDescription" );
             }
-        else {    
+        else { 
             nonMobileDescription = 
                 getObjectDescription( 
                     mHouseSubMapIDs[ mHighlightIndex ],

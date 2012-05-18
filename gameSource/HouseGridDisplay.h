@@ -199,7 +199,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
                                  int inTileID, int inTileState );
         
         
-        void pointerOver( float inX, float inY );
+        virtual void pointerOver( float inX, float inY );
 
 
         SpriteHandle mWallShadowSprite;

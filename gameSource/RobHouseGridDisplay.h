@@ -15,7 +15,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
     
     public:
 
-        RobHouseGridDisplay( double inX, double inY );
+        RobHouseGridDisplay( double inX, double inY,
+                             GamePage *inParentPage = NULL );
         
         virtual ~RobHouseGridDisplay();
 
@@ -74,6 +75,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
 
         void applyTransitionsAndProcess();
+
+        
+        // override from HouseGridDisplay
+        void pointerOver( float inX, float inY );
+
     };
 
 
