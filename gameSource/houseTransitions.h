@@ -9,6 +9,12 @@ void initHouseTransitions();
 void freeHouseTransitions();
 
 
+// when mobile objects are frozen, they don't move during applyTransitions
+// and their presence on a tile does not trigger transitions for that tile
+void freezeMobileObjects( char inFreeze );
+
+
+
 // applies transition rules to transform inMapIDs and inMapStates
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,

@@ -14,6 +14,15 @@
 #include <stdlib.h>
 
 
+
+static char mobileObjectsFrozen = false;
+
+void freezeMobileObjects( char inFreeze ) {
+    mobileObjectsFrozen = inFreeze;
+    }
+
+
+
 // describes a transition
 typedef struct TransitionRecord {
         int triggerID;
@@ -560,14 +569,13 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
 
-
-void applyTransitions( int *inMapIDs, int *inMapStates, 
-                       int *inMapMobileIDs, int *inMapMobileStates,
-                       int inMapW, int inMapH,
-                       int inRobberIndex ) {
-
-
+static void applyMobileTransitions( int *inMapIDs, int *inMapStates, 
+                                    int *inMapMobileIDs, 
+                                    int *inMapMobileStates,
+                                    int inMapW, int inMapH,
+                                    int inRobberIndex ) {
     
+
     // first, move mobile objects around
 
     
@@ -700,7 +708,25 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
                 }
             }
         }
+
+    }
     
+
+
+
+
+void applyTransitions( int *inMapIDs, int *inMapStates, 
+                       int *inMapMobileIDs, int *inMapMobileStates,
+                       int inMapW, int inMapH,
+                       int inRobberIndex ) {
+    
+    if( !mobileObjectsFrozen ) {
+        applyMobileTransitions( inMapIDs, inMapStates,
+                                inMapMobileIDs, inMapMobileStates,
+                                inMapW, inMapH, inRobberIndex );
+        }
+    
+    int numCells = inMapW * inMapH;
 
     
     // now process power transitions
@@ -799,7 +825,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     // are standing
 
     // indices might have changed
-    mobileIndices.deleteAll();
+    SimpleVector<int> mobileIndices;
 
     for( int i=0; i<numCells; i++ ) {
         if( inMapMobileIDs[i] != 0 ) {

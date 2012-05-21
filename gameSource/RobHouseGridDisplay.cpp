@@ -104,7 +104,9 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
         }
 
     // initial transitions (like for power that starts out on, etc)
+    freezeMobileObjects( true );
     applyTransitionsAndProcess();
+    freezeMobileObjects( false );
     }
 
 
