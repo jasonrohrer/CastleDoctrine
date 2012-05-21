@@ -1,5 +1,7 @@
 #include "HouseGridDisplay.h"
 
+#include "FastBoxBlurFilter.h"
+
 
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/game/game.h"
@@ -31,6 +33,9 @@ char HouseGridDisplay::sNoiseTileBankPopulated = false;
 SpriteHandle HouseGridDisplay::sNoiseTileBank[ NUM_NOISE_TILES ];
 
 int *HouseGridDisplay::sHouseMapNoiseTileIndices = NULL;
+
+
+SpriteHandle HouseGridDisplay::sDropShadowSprite = NULL;
 
 
 
@@ -81,6 +86,68 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
         
             sNoiseTileBank[i] = fillSpriteAlphaOnly( noisePixels, 16, 16 );
             }
+
+
+        int dropW = 32;
+        int dropH = 32;
+        
+        unsigned char *dropAlpha = new unsigned char[ dropW * dropH ];
+        
+        // for blur filter
+        int *touchedPixels = new int[ dropW * dropH ];
+        int numTouched = 0;
+
+        memset( dropAlpha, 0, dropW * dropH );
+
+        int centerX = dropW / 2;
+        int centerY = dropH / 2;
+        
+        for( int y=0; y<dropH; y++ ) {
+            for( int x=0; x<dropW; x++ ) {
+                
+                int dY = y - centerY;
+                int dX = x - centerX;
+                
+                double distance = sqrt( dY * dY + dX * dX );
+                
+                int i = y * dropW + x;
+
+                if( distance < 4 ) {
+                    dropAlpha[ i ] = 255;
+                    }
+
+                if( y > 1 && y < dropH - 1 
+                    && 
+                    x > 1 && x < dropW - 1 ) {
+                    // away from border
+                    touchedPixels[ numTouched ] = i;
+                    numTouched++;
+                    }
+                
+                }
+            }
+
+        FastBoxBlurFilter blur;
+        
+        
+        
+        
+        for( int i=0; i<20; i++ ) {
+            
+            blur.applySubRegion( dropAlpha,
+                                 touchedPixels,
+                                 numTouched,
+                                 dropW, dropH );
+            }
+        
+        delete [] touchedPixels;
+        
+
+        sDropShadowSprite = fillSpriteAlphaOnly( dropAlpha,
+                                                 dropW, 
+                                                 dropH );
+        delete [] dropAlpha;
+        
         sNoiseTileBankPopulated = true;
         }
     
@@ -133,6 +200,8 @@ HouseGridDisplay::~HouseGridDisplay() {
             delete [] sHouseMapNoiseTileIndices;
             sHouseMapNoiseTileIndices = NULL;
             }
+
+        freeSprite( sDropShadowSprite );
         }
     }
 
@@ -745,6 +814,19 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
 
 
 
+void HouseGridDisplay::drawDropShadow( doublePair inPosition ) {
+    setDrawColor( 0, 0, 0, 0.75 );
+    
+    toggleLinearMagFilter( true );
+
+    drawSprite( sDropShadowSprite, inPosition, 1.0/16.0 );
+    
+    toggleLinearMagFilter( false );
+    }
+
+
+
+
 void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
     for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
@@ -766,15 +848,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             if( inBeneathShadowsOnly && aboveShadows ) {
                 // skip this blocking tile
-                
-                // but draw floor under it!
-
-                setDrawColor( 1, 1, 1, 1 );
-                
-                SpriteHandle sprite = 
-                    getObjectSprite( 0, 0, 0 );
-                
-                drawSprite( sprite, tilePos, 1.0/16.0 );
 
                 if( mHighlightIndex != i ) {
                     // nothing left to draw, if no highlight is here
@@ -797,38 +870,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             int orientationIndex = getOrientationIndex( fullI, houseTile,
                                                         houseTileState );
 
-                
-
-            
-            // draw empty floor, even under non-blocking objects
-            if( inBeneathShadowsOnly && !aboveShadows  ) {
-                
-                setDrawColor( 1, 1, 1, 1 );
-                
-                SpriteHandle sprite = 
-                    getObjectSprite( 0, 0, 0 );
-                
-                drawSprite( sprite, tilePos, 1.0/16.0 );
-                
-                /*
-                if( houseTile == GOAL_ID ) {
-                    // draw goal here, so highlight can draw over it
-
-                    setDrawColor( 1, 1, 0, 1 );
-                    drawSquare( tilePos, 0.75 * mTileRadius );
-                    }
-                */
-                }
-            /*
-            else if( houseTile == GOAL_ID ) {
-                // goal position found
-                mGoalIndex = subToFull( i );
-
-                // draw empty floor under it
-                setDrawColor( 0.25, 0.25, 0.25, 1 );
-                drawSquare( tilePos, mTileRadius );
-                }
-            */
 
 
             // draw "behind" parts of structural tiles before drawing
@@ -859,6 +900,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( mHouseMapMobileIDs[fullI] != 0 ) {
                     // mobile object here
                     
+                    // first drop shadow
+                    drawDropShadow( tilePos );
+                    
+
                     int mobID = mHouseMapMobileIDs[fullI];
                     int mobState = mHouseMapMobileCellStates[fullI];
 
@@ -877,7 +922,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
 
             // same for robber
-            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {    
+            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {
+                // first drop shadow
+                drawDropShadow( tilePos );
+
                 setDrawColor( 0, 0, 1, 1 );
 
                 doublePair robberPos = tilePos;
@@ -896,6 +944,13 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 houseTile != 0 ) {
                 
                 // now draw tile itself, on top of floor
+
+                if( isSubMapPropertySet( i, mobile ) ) {
+                    // drop shadow
+                    drawDropShadow( tilePos );
+                    }
+                
+
                 setDrawColor( 1, 1, 1, 1 );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
@@ -1017,6 +1072,16 @@ void HouseGridDisplay::draw() {
                    -HOUSE_D * mTileRadius,
                    2 * ( HOUSE_D * mTileRadius ),
                    2 * ( HOUSE_D * mTileRadius ) );
+
+    // draw full grid of floor under everything
+    SpriteHandle sprite = getObjectSprite( 0, 0, 0 );
+    setDrawColor( 1, 1, 1, 1 );
+    for( int y=HOUSE_D-1; y>=0; y-- ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            drawSprite( sprite, getTilePos( y * HOUSE_D + x ), 1.0/16.0 );
+            }
+        }
+    
 
     
     // draw house parts that are under shadows (non-structural parts)
@@ -1606,7 +1671,6 @@ void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
 
 
 
-#include "FastBoxBlurFilter.h"
 
 
 
