@@ -112,7 +112,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         HouseObjectPicker *mPicker;
 
         int mRobberIndex;
-
+        int mRobberState;
+        int mRobberOrientation;
+        
         char *mHouseMap;
         
         int mNumMapSpots;

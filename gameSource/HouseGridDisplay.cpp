@@ -19,6 +19,7 @@
 
 #define GOAL_ID  999
 #define START_ID  997
+#define PLAYER_ID 1000
 
 
 #include "minorGems/util/random/CustomRandomSource.h"
@@ -328,7 +329,9 @@ void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     
     mRobberIndex = mStartIndex;
-
+    mRobberState = 0;
+    mRobberOrientation = 1;
+    
     mEditHistory.deleteAll();
     }
 
@@ -926,15 +929,16 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // first drop shadow
                 drawDropShadow( tilePos );
 
-                setDrawColor( 0, 0, 1, 1 );
+                setDrawColor( 1, 1, 1, 1 );
 
                 doublePair robberPos = tilePos;
         
-                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                SpriteHandle sprite = 
+                        getObjectSprite( PLAYER_ID, 
+                                         mRobberOrientation, 
+                                         mRobberState );
                 
-                robberPos.y += 0.875 * mTileRadius;
-                
-                drawSquare( robberPos, (4/7.0 ) * mTileRadius );
+                drawSprite( sprite, tilePos, 1.0/16.0 );
                 }
 
 
@@ -1529,6 +1533,34 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
     
     if( mRobberIndex != inNewIndex ) {
         
+        int oldX = mRobberIndex % mFullMapD;
+        int oldY = mRobberIndex / mFullMapD;
+        int newX = inNewIndex % mFullMapD;
+        int newY = inNewIndex / mFullMapD;
+        
+        int dX = newX - oldX;
+        
+        int dY = newY - oldY;
+        
+        if( dX != 0 ) {
+            if( dX == 1 ) {
+                mRobberOrientation = 1;
+                }
+            else { 
+                mRobberOrientation = 3;
+                }
+            }
+        else if( dY != 0 ) {
+            if( dY == 1 ) {
+                mRobberOrientation = 0;
+                }
+            else { 
+                mRobberOrientation = 2;
+                }
+            }
+        
+
+
         mRobberIndex = inNewIndex;
 
         // if robber too close to edge, move view to keep robber on screen
