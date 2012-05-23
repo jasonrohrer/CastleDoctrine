@@ -157,6 +157,11 @@ void HouseObjectPicker::draw() {
             // default to left-facing
             orientation = 3;
             }
+        if( numOrientations == 2 ) {
+            // default to horizontal
+            orientation = 1;
+            }
+        
         
         SpriteHandle sprite = getObjectSprite( r->id, orientation, 0 );
 

@@ -800,8 +800,8 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
             orientationIndex = 1;
             }
         else {
-            // default when not blocked at all, vertical
-            orientationIndex = 0;
+            // default when not blocked at all, horizontal
+            orientationIndex = 1;
             }    
         }
     else if( numOrientations == 1 ) {
