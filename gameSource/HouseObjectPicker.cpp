@@ -150,7 +150,15 @@ void HouseObjectPicker::draw() {
     if( mSelectedIndex >= 0 ) {
         ObjectPriceRecord *r = mObjectList.getElement( mSelectedIndex );
         
-        SpriteHandle sprite = getObjectSprite( r->id, 0, 0 );
+        int numOrientations = getNumOrientations( r->id, 0 );
+        
+        int orientation = 0;
+        if( numOrientations == 4 ) {
+            // default to left-facing
+            orientation = 3;
+            }
+        
+        SpriteHandle sprite = getObjectSprite( r->id, orientation, 0 );
 
         doublePair center = { 0, 0 };
         
