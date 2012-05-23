@@ -97,6 +97,9 @@ void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
     // switch all unstuck
     // to "1" state for presentation to robber
     resetToggledStates( 1 );
+
+    // robber outfit
+    mRobberState = 1;
     
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         mVisibleMap[i] = 255;
