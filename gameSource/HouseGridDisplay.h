@@ -250,6 +250,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
 
         void drawDropShadow( doublePair inPosition );
+        void drawRobber( doublePair inPosition );
 
 
     };

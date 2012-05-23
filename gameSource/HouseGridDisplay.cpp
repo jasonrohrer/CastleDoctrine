@@ -826,6 +826,25 @@ void HouseGridDisplay::drawDropShadow( doublePair inPosition ) {
 
 
 
+void HouseGridDisplay::drawRobber( doublePair inPosition ) {
+    // first drop shadow
+    drawDropShadow( inPosition );
+    
+    setDrawColor( 1, 1, 1, 1 );
+    
+    doublePair robberPos = inPosition;
+    
+    SpriteHandle sprite = 
+        getObjectSprite( PLAYER_ID, 
+                         mRobberOrientation, 
+                         mRobberState );
+    
+    drawSprite( sprite, inPosition, 1.0/16.0 );
+    }
+
+
+
+
 
 void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
     for( int y=HOUSE_D-1; y>=0; y-- ) {
@@ -893,6 +912,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
             
 
+            char robberDrawn = false;
+
             // mobile objects above shadows, behind structural tiles in 
             // current row only
             if( ! inBeneathShadowsOnly ) {
@@ -900,15 +921,26 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( mHouseMapMobileIDs[fullI] != 0 ) {
                     // mobile object here
                     
-                    // first drop shadow
-                    drawDropShadow( tilePos );
                     
 
                     int mobID = mHouseMapMobileIDs[fullI];
                     int mobState = mHouseMapMobileCellStates[fullI];
 
+                    if( isPropertySet( mobID, mobState, onTopOfPlayer ) ) {
+                        
+                        if( mRobberIndex == fullI ) {
+                            // draw robber under this mobile
+                            drawRobber( tilePos );
+                            robberDrawn = true;
+                            }
+                        }
+                    
+
                     int mobOrientation = getOrientationIndex( fullI, mobID,
                                                               mobState );
+                    
+                    // first drop shadow
+                    drawDropShadow( tilePos );
 
                     setDrawColor( 1, 1, 1, 1 );
                 
@@ -921,21 +953,12 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     }
                 }
 
-            // same for robber
-            if( !inBeneathShadowsOnly && mRobberIndex == fullI ) {
-                // first drop shadow
-                drawDropShadow( tilePos );
+            // same for robber (if not already drawn under a mobile)
+            if( !inBeneathShadowsOnly && mRobberIndex == fullI
+                &&
+                ! robberDrawn ) {
 
-                setDrawColor( 1, 1, 1, 1 );
-
-                doublePair robberPos = tilePos;
-        
-                SpriteHandle sprite = 
-                        getObjectSprite( PLAYER_ID, 
-                                         mRobberOrientation, 
-                                         mRobberState );
-                
-                drawSprite( sprite, tilePos, 1.0/16.0 );
+                drawRobber( tilePos );
                 }
 
 

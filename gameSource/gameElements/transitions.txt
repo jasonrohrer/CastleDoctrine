@@ -16,6 +16,10 @@ floor_electric:2 # pitbull => 3
 floor_electric:2 # player => 3
 
 
+player # pitbull => 4
+
+pitbull:4 # player => 4
+
 
 
 power   #   wire:1   =>  2

@@ -60,9 +60,10 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 5
+#define NUM_BUILT_IN_TRIGGERS 6
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
+    "player",
     "mobile",
     "power",
     "noPower",
@@ -768,6 +769,42 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 }
             }
         }
+
+
+    // now process any transitions for mobile objects
+    // that occupy same tile as player
+
+    if( inMapMobileIDs[ inRobberIndex ] != 0 ) {
+        
+        r = &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+
+
+        int playerOnMobID = inMapMobileIDs[ inRobberIndex ];
+        int playerOnMobState = inMapMobileStates[ inRobberIndex ];
+        
+
+        for( int i=0; i<r->numTransitions; i++ ) {
+            TransitionRecord *transRecord = &( r->transitions[i] );
+        
+            if( transRecord->targetID == playerOnMobID
+                &&
+                ( transRecord->targetStartState == playerOnMobState
+                  ||
+                  transRecord->targetStartState == -1 )
+                &&
+                transRecord->targetEndState != playerOnMobState ) {
+                
+                inMapMobileStates[ inRobberIndex ] = 
+                    transRecord->targetEndState;
+                
+                // only allow one transition triggered for
+                // the mobile that overlaps with player
+                break;
+                }
+}
+        }
+    
+    
 
     }
     
