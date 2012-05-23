@@ -900,8 +900,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         int mobID = inMapMobileIDs[ mobIndex ];
         int mobState = inMapMobileStates[ mobIndex ];
         
-
+        
         int mobOverTileID = inMapIDs[ mobIndex ];
+        int mobOverTileState = inMapStates[ mobIndex ];
         
         // all transitions triggered by this underlying tile
         TransitionTriggerRecord *r = &( triggerRecords[ mobOverTileID ] );
@@ -910,7 +911,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         
             TransitionRecord *transRecord = &( r->transitions[i] );
         
-            if( transRecord->targetID == mobID
+            if( transRecord->triggerState == mobOverTileState
+                &&
+                transRecord->targetID == mobID
                 &&
                 ( transRecord->targetStartState == mobState
                   ||

@@ -7,9 +7,13 @@ mobile   #   toggle_switch:1   =>  2
 mobile   #   toggle_switch:2   =>  1
 
 
-floor_trap   #   pitbull   =>   2
+floor_trap:2   #   pitbull   =>   2
 
-floor_trap   #   player  =>  2
+floor_trap:2   #   player  =>  2
+
+
+floor_electric:2 # pitbull => 3
+
 
 
 
@@ -21,6 +25,12 @@ noPower   #   wire:2   =>  1
 power   #   power_door:1   =>  2
 
 noPower   #   power_door:2   =>  1
+
+
+
+power   #   floor_electric:1   =>  2
+
+noPower   #   floor_electric:2   =>  1
 
 
 
