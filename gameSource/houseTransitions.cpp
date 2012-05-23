@@ -27,6 +27,8 @@ void freezeMobileObjects( char inFreeze ) {
 typedef struct TransitionRecord {
         int triggerID;
 
+        int triggerState;
+
         int targetID;
         int targetStartState;
         
@@ -140,37 +142,90 @@ void initHouseTransitions() {
             // samples:
             // player   #   floor_trap:1   =>  2
             // player   #   floor_trap   =>  2
+            // floor_trap:2   #   pitbull:1   =>  2
 
 
             
             char triggerName[100];
             char targetName[100];
             
+            int triggerState;
+
             int startState;
             int endState;
             
             
-            int numRead = sscanf( 
-                trimmedLine, 
-                "%99[^# \t]   #   %99[^:=> \t] : %d   =>   %d", 
-                triggerName, targetName, 
-                &startState, &endState );
+            // :state parts are optional
+            // count them
+            int colonCount = 0;
+            int lineLength = strlen( trimmedLine );
+            
+            for( int c=0; c<lineLength; c++ ) {
+                if( trimmedLine[c] == ':' ) {
+                    colonCount ++;
+                    }
+                }
             
             char scanFail = false;
 
-            if( numRead != 4 ) {
+            if( colonCount == 0 ) {
+                int numRead = sscanf( 
+                    trimmedLine, 
+                    "%99[^# \t]   #   %99[^=> \t]   =>   %d", 
+                    triggerName, targetName, 
+                    &endState );
                 
-                numRead = sscanf( trimmedLine, 
-                                  "%99[^# \t]   #   %99[^:=> \t]   =>   %d", 
-                                  triggerName, targetName, 
-                                  &endState );
                 if( numRead != 3 ) {
                     scanFail = true;
+                    }
+                else {
+                    triggerState = -1;
+                    startState = -1;
+                    }
+                }
+            else if( colonCount == 2 ) {
+                int numRead = sscanf( 
+                    trimmedLine, 
+                    "%99[^:# \t] : %d   #   %99[^:=> \t] : %d   =>   %d", 
+                    triggerName, &triggerState, targetName, 
+                    &startState, &endState );
+            
+
+                if( numRead != 5 ) {
+                    scanFail = true;
+                    }                
+                }
+            else if( colonCount == 1 ) {
+                // a :state part for either the trigger or the target
+                
+                int numRead = sscanf( 
+                    trimmedLine, 
+                    "%99[^:# \t] : %d   #   %99[^=> \t]  =>   %d", 
+                    triggerName, &triggerState, targetName, &endState );
+
+                if( numRead != 4 ) {
+                    // try opposite
+                    numRead = sscanf( 
+                    trimmedLine, 
+                    "%99[^# \t]   #   %99[^:=> \t] : %d   =>   %d", 
+                    triggerName, targetName, 
+                    &startState, &endState );
+                    
+                    if( numRead != 4 ) {
+                        scanFail = true;
+                        }
+                    else {
+                        triggerState = -1;
+                        }                    
                     }
                 else {
                     startState = -1;
                     }
                 }
+            else {
+                scanFail = true;
+                }
+
 
             if( ! scanFail ) {
                 
@@ -178,6 +233,8 @@ void initHouseTransitions() {
             
                 r.triggerID = getTriggerID( triggerName );
                 
+                r.triggerState = triggerState;
+
                 r.targetID = getObjectID( targetName );
                 
                 r.targetStartState = startState;
@@ -547,7 +604,9 @@ static char applyPowerTransitions( int *inMapIDs,
             
                 if( transRecord->targetID == inMapIDs[i]
                     &&
-                    transRecord->targetStartState == inMapStates[i] 
+                    ( transRecord->targetStartState == inMapStates[i]
+                      || 
+                      transRecord->targetStartState == -1 )
                     &&
                     transRecord->targetEndState != inMapStates[i] ) {
                 
@@ -695,7 +754,9 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
         
             if( transRecord->targetID == mobOverTileID
                 &&
-                transRecord->targetStartState == mobOverTileState 
+                ( transRecord->targetStartState == mobOverTileState
+                  ||
+                  transRecord->targetStartState == -1 )
                 &&
                 transRecord->targetEndState != mobOverTileState ) {
                 
@@ -851,7 +912,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         
             if( transRecord->targetID == mobID
                 &&
-                transRecord->targetStartState == mobState 
+                ( transRecord->targetStartState == mobState
+                  ||
+                  transRecord->targetStartState == -1 )
                 &&
                 transRecord->targetEndState != mobState ) {
                 

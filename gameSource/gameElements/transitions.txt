@@ -7,7 +7,9 @@ mobile   #   toggle_switch:1   =>  2
 mobile   #   toggle_switch:2   =>  1
 
 
-floor_trap   #   pitbull:1   =>   2
+floor_trap   #   pitbull   =>   2
+
+floor_trap   #   player  =>  2
 
 
 
