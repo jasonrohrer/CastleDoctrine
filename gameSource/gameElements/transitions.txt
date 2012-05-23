@@ -13,6 +13,7 @@ floor_trap:2   #   player  =>  2
 
 
 floor_electric:2 # pitbull => 3
+floor_electric:2 # player => 3
 
 
 
