@@ -23,4 +23,10 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
 
 
 
+// returns new state for inTarget
+int checkTransition( int inTargetID, int inTargetState,
+                     int inTriggerID, int inTriggerState );
+
+
+
 #endif

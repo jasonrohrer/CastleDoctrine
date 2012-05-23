@@ -26,6 +26,13 @@
 #define NUM_NOISE_TILES 100
 
 
+#define GOAL_ID  999
+#define START_ID  997
+#define PLAYER_ID 1000
+
+
+
+
 // for undo history
 typedef struct GridChangeRecord {
         // index of change

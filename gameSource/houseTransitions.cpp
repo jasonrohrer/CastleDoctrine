@@ -737,7 +737,6 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     delete [] moveHappened;
 
 
-    // player is a mobile object
     TransitionTriggerRecord *r = 
             &( triggerRecords[ getTriggerID( (char*)"mobile" ) ] );
 
@@ -903,35 +902,50 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         
         int mobOverTileID = inMapIDs[ mobIndex ];
         int mobOverTileState = inMapStates[ mobIndex ];
+
         
-        // all transitions triggered by this underlying tile
-        TransitionTriggerRecord *r = &( triggerRecords[ mobOverTileID ] );
-        
-        for( int i=0; i<r->numTransitions; i++ ) {
-        
-            TransitionRecord *transRecord = &( r->transitions[i] );
-        
-            if( transRecord->triggerState == mobOverTileState
-                &&
-                transRecord->targetID == mobID
-                &&
-                ( transRecord->targetStartState == mobState
-                  ||
-                  transRecord->targetStartState == -1 )
-                &&
-                transRecord->targetEndState != mobState ) {
-                
-                printf( "Mobile object transitioned by underlying tile\n" );
-                
-                inMapMobileStates[ mobIndex ] = transRecord->targetEndState;
-                
-                // apply only one transition to each mobile object
-                break;
-                }
-            }
+        inMapMobileStates[ mobIndex ] = checkTransition( mobID, mobState,
+                                                         mobOverTileID,
+                                                         mobOverTileState );
         }
     
 
 
     }
+
+
+
+
+int checkTransition( int inTargetID, int inTargetState,
+                     int inTriggerID, int inTriggerState ) {
+    
+    // all transitions triggered by this trigger
+    TransitionTriggerRecord *r = &( triggerRecords[ inTriggerID ] );
+        
+    for( int i=0; i<r->numTransitions; i++ ) {
+        
+        TransitionRecord *transRecord = &( r->transitions[i] );
+        
+        if( ( transRecord->triggerState == inTriggerState
+              ||
+              transRecord->triggerState == -1
+              )
+            &&
+            transRecord->targetID == inTargetID
+            &&
+            ( transRecord->targetStartState == inTargetState
+              ||
+              transRecord->targetStartState == -1 )
+            &&
+            transRecord->targetEndState != inTargetState ) {
+                
+            // return first one found
+            return  transRecord->targetEndState;
+            }
+        }
+    
+    // default
+    return inTargetState;
+    }
+
 

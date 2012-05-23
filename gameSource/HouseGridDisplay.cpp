@@ -17,9 +17,6 @@
 #include "houseObjects.h"
 
 
-#define GOAL_ID  999
-#define START_ID  997
-#define PLAYER_ID 1000
 
 
 #include "minorGems/util/random/CustomRandomSource.h"

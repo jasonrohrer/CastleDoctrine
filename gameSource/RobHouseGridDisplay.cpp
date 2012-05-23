@@ -129,6 +129,10 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         mDead = true;
         mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
         mDeathSourceState = mHouseMapCellStates[ mRobberIndex ];
+        
+        mRobberState = checkTransition( PLAYER_ID, mRobberState,
+                                        mDeathSourceID,
+                                        mDeathSourceState );
         mSuccess = false;
         }
     else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
@@ -139,6 +143,10 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         mDead = true;
         mDeathSourceID = mHouseMapMobileIDs[ mRobberIndex ];
         mDeathSourceState = mHouseMapMobileCellStates[ mRobberIndex ];
+
+        mRobberState = checkTransition( PLAYER_ID, mRobberState,
+                                        mDeathSourceID,
+                                        mDeathSourceState );
         mSuccess = false;
         }
 
