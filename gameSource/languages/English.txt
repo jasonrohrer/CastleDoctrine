@@ -50,7 +50,7 @@ houseCheckInFailed "House check in failed."
 
 
 
-startEditHouse "Work on Your House"
+startEditHouse "Return to Your House"
 startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 
@@ -65,6 +65,10 @@ doneRob "Suicide"
 doneRobTest "Give Up"
 
 doneRobDead "Accept"
+
+
+leave "Leave"
+
 
 
 killedBy "You were killed by:"

@@ -1511,6 +1511,9 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         if( newX > 0 ) {
             newX--;
             }
+        else if( mRobberIndex == mStartIndex ) {
+            robberTriedToLeave();
+            }
         }
     else if( inKeyCode == MG_KEY_RIGHT ) {
         if( newX < mFullMapD - 1 ) {

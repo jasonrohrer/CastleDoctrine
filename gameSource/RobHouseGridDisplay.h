@@ -20,8 +20,12 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
         virtual ~RobHouseGridDisplay();
 
+        
+        // 0 death
+        // 1 reached vault
+        // 2 chickened out
+        int getSuccess();
 
-        char getSuccess();
         char getDead();
         int getDeathSourceID();
         int getDeathSourceState();
@@ -49,10 +53,13 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
     protected:
         
-        char mSuccess;
+        int mSuccess;
         char mDead;
         char mDeathSourceID;
         char mDeathSourceState;
+
+        SpriteHandle mLeaveSprite;
+
 
         // 0 = visible (shroud transparent)
         // 255 = invisible (shroud opaque)
@@ -71,6 +78,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // override to recompute visibility and check for goal reached
         virtual void moveRobber( int inNewIndex );
         
+        virtual void robberTriedToLeave();
+
+
         virtual void recomputeVisibility();
         
 

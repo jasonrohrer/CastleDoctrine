@@ -208,7 +208,7 @@ houseMap = ASCII string representing the house layout
 server.php?action=end_rob_house&user_id=[id number]
                                &sequence_number=[number]
                                &ticket_hash=[sha1 hash, hex-encoded]
-                               &success=[0 or 1]
+                               &success=[0 or 1(reach vault) or 2(chicken out)]
 							   $loadout=[loadout as ASCII string]
                                &move_list=[move list as ASCII string]
                                &house_map=[house map ASCII string]

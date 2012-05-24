@@ -906,9 +906,9 @@ void drawFrame( char inUpdate ) {
                 char *editList = editHousePage->getEditList();
                 char *priceList = editHousePage->getPriceList();
                 
-                if( selfHouseTestPage->getSuccess() ) {
+                if( selfHouseTestPage->getSuccess() == 1 ) {
                     
-                    // house passed by owner, okay to check in
+                    // house passed by owner (reached vault), okay to check in
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPriceList( priceList );

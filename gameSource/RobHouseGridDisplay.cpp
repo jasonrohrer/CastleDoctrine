@@ -1,9 +1,17 @@
 #include "RobHouseGridDisplay.h"
 
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/game/game.h"
 #include "minorGems/game/drawUtils.h"
 
 #include "minorGems/util/stringUtils.h"
+
+
+
+#include "minorGems/game/Font.h"
+
+extern Font *mainFont;
+
 
 
 #include "FastBoxBlurFilter.h"
@@ -21,10 +29,11 @@ extern double frameRateFactor;
 RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY,
                                           GamePage *inParentPage )
         : HouseGridDisplay( inX, inY, inParentPage ),
-          mSuccess( false ),
+          mSuccess( 0 ),
           mDead( false ),
           mDeathSourceID( -1 ),
-          mDeathSourceState( 1 ) {
+          mDeathSourceState( 1 ),
+          mLeaveSprite( loadSprite( "left.tga" ) ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
@@ -35,6 +44,8 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY,
 
 RobHouseGridDisplay::~RobHouseGridDisplay() {
     clearMoveList();
+
+    freeSprite( mLeaveSprite );
     }
 
 
@@ -48,7 +59,7 @@ void RobHouseGridDisplay::clearMoveList() {
 
 
 
-char RobHouseGridDisplay::getSuccess() {
+int RobHouseGridDisplay::getSuccess() {
     return mSuccess;
     }
 
@@ -87,7 +98,7 @@ char *RobHouseGridDisplay::getMoveList() {
 
 
 void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
-    mSuccess = false;
+    mSuccess = 0;
     mDead = false;
 
     clearMoveList();
@@ -133,7 +144,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         mRobberState = checkTransition( PLAYER_ID, mRobberState,
                                         mDeathSourceID,
                                         mDeathSourceState );
-        mSuccess = false;
+        mSuccess = 0;
         }
     else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
                             mHouseMapMobileCellStates[ mRobberIndex ], 
@@ -147,7 +158,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         mRobberState = checkTransition( PLAYER_ID, mRobberState,
                                         mDeathSourceID,
                                         mDeathSourceState );
-        mSuccess = false;
+        mSuccess = 0;
         }
 
     
@@ -337,6 +348,24 @@ void RobHouseGridDisplay::draw() {
 
 
     disableScissor();
+
+
+    if( mRobberIndex == mStartIndex ) {
+        doublePair startPos = getTilePosFull( mStartIndex );
+        
+        startPos.x -= 1;
+
+        setDrawColor( 1, 1, 1, 1 );
+        
+        drawSprite( mLeaveSprite, startPos, 
+                    1.0 / 16.0 );
+        
+        startPos.x -= 0.5;
+
+        mainFont->drawString( translate( "leave" ), startPos, alignRight );;
+
+        }
+    
     }
 
 
@@ -383,9 +412,16 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     mMoveList.push_back( autoSprintf( "m%d", mRobberIndex ) );
     
     if( mRobberIndex == mGoalIndex ) {
-        mSuccess = true;
+        mSuccess = 1;
         fireActionPerformed( this );
         }
+    }
+
+
+
+void RobHouseGridDisplay::robberTriedToLeave() {
+    mSuccess = 2;
+    fireActionPerformed( this );
     }
 
 

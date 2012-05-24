@@ -160,6 +160,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // can be overridded to do special processing after robber moves
         virtual void moveRobber( int inNewIndex );
         
+        // subclasses can override to receive notification of
+        // robber leaving
+        // base class does not allow robber to leave
+        virtual void robberTriedToLeave() { 
+            };
+        
+
         
         char isSubMapPropertySet( int inSubCellIndex, propertyID inProperty );
 
