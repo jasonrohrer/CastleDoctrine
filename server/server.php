@@ -1622,7 +1622,7 @@ function cd_endRobHouse() {
     // out for robbery and limbo houses for this user
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
-        "loot_value, rob_attempts ".
+        "loot_value, rob_attempts, edit_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
@@ -1656,22 +1656,30 @@ function cd_endRobHouse() {
     $victim_name = $row[ "character_name" ];
     $loot_value = $row[ "loot_value" ];
     $rob_attempts = $row[ "rob_attempts" ];
+    $edit_count = $row[ "edit_count" ];
     
     
-    if( ! $success ) {
+    if( $success == 0 || $success == 2 ) {
         // keep original house map, untouched
         $house_map = $old_house_map;
 
         // don't touch loot value
 
         $amountTaken = 0;
-        
-        // robber dies, starts over as new character, house destroyed
-        cd_newHouseForUser( $user_id );
+
+        if( $success == 0 ) {
+            // robber dies, starts over as new character, house destroyed
+            cd_newHouseForUser( $user_id );
+            }
         }
     else {
+        // reached vault, successful robbery
+        
         // use new house map
 
+        // successful robbery, has not been edited since
+        $edit_count = 0;
+        
         // also transfer all money from victim to robber
         
         $query = "UPDATE $tableNamePrefix"."houses SET ".
@@ -1729,7 +1737,8 @@ function cd_endRobHouse() {
         
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0, edit_count = 0, house_map='$house_map', ".
+        "rob_checkout = 0, edit_count = '$edit_count', ".
+        "house_map='$house_map', ".
         "loot_value = $house_money ".
         "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
     cd_queryDatabase( $query );
