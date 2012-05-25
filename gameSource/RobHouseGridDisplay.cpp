@@ -406,6 +406,11 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
     HouseGridDisplay::moveRobber( inNewIndex );
 
+    if( mSuccess == 2 ) {
+        // left, don't apply transitions
+        return;
+        }
+
     applyTransitionsAndProcess();
     
     // a move!
