@@ -23,11 +23,17 @@ CheckinHousePage::CheckinHousePage()
           mHouseMap( NULL ),
           mEditList( NULL ),
           mPriceList( NULL ),
+          mDied( 0 ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
-          mReturnToMenu( false ) {
+          mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
+          mReturnToMenu( false ),
+          mStartOver( true ) {
 
     addComponent( &mMenuButton );
     mMenuButton.addActionListener( this );
+
+    addComponent( &mStartOverButton );
+    mStartOverButton.addActionListener( this );
     }
 
 
@@ -51,6 +57,11 @@ CheckinHousePage::~CheckinHousePage() {
 
 char CheckinHousePage::getReturnToMenu() {
     return mReturnToMenu;
+    }
+
+
+char CheckinHousePage::getStartOver() {
+    return mStartOver;
     }
 
 
@@ -82,9 +93,18 @@ void CheckinHousePage::setPriceList( char *inPriceList ) {
 
 
 
+void CheckinHousePage::setDied( int inDied ) {
+    mDied = inDied;
+    }
+
+
+
 void CheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
         mReturnToMenu = true;
+        }
+    else if( inTarget == &mStartOverButton ) {
+        mStartOver = true;
         }
     }
 
@@ -114,10 +134,16 @@ void CheckinHousePage::step() {
                 if( strstr( result, "OK" ) != NULL ) {
                     // house checked in!
                     
-
-                    mStatusError = false;
-                    mStatusMessageKey = "houseCheckedIn";
-                    mReturnToMenu = true;
+                    if( mDied == 0 ) {    
+                        mStatusError = false;
+                        mStatusMessageKey = "houseCheckedIn";
+                        mReturnToMenu = true;
+                        }
+                    else {
+                        mStatusError = true;
+                        mStatusMessageKey = "deathMessage";
+                        mStartOverButton.setVisible( true );
+                        }
                     }
                 else {
                     mStatusError = true;
@@ -149,8 +175,8 @@ void CheckinHousePage::makeActive( char inFresh ) {
     
     char *actionString = autoSprintf( 
         "action=end_edit_house&user_id=%d"
-        "&%s&house_map=%s&price_list=%s&edit_list=%s",
-        userID, ticketHash, mHouseMap, mPriceList, mEditList );
+        "&%s&died=%d&house_map=%s&price_list=%s&edit_list=%s",
+        userID, ticketHash, mDied, mHouseMap, mPriceList, mEditList );
     delete [] ticketHash;
             
     
@@ -163,10 +189,13 @@ void CheckinHousePage::makeActive( char inFresh ) {
     delete [] actionString;
 
     mReturnToMenu = false;
+    mStartOver = false;
+    
     mStatusError = false;
     mStatusMessageKey = NULL;
 
     mMenuButton.setVisible( false );
+    mStartOverButton.setVisible( false );
     }
 
 

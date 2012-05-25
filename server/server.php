@@ -1104,7 +1104,30 @@ function cd_endEditHouse() {
         $edit_list = $_REQUEST[ "edit_list" ];
         }
 
+    $died = "";
+    if( isset( $_REQUEST[ "died" ] ) ) {
+        $died = $_REQUEST[ "died" ];
+        }
 
+
+    if( $died == 1 ) {
+        // don't need to check edit, because player died and house
+        // will be destroyed anyway
+
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
+
+        
+        cd_newHouseForUser( $user_id );
+
+        echo "OK";
+
+        // skip rest
+        return;
+        }
+    
+
+    
 
     $query = "SELECT last_price_list_number ".
         "FROM $tableNamePrefix"."users ".

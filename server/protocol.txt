@@ -118,6 +118,7 @@ current_balance = player's current money balance in whole dollars.
 server.php?action=end_edit_house&user_id=[id number]
                                 &sequence_number=[number]
                                 &ticket_hash=[sha1 hash, hex-encoded]
+								&died=[0 or 1]
                                 &house_map=[house map ASCII string]
                                 &price_list=[price list ASCII string]
                                 &edit_list=[edit list ASCII string
@@ -126,6 +127,8 @@ OK
 
 
 Where:
+
+died is 1 if player died while testing house
 
 price_list is the list returned by start_edit_house
 

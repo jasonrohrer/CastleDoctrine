@@ -16,11 +16,15 @@ class CheckinHousePage : public GamePage, public ActionListener {
 
 
         virtual char getReturnToMenu();
+        virtual char getStartOver();
         
         // destroyed by caller
         virtual void setHouseMap( char *inHouseMap );        
         virtual void setEditList( char *inEditList );
         virtual void setPriceList( char *inPriceList );
+        
+        // 0 or 1
+        virtual void setDied( int inDied );
         
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -41,11 +45,15 @@ class CheckinHousePage : public GamePage, public ActionListener {
         char *mEditList;
         char *mPriceList;
         
+        int mDied;
+        
 
         TextButton mMenuButton;
+        TextButton mStartOverButton;
 
 
         char mReturnToMenu;
+        char mStartOver;
 
     };
 

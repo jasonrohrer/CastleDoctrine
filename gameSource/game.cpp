@@ -381,7 +381,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
-    selfHouseTestPage = new RobHousePage( "doneRobTest" );
+    selfHouseTestPage = new RobHousePage();
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
     robCheckoutHousePage = new RobCheckoutHousePage();
@@ -906,13 +906,27 @@ void drawFrame( char inUpdate ) {
                 char *editList = editHousePage->getEditList();
                 char *priceList = editHousePage->getPriceList();
                 
-                if( selfHouseTestPage->getSuccess() == 1 ) {
+                int testResult = selfHouseTestPage->getSuccess();
+
+                if( testResult == 1 ) {
                     
                     // house passed by owner (reached vault), okay to check in
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPriceList( priceList );
-
+                    checkinHousePage->setDied( 0 );
+                    
+                    currentGamePage = checkinHousePage;
+                    currentGamePage->base_makeActive( true );
+                    }
+                else if( testResult == 0 ) {
+                    // died while testing
+                    // check in
+                    checkinHousePage->setHouseMap( houseMap );
+                    checkinHousePage->setEditList( editList );
+                    checkinHousePage->setPriceList( priceList );
+                    checkinHousePage->setDied( 1 );
+                    
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
                     }
@@ -935,6 +949,11 @@ void drawFrame( char inUpdate ) {
         else if( currentGamePage == checkinHousePage ) {
             if( checkinHousePage->getReturnToMenu() ) {
                 currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( checkinHousePage->getStartOver() ) {
+                // fresh start, back to editing empty house
+                currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
                 }
             }
