@@ -15,7 +15,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         virtual ~RobCheckinHousePage();
 
 
-        virtual char getReturnToMenu();
+        virtual char getReturnToHome();
         
         // did robber die?
         virtual char getStartOver();
@@ -49,11 +49,11 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         
         char mSuccess;
 
-        TextButton mMenuButton;
+        TextButton mHomeButton;
         TextButton mStartOverButton;
 
 
-        char mReturnToMenu;
+        char mReturnToHome;
         char mStartOver;
 
     };

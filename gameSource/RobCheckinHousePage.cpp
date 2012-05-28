@@ -23,13 +23,13 @@ RobCheckinHousePage::RobCheckinHousePage()
           mMoveList( NULL ),
           mHouseMap( NULL ),
           mSuccess( false ),
-          mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
+          mHomeButton( mainFont, 4, -4, translate( "returnHome" ) ),
           mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
-          mReturnToMenu( false ),
+          mReturnToHome( false ),
           mStartOver( true ) {
 
-    addComponent( &mMenuButton );
-    mMenuButton.addActionListener( this );
+    addComponent( &mHomeButton );
+    mHomeButton.addActionListener( this );
 
     addComponent( &mStartOverButton );
     mStartOverButton.addActionListener( this );
@@ -51,8 +51,8 @@ RobCheckinHousePage::~RobCheckinHousePage() {
 
 
 
-char RobCheckinHousePage::getReturnToMenu() {
-    return mReturnToMenu;
+char RobCheckinHousePage::getReturnToHome() {
+    return mReturnToHome;
     }
 
 
@@ -88,8 +88,8 @@ void RobCheckinHousePage::setSuccess( char inSuccess ) {
 
 
 void RobCheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
-    if( inTarget == &mMenuButton ) {
-        mReturnToMenu = true;
+    if( inTarget == &mHomeButton ) {
+        mReturnToHome = true;
         }
     else if( inTarget == &mStartOverButton ) {
         mStartOver = true;
@@ -110,7 +110,7 @@ void RobCheckinHousePage::step() {
                 mStatusMessageKey = "err_webRequest";
                 clearWebRequest( mWebRequest );
                 mWebRequest = -1;
-                mMenuButton.setVisible( true );
+                mHomeButton.setVisible( true );
                 break;
             case 1: {
                 char *result = getWebResult( mWebRequest );
@@ -122,7 +122,7 @@ void RobCheckinHousePage::step() {
                 if( strstr( result, "DENIED" ) != NULL ) {
                     mStatusError = true;
                     mStatusMessageKey = "houseCheckInFailed";
-                    mMenuButton.setVisible( true );
+                    mHomeButton.setVisible( true );
                     }
                 else {
                     // house checked in!
@@ -134,7 +134,7 @@ void RobCheckinHousePage::step() {
                         strcmp( *( tokens->getElement( 1 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
-                        mMenuButton.setVisible( true );                    
+                        mHomeButton.setVisible( true );                    
                         }
                     else {
                         int value;
@@ -155,7 +155,7 @@ void RobCheckinHousePage::step() {
                             
                             delete [] robReport;
                             
-                            mMenuButton.setVisible( true );
+                            mHomeButton.setVisible( true );
                             }
                         else {
                             mStatusError = true;
@@ -212,7 +212,7 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
 
     delete [] actionString;
 
-    mReturnToMenu = false;
+    mReturnToHome = false;
     mStartOver = false;
     
     mStatusError = false;
@@ -221,7 +221,7 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     setStatusDirect( NULL, false );
     
 
-    mMenuButton.setVisible( false );
+    mHomeButton.setVisible( false );
     mStartOverButton.setVisible( false );
     }
 

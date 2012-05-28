@@ -30,6 +30,7 @@ outOfDateClient "Please download the latest version."
 houseBeingRobbed "Your house is currently being robbed.##You can't work on it now."
 returnMenu "Menu"
 
+returnHome "Return Home"
 
 
 

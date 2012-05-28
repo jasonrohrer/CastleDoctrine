@@ -1059,8 +1059,8 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == robCheckinHousePage ) {
-            if( robCheckinHousePage->getReturnToMenu() ) {
-                currentGamePage = menuPage;
+            if( robCheckinHousePage->getReturnToHome() ) {
+                currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
                 }
             else if( robCheckinHousePage->getStartOver() ) {
