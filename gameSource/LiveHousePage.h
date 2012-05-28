@@ -22,6 +22,10 @@ class LiveHousePage : public GamePage {
 
         virtual void makeActive( char inFresh );
 
+        virtual char isStale() {
+            return mCheckoutStale;
+            }
+
 
         // track this globally
         // User only has one house checked out at a time, but they
@@ -38,6 +42,11 @@ class LiveHousePage : public GamePage {
 
         // subclass should update this every time a user action happens
         int mLastActionTime;
+
+
+        // becomes true when a ping fails
+        char mCheckoutStale;
+        
 
     };
 

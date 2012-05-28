@@ -149,6 +149,8 @@ server.php?action=ping_house&user_id=[id number]
                             &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
 OK
+or
+FAILED  (in the case of a house that has gone stale and can't be pinged)
 
 Note:
 Proves that house is still being actively edited or robbed, keeping the

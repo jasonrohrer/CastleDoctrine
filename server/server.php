@@ -1465,11 +1465,11 @@ function cd_pingHouse() {
     $result = cd_queryDatabase( $query );
 
     
-    if( mysql_affected_rows( $result ) == 1 ) {
+    if( mysql_affected_rows() == 1 ) {
         echo "OK";
         }
     else {
-        echo "DENIED";
+        echo "FAILED";
         }
     }
 

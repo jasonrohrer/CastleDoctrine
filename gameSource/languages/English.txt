@@ -67,6 +67,9 @@ doneRobTest "Give Up"
 doneRobDead "Accept"
 
 
+doneStale "Okay"
+
+
 leave "Leave"
 
 
@@ -89,6 +92,8 @@ listFetchFailed "Failed to fetch house list"
 
 
 houseBeingRobbedOrEdited "Someone else is in that house.##You can't rob it now."
+
+houseStale "You left the house due to inactivity."
 
 
 robberyLogNotFound "Failed to find the requested robbery log."

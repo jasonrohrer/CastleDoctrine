@@ -24,7 +24,8 @@ int LiveHousePage::sLastPingTime = time( NULL );
 
 LiveHousePage::LiveHousePage()
         : mWebRequest( -1 ),
-          mLastActionTime( time( NULL ) ) {
+          mLastActionTime( time( NULL ) ),
+          mCheckoutStale( false ) {
     }
 
 
@@ -44,6 +45,7 @@ void LiveHousePage::makeActive( char inFresh ) {
 
     // this page becoming active is an action
     mLastActionTime = time( NULL );
+    mCheckoutStale = false;
     }
 
 
@@ -54,11 +56,26 @@ void LiveHousePage::step() {
         int result = stepWebRequest( mWebRequest );
           
         if( result != 0 ) {
+            
+            switch( result ) {
+                case -1:
+                    mCheckoutStale = true;
+                    break;
+                case 1: {
+                    char *result = getWebResult( mWebRequest );
+
+                    if( strstr( result, "OK" ) == NULL ) {
+                        mCheckoutStale = true;
+                        }
+                    delete [] result;
+                    }
+                }
+
             clearWebRequest( mWebRequest );
             mWebRequest = -1;
             }
         }
-    else {
+    else if( ! mCheckoutStale ) {
         int currentTime = time( NULL );
         
         if( currentTime > sLastPingTime + 60 * 4 ) {

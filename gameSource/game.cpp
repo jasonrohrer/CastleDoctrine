@@ -54,6 +54,8 @@ CustomRandomSource randSource;
 #include "RobberyReplayMenuPage.h"
 #include "FetchRobberyReplayPage.h"
 #include "ReplayRobHousePage.h"
+#include "StaleHousePage.h"
+
 
 
 #include "houseObjects.h"
@@ -75,7 +77,7 @@ RobCheckinHousePage *robCheckinHousePage;
 RobberyReplayMenuPage *robberyReplayMenuPage;
 FetchRobberyReplayPage *fetchRobberyReplayPage;
 ReplayRobHousePage *replayRobHousePage;
-
+StaleHousePage *staleHousePage;
 
 
 // position of view in world
@@ -390,7 +392,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robberyReplayMenuPage = new RobberyReplayMenuPage();
     fetchRobberyReplayPage = new FetchRobberyReplayPage();
     replayRobHousePage = new ReplayRobHousePage();
-    
+    staleHousePage = new StaleHousePage();
+
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );
@@ -421,6 +424,8 @@ void freeFrameDrawer() {
     delete robberyReplayMenuPage;
     delete fetchRobberyReplayPage;
     delete replayRobHousePage;
+    delete staleHousePage;
+
 
     freeHouseObjects();
     freeHouseTransitions();
@@ -868,7 +873,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == editHousePage ) {
-            if( editHousePage->getDone() ) {
+            if( editHousePage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( editHousePage->getDone() ) {
 
                 char *houseMap = editHousePage->getHouseMap();
                 char *editList = editHousePage->getEditList();
@@ -898,6 +907,15 @@ void drawFrame( char inUpdate ) {
                 delete [] houseMap;
                 delete [] editList;
                 delete [] priceList;
+                }
+            }
+        else if( currentGamePage == staleHousePage ) {
+            if( staleHousePage->getDone() ) {
+                // either robbery or house edit became stale
+                
+                // return to own house in either case
+                currentGamePage = checkoutHousePage;
+                currentGamePage->base_makeActive( true );
                 }
             }
         else if( currentGamePage == selfHouseTestPage ) {
@@ -1020,7 +1038,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == robHousePage ) {
-            if( robHousePage->getDone() ) {
+            if( robHousePage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( robHousePage->getDone() ) {
                 char *houseMap = robHousePage->getHouseMap();
                 char *moveList = robHousePage->getMoveList();
 

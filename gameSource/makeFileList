@@ -43,6 +43,7 @@ nameProcessing.cpp \
 houseObjects.cpp \
 HouseObjectPicker.cpp \
 houseTransitions.cpp \
+StaleHousePage.cpp \
 
 
 
