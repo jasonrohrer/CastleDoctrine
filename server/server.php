@@ -87,10 +87,7 @@ cd_checkForFlush();
 
 
 // grab POST/GET variables
-$action = "";
-if( isset( $_REQUEST[ "action" ] ) ) {
-    $action = $_REQUEST[ "action" ];
-    }
+$action = cd_requestFilter( "action", "/[A-Z_]+/i" );
 
 /*
 // debugging:  log full request vars
@@ -101,10 +98,7 @@ foreach( $_REQUEST as $key => $value ) {
 cd_log( "Web request with vars $fullRequest" );
 */
 
-$debug = "";
-if( isset( $_REQUEST[ "debug" ] ) ) {
-    $debug = $_REQUEST[ "debug" ];
-    }
+$debug = cd_requestFilter( "debug", "/[01]/" );
 
 $remoteIP = "";
 if( isset( $_SERVER[ "REMOTE_ADDR" ] ) ) {
@@ -788,11 +782,8 @@ function cd_checkForFlush() {
 function cd_checkUser() {
     global $tableNamePrefix, $ticketServerNamePrefix;
 
-    $email = "";
-    if( isset( $_REQUEST[ "email" ] ) ) {
-        $email = $_REQUEST[ "email" ];
-        }
-
+    $email = cd_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
+    
     $query = "SELECT ticket_id, blocked ".
         "FROM $ticketServerNamePrefix"."tickets ".
         "WHERE email = '$email';";
@@ -939,10 +930,7 @@ function cd_startEditHouse() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -1057,10 +1045,7 @@ function cd_endEditHouse() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -1089,25 +1074,14 @@ function cd_endEditHouse() {
     
     $edit_count ++;
     
-    $house_map = "";
-    if( isset( $_REQUEST[ "house_map" ] ) ) {
-        $house_map = $_REQUEST[ "house_map" ];
-        }
+    $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
 
-    $price_list = "";
-    if( isset( $_REQUEST[ "price_list" ] ) ) {
-        $price_list = $_REQUEST[ "price_list" ];
-        }
+    $price_list = cd_requestFilter( "price_list",
+                                    "/\d+:[0-9@#]+:[A-F0-9]+/i" );
 
-    $edit_list = "";
-    if( isset( $_REQUEST[ "edit_list" ] ) ) {
-        $edit_list = $_REQUEST[ "edit_list" ];
-        }
+    $edit_list = cd_requestFilter( "edit_list", "/[0-9@#]+/" );
 
-    $died = "";
-    if( isset( $_REQUEST[ "died" ] ) ) {
-        $died = $_REQUEST[ "died" ];
-        }
+    $died = cd_requestFilter( "died", "/[01]/" );
 
 
     if( $died == 1 ) {
@@ -1448,10 +1422,7 @@ function cd_pingHouse() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
     
     // automatically ignore blocked users and houses not checked out
@@ -1482,22 +1453,13 @@ function cd_listHouses() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
 
-    $skip = 0;
-    if( isset( $_REQUEST[ "skip" ] ) ) {
-        $skip = $_REQUEST[ "skip" ];
-        }
+    $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
-    $limit = 20;
-    if( isset( $_REQUEST[ "limit" ] ) ) {
-        $limit = $_REQUEST[ "limit" ];
-        }
-
+    $limit = cd_requestFilter( "limit", "/\d+/", 20 );
+    
     
     
     // automatically ignore blocked users and houses already checked
@@ -1562,15 +1524,9 @@ function cd_startRobHouse() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
-    $to_rob_user_id = "";
-    if( isset( $_REQUEST[ "to_rob_user_id" ] ) ) {
-        $to_rob_user_id = $_REQUEST[ "to_rob_user_id" ];
-        }
+    $to_rob_user_id = cd_requestFilter( "to_rob_user_id", "/\d+/" );
 
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -1628,15 +1584,9 @@ function cd_endRobHouse() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
-    $success = "";
-    if( isset( $_REQUEST[ "success" ] ) ) {
-        $success = $_REQUEST[ "success" ];
-        }
+    $success = cd_requestFilter( "success", "/[012]/" );
 
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -1665,10 +1615,7 @@ function cd_endRobHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
-    $house_map = "";
-    if( isset( $_REQUEST[ "house_map" ] ) ) {
-        $house_map = $_REQUEST[ "house_map" ];
-        }
+    $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
 
     $house_money = $row[ "loot_value" ];
 
@@ -1717,15 +1664,12 @@ function cd_endRobHouse() {
         // log robbery
         $robber_name = cd_getCharacterName( $user_id );
 
-        $loadout = "";
-        if( isset( $_REQUEST[ "loadout" ] ) ) {
-            $loadout = $_REQUEST[ "loadout" ];
-            }
+        // FIXME:
+        // add real regex for loadout
+        $loadout = cd_requestFilter( "loadout", "/x/" );
 
-        $move_list = "";
-        if( isset( $_REQUEST[ "move_list" ] ) ) {
-            $move_list = $_REQUEST[ "move_list" ];
-            }
+        $move_list = cd_requestFilter( "move_list", "/[m0-9_]+/" );
+
         /*
         $query =
             "CREATE TABLE $tableName(" .
@@ -1783,22 +1727,13 @@ function cd_listLoggedRobberies() {
         return;
         }
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
 
-    $skip = 0;
-    if( isset( $_REQUEST[ "skip" ] ) ) {
-        $skip = $_REQUEST[ "skip" ];
-        }
+    $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
-    $limit = 20;
-    if( isset( $_REQUEST[ "limit" ] ) ) {
-        $limit = $_REQUEST[ "limit" ];
-        }
-
+    $limit = cd_requestFilter( "limit", "/\d+/", 20 );
+    
 
     /*
         $query =
@@ -1865,16 +1800,10 @@ function cd_getRobberyLog() {
         }
 
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
 
-    $log_id = "";
-    if( isset( $_REQUEST[ "log_id" ] ) ) {
-        $log_id = $_REQUEST[ "log_id" ];
-        }
+    $log_id = cd_requestFilter( "log_id", "/\d+/" );
     
     
     
@@ -1961,25 +1890,22 @@ function cd_getCharacterName( $user_id ) {
 
 
 
+function cd_getUserID() {
+    return cd_requestFilter( "user_id", "/\d+/" );
+    }
+
+
+
 // checks the ticket hash for the user ID and sequence number
 // attached to a transaction (also makes sure user isn't blocked!)
 function cd_verifyTransaction() {
     global $tableNamePrefix;
     
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
-    $sequence_number = "";
-    if( isset( $_REQUEST[ "sequence_number" ] ) ) {
-        $sequence_number = $_REQUEST[ "sequence_number" ];
-        }
+    $sequence_number = cd_requestFilter( "sequence_number", "/\d+/" );
 
-    $ticket_hash = "";
-    if( isset( $_REQUEST[ "ticket_hash" ] ) ) {
-        $ticket_hash = $_REQUEST[ "ticket_hash" ];
-        }
+    $ticket_hash = cd_requestFilter( "ticket_hash", "/[A-F0-9]+/i" );
     
 
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -2201,22 +2127,13 @@ function cd_showData() {
 
 
 
-    $skip = 0;
-    if( isset( $_REQUEST[ "skip" ] ) ) {
-        $skip = $_REQUEST[ "skip" ];
-        }
+    $skip = cd_requestFilter( "skip", "/\d+/", 0 );
 
     global $housesPerPage;
     
-    $search = "";
-    if( isset( $_REQUEST[ "search" ] ) ) {
-        $search = $_REQUEST[ "search" ];
-        }
+    $search = cd_requestFilter( "search", "/[A-Z0-9_@ ]+/i" );
 
-    $order_by = "last_ping_time";
-    if( isset( $_REQUEST[ "order_by" ] ) ) {
-        $order_by = $_REQUEST[ "order_by" ];
-        }
+    $order_by = cd_requestFilter( "order_by", "/[A-Z_]+/i", "last_ping_time" );
     
 
     $keywordClause = "";
@@ -2489,13 +2406,10 @@ function cd_showData() {
 function cd_showDetail() {
     $password = cd_checkPassword( "show_detail" );
 
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
     
-     echo "[<a href=\"server.php?action=show_data&password=$password" .
-         "\">Main</a>]<br><br><br>";
+    echo "[<a href=\"server.php?action=show_data&password=$password" .
+        "\">Main</a>]<br><br><br>";
      
     global $tableNamePrefix, $ticketServerNamePrefix;
 
@@ -2544,15 +2458,9 @@ function cd_blockUserID() {
 
     global $tableNamePrefix;
         
-    $user_id = "";
-    if( isset( $_REQUEST[ "user_id" ] ) ) {
-        $user_id = $_REQUEST[ "user_id" ];
-        }
+    $user_id = cd_getUserID();
 
-    $blocked = "";
-    if( isset( $_REQUEST[ "blocked" ] ) ) {
-        $blocked = $_REQUEST[ "blocked" ];
-        }
+    $blocked = cd_requestFilter( "blocked", "/[01]/" );
 
     
     global $remoteIP;
@@ -2604,16 +2512,8 @@ function cd_defaultPrices() {
     global $tableNamePrefix;
     global $remoteIP;
 
-    $confirm1 = "";
-    
-    if( isset( $_REQUEST[ "confirm1" ] ) ) {
-        $confirm1 = $_REQUEST[ "confirm1" ];
-        }
-
-    $confirm2 = "";
-    if( isset( $_REQUEST[ "confirm2" ] ) ) {
-        $confirm2 = $_REQUEST[ "confirm2" ];
-        }
+    $confirm1 = cd_requestFilter( "confirm1", "/[1]/" );
+    $confirm2 = cd_requestFilter( "confirm2", "/[1]/" );
     
     if( $confirm1 == 1 && $confirm2 == 1 ) {
 
@@ -2643,33 +2543,23 @@ function cd_updatePrices() {
 
     
     
-    $num_prices = "";
-    if( isset( $_REQUEST[ "num_prices" ] ) ) {
-        $num_prices = $_REQUEST[ "num_prices" ];
-        }
+    $num_prices = cd_requestFilter( "num_prices", "/\d+/" );
 
-    $blocked = "";
-    if( isset( $_REQUEST[ "blocked" ] ) ) {
-        $blocked = $_REQUEST[ "blocked" ];
-        }
-
+    
     if( $num_prices > 0 ) {
         
 
         for( $i=0; $i<$num_prices; $i++ ) {
-            $id = "";
-            if( isset( $_REQUEST[ "id_$i" ] ) ) {
-                $id = $_REQUEST[ "id_$i" ];
+            $id = cd_requestFilter( "id_$i", "/\d+/" );
+            $price = cd_requestFilter( "price_$i", "/\d+/" );
+
+            if( $id != "" && $price != "" ) {
+                $query = "UPDATE $tableNamePrefix"."prices SET " .
+                    "price = '$price' " .
+                    "WHERE object_id = '$id';";
+                
+                $result = cd_queryDatabase( $query );
                 }
-            $price = "";
-            if( isset( $_REQUEST[ "price_$i" ] ) ) {
-                $price = $_REQUEST[ "price_$i" ];
-                }
-            $query = "UPDATE $tableNamePrefix"."prices SET " .
-                "price = '$price' " .
-                "WHERE object_id = '$id';";
-            
-            $result = cd_queryDatabase( $query );
             }
         
         cd_log( "Prices updated by $remoteIP" );
@@ -2677,14 +2567,10 @@ function cd_updatePrices() {
 
     // new one to insert?
 
-    $id = "";
-    if( isset( $_REQUEST[ "id_NEW" ] ) ) {
-        $id = $_REQUEST[ "id_NEW" ];
-        }
-    $price = "";
-    if( isset( $_REQUEST[ "price_NEW" ] ) ) {
-        $price = $_REQUEST[ "price_NEW" ];
-        }
+    $id = cd_requestFilter( "id_NEW", "/\d+/" );
+
+    $price = cd_requestFilter( "price_NEW", "/\d+/" );
+
     
     if( $id != "" && $price != "" ) {
         // first, make sure it doesn't already exist
@@ -2728,9 +2614,8 @@ function cd_deletePrice() {
 
     $success = false;
     
-    $object_id = "";
-    if( isset( $_REQUEST[ "object_id" ] ) ) {
-        $object_id = $_REQUEST[ "object_id" ];
+    $object_id = cd_requestFilter( "object_id", "/\d+/" );
+    if( $object_id != "" ) {
 
         $query = "DELETE FROM $tableNamePrefix"."prices " .
             "WHERE object_id = '$object_id';";
@@ -2840,9 +2725,9 @@ function cd_log( $message ) {
     global $enableLog, $tableNamePrefix;
 
     if( $enableLog ) {
-        if( isset( $_REQUEST[ "user_id" ] ) ) {
-            $user_id = $_REQUEST[ "user_id" ];
-
+        $user_id = cd_getUserID();
+        
+        if( $user_id != "" ) {
             $message = "[user_id = $user_id] " . $message;
             }
 
@@ -2953,6 +2838,30 @@ function cd_stripslashes_deep( $inValue ) {
           ? array_map( 'sb_stripslashes_deep', $inValue )
           : stripslashes( $inValue ) );
     }
+
+
+
+
+/**
+ * Filters a $_REQUEST variable using a regex match.
+ *
+ * Returns "" (or specified default value) if there is no match.
+ */
+function cd_requestFilter( $inRequestVariable, $inRegex, $inDefault = "" ) {
+    if( ! isset( $_REQUEST[ $inRequestVariable ] ) ) {
+        return $inDefault;
+        }
+    
+    $numMatches = preg_match( $inRegex,
+                              $_REQUEST[ $inRequestVariable ], $matches );
+
+    if( $numMatches != 1 ) {
+        return $inDefault;
+        }
+        
+    return $matches[0];
+    }
+
 
 
 
