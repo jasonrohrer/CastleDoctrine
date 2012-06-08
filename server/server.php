@@ -2131,7 +2131,7 @@ function cd_showData() {
 
     global $housesPerPage;
     
-    $search = cd_requestFilter( "search", "/[A-Z0-9_@ ]+/i" );
+    $search = cd_requestFilter( "search", "/[A-Z0-9_@. -]+/i" );
 
     $order_by = cd_requestFilter( "order_by", "/[A-Z_]+/i", "last_ping_time" );
     
