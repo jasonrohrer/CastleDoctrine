@@ -14,7 +14,6 @@ include( "settings.php" );
 
 
 
-
 // no end-user settings below this point
 
 
@@ -82,12 +81,19 @@ cd_connectToDatabase();
 
 // general processing whenver server.php is accessed directly
 
-cd_checkForFlush();
 
 
 
 // grab POST/GET variables
 $action = cd_requestFilter( "action", "/[A-Z_]+/i" );
+
+
+if( $action != "" && $action != "cd_setup" ) {
+    // don't check for flush if we may be executing initial database setup
+    // (flush breaks in that case)
+    cd_checkForFlush();
+    }
+
 
 /*
 // debugging:  log full request vars
@@ -471,6 +477,8 @@ function cd_setupDatabase() {
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
             "house_map LONGTEXT NOT NULL," .
+            "vault_contents LONGTEXT NOT NULL," .
+            "backpack_contents LONGTEXT NOT NULL," .
             // times edited since last successful robbery
             "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
@@ -946,7 +954,8 @@ function cd_startEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT house_map, loot_value FROM $tableNamePrefix"."houses ".
+    $query = "SELECT house_map, vault_contents, backpack_contents, ".
+        "loot_value FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -961,6 +970,8 @@ function cd_startEditHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $house_map = $row[ "house_map" ];
+    $vault_contents = $row[ "vault_contents" ];
+    $backpack_contents = $row[ "backpack_contents" ];
     $loot_value = $row[ "loot_value" ];
 
 
@@ -1035,11 +1046,88 @@ function cd_startEditHouse() {
     
     echo $house_map;
     echo "\n";
+    echo $vault_contents;
+    echo "\n";
+    echo $backpack_contents;
+    echo "\n";
     echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
     echo "\n";
     echo $loot_value;
     echo "\nOK";
     }
+
+
+
+
+function cd_idQuanityStringToArray( $inIDQuantityString ) {
+
+    $pairArray = preg_split( "/#/", $inIDQuantityString );
+
+    $result = array();
+    
+    if( $inIDQuantityString == "#" ) {
+        return $result;
+        }
+
+    foreach( $pairArray as $pair ) {
+        $pairParts = preg_split( "/:/", $pair );
+
+        if( count( $pairParts ) == 2 ) {
+            $id = $pairParts[0];
+            $quantity = $pairParts[1];
+
+            $result[ $id ] = $quantity;
+            }
+        }
+    return $result;
+    }
+
+
+
+// takes strings that are ID:quantity pairs, like:
+// 101:3#3:10#5:1#102:1
+//
+// And computes a union operation, returning a new string
+// (where the quanity for each ID in the result is the sum of the
+//  quantities of that ID in A and B)
+function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
+
+    $arrayA = cd_idQuanityStringToArray( $inIDQuantityStringA );
+    $arrayB = cd_idQuanityStringToArray( $inIDQuantityStringB );
+    
+    // start with B as base, sum in (or append) ID/quantities from A
+    $result = $arrayB;
+
+    foreach( $arrayA as $id => $quantity ) {    
+        if( array_key_exists( $id, $result ) ) {
+            // exists in B, sum with A's quantity
+            $result[ $id ] += $quantity;
+            }
+        else {
+            // doesn't exist in B, insert A's quantity
+            $result[ $id ] = $quantity;
+            }
+        }
+
+    ksort( $result );
+    
+    $pairArray = array();
+    
+    foreach( $result as $id => $quantity ) {
+        // append
+        $pairArray[] = "$id:$quantity";
+        }
+
+    $resultString = implode( "#", $pairArray );
+
+    if( $resultString == "" ) {
+        $resultString = "#";
+        }
+
+    return $resultString;
+    }
+
+
 
 
 
@@ -1058,7 +1146,8 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT user_id, edit_count, loot_value, house_map ".
+    $query = "SELECT user_id, edit_count, loot_value, house_map, ".
+        "vault_contents, backpack_contents ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -1076,16 +1165,25 @@ function cd_endEditHouse() {
     $edit_count = $row[ "edit_count" ];
     $loot_value = $row[ "loot_value" ];
     $old_house_map = $row[ "house_map" ];
+    $old_vault_contents = $row[ "vault_contents" ];
+    $old_backpack_contents = $row[ "backpack_contents" ];
     
     $edit_count ++;
     
     $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
+
+    $vault_contents = cd_requestFilter( "vault_contents", "/[#0-9:]+/" );
+
+    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9]+/" );
 
     $price_list = cd_requestFilter( "price_list",
                                     "/\d+:[0-9@#]+:[A-F0-9]+/i" );
 
     $edit_list = cd_requestFilter( "edit_list", "/[0-9@#]+/" );
 
+    $purchase_list = cd_requestFilter( "purchase_list", "/[#0-9:]+/" );
+
+    
     $died = cd_requestFilter( "died", "/[01]/" );
 
 
@@ -1403,10 +1501,88 @@ function cd_endEditHouse() {
 
     // Well...
     // if we get here, then we have a valid, edited house map.
+
+
+
+    // Compose UNION of current vault and backpack
+
+    
+    // NEXT:
+    // Check that purchases don't exceed loot value,
+    // PLUS subtract them from vault/backpack union
+
+    $purchaseArray = preg_split( "/#/", $purchase_list );
+
+    $numPurchases = count( $purchaseArray );
+        
+    
+    if( $purchase_list == "#" ) {
+        $numPurchases = 0;
+        }
+    
+    for( $i=0; $i<$numPurchases; $i++ ) {
+        $purchaseParts = preg_split( "/:/", $purchaseArray[$i] );
+
+        if( count( $purchaseParts ) != 2 ) {
+            cd_log(
+                "House check-in with badly-formatted purchase list denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        $id = $purchaseParts[0];
+        $quantity = $purchaseParts[1];
+        
+
+        if( ! array_key_exists( "$id", $priceArray ) ) {
+            // id's not on the price list can't be bought!
+            cd_log(
+                "House check-in with unbuyable object in purchase denied" );
+            cd_transactionDeny();
+            return;
+            }
+        
+        $loot_value -= $priceArray[ "$id" ];
+
+        if( $loot_value < 0 ) {
+            // more edits than they could afford
+            cd_log( "House check-in with ".
+                    "purchases exceeding player budget denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        }
+    
+
+    // Finally, make sure
+    // (Vault U Backpack) =  ( (old_Vault U old_Backpack)  + Purchaes )
+    
+    $ownedUnion = cd_idQuantityUnion( $vault_contents, $backpack_contents );
+
+    $oldOwnedUnion = cd_idQuantityUnion( $old_vault_contents,
+                                         $old_backpack_contents );
+    $newOwnedUnion = cd_idQuantityUnion( $oldOwnedUnion, $purchase_list );
+
+
+    if( $ownedUnion != $newOwnedUnion ) {
+        cd_log( "House check-in with ".
+                " purchases that don't match contents of vault and ".
+                " backpack denied" );
+        cd_transactionDeny();
+        return;
+        }
+    
+
+    // map and edits okay
+    // purchases okay
+    // accept it and check house back in with these changes
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 0, house_map='$house_map', ".
+        "vault_contents='$vault_contents', ".
+        "backpack_contents='$backpack_contents', ".
         "edit_count='$edit_count', loot_value='$loot_value' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
@@ -1998,7 +2174,7 @@ function cd_newHouseForUser( $user_id ) {
     // row gap.  In the case of concurrent inserts for the same user_id,
     // the second insert will fail (user_id is the primary key)
     
-    $query = "select * from $tableNamePrefix"."houses ".
+    $query = "select user_id from $tableNamePrefix"."houses ".
         "WHERE user_id = $user_id;";
 
     $result = cd_queryDatabase( $query );
@@ -2068,15 +2244,17 @@ function cd_newHouseForUser( $user_id ) {
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
         "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998";
     
-
+    $vault_contents = "#";
+    $backpack_contents = "#";
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
         
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '$house_map', 0, ".
-            "1000, 0, 0, 0, 0, ".
+            " $user_id, '$character_name', '$house_map', ".
+            "'$vault_contents', '$backpack_contents', ".
+            "0, 1000, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that

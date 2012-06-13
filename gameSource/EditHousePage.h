@@ -27,7 +27,20 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
 
         // destroyed by caller
+        void setVaultContents( char *inVaultContents );
+        char *getVaultContents();
+
+
+        // destroyed by caller
+        void setBackpackContents( char *inBackpackContents );
+        char *getBackpackContents();
+
+
+        // destroyed by caller
         char *getEditList();
+        
+        // list of purchases added to vault/backpack
+        char *getPurchaseList();
         
         
         // destroyed by caller
@@ -61,6 +74,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // for change detection
         char *mStartHouseMap;
         
+        char *mVaultContents;
+        char *mBackpackContents;
+
         char *mPriceList;
         
         int mLootValue;

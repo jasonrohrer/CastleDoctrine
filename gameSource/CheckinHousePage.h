@@ -20,7 +20,10 @@ class CheckinHousePage : public GamePage, public ActionListener {
         
         // destroyed by caller
         virtual void setHouseMap( char *inHouseMap );        
+        virtual void setVaultContents( char *inVaultContents );
+        virtual void setBackpackContents( char *inBackpackContents );
         virtual void setEditList( char *inEditList );
+        virtual void setPurchaseList( char *inPurchaseList );
         virtual void setPriceList( char *inPriceList );
         
         // 0 or 1
@@ -42,7 +45,10 @@ class CheckinHousePage : public GamePage, public ActionListener {
         int mWebRequest;
 
         char *mHouseMap;
+        char *mVaultContents;
+        char *mBackpackContents;
         char *mEditList;
+        char *mPurchaseList;
         char *mPriceList;
         
         int mDied;

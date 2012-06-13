@@ -24,6 +24,8 @@ extern int userID;
 CheckoutHousePage::CheckoutHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mVaultContents( NULL ),
+          mBackpackContents( NULL ),
           mPriceList( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
@@ -40,6 +42,12 @@ CheckoutHousePage::~CheckoutHousePage() {
         }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
+        }
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
         }
     if( mPriceList != NULL ) {
         delete [] mPriceList;
@@ -60,6 +68,28 @@ char *CheckoutHousePage::getHouseMap() {
         }
     else {
         return stringDuplicate( mHouseMap );
+        }
+    }
+
+
+
+char *CheckoutHousePage::getVaultContents() {
+    if( mVaultContents == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mVaultContents );
+        }
+    }
+
+
+
+char *CheckoutHousePage::getBackpackContents() {
+    if( mBackpackContents == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mBackpackContents );
         }
     }
 
@@ -122,9 +152,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 4
+                    if( lines->size() != 6
                         ||
-                        strcmp( *( lines->getElement( 3 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 5 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -135,16 +165,20 @@ void CheckoutHousePage::step() {
                         }
                     else {
                         mHouseMap = *( lines->getElement( 0 ) );
-                        mPriceList = *( lines->getElement( 1 ) );
+                        mVaultContents = *( lines->getElement( 1 ) );
+                        mBackpackContents = *( lines->getElement( 2 ) );
+                        mPriceList = *( lines->getElement( 3 ) );
                         
                         mLootValue = 0;
-                        sscanf( *( lines->getElement( 2 ) ),
+                        sscanf( *( lines->getElement( 4 ) ),
                                 "%d", &mLootValue );
 
-                        delete [] *( lines->getElement( 2 ) );
-                        delete [] *( lines->getElement( 3 ) );
+                        delete [] *( lines->getElement( 4 ) );
+                        delete [] *( lines->getElement( 5 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
+                        printf( "Vault = %s\n", mVaultContents );
+                        printf( "Backpack = %s\n", mBackpackContents );
                         printf( "PriceList = %s\n", mPriceList );
                         printf( "LootValue = %d\n", mLootValue );
 
@@ -174,6 +208,16 @@ void CheckoutHousePage::makeActive( char inFresh ) {
         delete [] mHouseMap;
         }
     mHouseMap = NULL;
+
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+    mVaultContents = NULL;
+
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+    mBackpackContents = NULL;
 
     if( mPriceList != NULL ) {
         delete [] mPriceList;

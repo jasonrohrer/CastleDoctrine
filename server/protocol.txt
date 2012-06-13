@@ -64,6 +64,8 @@ server.php?action=start_edit_house&user_id=[id number]
                                   &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
 houseMap
+vault_contents
+backpack_contents
 price_list
 current_balance
 OK
@@ -92,9 +94,18 @@ Note that this is used to encode the presense of mobile objects (which can
 
 
 
+vault_contents = ASCII string containing ID:quantity pairs, like:
+
+101:3#3:10#5:1#102:1
+
+(If empty, string is a single "#")
 
 
-price_list = ASCII string containing ID/price pairs, like:
+backpack_contents = ASCII string, same format as vault_contents
+
+
+
+price_list = ASCII string containing ID@price pairs, like:
 
 LIST_NUMBER:1@10#2@20#5@25:SIGNATURE
 
@@ -120,8 +131,11 @@ server.php?action=end_edit_house&user_id=[id number]
                                 &ticket_hash=[sha1 hash, hex-encoded]
 								&died=[0 or 1]
                                 &house_map=[house map ASCII string]
+                                &vault_contents=[vault contents ASCII string]
+                                &backpack_contents=[bp contents ASCII string]
                                 &price_list=[price list ASCII string]
-                                &edit_list=[edit list ASCII string
+                                &edit_list=[edit list ASCII string]
+                                &purchase_list=[purchase list ASCII string]
 Returns:
 OK
 
@@ -130,7 +144,11 @@ Where:
 
 died is 1 if player died while testing house
 
+vault_contents and backpack_contents take the same format as the return values
+of start_edit_house.
+
 price_list is the list returned by start_edit_house
+
 
 edit_list is encoded as follows:
 
@@ -139,6 +157,12 @@ object_id@index#object_id@index#object_id@index#object_id@index
 Where object_id is the id of the object placed, and index is the position
 in the house map.
 
+
+purchase_list is encoded as a series of ID:quantity pairs, like:
+
+101:3#3:10#5:1#102:1
+
+(If empty, string is a single "#")
 
 
 

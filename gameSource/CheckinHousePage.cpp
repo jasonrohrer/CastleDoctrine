@@ -21,7 +21,10 @@ extern int userID;
 CheckinHousePage::CheckinHousePage() 
         : mWebRequest( -1 ),
           mHouseMap( NULL ),
+          mVaultContents( NULL ),
+          mBackpackContents( NULL ),
           mEditList( NULL ),
+          mPurchaseList( NULL ),
           mPriceList( NULL ),
           mDied( 0 ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
@@ -45,8 +48,17 @@ CheckinHousePage::~CheckinHousePage() {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
     if( mEditList != NULL ) {
         delete [] mEditList;
+        }
+    if( mPurchaseList != NULL ) {
+        delete [] mPurchaseList;
         }
     if( mPriceList != NULL ) {
         delete [] mPriceList;
@@ -75,11 +87,38 @@ void CheckinHousePage::setHouseMap( char *inHouseMap ) {
 
 
 
+void CheckinHousePage::setVaultContents( char *inVaultContents ) {
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+    mVaultContents = stringDuplicate( inVaultContents );
+    }
+
+
+
+void CheckinHousePage::setBackpackContents( char *inBackpackContents ) {
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+    mBackpackContents = stringDuplicate( inBackpackContents );
+    }
+
+
+
 void CheckinHousePage::setEditList( char *inEditList ) {
     if( mEditList != NULL ) {
         delete [] mEditList;
         }
     mEditList = stringDuplicate( inEditList );
+    }
+
+
+
+void CheckinHousePage::setPurchaseList( char *inPurchaseList ) {
+    if( mPurchaseList != NULL ) {
+        delete [] mPurchaseList;
+        }
+    mPurchaseList = stringDuplicate( inPurchaseList );
     }
 
 
@@ -175,8 +214,10 @@ void CheckinHousePage::makeActive( char inFresh ) {
     
     char *actionString = autoSprintf( 
         "action=end_edit_house&user_id=%d"
-        "&%s&died=%d&house_map=%s&price_list=%s&edit_list=%s",
-        userID, ticketHash, mDied, mHouseMap, mPriceList, mEditList );
+        "&%s&died=%d&house_map=%s&vault_contents=%s"
+        "&backpack_contents=%s&price_list=%s&edit_list=%s&purchase_list=%s",
+        userID, ticketHash, mDied, mHouseMap, mVaultContents, 
+        mBackpackContents,mPriceList, mEditList, mPurchaseList );
     delete [] ticketHash;
             
     

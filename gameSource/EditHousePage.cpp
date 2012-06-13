@@ -21,6 +21,8 @@ extern Font *mainFont;
 
 EditHousePage::EditHousePage() 
         : mStartHouseMap( NULL ),
+          mVaultContents( NULL ),
+          mBackpackContents( NULL ),
           mPriceList( NULL ),
           mObjectPicker( 8, 5, this ),
           mGridDisplay( 0, 0, this, &mObjectPicker ),
@@ -49,6 +51,15 @@ EditHousePage::~EditHousePage() {
     if( mStartHouseMap != NULL ) {
         delete [] mStartHouseMap;
         }
+
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+
     if( mPriceList != NULL ) {
         delete [] mPriceList;
         }
@@ -74,8 +85,47 @@ char *EditHousePage::getHouseMap() {
     }
 
 
+
+void EditHousePage::setVaultContents( char *inVaultContents ) {
+    if( mVaultContents != NULL ) {
+        delete [] mVaultContents;
+        }
+    mVaultContents = stringDuplicate( inVaultContents );
+    }
+
+
+
+char *EditHousePage::getVaultContents() {
+    return stringDuplicate( mVaultContents );
+    }
+
+
+
+void EditHousePage::setBackpackContents( char *inBackpackContents ) {
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+    mBackpackContents = stringDuplicate( inBackpackContents );
+    }
+
+
+
+char *EditHousePage::getBackpackContents() {
+    return stringDuplicate( mBackpackContents );
+    }
+
+
+
+
+
 char *EditHousePage::getEditList() {
     return mGridDisplay.getEditList();
+    }
+
+
+char *EditHousePage::getPurchaseList() {
+    // empty for now
+    return stringDuplicate( "#" );
     }
 
 
