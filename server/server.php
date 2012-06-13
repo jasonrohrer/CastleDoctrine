@@ -366,9 +366,13 @@ function cd_restoreDefaultPrices() {
     cd_queryDatabase( $query );
 
     
-    foreach( $defaultPrices as $object_id => $price ) {
+    foreach( $defaultPrices as $tuple ) {
+        $object_id = $tuple[0];
+        $price = $tuple[1];
+        $note = mysql_real_escape_string( $tuple[2] );
+        
         $query = "INSERT INTO $tableName ".
-            "VALUES ( '$object_id', '$price' )";
+            "VALUES ( '$object_id', '$price', '$note' )";
 
         cd_queryDatabase( $query );
         }
@@ -557,7 +561,8 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "object_id INT NOT NULL PRIMARY KEY," .
-            "price INT NOT NULL ) ENGINE = INNODB;";
+            "price INT NOT NULL, ".
+            "note LONGTEXT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -2308,7 +2313,7 @@ function cd_showData() {
     echo "<hr>";
 
 
-    $query = "SELECT object_id, price ".
+    $query = "SELECT object_id, price, note ".
         "FROM $tableNamePrefix"."prices;";
     $result = cd_queryDatabase( $query );
     
@@ -2332,7 +2337,10 @@ function cd_showData() {
     for( $i=0; $i<$numRows; $i++ ) {
         $object_id = mysql_result( $result, $i, "object_id" );
         $price = mysql_result( $result, $i, "price" );
+        $note = mysql_result( $result, $i, "note" );
 
+        $note = htmlspecialchars( $note, ENT_QUOTES );
+        
         echo "<tr>\n";
         echo "<td bgcolor=$bgColor>".
             "Object ID: <b>$object_id</b>".
@@ -2340,6 +2348,9 @@ function cd_showData() {
         echo "<td bgcolor=$bgColor>Price: $<INPUT TYPE='text' ".
                           "MAXLENGTH=40 SIZE=20 NAME='price_$i' ".
                           "VALUE='$price'></td>\n";
+        echo "<td bgcolor=$bgColor>Note: <INPUT TYPE='text' ".
+                          "MAXLENGTH=255 SIZE=30 NAME='note_$i' ".
+                          "VALUE='$note'></td>\n";
         echo "<td bgcolor=$bgColor>[<a href='server.php?action=delete_price".
                            "&object_id=$object_id".
                            "&password=$password#priceList'>delete]</td>\n";
@@ -2357,6 +2368,9 @@ function cd_showData() {
              VALUE=''></td>\n";
     echo "<td>Price: $<INPUT TYPE='text' ".
         "MAXLENGTH=40 SIZE=20 NAME='price_NEW' ".
+        "VALUE=''></td>\n";
+    echo "<td>Note: <INPUT TYPE='text' ".
+        "MAXLENGTH=255 SIZE=30 NAME='note_NEW' ".
         "VALUE=''></td>\n";
     echo "<td></td>\n";
     echo "</tr>\n\n";
@@ -2552,10 +2566,15 @@ function cd_updatePrices() {
         for( $i=0; $i<$num_prices; $i++ ) {
             $id = cd_requestFilter( "id_$i", "/\d+/" );
             $price = cd_requestFilter( "price_$i", "/\d+/" );
-
+            $note = cd_requestFilter( "note_$i", "/[A-Z0-9.' _-]+/i" );
+            
             if( $id != "" && $price != "" ) {
+
+                // note may have ' in it
+                $note = mysql_real_escape_string( $note );
+                
                 $query = "UPDATE $tableNamePrefix"."prices SET " .
-                    "price = '$price' " .
+                    "price = '$price', note = '$note' " .
                     "WHERE object_id = '$id';";
                 
                 $result = cd_queryDatabase( $query );
@@ -2571,6 +2590,8 @@ function cd_updatePrices() {
 
     $price = cd_requestFilter( "price_NEW", "/\d+/" );
 
+    $note = cd_requestFilter( "note_NEW", "/[A-Z0-9.' _-]+/i" );
+
     
     if( $id != "" && $price != "" ) {
         // first, make sure it doesn't already exist
@@ -2583,14 +2604,18 @@ function cd_updatePrices() {
 
             cd_nonFatalError( "Price already exists for '$id'" );            
             }
+
+        // note may have ' in it
+        $note = mysql_real_escape_string( $note );
         
         
         $query = "INSERT INTO $tableNamePrefix"."prices VALUES ( " .
-            "'$id', '$price' );";
+            "'$id', '$price', '$note' );";
         $result = cd_queryDatabase( $query );
 
         if( $result ) {
-            cd_log( "New price ($id, \$$price) created by $remoteIP" );
+            cd_log( "New price ($id, \$$price, '$note' ) ".
+                    "created by $remoteIP" );
             }
         
         }

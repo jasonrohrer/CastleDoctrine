@@ -54,19 +54,19 @@ $accessPasswords = array( "secret", "secret2" );
 // prices that are loaded when database is first setup
 // they can be changed manually later from the admin page
 $defaultPrices = array(
-    1 => 10,
-    2 => 20,
-    20 => 15,
-    30 => 50,
-    70 => 200,
-    100 => 100,
-    101 => 50,
-    102 => 5,
-    103 => 100,
-    104 => 20,
-    105 => 20,
-    106 => 10,
-    110 => 20
+    array( 1, 10, "Wooden Wall" ),
+    array( 2, 20, "Metal Wall" ),
+    array( 20, 15, "Window" ),
+    array( 30, 50, "Automatic Door" ),
+    array( 70, 200, "Pit Bull" ),
+    array( 100, 100, "Invisible Floor Trap" ),
+    array( 101, 50, "Pressure Toggle Switch" ),
+    array( 102, 5, "Wiring" ),
+    array( 103, 100, "Power Source" ),
+    array( 104, 20, "Voltage-triggered Switch" ),
+    array( 105, 20, "Voltage-triggered Inverted Switch" ),
+    array( 106, 10, "Wire Bridge" ),
+    array( 110, 20, "Electric Floor" )
     );
 
 
