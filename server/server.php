@@ -57,12 +57,12 @@ $setup_footer = "
 
 // ensure that magic quotes are on (adding slashes before quotes
 // so that user-submitted data can be safely submitted in DB queries)
-if( !get_magic_quotes_gpc() ) {
+if( get_magic_quotes_gpc() ) {
     // force magic quotes to be added
-    $_GET     = array_map( 'cd_addslashes_deep', $_GET );
-    $_POST    = array_map( 'cd_addslashes_deep', $_POST );
-    $_REQUEST = array_map( 'cd_addslashes_deep', $_REQUEST );
-    $_COOKIE  = array_map( 'cd_addslashes_deep', $_COOKIE );
+    $_GET     = array_map( 'cd_stripslashes_deep', $_GET );
+    $_POST    = array_map( 'cd_stripslashes_deep', $_POST );
+    $_REQUEST = array_map( 'cd_stripslashes_deep', $_REQUEST );
+    $_COOKIE  = array_map( 'cd_stripslashes_deep', $_COOKIE );
     }
     
 
@@ -2731,7 +2731,7 @@ function cd_log( $message ) {
             $message = "[user_id = $user_id] " . $message;
             }
 
-        $slashedMessage = addslashes( $message );
+        $slashedMessage = mysql_real_escape_string( $message );
         
         $query = "INSERT INTO $tableNamePrefix"."log VALUES ( " .
             "'$slashedMessage', CURRENT_TIMESTAMP );";
