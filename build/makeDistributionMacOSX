@@ -20,35 +20,35 @@ mkdir mac
 
 
 
-mkdir mac/StarFilledSky_$1
-mkdir mac/StarFilledSky_$1/graphics
-mkdir mac/StarFilledSky_$1/settings
-mkdir mac/StarFilledSky_$1/languages
+mkdir mac/CastleDoctrine_$1
+mkdir mac/CastleDoctrine_$1/graphics
+mkdir mac/CastleDoctrine_$1/gameElements
+mkdir mac/CastleDoctrine_$1/settings
+mkdir mac/CastleDoctrine_$1/languages
 
 
 
-cp ../gameSource/graphics/*.tga mac/StarFilledSky_$1/graphics
-cp ../gameSource/settings/*.ini mac/StarFilledSky_$1/settings
-cp ../gameSource/languages/*.txt mac/StarFilledSky_$1/languages
-cp ../gameSource/language.txt mac/StarFilledSky_$1
-cp ../documentation/Readme.txt mac/StarFilledSky_$1
-cp ../documentation/Upgrading.txt mac/StarFilledSky_$1
+cp ../gameSource/graphics/*.tga mac/CastleDoctrine_$1/graphics
+cp ../gameSource/settings/*.ini mac/CastleDoctrine_$1/settings
+cp ../gameSource/languages/*.txt mac/CastleDoctrine_$1/languages
+cp ../gameSource/language.txt mac/CastleDoctrine_$1
+
+cp -r ../gameSource/gameElements/* mac/CastleDoctrine_$1/gameElements/
 
 
 
+cp -r macOSX/CastleDoctrine.app mac/CastleDoctrine_$1/CastleDoctrine.app
+cp ../gameSource/CastleDoctrine mac/CastleDoctrine_$1/CastleDoctrine.app/Contents/MacOS
 
-cp -r macOSX/StarFilledSky.app mac/StarFilledSky_$1/StarFilledSky.app
-cp ../gameSource/StarFilledSky mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS
-
-rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS/empty.txt
-rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/empty.txt
+rm -r mac/CastleDoctrine_$1/CastleDoctrine.app/Contents/MacOS/empty.txt
+rm -r mac/CastleDoctrine_$1/CastleDoctrine.app/Contents/Frameworks/empty.txt
 
 # install SDL framework
-cp -r $3 mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/
+cp -r $3 mac/CastleDoctrine_$1/CastleDoctrine.app/Contents/Frameworks/
 
 cd mac
-tar cf "StarFilledSky_$1_$2.tar" StarFilledSky_$1
-gzip "StarFilledSky_$1_$2.tar"
+tar cf "CastleDoctrine_$1_$2.tar" CastleDoctrine_$1
+gzip "CastleDoctrine_$1_$2.tar"
 
 
 
