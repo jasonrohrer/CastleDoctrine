@@ -1017,9 +1017,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     isPropertySet( highlightPick, 0, structural ) ||
                     isPropertySet( highlightPick, 0, shadowMaking );
 
-                if( highlightAboveShadows && inBeneathShadowsOnly 
+                if( ( highlightAboveShadows && inBeneathShadowsOnly ) 
                     ||
-                    ! highlightAboveShadows && ! inBeneathShadowsOnly ) {
+                    ( ! highlightAboveShadows && ! inBeneathShadowsOnly ) ) {
                     
                     // only draw each highlight once (along with other objects
                     // that share its shadow-casting status)
