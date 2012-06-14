@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ $# -lt 1 ] ; then
+   echo "Usage: $0 release_name"
+   exit 1
+fi
+
+
+bundleDir="StarFilledSky_$1_UnixSource"
+
+mkdir $bundleDir
+
+cd $bundleDir
+
+../exportSrc
+
+../cleanSrc
+
+cp ../runToBuild .
+
+# fix date stamping so that tga files aren't rebuilt by accident
+cd game10/gameSource/graphics
+touch *.tga
+
+cd ../../../..
+
+tar czf $bundleDir.tar.gz $bundleDir

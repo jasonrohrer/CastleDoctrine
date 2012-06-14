@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#
+# Modification History
+#
+# 2007-November-12   Jason Rohrer
+# Copied from Cultivation build.
+#
+
+
+if [ $# -lt 3 ] ; then
+   echo "Usage: $0 release_name unix_platform_name path_to_SDL.framework"
+   exit 1
+fi
+
+
+rm -rf mac
+
+mkdir mac
+
+
+
+mkdir mac/StarFilledSky_$1
+mkdir mac/StarFilledSky_$1/graphics
+mkdir mac/StarFilledSky_$1/settings
+mkdir mac/StarFilledSky_$1/languages
+
+
+
+cp ../gameSource/graphics/*.tga mac/StarFilledSky_$1/graphics
+cp ../gameSource/settings/*.ini mac/StarFilledSky_$1/settings
+cp ../gameSource/languages/*.txt mac/StarFilledSky_$1/languages
+cp ../gameSource/language.txt mac/StarFilledSky_$1
+cp ../documentation/Readme.txt mac/StarFilledSky_$1
+cp ../documentation/Upgrading.txt mac/StarFilledSky_$1
+
+
+
+
+cp -r macOSX/StarFilledSky.app mac/StarFilledSky_$1/StarFilledSky.app
+cp ../gameSource/StarFilledSky mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS
+
+rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS/empty.txt
+rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/empty.txt
+
+# install SDL framework
+cp -r $3 mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/
+
+cd mac
+tar cf "StarFilledSky_$1_$2.tar" StarFilledSky_$1
+gzip "StarFilledSky_$1_$2.tar"
+
+
+
+
+
+

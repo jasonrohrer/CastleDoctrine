@@ -1,0 +1,7 @@
+
+
+7z a -tzip StarFilledSky_%version%_Windows.zip StarFilledSky_%version% -r
+
+makesfx.exe /zip="StarFilledSky_%version%_Windows.zip" /sfx="StarFilledSky_%version%_Windows.exe" /title="Inside a Star-filled Sky %version%" /website="http://insideastarfilledsky.net" /intro="This will extract the game." /defaultpath="$curdir$" /icon="..\win32\icon_installer.ico"
+
+pause
