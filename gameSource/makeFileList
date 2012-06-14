@@ -40,10 +40,13 @@ FetchRobberyReplayPage.cpp \
 ReplayRobHouseGridDisplay.cpp \
 ReplayRobHousePage.cpp \
 nameProcessing.cpp \
+gameElements.cpp \
 houseObjects.cpp \
 HouseObjectPicker.cpp \
 houseTransitions.cpp \
 StaleHousePage.cpp \
+tools.cpp \
+
 
 
 

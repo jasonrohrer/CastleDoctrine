@@ -1,5 +1,7 @@
 #include "houseObjects.h"
 
+#include "gameElements.h"
+
 #include "minorGems/util/SimpleVector.h"
 
 #include "minorGems/io/file/File.h"
@@ -73,7 +75,7 @@ typedef struct houseObjectRecord {
 
 static SimpleVector<houseObjectRecord> objects;
 
-int idSpaceSize = 0;
+static int idSpaceSize = 0;
 
 // some may be -1
 static int *idToIndexMap = NULL;
@@ -335,47 +337,10 @@ void initHouseObjects() {
 
             File *infoFile = f->getChildFile( "info.txt" );
             
-            if( infoFile->exists() ) {
-                
-                char *info = infoFile->readFileContents();
-                
-                char *infoStart = info;
-
-                int numRead = sscanf( info, "%d", &( r.id ) );
-                
-                if( numRead != 1 ) {
-                    completeRecord = false;
-                    }
-
-                // skip the first "
-                int readChar = ' ';
-
-                while( readChar != '"' && readChar != '\0' ) {
-                    readChar = info[0];
-                    info = &( info[1] );
-                    }
-
-                
-                char *descriptionString = new char[1000];
-                // scan a string of up to 999 characters, stopping
-                // at the first " character
-                numRead = sscanf( info, "%999[^\"]",
-                                  descriptionString );
-
-                delete [] infoStart;
-                
-
-                if( numRead == 1 ) {
-                    r.description = stringDuplicate( descriptionString );
-                    }
-                else {
-                    r.description = stringDuplicate( r.name );
-                    }
-                delete [] descriptionString;
-                }
-            else {
-                completeRecord = false;
-                }
+            completeRecord = readInfoFile( infoFile, 
+                                           &( r.id ), &( r.description ) );
+                        
+            delete infoFile;
 
 
             if( completeRecord ) {
@@ -461,8 +426,6 @@ void initHouseObjects() {
                     delete [] r.description;
                     }
                 }
-            
-            delete infoFile;
             }
 
         delete f;
