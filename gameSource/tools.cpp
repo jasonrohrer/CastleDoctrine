@@ -235,3 +235,19 @@ int getToolID( const char *inName ) {
     return -1;
     }
 
+
+
+int *getFullToolIDList( int *outNumIDs ) {
+    *outNumIDs = tools.size();
+    
+    int *returnList = new int[ *outNumIDs ];
+    
+    
+    for( int i=0; i<*outNumIDs; i++ ) {
+        toolRecord *r = tools.getElement( i );
+    
+        returnList[i] = r->id;
+        }
+    
+    return returnList;
+    }

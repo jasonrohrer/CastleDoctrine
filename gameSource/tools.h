@@ -27,5 +27,10 @@ const char *getToolDescription( int inObjectID  );
 // returns -1 on failure
 int getToolID( const char *inName );
 
+// gets full list of IDs that have been loaded
+// result destroyed by caller
+int *getFullToolIDList( int *outNumIDs );
+
+
 
 #endif

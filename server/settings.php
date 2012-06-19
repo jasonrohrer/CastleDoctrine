@@ -66,7 +66,9 @@ $defaultPrices = array(
     array( 104, 20, "Voltage-triggered Switch" ),
     array( 105, 20, "Voltage-triggered Inverted Switch" ),
     array( 106, 10, "Wire Bridge" ),
-    array( 110, 20, "Electric Floor" )
+    array( 110, 20, "Electric Floor" ),
+
+    array( 500, 20, "Saw" )
     );
 
 

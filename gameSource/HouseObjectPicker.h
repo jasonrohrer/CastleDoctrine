@@ -22,9 +22,11 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
     public:
         
-        
+        // if inTools is true, only tools shown
+        // else only house objects (non-tools) shown
         HouseObjectPicker( double inX, double inY,
-                           GamePage *inParentPage );
+                           GamePage *inParentPage,
+                           char inTools = false );
         
 
         virtual ~HouseObjectPicker();
@@ -62,6 +64,7 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
 
     protected:
+        char mShowTools;
         
         GamePage *mParentPage;
 

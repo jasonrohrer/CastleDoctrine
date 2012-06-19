@@ -3,6 +3,7 @@
 
 #include "ticketHash.h"
 #include "houseObjects.h"
+#include "tools.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -35,8 +36,10 @@ static const char *blockList[BLOCK_LIST_SIZE] =
                                     
 
 HouseObjectPicker::HouseObjectPicker( double inX, double inY,
-                                      GamePage *inParentPage )
+                                      GamePage *inParentPage,
+                                      char inTools )
         : PageComponent( inX, inY ),
+          mShowTools( inTools ), 
           mParentPage( inParentPage ),
           mSelectedIndex( -1 ),
           mPixWidth( 1/16.0 ),
@@ -54,14 +57,27 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
 
     
     int numObjects;
-    int *idList = getFullObjectIDList( &numObjects );
+    int *idList;
+
+    if( mShowTools ) {
+        idList = getFullToolIDList( &numObjects );
+        }
+    else {
+        idList = getFullObjectIDList( &numObjects );
+        }
     
     for( int i=0; i<numObjects; i++ ) {
         ObjectPriceRecord r;
         r.id = idList[i];
         r.price = 10;
         
-        const char *name = getObjectName( r.id );
+        const char *name;
+        if( mShowTools ) {
+            name = getToolName( r.id );
+            }
+        else {
+            name = getObjectName( r.id );
+            }
         
         char blocked = false;
         for( int b=0; b<BLOCK_LIST_SIZE; b++ ) {
@@ -114,9 +130,16 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
     
     if( change ) {
         
-        mParentPage->setToolTipDirect( 
-            (char *)getObjectDescription( 
-                mObjectList.getElement( mSelectedIndex )->id, 0 ) );
+        if( mShowTools ) {
+            mParentPage->setToolTipDirect( 
+                (char *)getToolDescription( 
+                    mObjectList.getElement( mSelectedIndex )->id ) );
+            }
+        else {    
+            mParentPage->setToolTipDirect( 
+                (char *)getObjectDescription( 
+                    mObjectList.getElement( mSelectedIndex )->id, 0 ) );
+            }
         
         fireActionPerformed( this );
         }
@@ -163,8 +186,15 @@ void HouseObjectPicker::draw() {
             }
         
         
-        SpriteHandle sprite = getObjectSprite( r->id, orientation, 0 );
+        SpriteHandle sprite;
 
+        if( mShowTools ) {
+            sprite = getToolSprite( r->id );
+            }
+        else {
+            sprite = getObjectSprite( r->id, orientation, 0 );
+            }
+        
         doublePair center = { 0, 0 };
         
 
@@ -221,6 +251,11 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
         // only allow server-specified objects that we also have locally
         // (server can specify a subset of our local objects, and we
         //  ignore the rest)
+
+        // this also automatically filters inRecords (the full price list)
+        // for either houseObjects or tools, depending on what this picker
+        // is displaying (because mLocalPresentIDs will only have one or
+        //  the other)
         for( int j=0; j<mLocalPresentIDs.size(); j++ ) {
             if( r.id == *( mLocalPresentIDs.getElement( j ) ) ) {
                 mObjectList.push_back( r );

@@ -46,6 +46,7 @@ CustomRandomSource randSource;
 #include "LoginPage.h"
 #include "CheckoutHousePage.h"
 #include "EditHousePage.h"
+#include "LoadBackpackPage.h"
 #include "CheckinHousePage.h"
 #include "MenuPage.h"
 #include "RobCheckoutHousePage.h"
@@ -55,7 +56,6 @@ CustomRandomSource randSource;
 #include "FetchRobberyReplayPage.h"
 #include "ReplayRobHousePage.h"
 #include "StaleHousePage.h"
-
 
 
 #include "houseObjects.h"
@@ -68,6 +68,7 @@ GamePage *currentGamePage = NULL;
 LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
+LoadBackpackPage *loadBackpackPage;
 RobHousePage *selfHouseTestPage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
@@ -383,6 +384,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
+    loadBackpackPage = new LoadBackpackPage();
     selfHouseTestPage = new RobHousePage();
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
@@ -415,6 +417,7 @@ void freeFrameDrawer() {
     delete loginPage;
     delete checkoutHousePage;
     delete editHousePage;
+    delete loadBackpackPage;
     delete selfHouseTestPage;
     delete checkinHousePage;
     delete menuPage;
@@ -893,6 +896,25 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = staleHousePage;
                 currentGamePage->base_makeActive( true );
                 }
+            else if( editHousePage->showLoadBackpack() ) {
+                char *vaultContents = editHousePage->getVaultContents();
+                char *backpackContents = editHousePage->getBackpackContents();
+                char *purchaseList = editHousePage->getPurchaseList();
+                char *priceList = editHousePage->getPriceList();
+                
+                loadBackpackPage->setVaultContents( vaultContents );
+                loadBackpackPage->setBackpackContents( backpackContents );
+                loadBackpackPage->setPurchaseList( purchaseList );
+                loadBackpackPage->setPriceList( priceList );
+                
+                currentGamePage = loadBackpackPage;
+                currentGamePage->base_makeActive( true );
+
+                delete [] vaultContents;
+                delete [] backpackContents;
+                delete [] purchaseList;
+                delete [] priceList;
+                }
             else if( editHousePage->getDone() ) {
 
                 char *houseMap = editHousePage->getHouseMap();
@@ -940,6 +962,28 @@ void drawFrame( char inUpdate ) {
                 
                 // return to own house in either case
                 currentGamePage = checkoutHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == loadBackpackPage ) {
+            if( loadBackpackPage->getDone() ) {
+                // done changing backpack, back to editor
+                
+                char *vaultContents = loadBackpackPage->getVaultContents();
+                char *backpackContents = 
+                    loadBackpackPage->getBackpackContents();
+                char *purchaseList = loadBackpackPage->getPurchaseList();
+                
+                editHousePage->setVaultContents( vaultContents );
+                editHousePage->setBackpackContents( backpackContents );
+                editHousePage->setPurchaseList( purchaseList );
+                
+                delete [] vaultContents;
+                delete [] backpackContents;
+                delete [] purchaseList;
+                
+                // back to editing
+                currentGamePage = editHousePage;
                 currentGamePage->base_makeActive( true );
                 }
             }

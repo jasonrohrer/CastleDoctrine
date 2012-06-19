@@ -4,7 +4,6 @@
 #include "TextButton.h"
 #include "KeyEquivalentTextButton.h"
 
-#include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
 
 
@@ -12,19 +11,13 @@
 
 
 
-class EditHousePage : public LiveHousePage, public ActionListener {
+class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
     public:
         
-        EditHousePage();
+        LoadBackpackPage();
         
-        virtual ~EditHousePage();
-        
-        
-        // destroyed by caller
-        void setHouseMap( char *inHouseMap );
-        char *getHouseMap();
-
+        virtual ~LoadBackpackPage();
 
         // destroyed by caller
         void setVaultContents( char *inVaultContents );
@@ -34,10 +27,6 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // destroyed by caller
         void setBackpackContents( char *inBackpackContents );
         char *getBackpackContents();
-
-
-        // destroyed by caller
-        char *getEditList();
         
         // list of purchases added to vault/backpack
         void setPurchaseList( char *inPurchaseList );
@@ -50,18 +39,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         
         void setLootValue( int inLootValue );
-        
 
-        // true if map changed since last setHouseMap call
-        char houseMapChanged();
-        
 
         char getDone() {
             return mDone;
-            }
-
-        char showLoadBackpack() {
-            return mShowLoadBackpack;
             }
             
 
@@ -76,28 +57,21 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
     protected:
 
-        // for change detection
-        char *mStartHouseMap;
         
         char *mVaultContents;
         char *mBackpackContents;
 
         char *mPriceList;
-        
-        char *mPurchaseList;
 
+        char *mPurchaseList;
+        
         int mLootValue;
 
-        HouseObjectPicker mObjectPicker;
-        HouseGridDisplay mGridDisplay;
+        HouseObjectPicker mToolPicker;
         TextButton mDoneButton;
-        TextButton mBackpackButton;
         KeyEquivalentTextButton mUndoButton;
         
         char mDone;
-        char mShowLoadBackpack;
-
-        void checkIfPlacementAllowed();
 
     };
 

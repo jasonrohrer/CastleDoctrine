@@ -24,17 +24,23 @@ EditHousePage::EditHousePage()
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
           mPriceList( NULL ),
+          // starts empty
+          mPurchaseList( stringDuplicate( "#" ) ),
           mObjectPicker( 8, 5, this ),
           mGridDisplay( 0, 0, this, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
-          mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ) {
+          mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
+          mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
+          mDone( false ) {
 
     addComponent( &mDoneButton );
+    addComponent( &mBackpackButton );
     addComponent( &mUndoButton );
     addComponent( &mGridDisplay );
     addComponent( &mObjectPicker );
 
     mDoneButton.addActionListener( this );
+    mBackpackButton.addActionListener( this );
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );
     mGridDisplay.addActionListener( this );
@@ -44,10 +50,7 @@ EditHousePage::EditHousePage()
 
         
 EditHousePage::~EditHousePage() {
-    if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
-        }
-
+    
     if( mStartHouseMap != NULL ) {
         delete [] mStartHouseMap;
         }
@@ -62,6 +65,10 @@ EditHousePage::~EditHousePage() {
 
     if( mPriceList != NULL ) {
         delete [] mPriceList;
+        }
+
+    if( mPurchaseList != NULL ) {
+        delete [] mPurchaseList;
         }
     }
 
@@ -124,9 +131,17 @@ char *EditHousePage::getEditList() {
 
 
 char *EditHousePage::getPurchaseList() {
-    // empty for now
-    return stringDuplicate( "#" );
+    return stringDuplicate( mPurchaseList );
     }
+
+
+void EditHousePage::setPurchaseList( char *inPurchaseList ) {
+    if( mPurchaseList != NULL ) {
+        delete [] mPurchaseList;
+        }
+    mPurchaseList = stringDuplicate( inPurchaseList );
+    }
+
 
 
 
@@ -261,6 +276,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         // change to house map
         mLastActionTime = time( NULL );
         }
+    else if( inTarget == &mBackpackButton ) {
+        mShowLoadBackpack = true;
+        }
     else if( inTarget == &mDoneButton ) {
         
         // Reset any states
@@ -307,6 +325,7 @@ void EditHousePage::makeActive( char inFresh ) {
         }
     
     mDone = false;
+    mShowLoadBackpack = false;
     }
         
 

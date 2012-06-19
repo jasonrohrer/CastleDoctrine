@@ -36,6 +36,10 @@ returnHome "Return Home"
 
 editDescription "Work on your house:"
 
+loadBackpackDescription "Load your backpack:"
+
+loadBackpack "Backpack"
+
 doneEdit "Done"
 
 undo "Undo"

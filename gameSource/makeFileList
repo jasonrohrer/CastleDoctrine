@@ -46,7 +46,7 @@ HouseObjectPicker.cpp \
 houseTransitions.cpp \
 StaleHousePage.cpp \
 tools.cpp \
-
+LoadBackpackPage.cpp \
 
 
 

@@ -1,3 +1,5 @@
+#ifndef KEY_EQUIVALENT_TEXT_BUTTON_INCLUDED
+#define KEY_EQUIVALENT_TEXT_BUTTON_INCLUDED
 
 
 #include "TextButton.h"
@@ -25,3 +27,5 @@ class KeyEquivalentTextButton : public TextButton {
         
     };
 
+
+#endif
