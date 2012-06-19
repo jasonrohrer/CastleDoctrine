@@ -177,6 +177,9 @@ else if( $action == "default_prices" ) {
 else if( $action == "delete_price" ) {
     cd_deletePrice();
     }
+else if( $action == "logout" ) {
+    cd_logout();
+    }
 else if( $action == "cd_setup" ) {
     global $setup_header, $setup_footer;
     echo $setup_header; 
@@ -636,9 +639,9 @@ function cd_setupDatabase() {
 
 
 function cd_showLog() {
-    $password = cd_checkPassword( "show_log" );
+    cd_checkPassword( "show_log" );
 
-     echo "[<a href=\"server.php?action=show_data&password=$password" .
+     echo "[<a href=\"server.php?action=show_data" .
          "\">Main</a>]<br><br><br>";
     
     global $tableNamePrefix;
@@ -651,7 +654,7 @@ function cd_showLog() {
 
 
 
-    echo "<a href=\"server.php?action=clear_log&password=$password\">".
+    echo "<a href=\"server.php?action=clear_log\">".
         "Clear log</a>";
         
     echo "<hr>";
@@ -670,9 +673,9 @@ function cd_showLog() {
 
 
 function cd_clearLog() {
-    $password = cd_checkPassword( "clear_log" );
+    cd_checkPassword( "clear_log" );
 
-     echo "[<a href=\"server.php?action=show_data&password=$password" .
+     echo "[<a href=\"server.php?action=show_data" .
          "\">Main</a>]<br><br><br>";
     
     global $tableNamePrefix;
@@ -2287,6 +2290,12 @@ function cd_newHouseForUser( $user_id ) {
 
 
 
+function cd_logout() {
+
+    cd_clearPasswordCookie();
+
+    echo "Logged out";
+    }
 
 
 
@@ -2299,13 +2308,17 @@ function cd_showData() {
     global $tableNamePrefix, $remoteIP;
 
     // these are global so they work in embeded function call below
-    global $skip, $search, $order_by, $password;
+    global $skip, $search, $order_by;
 
-    $password = cd_checkPassword( "show_data" );
+    cd_checkPassword( "show_data" );
     
 
-    echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "\">Main</a>]<br><br><br>";
+    echo "<table width='100%' border=0><tr>".
+        "<td>[<a href=\"server.php?action=show_data" .
+            "\">Main</a>]</td>".
+        "<td align=right>[<a href=\"server.php?action=logout" .
+            "\">Logout</a>]</td>".
+        "</tr></table><br><br><br>";
 
 
 
@@ -2367,7 +2380,6 @@ function cd_showData() {
 ?>
         <hr>
             <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
     <INPUT TYPE="hidden" NAME="order_by" VALUE="<?php echo $order_by;?>">
     <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
@@ -2389,12 +2401,12 @@ function cd_showData() {
     $prevSkip = $skip - $housesPerPage;
     
     if( $prevSkip >= 0 ) {
-        echo "[<a href=\"server.php?action=show_data&password=$password" .
+        echo "[<a href=\"server.php?action=show_data" .
             "&skip=$prevSkip&search=$search&order_by=$order_by\">".
             "Previous Page</a>] ";
         }
     if( $nextSkip < $totalHouses ) {
-        echo "[<a href=\"server.php?action=show_data&password=$password" .
+        echo "[<a href=\"server.php?action=show_data" .
             "&skip=$nextSkip&search=$search&order_by=$order_by\">".
             "Next Page</a>]";
         }
@@ -2405,14 +2417,14 @@ function cd_showData() {
 
 
     function orderLink( $inOrderBy, $inLinkText ) {
-        global $password, $skip, $search, $order_by;
+        global $skip, $search, $order_by;
         if( $inOrderBy == $order_by ) {
             // already displaying this order, don't show link
             return "<b>$inLinkText</b>";
             }
 
         // else show a link to switch to this order
-        return "<a href=\"server.php?action=show_data&password=$password" .
+        return "<a href=\"server.php?action=show_data" .
             "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
         }
     
@@ -2445,14 +2457,14 @@ function cd_showData() {
         if( $blocked ) {
             $blocked = "BLOCKED";
             $block_toggle = "<a href=\"server.php?action=block_user_id&".
-                "blocked=0&user_id=$user_id&password=$password".
+                "blocked=0&user_id=$user_id".
                 "&search=$search&skip=$skip&order_by=$order_by\">unblock</a>";
             
             }
         else {
             $blocked = "";
             $block_toggle = "<a href=\"server.php?action=block_user_id&".
-                "blocked=1&user_id=$user_id&password=$password".
+                "blocked=1&user_id=$user_id".
                 "&search=$search&skip=$skip&order_by=$order_by\">block</a>";
             
             }
@@ -2474,7 +2486,7 @@ function cd_showData() {
         echo "<tr>\n";
         
         echo "<td><b>$user_id</b> ";
-        echo "[<a href=\"server.php?action=show_detail&password=$password" .
+        echo "[<a href=\"server.php?action=show_detail" .
             "&user_id=$user_id\">detail</a>]</td>\n";
         echo "<td align=right>$blocked [$block_toggle]</td>\n";
         echo "<td>$character_name</td>\n";
@@ -2502,7 +2514,6 @@ function cd_showData() {
     <a name="priceList">      
     <FORM ACTION="server.php#priceList" METHOD="post">
     <INPUT TYPE="Submit" VALUE="Update Prices">
-    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="update_prices">
     <INPUT TYPE="hidden" NAME="num_prices" VALUE="<?php echo $numRows;?>">
 <?php
@@ -2531,7 +2542,7 @@ function cd_showData() {
                           "VALUE='$note'></td>\n";
         echo "<td bgcolor=$bgColor>[<a href='server.php?action=delete_price".
                            "&object_id=$object_id".
-                           "&password=$password#priceList'>delete]</td>\n";
+                           "#priceList'>delete]</td>\n";
         echo "</tr>\n\n";
 
         $temp = $bgColor;
@@ -2562,7 +2573,6 @@ function cd_showData() {
 
          
     <FORM ACTION="server.php#priceList" METHOD="post">
-    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="default_prices">
     <table border=1>
     <tr>
@@ -2578,7 +2588,7 @@ function cd_showData() {
     
     echo "<hr>";
 
-    echo "<a href=\"server.php?action=show_log&password=$password\">".
+    echo "<a href=\"server.php?action=show_log\">".
         "Show log</a>";
     echo "<hr>";
     echo "Generated for $remoteIP\n";
@@ -2596,11 +2606,11 @@ function cd_showData() {
 
 
 function cd_showDetail() {
-    $password = cd_checkPassword( "show_detail" );
+    cd_checkPassword( "show_detail" );
 
     $user_id = cd_getUserID();
     
-    echo "[<a href=\"server.php?action=show_data&password=$password" .
+    echo "[<a href=\"server.php?action=show_data" .
         "\">Main</a>]<br><br><br>";
      
     global $tableNamePrefix, $ticketServerNamePrefix;
@@ -2645,7 +2655,7 @@ function cd_showDetail() {
 
 
 function cd_blockUserID() {
-    $password = cd_checkPassword( "block_user_id" );
+    cd_checkPassword( "block_user_id" );
 
 
     global $tableNamePrefix;
@@ -2698,7 +2708,7 @@ function cd_blockUserID() {
 
 
 function cd_defaultPrices() {
-    $password = cd_checkPassword( "default_prices" );
+    cd_checkPassword( "default_prices" );
 
 
     global $tableNamePrefix;
@@ -2727,7 +2737,7 @@ function cd_defaultPrices() {
 
 
 function cd_updatePrices() {
-    $password = cd_checkPassword( "update_prices" );
+    cd_checkPassword( "update_prices" );
 
 
     global $tableNamePrefix;
@@ -2808,7 +2818,7 @@ function cd_updatePrices() {
 
 
 function cd_deletePrice() {
-    $password = cd_checkPassword( "delete_price" );
+    cd_checkPassword( "delete_price" );
 
 
     global $tableNamePrefix;
@@ -2990,9 +3000,9 @@ function cd_operationError( $message ) {
  */
 function cd_nonFatalError( $message ) {
 
-    $password = cd_checkPassword( "nonFatalError" );
+    cd_checkPassword( "nonFatalError" );
     
-     echo "[<a href=\"server.php?action=show_data&password=$password" .
+     echo "[<a href=\"server.php?action=show_data" .
          "\">Main</a>]<br><br><br>";
     
     // for now, just print error message
@@ -3068,80 +3078,117 @@ function cd_requestFilter( $inRequestVariable, $inRegex, $inDefault = "" ) {
 
 
 
+
+// this function checks the password directly from a request variable
+// or via hash from a cookie.
+//
+// It then sets a new cookie for the next request.
+//
+// This avoids storing the password itself in the cookie, so a stale cookie
+// (cached by a browser) can't be used to figure out the cookie and log in
+// later. 
 function cd_checkPassword( $inFunctionName ) {
     $password = "";
+    $password_hash = "";
+
+    $badCookie = false;
+    
+    
+    global $accessPasswords, $tableNamePrefix, $remoteIP;
+
+    $cookieName = $tableNamePrefix . "cookie_password_hash";
+
+    
     if( isset( $_REQUEST[ "password" ] ) ) {
         $password = $_REQUEST[ "password" ];
+
+        // generate a new hash cookie from this password
+        $newSalt = time();
+        $newHash = md5( $newSalt . $password );
+        
+        $password_hash = $newSalt . "_" . $newHash;
         }
+    else if( isset( $_COOKIE[ $cookieName ] ) ) {
+        $password_hash = $_COOKIE[ $cookieName ];
+        
+        // check that it's a good hash
+        
+        $hashParts = preg_split( "/_/", $password_hash );
 
-    global $accessPasswords;
+        // default, to show in log message on failure
+        // gets replaced if cookie contains a good hash
+        $password = "(bad cookie:  $password_hash)";
 
+        $badCookie = true;
+        
+        if( count( $hashParts ) == 2 ) {
+            
+            $salt = $hashParts[0];
+            $hash = $hashParts[1];
+
+            foreach( $accessPasswords as $truePassword ) {    
+                $trueHash = md5( $salt . $truePassword );
+            
+                if( $trueHash == $hash ) {
+                    $password = $truePassword;
+                    $badCookie = false;
+                    }
+                }
+            
+            }
+        }
+    else {
+        // no request variable, no cookie
+        // cookie probably expired
+        $badCookie = true;
+        $password_hash = "(no cookie.  expired?)";
+        }
+    
+        
+    
     if( ! in_array( $password, $accessPasswords ) ) {
-        echo "Incorrect password.";
 
-        cd_log( "Failed $inFunctionName access with password:  $password" );
+        if( ! $badCookie ) {
+            
+            echo "Incorrect password.";
 
+            cd_log( "Failed $inFunctionName access with password:  ".
+                    "$password" );
+            }
+        else {
+            echo "Session expired.";
+                
+            cd_log( "Failed $inFunctionName access with bad cookie:  ".
+                    "$password_hash" );
+            }
+        
         die();
         }
+    else {
+        // set cookie again, renewing it, expires in 24 hours
+        $expireTime = time() + 60 * 60 * 24;
+    
+        setcookie( $cookieName, $password_hash, $expireTime, "/" );
+        }
+    }
+ 
 
-    return $password;
+
+
+function cd_clearPasswordCookie() {
+    global $tableNamePrefix;
+
+    $cookieName = $tableNamePrefix . "cookie_password_hash";
+
+    // expire 24 hours ago (to avoid timezone issues)
+    $expireTime = time() - 60 * 60 * 24;
+
+    setcookie( $cookieName, "", $expireTime, "/" );
     }
 
 
 
 
-// found here:
-// http://php.net/manual/en/function.fpassthru.php
-
-function cd_send_file( $path ) {
-    session_write_close();
-    //ob_end_clean();
-    
-    if( !is_file( $path ) || connection_status() != 0 ) {
-        return( FALSE );
-        }
-    
-
-    //to prevent long file from getting cut off from     //max_execution_time
-
-    set_time_limit( 0 );
-
-    $name = basename( $path );
-
-    //filenames in IE containing dots will screw up the
-    //filename unless we add this
-
-    // sometimes user agent is not set!
-    if( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
-        
-        if( strstr( $_SERVER['HTTP_USER_AGENT'], "MSIE" ) ) {
-            $name =
-                preg_replace('/\./', '%2e',
-                             $name, substr_count($name, '.') - 1);
-            }
-        }
-    
-    
-    //required, or it might try to send the serving
-    //document instead of the file
-
-    header("Cache-Control: ");
-    header("Pragma: ");
-    header("Content-Type: application/octet-stream");
-    header("Content-Length: " .(string)(filesize($path)) );
-    header('Content-Disposition: attachment; filename="'.$name.'"');
-    header("Content-Transfer-Encoding: binary\n");
-
-    if( $file = fopen( $path, 'rb' ) ) {
-        while( ( !feof( $file ) )
-               && ( connection_status() == 0 ) ) {
-            print( fread( $file, 1024*8 ) );
-            flush();
-            }
-        fclose($file);
-        }
-    return( (connection_status() == 0 ) and !connection_aborted() );
-    }
 
 
 ?>
