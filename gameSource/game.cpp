@@ -908,6 +908,8 @@ void drawFrame( char inUpdate ) {
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *priceList = editHousePage->getPriceList();
                 
+                loadBackpackPage->setLootValue( 
+                    editHousePage->getLootValue() );
                 loadBackpackPage->setVaultContents( vaultContents );
                 loadBackpackPage->setBackpackContents( backpackContents );
                 loadBackpackPage->setPurchaseList( purchaseList );
@@ -984,6 +986,10 @@ void drawFrame( char inUpdate ) {
                 editHousePage->setBackpackContents( backpackContents );
                 editHousePage->setPurchaseList( purchaseList );
                 
+                editHousePage->setLootValue( 
+                    loadBackpackPage->getLootValue() );
+
+
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] purchaseList;

@@ -11,7 +11,7 @@ class SpriteButton : public Button {
         
     public:
         
-
+        // inSprite NOT destroyed by this class
         SpriteButton( SpriteHandle inSprite, 
                       // size of sprite in pixels
                       int inWide, int inHigh,
@@ -26,11 +26,19 @@ class SpriteButton : public Button {
 
 
     protected:
-        
+        char mShouldDestroySprite;
         SpriteHandle mSprite;
 
-        double mDrawScale;
+        // if false (default), highlight color set by Button class is 
+        // kept when drawing sprite.  This works great for white sprites,
+        // as they become highlighted.
+        //
+        // But for color sprites, this can be overriden by subclasses
+        // (if true, sprites are drawn with white color instead)
+        char mOverrideHighlightColor;
 
+        double mDrawScale;
+        
         
         // override
         virtual void drawContents();

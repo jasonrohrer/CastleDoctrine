@@ -12,7 +12,9 @@ SpriteButton::SpriteButton( SpriteHandle inSprite,
                   inWide * 2 * inDrawScale,
                   inHigh * 2 * inDrawScale, 
                   inDrawScale ), 
+          mShouldDestroySprite( false ),
           mSprite( inSprite ), 
+          mOverrideHighlightColor( false ),
           mDrawScale( inDrawScale ) {
 
     }
@@ -24,8 +26,10 @@ SpriteButton::SpriteButton( const char *inTGAFileName, double inX, double inY,
         Button( inX, inY, 
                 1,
                 1, 
-                inDrawScale ), 
+                inDrawScale ),
+        mShouldDestroySprite( false ),
         mSprite( NULL ), 
+        mOverrideHighlightColor( false ),
         mDrawScale( inDrawScale ) {
     
     Image *image = readTGAFile( inTGAFileName );
@@ -36,7 +40,8 @@ SpriteButton::SpriteButton( const char *inTGAFileName, double inX, double inY,
         mHigh = image->getHeight() * 2 * inDrawScale;
         
         mSprite = fillSprite( image );
-
+        mShouldDestroySprite = true;
+        
         delete image;
         }
     else {
@@ -49,7 +54,7 @@ SpriteButton::SpriteButton( const char *inTGAFileName, double inX, double inY,
 
 
 SpriteButton::~SpriteButton() {
-    if( mSprite != NULL ) {
+    if( mShouldDestroySprite && mSprite != NULL ) {
         freeSprite( mSprite );
         }
     }
@@ -59,7 +64,11 @@ SpriteButton::~SpriteButton() {
 void SpriteButton::drawContents() {
     if( mSprite != NULL ) {
         
-        // leave draw color as set by Button's draw function
+        if( mOverrideHighlightColor ) {
+            setDrawColor( 1, 1, 1, 1 );
+            }
+        // else leave draw color as set by Button's draw function
+        
         
         doublePair center = { 0, 0 };
         

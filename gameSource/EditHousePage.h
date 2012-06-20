@@ -51,6 +51,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         void setLootValue( int inLootValue );
         
+        int getLootValue() {
+            return mLootValue;
+            }
+        
 
         // true if map changed since last setHouseMap call
         char houseMapChanged();

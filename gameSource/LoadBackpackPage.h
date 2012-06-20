@@ -3,6 +3,7 @@
 #include "TextField.h"
 #include "TextButton.h"
 #include "KeyEquivalentTextButton.h"
+#include "InventorySlotButton.h"
 
 #include "HouseObjectPicker.h"
 
@@ -41,7 +42,11 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
         
         void setLootValue( int inLootValue );
-
+        
+        int getLootValue() {
+            return mLootValue;
+            }
+        
 
         char getDone() {
             return mDone;
@@ -75,6 +80,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         char mDone;
         
 
-        int mPackSlots[ NUM_PACK_SLOTS ];
+        InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
     };
 

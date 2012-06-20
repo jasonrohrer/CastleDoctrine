@@ -38,9 +38,21 @@ LoadBackpackPage::LoadBackpackPage()
     mUndoButton.setVisible( false );
     mToolPicker.addActionListener( this );
 
+
+    doublePair slotCenter = { -8, 5 };
+
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        mPackSlots[i] = -1;
+        mPackSlots[i] = new InventorySlotButton( slotCenter.x, slotCenter.y,
+                                                 1 / 16.0 );
+        slotCenter.x += 1.5;
+        
+        addComponent( mPackSlots[i] );
+        mPackSlots[i]->addActionListener( this );
         }
+    // for testing
+    //mPackSlots[0]->setObject( 500 );
+    //mPackSlots[2]->setObject( 501 );
+    
     }
 
 
@@ -58,6 +70,10 @@ LoadBackpackPage::~LoadBackpackPage() {
 
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
+        }
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        delete mPackSlots[i];
         }
     }
 
@@ -175,28 +191,4 @@ void LoadBackpackPage::draw( doublePair inViewCenter,
     drawMessage( balanceMessage, labelPos, false );
     
     delete [] balanceMessage;
-
-    doublePair slotCenter = { -8, 5 };
-        
-    double pixWidth = 1 / 16.0;
-    
-    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        
-        setDrawColor( 0.5, 0.5, 0.5, 1 );
-
-        drawSquare( slotCenter, 0.5 + pixWidth );
-        
-        setDrawColor( 0, 0, 0, 1 );
-
-        drawSquare( slotCenter, 0.5 );
-        
-        if( mPackSlots[i] != -1 ) {
-            
-            setDrawColor( 1, 1, 1, 1 );
-            
-            drawSprite( getToolSprite( mPackSlots[i] ), slotCenter, 1.0/16.0 );
-            }
-        slotCenter.x += 1.5;
-        }
-    
     }
