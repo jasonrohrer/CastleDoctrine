@@ -172,18 +172,22 @@ void HouseObjectPicker::draw() {
 
     if( mSelectedIndex >= 0 ) {
         ObjectPriceRecord *r = mObjectList.getElement( mSelectedIndex );
-        
-        int numOrientations = getNumOrientations( r->id, 0 );
-        
+
         int orientation = 0;
-        if( numOrientations == 4 ) {
-            // default to left-facing
-            orientation = 3;
+
+        if( !mShowTools ) {    
+            int numOrientations = getNumOrientations( r->id, 0 );
+            
+            if( numOrientations == 4 ) {
+                // default to left-facing
+                orientation = 3;
+                }
+            if( numOrientations == 2 ) {
+                // default to horizontal
+                orientation = 1;
+                }
             }
-        if( numOrientations == 2 ) {
-            // default to horizontal
-            orientation = 1;
-            }
+        
         
         
         SpriteHandle sprite;

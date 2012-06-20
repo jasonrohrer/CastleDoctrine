@@ -118,7 +118,7 @@ void initTools() {
                     
                     delete [] name;
 
-                    delete childFiles[i];
+                    delete childFiles[j];
                     }
                 delete [] childFiles;
 
