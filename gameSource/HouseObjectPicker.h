@@ -65,6 +65,10 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
 
     protected:
+
+        virtual void pointerMove( float inX, float inY );
+        virtual void pointerDrag( float inX, float inY );
+
         char mShowTools;
 
 
@@ -78,7 +82,11 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
         SpriteButton mUpButton;
         SpriteButton mDownButton;
+        
 
+        void triggerToolTip();
+        
+        char isInside( float inX, float inY );
 
     };
 

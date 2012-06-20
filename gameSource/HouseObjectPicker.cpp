@@ -107,6 +107,22 @@ HouseObjectPicker::~HouseObjectPicker() {
 
 
 
+
+void HouseObjectPicker::triggerToolTip() {
+    if( mShowTools ) {
+        setToolTipDirect( 
+            (char *)getToolDescription( 
+                mObjectList.getElement( mSelectedIndex )->id ) );
+        }
+    else {    
+        setToolTipDirect( 
+            (char *)getObjectDescription( 
+                mObjectList.getElement( mSelectedIndex )->id, 0 ) );
+        }
+    }
+
+
+
 void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
     char change = false;
     
@@ -127,17 +143,7 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
 
     
     if( change ) {
-        
-        if( mShowTools ) {
-            setToolTipDirect( 
-                (char *)getToolDescription( 
-                    mObjectList.getElement( mSelectedIndex )->id ) );
-            }
-        else {    
-            setToolTipDirect( 
-                (char *)getObjectDescription( 
-                    mObjectList.getElement( mSelectedIndex )->id, 0 ) );
-            }
+        triggerToolTip();
         
         fireActionPerformed( this );
         }
@@ -333,6 +339,28 @@ int HouseObjectPicker::getPrice( int inObjectID ) {
 
     return -1;
     }
+
+
+
+char HouseObjectPicker::isInside( float inX, float inY ) {
+    return fabs( inX ) < 1 &&
+        fabs( inY ) < 1;
+    }
+
+
+
+void HouseObjectPicker::pointerMove( float inX, float inY ) {
+    if( isInside( inX, inY ) ) {
+        triggerToolTip();
+        }
+    }
+
+
+
+void HouseObjectPicker::pointerDrag( float inX, float inY ) {
+    pointerMove( inX, inY );
+    }
+
 
 
 
