@@ -32,6 +32,10 @@ class Button : public PageComponent, public ActionListenerList {
         virtual char isVisible();
 
         
+
+        
+    protected:
+
         virtual void clearState();
         
         virtual void step();
@@ -45,8 +49,7 @@ class Button : public PageComponent, public ActionListenerList {
         // fires action performed to listener list
         virtual void pointerUp( float inX, float inY );        
 
-        
-    protected:
+
         char mVisible;
         char mHover;
         char mDragOver;
