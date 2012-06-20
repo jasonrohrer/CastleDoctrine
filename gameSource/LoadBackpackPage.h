@@ -77,9 +77,16 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         TextButton mDoneButton;
         KeyEquivalentTextButton mUndoButton;
         
+        SpriteButton mBuyButton;
+
         char mDone;
         
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
+
+
+        void checkBuyButtonStatus();
+        
+
     };
 

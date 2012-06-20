@@ -27,18 +27,23 @@ LoadBackpackPage::LoadBackpackPage()
           mToolPicker( 8, 5, true ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
+          mBuyButton( "left.tga", 5, 5, 1 / 16.0 ),
           mDone( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mUndoButton );
     addComponent( &mToolPicker );
+    addComponent( &mBuyButton );
 
     mDoneButton.addActionListener( this );
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );
     mToolPicker.addActionListener( this );
 
-
+    mBuyButton.addActionListener( this );
+    mBuyButton.setVisible( false );
+    mBuyButton.setMouseOverTip( translate( "buyTip" ) );
+    
     doublePair slotCenter = { -8, 5 };
 
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
@@ -99,6 +104,8 @@ void LoadBackpackPage::setBackpackContents( char *inBackpackContents ) {
         delete [] mBackpackContents;
         }
     mBackpackContents = stringDuplicate( inBackpackContents );
+
+    mBuyButton.setVisible( true );
     }
 
 
@@ -136,6 +143,31 @@ void LoadBackpackPage::setLootValue( int inLootValue ) {
 
 
 
+void LoadBackpackPage::checkBuyButtonStatus() {
+    int selectedObject = mToolPicker.getSelectedObject();
+        
+    int price = mToolPicker.getPrice( selectedObject );
+    
+    if( price > mLootValue ) {
+        mBuyButton.setVisible( false );
+        return;
+        }
+    
+    // we can afford it
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        if( mPackSlots[i]->getObject() == -1 ) {
+            // empty slot found
+            mBuyButton.setVisible( true );
+            return;
+            }
+        }
+    // no empty slots
+    mBuyButton.setVisible( false );
+    }
+
+
+
 
 
 void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
@@ -143,12 +175,29 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mToolPicker ) {
-        // nothing yet
+        checkBuyButtonStatus();
         }
     else if( inTarget == &mUndoButton ) {
         // figure out how undo makes sense here
         
         }
+    else if( inTarget == &mBuyButton ) {
+        int selectedObject = mToolPicker.getSelectedObject();
+        
+        int price = mToolPicker.getPrice( selectedObject );
+
+        for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+            if( mPackSlots[i]->getObject() == -1 ) {
+                // empty slot!
+                mPackSlots[i]->setObject( selectedObject );
+                mLootValue -= price;
+                break;
+                }
+            }
+        
+        checkBuyButtonStatus();
+        }
+    
     
     }
 

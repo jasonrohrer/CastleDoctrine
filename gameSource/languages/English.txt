@@ -49,6 +49,8 @@ undo "Undo"
 
 editBalance "Balance:"
 
+buyTip "Buy for backpack"
+
 
 selfTestDescription "Prove that your house is fair:"
 
