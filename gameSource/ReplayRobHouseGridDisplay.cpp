@@ -18,9 +18,8 @@ extern double frameRateFactor;
 
 
 
-ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY,
-                                                      GamePage *inParentPage )
-        : RobHouseGridDisplay( inX, inY, inParentPage ),
+ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
+        : RobHouseGridDisplay( inX, inY ),
           mStepButton( mainFont, BUTTON_X, 0, 
                        translate( "step" ) ),
           mPlayButton( mainFont, BUTTON_X, 1.5, 

@@ -38,10 +38,8 @@ SpriteHandle HouseGridDisplay::sDropShadowSprite = NULL;
 
 
 HouseGridDisplay::HouseGridDisplay( double inX, double inY,
-                                    GamePage *inParentPage,
                                     HouseObjectPicker *inPicker )
         : PageComponent( inX, inY ),
-          mParentPage( inParentPage ),
           mPicker( inPicker ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
@@ -1214,7 +1212,7 @@ void HouseGridDisplay::draw() {
 void HouseGridDisplay::pointerOver( float inX, float inY ) {
     mHighlightIndex = getTileIndex( inX, inY );
 
-    if( mHighlightIndex != -1 && mParentPage != NULL ) {
+    if( mHighlightIndex != -1 ) {
 
         int fullI = subToFull( mHighlightIndex );
         
@@ -1242,12 +1240,12 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
             char *tip = autoSprintf( "%s  /  %s",
                                      nonMobileDescription, mobileDescription );
             
-            mParentPage->setToolTipDirect( tip );
+            setToolTipDirect( tip );
             
             delete [] tip;
             }
         else {
-            mParentPage->setToolTipDirect( (char*)nonMobileDescription );
+            setToolTipDirect( (char*)nonMobileDescription );
             }
         
         }

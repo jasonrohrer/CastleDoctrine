@@ -4,10 +4,32 @@
 
 
 PageComponent::PageComponent( double inX, double inY )
-        : mX( inX ), mY( inY ) {
+        : mX( inX ), mY( inY ), mParent( NULL ) {
     
     }
         
+
+
+void PageComponent::setParent( PageComponent *inParent ) {
+    mParent = inParent;
+    }
+
+
+
+void PageComponent::setToolTip( const char *inTipKey ) {
+    if( mParent != NULL ) {
+        mParent->setToolTip( inTipKey );
+        }
+    }
+
+
+        
+void PageComponent::setToolTipDirect( char *inTipMessage ) {
+    if( mParent != NULL ) {
+        mParent->setToolTipDirect( inTipMessage );
+        }
+    }
+
 
 
 void PageComponent::base_step(){
@@ -195,4 +217,6 @@ void PageComponent::base_specialKeyUp( int inKeyCode ){
 void PageComponent::addComponent( PageComponent *inComponent ){
 
     mComponents.push_back( inComponent );
+
+    inComponent->setParent( this );
     }

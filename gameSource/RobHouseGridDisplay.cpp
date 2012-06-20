@@ -26,9 +26,8 @@ extern double frameRateFactor;
 
 
 
-RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY,
-                                          GamePage *inParentPage )
-        : HouseGridDisplay( inX, inY, inParentPage ),
+RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
+        : HouseGridDisplay( inX, inY ),
           mSuccess( 0 ),
           mDead( false ),
           mDeathSourceID( -1 ),

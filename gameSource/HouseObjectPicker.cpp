@@ -36,11 +36,9 @@ static const char *blockList[BLOCK_LIST_SIZE] =
                                     
 
 HouseObjectPicker::HouseObjectPicker( double inX, double inY,
-                                      GamePage *inParentPage,
                                       char inTools )
         : PageComponent( inX, inY ),
           mShowTools( inTools ), 
-          mParentPage( inParentPage ),
           mSelectedIndex( -1 ),
           mPixWidth( 1/16.0 ),
           mUpButton( "up.tga", -1.25, 1, mPixWidth ),
@@ -131,12 +129,12 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
     if( change ) {
         
         if( mShowTools ) {
-            mParentPage->setToolTipDirect( 
+            setToolTipDirect( 
                 (char *)getToolDescription( 
                     mObjectList.getElement( mSelectedIndex )->id ) );
             }
         else {    
-            mParentPage->setToolTipDirect( 
+            setToolTipDirect( 
                 (char *)getObjectDescription( 
                     mObjectList.getElement( mSelectedIndex )->id, 0 ) );
             }

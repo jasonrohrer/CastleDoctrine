@@ -14,8 +14,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
     
     public:
 
-        ReplayRobHouseGridDisplay( double inX, double inY,
-                                   GamePage *inParentPage = NULL );
+        ReplayRobHouseGridDisplay( double inX, double inY );
         
         virtual ~ReplayRobHouseGridDisplay();
 

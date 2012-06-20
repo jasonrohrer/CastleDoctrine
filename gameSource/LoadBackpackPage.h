@@ -10,6 +10,9 @@
 #include "minorGems/ui/event/ActionListener.h"
 
 
+#define NUM_PACK_SLOTS 8
+
+
 
 class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
@@ -70,6 +73,8 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         KeyEquivalentTextButton mUndoButton;
         
         char mDone;
+        
 
+        int mPackSlots[ NUM_PACK_SLOTS ];
     };
 

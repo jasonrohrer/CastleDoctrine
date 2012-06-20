@@ -15,8 +15,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
     
     public:
 
-        RobHouseGridDisplay( double inX, double inY,
-                             GamePage *inParentPage = NULL );
+        RobHouseGridDisplay( double inX, double inY );
         
         virtual ~RobHouseGridDisplay();
 

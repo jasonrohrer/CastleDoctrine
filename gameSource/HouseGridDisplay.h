@@ -59,7 +59,6 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
     public:
 
         HouseGridDisplay( double inX, double inY,
-                          GamePage *inParentPage = NULL,
                           HouseObjectPicker *inPicker = NULL );
         
         virtual ~HouseGridDisplay();
@@ -115,7 +114,6 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
     protected:
-        GamePage *mParentPage;
         HouseObjectPicker *mPicker;
 
         int mRobberIndex;

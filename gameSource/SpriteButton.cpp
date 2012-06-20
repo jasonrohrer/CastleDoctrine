@@ -57,9 +57,12 @@ SpriteButton::~SpriteButton() {
 
 
 void SpriteButton::drawContents() {
-    // leave draw color as set by Button's draw function
-
-    doublePair center = { 0, 0 };
-
-    drawSprite( mSprite, center, mDrawScale );
+    if( mSprite != NULL ) {
+        
+        // leave draw color as set by Button's draw function
+        
+        doublePair center = { 0, 0 };
+        
+        drawSprite( mSprite, center, mDrawScale );
+        }
     }

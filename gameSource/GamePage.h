@@ -21,10 +21,10 @@ class GamePage : public PageComponent {
         void setStatusDirect( char *inStatusMessage, char inError );
 
         
-        void setToolTip( const char *inTipKey );
-        
-        // inTipMessage destroyed by caller
-        void setToolTipDirect( char *inTipMessage );
+        // override these from PageComponent to actually SHOW
+        // the tool tip, instead of passing it further up the parent chain
+        virtual void setToolTip( const char *inTipKey );
+        virtual void setToolTipDirect( char *inTipMessage );
         
 
         

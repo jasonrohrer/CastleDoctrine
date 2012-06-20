@@ -3,7 +3,6 @@
 
 
 
-#include "GamePage.h"
 #include "PageComponent.h"
 
 #include "SpriteButton.h"
@@ -25,7 +24,6 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         // if inTools is true, only tools shown
         // else only house objects (non-tools) shown
         HouseObjectPicker( double inX, double inY,
-                           GamePage *inParentPage,
                            char inTools = false );
         
 
@@ -68,8 +66,6 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
     protected:
         char mShowTools;
-        
-        GamePage *mParentPage;
 
 
         SimpleVector<ObjectPriceRecord> mObjectList;

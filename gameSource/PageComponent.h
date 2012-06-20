@@ -14,6 +14,16 @@ class PageComponent : public GUIComponent {
         
         virtual ~PageComponent() {
             };
+        
+        virtual void setParent( PageComponent *inParent );
+
+        // default implementations pass tool tip up to parent
+
+        virtual void setToolTip( const char *inTipKey );
+        
+        // inTipMessage destroyed by caller
+        virtual void setToolTipDirect( char *inTipMessage );
+
 
         
         virtual char isVisible() {
@@ -110,7 +120,9 @@ class PageComponent : public GUIComponent {
         
         double mX, mY;
 
+        PageComponent *mParent;
         
+
     };
 
 

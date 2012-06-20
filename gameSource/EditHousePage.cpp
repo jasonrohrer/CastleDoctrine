@@ -26,8 +26,8 @@ EditHousePage::EditHousePage()
           mPriceList( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
-          mObjectPicker( 8, 5, this ),
-          mGridDisplay( 0, 0, this, &mObjectPicker ),
+          mObjectPicker( 8, 5 ),
+          mGridDisplay( 0, 0, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),

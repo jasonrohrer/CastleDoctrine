@@ -1,7 +1,7 @@
 #include "LoadBackpackPage.h"
 
 #include "message.h"
-
+#include "tools.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -24,7 +24,7 @@ LoadBackpackPage::LoadBackpackPage()
           mBackpackContents( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
-          mToolPicker( 8, 5, this, true ),
+          mToolPicker( 8, 5, true ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
           mDone( false ) {
@@ -37,6 +37,10 @@ LoadBackpackPage::LoadBackpackPage()
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );
     mToolPicker.addActionListener( this );
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        mPackSlots[i] = -1;
+        }
     }
 
 
@@ -171,4 +175,28 @@ void LoadBackpackPage::draw( doublePair inViewCenter,
     drawMessage( balanceMessage, labelPos, false );
     
     delete [] balanceMessage;
+
+    doublePair slotCenter = { -8, 5 };
+        
+    double pixWidth = 1 / 16.0;
+    
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        
+        setDrawColor( 0.5, 0.5, 0.5, 1 );
+
+        drawSquare( slotCenter, 0.5 + pixWidth );
+        
+        setDrawColor( 0, 0, 0, 1 );
+
+        drawSquare( slotCenter, 0.5 );
+        
+        if( mPackSlots[i] != -1 ) {
+            
+            setDrawColor( 1, 1, 1, 1 );
+            
+            drawSprite( getToolSprite( mPackSlots[i] ), slotCenter, 1.0/16.0 );
+            }
+        slotCenter.x += 1.5;
+        }
+    
     }
