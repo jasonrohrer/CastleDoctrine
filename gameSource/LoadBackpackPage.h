@@ -35,7 +35,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
         // destroyed by caller
         void setPriceList( char *inPriceList );
-        char *getPriceList();
         
         
         void setLootValue( int inLootValue );
@@ -61,7 +60,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         char *mVaultContents;
         char *mBackpackContents;
 
-        char *mPriceList;
 
         char *mPurchaseList;
         

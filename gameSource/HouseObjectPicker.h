@@ -41,6 +41,9 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         // (doesn't included unplaceable objects)
         // destroyed by caller
         virtual int *getIDList( int *outNumIDs );
+
+
+        virtual void setPriceList( char *inPriceList );
         
         
         // inRecords destroyed by caller

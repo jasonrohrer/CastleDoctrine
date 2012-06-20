@@ -238,6 +238,57 @@ int *HouseObjectPicker::getIDList( int *outNumIDs ) {
     return resultList;
     }
 
+
+
+
+void HouseObjectPicker::setPriceList( char *inPriceList ) {
+    // parse it
+    int numBigParts;
+    char **bigParts = split( inPriceList, ":", &numBigParts );
+    
+    if( numBigParts == 3 ) {
+        
+        char *listBody = bigParts[1];
+        
+        int numPairs;
+        char **pairs = split( listBody, "#", &numPairs );
+        
+        ObjectPriceRecord *records = new ObjectPriceRecord[ numPairs ];
+        
+        for( int i=0; i<numPairs; i++ ) {
+            int numParts;
+            char **parts = split( pairs[i], "@", &numParts );
+            
+            if( numParts == 2 ) {
+                
+                // default in case scan fails
+                records[i].id = -1;
+                records[i].price = 1;
+
+                sscanf( parts[0], "%d", &( records[i].id ) );
+
+                sscanf( parts[1], "%d", &( records[i].price ) );
+                }
+            
+            for( int p=0; p<numParts; p++ ) {
+                delete [] parts[p];
+                }
+            delete [] parts;
+
+            delete [] pairs[i];
+            }
+        delete [] pairs;
+
+        setPrices( records, numPairs );
+        delete [] records;
+        }
+    
+    for( int i=0; i<numBigParts; i++ ) {
+        delete [] bigParts[i];
+        }
+    delete [] bigParts;
+    }
+
         
         
 void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords, 
