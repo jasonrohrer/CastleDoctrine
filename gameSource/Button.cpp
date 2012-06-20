@@ -11,12 +11,20 @@ Button::Button( double inX, double inY,
         : PageComponent( inX, inY ),
           mVisible( true ), 
           mHover( false ), mDragOver( false ),
-          mWide( inWide ), mHigh( inHigh ), mPixWidth( inPixelSize ) {
+          mWide( inWide ), mHigh( inHigh ), mPixWidth( inPixelSize ),
+          mMouseOverTip( NULL ) {
     }
 
 
 Button::~Button() {
     }
+
+
+
+void Button::setMouseOverTip( const char *inTipMessage ) {
+    mMouseOverTip = inTipMessage;
+    }
+
 
 
 
@@ -109,6 +117,9 @@ char Button::isInside( float inX, float inY ) {
 void Button::pointerMove( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         mHover = true;
+        if( mMouseOverTip != NULL ) {
+            setToolTipDirect( (char*)mMouseOverTip );
+            }
         }
     else {
         mHover = false;
@@ -125,6 +136,9 @@ void Button::pointerDown( float inX, float inY ) {
 void Button::pointerDrag( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         mDragOver = true;
+        if( mMouseOverTip != NULL ) {
+            setToolTipDirect( (char*)mMouseOverTip );
+            }
         }
     else {
         mDragOver = false;

@@ -40,6 +40,9 @@ loadBackpackDescription "Load your backpack:"
 
 loadBackpack "Backpack"
 
+loadBackpackTip "Load your backpack before leaving"
+
+
 doneEdit "Done"
 
 undo "Undo"

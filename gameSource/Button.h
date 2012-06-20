@@ -20,6 +20,11 @@ class Button : public PageComponent, public ActionListenerList {
                 double inPixelSize );
 
         virtual ~Button();
+
+        // set the tool tip that will be passed up the parent chain
+        // when this button is moused over
+        // NULL disables tip display for this button
+        virtual void setMouseOverTip( const char *inTipMessage );
         
 
         virtual void setVisible( char inIsVible );
@@ -48,6 +53,9 @@ class Button : public PageComponent, public ActionListenerList {
 
         double mWide, mHigh, mPixWidth;
         
+        const char *mMouseOverTip;
+
+
         char isInside( float inX, float inY );
 
 
