@@ -68,7 +68,8 @@ $defaultPrices = array(
     array( 106, 10, "Wire Bridge" ),
     array( 110, 20, "Electric Floor" ),
 
-    array( 500, 20, "Saw" )
+    array( 500, 20, "Saw" ),
+    array( 501, 100, "Cutting Torch" )
     );
 
 
