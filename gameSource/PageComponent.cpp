@@ -10,6 +10,14 @@ PageComponent::PageComponent( double inX, double inY )
         
 
 
+doublePair PageComponent::getCenter() {
+    doublePair c = { mX, mY };
+
+    return c;
+    }
+
+
+
 void PageComponent::setParent( PageComponent *inParent ) {
     mParent = inParent;
     }

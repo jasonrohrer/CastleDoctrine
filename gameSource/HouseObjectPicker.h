@@ -41,7 +41,7 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         virtual int *getIDList( int *outNumIDs );
 
 
-        virtual void setPriceList( char *inPriceList );
+        virtual void setPriceList( const char *inPriceList );
         
         
         // inRecords destroyed by caller

@@ -873,6 +873,11 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setPriceList( priceList );
                     editHousePage->setLootValue( lootValue );
                     
+                    // empty, because house just checked out an nothing
+                    // bought yet
+                    editHousePage->setPurchaseList( "#" );
+                    
+
                     delete [] houseMap;
                     delete [] vaultContents;
                     delete [] backpackContents;

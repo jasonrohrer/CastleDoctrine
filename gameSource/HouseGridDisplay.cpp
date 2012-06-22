@@ -203,7 +203,7 @@ HouseGridDisplay::~HouseGridDisplay() {
 
 
 
-void HouseGridDisplay::setHouseMap( char *inHouseMap ) {
+void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }

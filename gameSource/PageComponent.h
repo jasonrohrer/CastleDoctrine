@@ -14,6 +14,10 @@ class PageComponent : public GUIComponent {
         
         virtual ~PageComponent() {
             };
+
+        
+        virtual doublePair getCenter();
+        
         
         virtual void setParent( PageComponent *inParent );
 

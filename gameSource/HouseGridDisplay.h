@@ -65,7 +65,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
         // destroyed by caller
-        virtual void setHouseMap( char *inHouseMap );
+        virtual void setHouseMap( const char *inHouseMap );
         
         
         // destroyed by caller

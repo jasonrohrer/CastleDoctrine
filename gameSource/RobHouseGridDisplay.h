@@ -35,7 +35,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
 
         // override to update visibility when map changes
-        virtual void setHouseMap( char *inHouseMap );
+        virtual void setHouseMap( const char *inHouseMap );
 
         // override to shift visibility map too
         virtual void setVisibleOffset( int inXOffset, int inYOffset );

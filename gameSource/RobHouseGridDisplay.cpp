@@ -96,7 +96,7 @@ char *RobHouseGridDisplay::getMoveList() {
     }
 
 
-void RobHouseGridDisplay::setHouseMap( char *inHouseMap ) {
+void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mSuccess = 0;
     mDead = false;
 

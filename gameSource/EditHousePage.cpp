@@ -76,7 +76,7 @@ EditHousePage::~EditHousePage() {
 
 
 
-void EditHousePage::setHouseMap( char *inHouseMap ) {
+void EditHousePage::setHouseMap( const char *inHouseMap ) {
     if( mStartHouseMap != NULL ) {
         delete [] mStartHouseMap;
         }
@@ -95,7 +95,7 @@ char *EditHousePage::getHouseMap() {
 
 
 
-void EditHousePage::setVaultContents( char *inVaultContents ) {
+void EditHousePage::setVaultContents( const char *inVaultContents ) {
     if( mVaultContents != NULL ) {
         delete [] mVaultContents;
         }
@@ -110,7 +110,7 @@ char *EditHousePage::getVaultContents() {
 
 
 
-void EditHousePage::setBackpackContents( char *inBackpackContents ) {
+void EditHousePage::setBackpackContents( const char *inBackpackContents ) {
     if( mBackpackContents != NULL ) {
         delete [] mBackpackContents;
         }
@@ -137,7 +137,7 @@ char *EditHousePage::getPurchaseList() {
     }
 
 
-void EditHousePage::setPurchaseList( char *inPurchaseList ) {
+void EditHousePage::setPurchaseList( const char *inPurchaseList ) {
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
         }
@@ -147,7 +147,7 @@ void EditHousePage::setPurchaseList( char *inPurchaseList ) {
 
 
 
-void EditHousePage::setPriceList( char *inPriceList ) {
+void EditHousePage::setPriceList( const char *inPriceList ) {
     if( mPriceList != NULL ) {
         delete [] mPriceList;
         }
@@ -294,14 +294,14 @@ void EditHousePage::draw( doublePair inViewCenter,
         
     doublePair labelPos = { 0, 6.75 };
     
-    drawMessage( translate( "editDescription" ), labelPos, false );
+    drawMessage( "editDescription", labelPos, false );
     
 
 
     labelPos.x = 8;
     labelPos.y = 2;
     
-    drawMessage( translate( "editBalance" ), labelPos, false );
+    drawMessage( "editBalance", labelPos, false );
     
     labelPos.y = 1.25;
 

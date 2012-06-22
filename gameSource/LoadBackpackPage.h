@@ -14,6 +14,9 @@
 
 #define NUM_PACK_SLOTS 8
 
+// must be a whole multiple of NUM_PACK_SLOTS
+#define NUM_VAULT_SLOTS 48
+
 
 typedef struct QuantityRecord {
         int objectID;
@@ -71,10 +74,9 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
         virtual void makeActive( char inFresh );
 
-    protected:
 
-        
-        char *mVaultContents;
+
+    protected:
         
         int mLootValue;
 
@@ -88,6 +90,8 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
+
+        InventorySlotButton *mVaultSlots[ NUM_VAULT_SLOTS ];
 
         SimpleVector<QuantityRecord> mPurchaseRecords;
 

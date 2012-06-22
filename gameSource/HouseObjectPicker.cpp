@@ -249,7 +249,7 @@ int *HouseObjectPicker::getIDList( int *outNumIDs ) {
 
 
 
-void HouseObjectPicker::setPriceList( char *inPriceList ) {
+void HouseObjectPicker::setPriceList( const char *inPriceList ) {
     // parse it
     int numBigParts;
     char **bigParts = split( inPriceList, ":", &numBigParts );

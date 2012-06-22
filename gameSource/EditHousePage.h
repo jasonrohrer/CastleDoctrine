@@ -22,17 +22,17 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         
         // destroyed by caller
-        void setHouseMap( char *inHouseMap );
+        void setHouseMap( const char *inHouseMap );
         char *getHouseMap();
 
 
         // destroyed by caller
-        void setVaultContents( char *inVaultContents );
+        void setVaultContents( const char *inVaultContents );
         char *getVaultContents();
 
 
         // destroyed by caller
-        void setBackpackContents( char *inBackpackContents );
+        void setBackpackContents( const char *inBackpackContents );
         char *getBackpackContents();
 
 
@@ -40,12 +40,12 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *getEditList();
         
         // list of purchases added to vault/backpack
-        void setPurchaseList( char *inPurchaseList );
+        void setPurchaseList( const char *inPurchaseList );
         char *getPurchaseList();
         
         
         // destroyed by caller
-        void setPriceList( char *inPriceList );
+        void setPriceList( const char *inPriceList );
         char *getPriceList();
         
         

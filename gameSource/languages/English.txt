@@ -38,6 +38,9 @@ editDescription "Work on your house:"
 
 loadBackpackDescription "Load your backpack:"
 
+backpackLabel "Backpack:"
+vaultLabel "Vault:"
+
 loadBackpack "Backpack"
 
 loadBackpackTip "Load your backpack before leaving"
