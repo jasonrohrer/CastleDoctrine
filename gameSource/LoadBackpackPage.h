@@ -9,9 +9,18 @@
 
 
 #include "minorGems/ui/event/ActionListener.h"
+#include "minorGems/util/SimpleVector.h"
 
 
 #define NUM_PACK_SLOTS 8
+
+
+typedef struct QuantityRecord {
+        int objectID;
+        int quantity;
+    } QuantityRecord;
+
+
 
 
 
@@ -66,7 +75,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         
         char *mVaultContents;
-        char *mBackpackContents;
 
 
         char *mPurchaseList;
@@ -84,9 +92,16 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
 
+        SimpleVector<QuantityRecord> mPurchaseRecords;
+
 
         void checkBuyButtonStatus();
         
+
+        void addToQuantity( 
+            SimpleVector<QuantityRecord> *inOldQuanties, int inAddObjectID );
+        
+
 
     };
 

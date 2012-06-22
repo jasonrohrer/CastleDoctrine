@@ -1177,7 +1177,7 @@ function cd_endEditHouse() {
 
     $vault_contents = cd_requestFilter( "vault_contents", "/[#0-9:]+/" );
 
-    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9]+/" );
+    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
     $price_list = cd_requestFilter( "price_list",
                                     "/\d+:[0-9@#]+:[A-F0-9]+/i" );

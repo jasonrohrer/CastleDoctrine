@@ -21,7 +21,6 @@ extern Font *mainFont;
 
 LoadBackpackPage::LoadBackpackPage() 
         : mVaultContents( NULL ),
-          mBackpackContents( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
           mToolPicker( 8, 5, true ),
@@ -68,11 +67,6 @@ LoadBackpackPage::~LoadBackpackPage() {
         delete [] mVaultContents;
         }
 
-    if( mBackpackContents != NULL ) {
-        delete [] mBackpackContents;
-        }
-
-
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
         }
@@ -100,18 +94,111 @@ char *LoadBackpackPage::getVaultContents() {
 
 
 void LoadBackpackPage::setBackpackContents( char *inBackpackContents ) {
-    if( mBackpackContents != NULL ) {
-        delete [] mBackpackContents;
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        // clear slots
+        mPackSlots[i]->setObject( -1 );
         }
-    mBackpackContents = stringDuplicate( inBackpackContents );
 
-    mBuyButton.setVisible( true );
+    // empty pack represented by "#"
+    if( strcmp( inBackpackContents, "#" ) != 0 ) {
+        int numParts;
+        char **parts = split( inBackpackContents, "#", &numParts );
+
+        int numFilledSlots = 0;
+        
+        for( int i=0; i<numParts; i++ ) {
+            if( numFilledSlots < NUM_PACK_SLOTS ) {            
+                int id, quantity;
+                int numRead = sscanf( parts[i], "%d:%d", &id, &quantity  );
+                
+                if( numRead == 2 ) {
+                    for( int j=0; j<quantity; j++ ) {
+                        if( numFilledSlots < NUM_PACK_SLOTS ) {
+                            mPackSlots[numFilledSlots]->setObject( id );
+                            numFilledSlots++;
+                            }
+                        }
+                    }
+                }
+            delete [] parts[i];
+            }
+        delete [] parts;
+        }
+    
+
+    checkBuyButtonStatus();
     }
 
 
 
+void LoadBackpackPage::addToQuantity( 
+    SimpleVector<QuantityRecord> *inOldQuanties, int inAddObjectID ) {
+    
+    char found = false;
+    for( int j=0; j<inOldQuanties->size(); j++ ) {
+        QuantityRecord *r = inOldQuanties->getElement( j );
+        
+        if( r->objectID == inAddObjectID ) {
+            r->quantity ++;
+            found = true;
+            break;
+            }
+                    }
+    
+    if( !found ) {
+        // new record for this object ID
+        
+        QuantityRecord r = { inAddObjectID, 1 };
+        inOldQuanties->push_back( r );
+        }
+    }
+
+
+
+
 char *LoadBackpackPage::getBackpackContents() {
-    return stringDuplicate( mBackpackContents );
+
+    SimpleVector<QuantityRecord> quantities;
+    
+    
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        int id = mPackSlots[i]->getObject();
+        
+        if( id != -1 ) {
+            addToQuantity( &quantities, id );
+            }
+        }
+
+    SimpleVector<char*> stringParts;
+    for( int i=0; i<quantities.size(); i++ ) {
+        
+        QuantityRecord *r = quantities.getElement( i );
+        
+        char *part = autoSprintf( "%d:%d", r->objectID, r->quantity );
+            
+        stringParts.push_back( part );
+        }
+
+
+    if( stringParts.size() > 0 ) {
+        
+        char **partArray = stringParts.getElementArray();
+    
+        char *contentsString = join( partArray, stringParts.size(), "#" );
+        
+        delete [] partArray;
+        
+        for( int i=0; i<stringParts.size(); i++ ) {
+            delete [] *( stringParts.getElement( i ) );
+            }
+        
+        return contentsString;
+        }
+    else {
+        // empty pack represented by "#"
+        return stringDuplicate( "#" );
+        }
     }
 
 
@@ -191,6 +278,9 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 // empty slot!
                 mPackSlots[i]->setObject( selectedObject );
                 mLootValue -= price;
+                
+
+                addToQuantity( &mPurchaseRecords, selectedObject );
                 break;
                 }
             }
