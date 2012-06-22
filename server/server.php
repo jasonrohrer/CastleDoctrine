@@ -1545,7 +1545,7 @@ function cd_endEditHouse() {
             return;
             }
         
-        $loot_value -= $priceArray[ "$id" ];
+        $loot_value -= $quantity * $priceArray[ "$id" ];
 
         if( $loot_value < 0 ) {
             // more edits than they could afford

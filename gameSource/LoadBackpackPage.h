@@ -75,9 +75,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         
         char *mVaultContents;
-
-
-        char *mPurchaseList;
         
         int mLootValue;
 
@@ -96,6 +93,18 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
 
         void checkBuyButtonStatus();
+
+
+        // parses a string in the following form:
+        // id:quanity#id:quanity#id:quantity (or # for an empty list)
+        //
+        // and adds the pairs as recors in a empty record list
+        void fromString( char *inListString, 
+                         SimpleVector<QuantityRecord> *inEmptyList );
+        
+        // converts a list of QuantityRecords to a string like
+        //  id:quanity#id:quanity#id:quantity (or # for an empty list)
+        char *toString( SimpleVector<QuantityRecord> *inQuantities );
         
 
         void addToQuantity( 

@@ -22,7 +22,6 @@ extern Font *mainFont;
 LoadBackpackPage::LoadBackpackPage() 
         : mVaultContents( NULL ),
           // starts empty
-          mPurchaseList( stringDuplicate( "#" ) ),
           mToolPicker( 8, 5, true ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
@@ -67,9 +66,6 @@ LoadBackpackPage::~LoadBackpackPage() {
         delete [] mVaultContents;
         }
 
-    if( mPurchaseList != NULL ) {
-        delete [] mPurchaseList;
-        }
 
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         delete mPackSlots[i];
@@ -93,39 +89,56 @@ char *LoadBackpackPage::getVaultContents() {
 
 
 
+void LoadBackpackPage::fromString( 
+    char *inListString, 
+    SimpleVector<QuantityRecord> *inEmptyList ) {
+    
+    // empty pack represented by "#"
+    if( strcmp( inListString, "#" ) != 0 ) {
+        int numParts;
+        char **parts = split( inListString, "#", &numParts );
+
+        for( int i=0; i<numParts; i++ ) {
+            int id, quantity;
+            int numRead = sscanf( parts[i], "%d:%d", &id, &quantity  );
+                
+            if( numRead == 2 ) {
+                QuantityRecord r = { id, quantity };
+                inEmptyList->push_back( r );
+                }
+            delete [] parts[i];
+            }
+        delete [] parts;
+        }
+    }
+
+
+
 void LoadBackpackPage::setBackpackContents( char *inBackpackContents ) {
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         // clear slots
         mPackSlots[i]->setObject( -1 );
         }
 
-    // empty pack represented by "#"
-    if( strcmp( inBackpackContents, "#" ) != 0 ) {
-        int numParts;
-        char **parts = split( inBackpackContents, "#", &numParts );
-
-        int numFilledSlots = 0;
+    SimpleVector<QuantityRecord> tempRecords;
+    
+    fromString( inBackpackContents, &tempRecords );
+    
+    int numFilledSlots = 0;
         
-        for( int i=0; i<numParts; i++ ) {
-            if( numFilledSlots < NUM_PACK_SLOTS ) {            
-                int id, quantity;
-                int numRead = sscanf( parts[i], "%d:%d", &id, &quantity  );
-                
-                if( numRead == 2 ) {
-                    for( int j=0; j<quantity; j++ ) {
-                        if( numFilledSlots < NUM_PACK_SLOTS ) {
-                            mPackSlots[numFilledSlots]->setObject( id );
-                            numFilledSlots++;
-                            }
-                        }
+    for( int i=0; i<tempRecords.size(); i++ ) {
+        if( numFilledSlots < NUM_PACK_SLOTS ) {            
+            QuantityRecord *r = tempRecords.getElement( i );
+            
+            for( int j=0; j<r->quantity; j++ ) {
+                if( numFilledSlots < NUM_PACK_SLOTS ) {
+                    mPackSlots[numFilledSlots]->setObject( r->objectID );
+                    numFilledSlots++;
                     }
                 }
-            delete [] parts[i];
             }
-        delete [] parts;
         }
-    
-
+   
     checkBuyButtonStatus();
     }
 
@@ -156,24 +169,14 @@ void LoadBackpackPage::addToQuantity(
 
 
 
-char *LoadBackpackPage::getBackpackContents() {
-
-    SimpleVector<QuantityRecord> quantities;
+char *LoadBackpackPage::toString( 
+    SimpleVector<QuantityRecord> *inQuantities ) {
     
     
-
-    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        int id = mPackSlots[i]->getObject();
-        
-        if( id != -1 ) {
-            addToQuantity( &quantities, id );
-            }
-        }
-
     SimpleVector<char*> stringParts;
-    for( int i=0; i<quantities.size(); i++ ) {
+    for( int i=0; i<inQuantities->size(); i++ ) {
         
-        QuantityRecord *r = quantities.getElement( i );
+        QuantityRecord *r = inQuantities->getElement( i );
         
         char *part = autoSprintf( "%d:%d", r->objectID, r->quantity );
             
@@ -199,21 +202,40 @@ char *LoadBackpackPage::getBackpackContents() {
         // empty pack represented by "#"
         return stringDuplicate( "#" );
         }
+
+    }
+
+
+
+
+char *LoadBackpackPage::getBackpackContents() {
+
+    SimpleVector<QuantityRecord> quantities;
+    
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        int id = mPackSlots[i]->getObject();
+        
+        if( id != -1 ) {
+            addToQuantity( &quantities, id );
+            }
+        }
+
+    return toString( &quantities );
     }
 
 
 
 
 char *LoadBackpackPage::getPurchaseList() {
-    return stringDuplicate( mPurchaseList );
+    
+    return toString( &mPurchaseRecords );
     }
 
 
 void LoadBackpackPage::setPurchaseList( char *inPurchaseList ) {
-    if( mPurchaseList != NULL ) {
-        delete [] mPurchaseList;
-        }
-    mPurchaseList = stringDuplicate( inPurchaseList );
+    mPurchaseRecords.deleteAll();
+    
+    fromString( inPurchaseList, &mPurchaseRecords );
     }
 
 
