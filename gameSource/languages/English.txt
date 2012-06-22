@@ -45,6 +45,8 @@ loadBackpack "Backpack"
 
 loadBackpackTip "Load your backpack before leaving"
 
+backpackUndoTip "Undo purchase of %s"
+
 
 doneEdit "Done"
 

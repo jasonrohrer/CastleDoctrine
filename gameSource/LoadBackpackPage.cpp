@@ -34,7 +34,9 @@ LoadBackpackPage::LoadBackpackPage()
     mDoneButton.addActionListener( this );
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );
+    
     mToolPicker.addActionListener( this );
+
 
     mBuyButton.addActionListener( this );
     mBuyButton.setVisible( false );
@@ -203,7 +205,7 @@ void LoadBackpackPage::addToQuantity(
             found = true;
             break;
             }
-                    }
+        }
     
     if( !found ) {
         // new record for this object ID
@@ -212,6 +214,23 @@ void LoadBackpackPage::addToQuantity(
         inOldQuanties->push_back( r );
         }
     }
+
+
+
+void LoadBackpackPage::subtractFromQuantity( 
+    SimpleVector<QuantityRecord> *inOldQuanties, int inSubtractObjectID ) {
+    
+    for( int j=0; j<inOldQuanties->size(); j++ ) {
+        QuantityRecord *r = inOldQuanties->getElement( j );
+        
+        if( r->objectID == inSubtractObjectID ) {
+            r->quantity --;
+            break;
+            }
+        }
+    }
+
+
 
 
 
@@ -283,6 +302,12 @@ void LoadBackpackPage::setPurchaseList( char *inPurchaseList ) {
     mPurchaseRecords.deleteAll();
     
     fromString( inPurchaseList, &mPurchaseRecords );
+
+    // this is a fresh loading session
+    // undoing old purchase history here would be confusing (and sometimes
+    // incorrect)
+    mPurchaseHistory.deleteAll();
+    mUndoButton.setVisible( false );
     }
 
 
@@ -323,7 +348,30 @@ void LoadBackpackPage::checkBuyButtonStatus() {
     }
 
 
+void LoadBackpackPage::checkUndoStatus() {
+            
+    if( mPurchaseHistory.size() == 0 ) {
+        // history exhausted
+        mUndoButton.setVisible( false );
+        }
+    else {
+        mUndoButton.setVisible( true );
+        
+        int lastBuy = 
+            *( mPurchaseHistory.getElement( mPurchaseHistory.size() - 1 ) );
+        
 
+        char *tip = autoSprintf( translate( "backpackUndoTip" ),
+                                 getToolDescription( lastBuy ) );
+        printf( "%s\n", tip );
+        
+        mUndoButton.setMouseOverTip( tip );
+        delete [] tip;
+        }
+    }
+
+        
+                
 
 
 void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
@@ -334,8 +382,41 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         checkBuyButtonStatus();
         }
     else if( inTarget == &mUndoButton ) {
-        // figure out how undo makes sense here
-        
+        if( mPurchaseHistory.size() > 0 ) {
+            // undo last one
+            int idToUnbuy = 
+                *( mPurchaseHistory.getElement( 
+                       mPurchaseHistory.size() - 1 ) );
+            mPurchaseHistory.deleteElement( mPurchaseHistory.size() - 1 );
+
+            subtractFromQuantity( &mPurchaseRecords, idToUnbuy );
+            
+            mLootValue += mToolPicker.getPrice( idToUnbuy );
+
+            // find in backpack?
+            char found = false;
+            for( int i=NUM_PACK_SLOTS - 1; i>=0; i-- ) {
+                if( mPackSlots[i]->getObject() == idToUnbuy ) {
+                    mPackSlots[i]->setObject( -1 );
+                    found = true;
+                    break;
+                    }
+                }
+            
+            if( !found ) {
+                // check vault
+                for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+                    if( mVaultSlots[i]->getObject() == idToUnbuy ) {
+                        mVaultSlots[i]->setQuantity( 
+                            mVaultSlots[i]->getQuantity() - 1 );
+                        found = true;
+                        break;
+                        }
+                    }
+                }
+            }
+
+        checkUndoStatus();
         }
     else if( inTarget == &mBuyButton ) {
         int selectedObject = mToolPicker.getSelectedObject();
@@ -350,6 +431,10 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 
 
                 addToQuantity( &mPurchaseRecords, selectedObject );
+                mPurchaseHistory.push_back( selectedObject );
+                
+                checkUndoStatus();
+
                 break;
                 }
             }

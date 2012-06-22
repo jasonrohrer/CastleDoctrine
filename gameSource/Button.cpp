@@ -1,6 +1,7 @@
 #include "Button.h"
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/util/stringUtils.h"
 
 #include <math.h>
 
@@ -17,12 +18,24 @@ Button::Button( double inX, double inY,
 
 
 Button::~Button() {
+    if( mMouseOverTip != NULL ) {
+        delete [] mMouseOverTip;
+        }
     }
 
 
 
 void Button::setMouseOverTip( const char *inTipMessage ) {
-    mMouseOverTip = inTipMessage;
+    if( mMouseOverTip != NULL ) {
+        delete [] mMouseOverTip;
+        }
+
+    if( inTipMessage != NULL ) {
+        mMouseOverTip = stringDuplicate( inTipMessage );
+        }
+    else {
+        mMouseOverTip = NULL;
+        }
     }
 
 

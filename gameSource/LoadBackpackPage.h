@@ -94,10 +94,14 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         InventorySlotButton *mVaultSlots[ NUM_VAULT_SLOTS ];
 
         SimpleVector<QuantityRecord> mPurchaseRecords;
-
+        
+        // for undo
+        SimpleVector<int> mPurchaseHistory;
+        
 
         void checkBuyButtonStatus();
-
+        void checkUndoStatus();
+        
 
         // parses a string in the following form:
         // id:quanity#id:quanity#id:quantity (or # for an empty list)
@@ -113,6 +117,9 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         void addToQuantity( 
             SimpleVector<QuantityRecord> *inOldQuanties, int inAddObjectID );
+
+        void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
+                                   int inSubtractObjectID );
         
 
 
