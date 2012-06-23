@@ -40,7 +40,6 @@ LoadBackpackPage::LoadBackpackPage()
 
     mBuyButton.addActionListener( this );
     mBuyButton.setVisible( false );
-    mBuyButton.setMouseOverTip( translate( "buyTip" ) );
     
     doublePair slotCenter = { -8, 5 };
 
@@ -314,21 +313,25 @@ void LoadBackpackPage::setPurchaseList( char *inPurchaseList ) {
 
 void LoadBackpackPage::setPriceList( char *inPriceList ) {
     mToolPicker.setPriceList( inPriceList );
+       
+    checkBuyButtonStatus();
     }
 
 
 
 void LoadBackpackPage::setLootValue( int inLootValue ) {
     mLootValue = inLootValue;
+
+    checkBuyButtonStatus();
     }
 
 
 
 void LoadBackpackPage::checkBuyButtonStatus() {
     int selectedObject = mToolPicker.getSelectedObject();
-        
-    int price = mToolPicker.getPrice( selectedObject );
     
+    int price = mToolPicker.getPrice( selectedObject );
+
     if( price > mLootValue ) {
         mBuyButton.setVisible( false );
         return;
@@ -340,12 +343,20 @@ void LoadBackpackPage::checkBuyButtonStatus() {
         if( mPackSlots[i]->getObject() == -1 ) {
             // empty slot found
             mBuyButton.setVisible( true );
+
+            char *tip = autoSprintf( translate( "buyTip" ),
+                                     getToolDescription( selectedObject ) );
+        
+            mBuyButton.setMouseOverTip( tip );
+            delete [] tip;                
+
             return;
             }
         }
     // no empty slots
     mBuyButton.setVisible( false );
     }
+
 
 
 void LoadBackpackPage::checkUndoStatus() {
@@ -363,7 +374,6 @@ void LoadBackpackPage::checkUndoStatus() {
 
         char *tip = autoSprintf( translate( "backpackUndoTip" ),
                                  getToolDescription( lastBuy ) );
-        printf( "%s\n", tip );
         
         mUndoButton.setMouseOverTip( tip );
         delete [] tip;
@@ -415,7 +425,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                     }
                 }
             }
-
+        checkBuyButtonStatus();
+        
         checkUndoStatus();
         }
     else if( inTarget == &mBuyButton ) {
