@@ -99,192 +99,31 @@ LoadBackpackPage::~LoadBackpackPage() {
 
 
 void LoadBackpackPage::setVaultContents( char *inVaultContents ) {
-    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
-        // clear slots
-        mVaultSlots[i]->setObject( -1 );
-        }
-
-    SimpleVector<QuantityRecord> tempRecords;
-    
-    fromString( inVaultContents, &tempRecords );
-    
-    for( int i=0; i<tempRecords.size(); i++ ) {
-        QuantityRecord *r = tempRecords.getElement( i );
-        
-        mVaultSlots[i]->setObject( r->objectID );
-        mVaultSlots[i]->setQuantity( r->quantity );
-        }    
+    vaultSlotsFromString( inVaultContents, mVaultSlots );
     }
 
 
 
 char *LoadBackpackPage::getVaultContents() {
-    SimpleVector<QuantityRecord> tempRecords;
-    
-    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
-        int id = mVaultSlots[i]->getObject();
-        if( id != -1 ) {
-            
-            QuantityRecord r = { id,
-                                 mVaultSlots[i]->getQuantity() };
-            tempRecords.push_back( r );
-            }
-        }
-    
-    return toString( &tempRecords );
-    }
 
-
-
-void LoadBackpackPage::fromString( 
-    char *inListString, 
-    SimpleVector<QuantityRecord> *inEmptyList ) {
-    
-    // empty pack represented by "#"
-    if( strcmp( inListString, "#" ) != 0 ) {
-        int numParts;
-        char **parts = split( inListString, "#", &numParts );
-
-        for( int i=0; i<numParts; i++ ) {
-            int id, quantity;
-            int numRead = sscanf( parts[i], "%d:%d", &id, &quantity  );
-                
-            if( numRead == 2 ) {
-                QuantityRecord r = { id, quantity };
-                inEmptyList->push_back( r );
-                }
-            delete [] parts[i];
-            }
-        delete [] parts;
-        }
+    return stringFromInventorySlots( mVaultSlots, NUM_VAULT_SLOTS );
     }
 
 
 
 void LoadBackpackPage::setBackpackContents( char *inBackpackContents ) {
-    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        // clear slots
-        mPackSlots[i]->setObject( -1 );
-        }
 
-    SimpleVector<QuantityRecord> tempRecords;
-    
-    fromString( inBackpackContents, &tempRecords );
-    
-    int numFilledSlots = 0;
-        
-    for( int i=0; i<tempRecords.size(); i++ ) {
-        if( numFilledSlots < NUM_PACK_SLOTS ) {            
-            QuantityRecord *r = tempRecords.getElement( i );
-            
-            for( int j=0; j<r->quantity; j++ ) {
-                if( numFilledSlots < NUM_PACK_SLOTS ) {
-                    mPackSlots[numFilledSlots]->setObject( r->objectID );
-                    numFilledSlots++;
-                    }
-                }
-            }
-        }
-   
+    backpackSlotsFromString( inBackpackContents,
+                             mPackSlots );
+       
     checkBuyButtonStatus();
     }
 
 
 
-void LoadBackpackPage::addToQuantity( 
-    SimpleVector<QuantityRecord> *inOldQuanties, int inAddObjectID ) {
-    
-    char found = false;
-    for( int j=0; j<inOldQuanties->size(); j++ ) {
-        QuantityRecord *r = inOldQuanties->getElement( j );
-        
-        if( r->objectID == inAddObjectID ) {
-            r->quantity ++;
-            found = true;
-            break;
-            }
-        }
-    
-    if( !found ) {
-        // new record for this object ID
-        
-        QuantityRecord r = { inAddObjectID, 1 };
-        inOldQuanties->push_back( r );
-        }
-    }
-
-
-
-void LoadBackpackPage::subtractFromQuantity( 
-    SimpleVector<QuantityRecord> *inOldQuanties, int inSubtractObjectID ) {
-    
-    for( int j=0; j<inOldQuanties->size(); j++ ) {
-        QuantityRecord *r = inOldQuanties->getElement( j );
-        
-        if( r->objectID == inSubtractObjectID ) {
-            r->quantity --;
-            break;
-            }
-        }
-    }
-
-
-
-
-
-
-char *LoadBackpackPage::toString( 
-    SimpleVector<QuantityRecord> *inQuantities ) {
-    
-    
-    SimpleVector<char*> stringParts;
-    for( int i=0; i<inQuantities->size(); i++ ) {
-        
-        QuantityRecord *r = inQuantities->getElement( i );
-        
-        char *part = autoSprintf( "%d:%d", r->objectID, r->quantity );
-            
-        stringParts.push_back( part );
-        }
-
-
-    if( stringParts.size() > 0 ) {
-        
-        char **partArray = stringParts.getElementArray();
-    
-        char *contentsString = join( partArray, stringParts.size(), "#" );
-        
-        delete [] partArray;
-        
-        for( int i=0; i<stringParts.size(); i++ ) {
-            delete [] *( stringParts.getElement( i ) );
-            }
-        
-        return contentsString;
-        }
-    else {
-        // empty pack represented by "#"
-        return stringDuplicate( "#" );
-        }
-
-    }
-
-
-
-
 char *LoadBackpackPage::getBackpackContents() {
 
-    SimpleVector<QuantityRecord> quantities;
-    
-    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        int id = mPackSlots[i]->getObject();
-        
-        if( id != -1 ) {
-            addToQuantity( &quantities, id );
-            }
-        }
-
-    return toString( &quantities );
+    return stringFromInventorySlots( mPackSlots, NUM_PACK_SLOTS );
     }
 
 

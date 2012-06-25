@@ -7,22 +7,12 @@
 
 #include "HouseObjectPicker.h"
 
+#include "inventory.h"
+
+
 
 #include "minorGems/ui/event/ActionListener.h"
 #include "minorGems/util/SimpleVector.h"
-
-
-#define NUM_PACK_SLOTS 8
-
-// must be a whole multiple of NUM_PACK_SLOTS
-#define NUM_VAULT_SLOTS 48
-
-
-typedef struct QuantityRecord {
-        int objectID;
-        int quantity;
-    } QuantityRecord;
-
 
 
 
@@ -101,25 +91,6 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         void checkBuyButtonStatus();
         void checkUndoStatus();
-        
-
-        // parses a string in the following form:
-        // id:quanity#id:quanity#id:quantity (or # for an empty list)
-        //
-        // and adds the pairs as recors in a empty record list
-        void fromString( char *inListString, 
-                         SimpleVector<QuantityRecord> *inEmptyList );
-        
-        // converts a list of QuantityRecords to a string like
-        //  id:quanity#id:quanity#id:quantity (or # for an empty list)
-        char *toString( SimpleVector<QuantityRecord> *inQuantities );
-        
-
-        void addToQuantity( 
-            SimpleVector<QuantityRecord> *inOldQuanties, int inAddObjectID );
-
-        void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
-                                   int inSubtractObjectID );
         
 
 
