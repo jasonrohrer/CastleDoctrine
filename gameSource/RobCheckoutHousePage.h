@@ -27,6 +27,10 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         // destroyed by caller if not NULL
         virtual char *getHouseMap();
         
+        // destroyed by caller if not NULL
+        virtual char *getBackpackContents();
+        
+
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
@@ -40,7 +44,7 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         
         char *mOwnerName;
         char *mHouseMap;
-
+        char *mBackpackContents;
 
         TextButton mMenuButton;
 

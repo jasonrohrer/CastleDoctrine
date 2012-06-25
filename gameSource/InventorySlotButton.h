@@ -1,3 +1,5 @@
+#ifndef INVENTORY_SLOT_BUTTON_INCLUDED
+#define INVENTORY_SLOT_BUTTON_INCLUDED
 
 
 #include "SpriteButton.h"
@@ -40,3 +42,6 @@ class InventorySlotButton : public SpriteButton {
         virtual void drawContents();
     };
 
+
+
+#endif

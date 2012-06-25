@@ -388,7 +388,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
+    
     selfHouseTestPage = new RobHousePage();
+    selfHouseTestPage->showBackpack( false );
+    
     checkinHousePage = new CheckinHousePage();
     menuPage = new MenuPage();
     robCheckoutHousePage = new RobCheckoutHousePage();
@@ -1104,6 +1107,14 @@ void drawFrame( char inUpdate ) {
                     
                     robHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
+
+                    char *backpackContents = 
+                        robCheckoutHousePage->getBackpackContents();
+                    
+                    robHousePage->setBackpackContents( backpackContents );
+                    
+                    delete [] backpackContents;
+
 
                     char *ownerName = robCheckoutHousePage->getOwnerName();
                     

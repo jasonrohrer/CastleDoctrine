@@ -31,6 +31,31 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
 
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
+
+
+    doublePair slotCenter = { 7.25, 4 };
+
+    int currentSlot = 0;
+    for( int c=0; c<2; c++ ) {
+        
+        for( int i=0; i<NUM_PACK_SLOTS / 2; i++ ) {
+            
+            mPackSlots[currentSlot] = 
+                new InventorySlotButton( mainFont, 
+                                         slotCenter.x, slotCenter.y,
+                                         1 / 16.0 );
+            slotCenter.y -= 1.5;
+            
+            addComponent( mPackSlots[currentSlot] );
+            mPackSlots[currentSlot]->addActionListener( this );
+            currentSlot++;
+            }
+        
+        // next column
+        slotCenter.y = 4;
+        slotCenter.x += 1.5;
+        }
+    
     }
 
 
@@ -40,7 +65,20 @@ RobHousePage::~RobHousePage() {
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        delete mPackSlots[i];
+        }
     }
+
+
+
+void RobHousePage::showBackpack( char inShow ) {
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        mPackSlots[i]->setVisible( inShow );
+        }
+    }
+
 
 
 
@@ -52,6 +90,21 @@ void RobHousePage::setHouseMap( char *inHouseMap ) {
 
 char *RobHousePage::getHouseMap() {
     return mGridDisplay.getHouseMap();
+    }
+
+
+
+void RobHousePage::setBackpackContents( char *inBackpackContents ) {
+
+    backpackSlotsFromString( inBackpackContents,
+                             mPackSlots );
+    }
+
+
+
+char *RobHousePage::getBackpackContents() {
+
+    return stringFromInventorySlots( mPackSlots, NUM_PACK_SLOTS );
     }
 
 
@@ -123,8 +176,11 @@ void RobHousePage::draw( doublePair inViewCenter,
     if( mDescription != NULL ) {
         doublePair labelPos = { 0, 6.75 };
         
-        drawMessage( mDescription, labelPos, false );
+        drawMessage( mDescription, labelPos );
         }
+    
+    doublePair labelPos = { 8, 5.5 };
+    drawMessage( "robBackpack", labelPos );
     }
 
         

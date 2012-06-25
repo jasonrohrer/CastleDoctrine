@@ -1,3 +1,6 @@
+#ifndef INVENTORY_INCLUDED
+#define INVENTORY_INCLUDED
+
 // shared utility function for decoding/encoding inventories
 
 
@@ -69,3 +72,7 @@ void vaultSlotsFromString(
 // (works for both backpack and vault)
 char *stringFromInventorySlots( 
     InventorySlotButton *inSlots[], int inNumSlots );
+
+
+
+#endif

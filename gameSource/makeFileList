@@ -46,6 +46,7 @@ HouseObjectPicker.cpp \
 houseTransitions.cpp \
 StaleHousePage.cpp \
 tools.cpp \
+inventory.cpp \
 LoadBackpackPage.cpp \
 InventorySlotButton.cpp \
 

@@ -75,6 +75,8 @@ startTileDescription "Welcome Mat"
 
 robDescription "Robbing %s house"
 
+robBackpack "Backpack:"
+
 doneRob "Suicide"
 
 doneRobTest "Give Up"

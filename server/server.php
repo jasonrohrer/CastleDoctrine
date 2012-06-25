@@ -1717,6 +1717,16 @@ function cd_startRobHouse() {
 
     cd_processStaleRobberies( $user_id );
     
+    // get user's backpack contents
+    $query = "SELECT backpack_contents ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+
+    $backpack_contents = mysql_result( $result, 0, "backpack_contents" );
+
+    
     
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
@@ -1755,8 +1765,9 @@ function cd_startRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
     echo "$character_name\n";
-    echo $house_map;
-    echo "\nOK";
+    echo "$house_map\n";
+    echo "$backpack_contents\n";
+    echo "OK";
     }
 
 

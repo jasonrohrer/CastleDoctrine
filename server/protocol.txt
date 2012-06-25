@@ -222,12 +222,13 @@ server.php?action=start_rob_house&user_id=[id number]
 Returns:
 character_name
 houseMap
+backpack_contents
 OK
 
 Where:
 character_name has spaces repaced by "_"
 houseMap = ASCII string representing the house layout
-
+backpack_contents = ASCII string encoded as described for start_edit_house
 
 
 
