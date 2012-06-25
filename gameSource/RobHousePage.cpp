@@ -144,9 +144,29 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             
             // activity on house map
             actionHappened();
+            }        
+        }
+    else {
+        // check backpack slots
+        for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+            if( inTarget == mPackSlots[i] ) {
+                
+                char oldOn = mPackSlots[i]->getRingOn();
+                
+                // turn all other slots off first (only one ring at a time)
+                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    mPackSlots[j]->setRingOn( false );
+                    }
+                
+                mPackSlots[i]->setRingOn( !oldOn );
+
+                break;
+                }
             }
         
+        
         }
+    
     }
 
 

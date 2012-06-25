@@ -6,6 +6,10 @@
 
 #include "minorGems/util/stringUtils.h"
 
+#include "minorGems/game/drawUtils.h"
+#include "minorGems/game/gameGraphics.h"
+
+
 
 InventorySlotButton::InventorySlotButton( Font *inDisplayFont,
                                           double inX, double inY,
@@ -15,7 +19,8 @@ InventorySlotButton::InventorySlotButton( Font *inDisplayFont,
         SpriteButton( NULL, 9, 9, inX, inY, inDrawScale ),
         mFont( inDisplayFont ),
         mObjectID( -1 ),
-        mQuantity( 0 ) {
+        mQuantity( 0 ),
+        mRingOn( false ) {
     
     mOverrideHighlightColor = true;
     }
@@ -80,3 +85,42 @@ void InventorySlotButton::drawContents() {
     
     }
 
+
+
+
+void InventorySlotButton::setRingOn( char inRingOn ) {
+    mRingOn = inRingOn;
+    }
+
+
+
+
+
+void InventorySlotButton::draw() {
+
+    if( mRingOn ) {
+
+        // ring
+        setDrawColor( 0.75, 0.75, 0, 1 );
+        
+        double fullWide = mWide + 4 * mPixWidth;
+        double fullHigh = mHigh + 4 * mPixWidth;
+
+        drawRect( - fullWide / 2, - fullHigh / 2, 
+                  fullWide / 2, fullHigh / 2 );
+
+
+        // background inside ring
+        setDrawColor( 0, 0, 0, 1 );
+        
+        fullWide -= 2 * mPixWidth;
+        fullHigh -= 2 * mPixWidth;
+        
+        drawRect( - fullWide / 2, - fullHigh / 2, 
+                  fullWide / 2, fullHigh / 2 );
+        }
+    
+
+    // draw button's contents on top
+    SpriteButton::draw();
+    }

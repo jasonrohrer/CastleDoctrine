@@ -30,6 +30,13 @@ class InventorySlotButton : public SpriteButton {
         int getObject();
         
 
+        void setRingOn( char inRingOn );
+        
+        char getRingOn() {
+            return mRingOn;
+            }
+        
+
     protected:
         Font *mFont;
 
@@ -40,6 +47,11 @@ class InventorySlotButton : public SpriteButton {
 
         // override from SpriteButton to display quantity
         virtual void drawContents();
+
+        char mRingOn;
+        
+        // override this from Button to draw ring
+        virtual void draw();
     };
 
 
