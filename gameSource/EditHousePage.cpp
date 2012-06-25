@@ -10,8 +10,6 @@
 #include "minorGems/util/stringUtils.h"
 
 
-#include <time.h>
-
 
 extern Font *mainFont;
 
@@ -232,7 +230,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         // change to house map
-        mLastActionTime = time( NULL );
+        actionHappened();
         }
     else if( inTarget == &mBackpackButton ) {
         mShowLoadBackpack = true;
@@ -266,6 +264,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+        
+        // change to house map
+        actionHappened();
         }
     
     }

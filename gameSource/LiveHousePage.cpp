@@ -50,6 +50,12 @@ void LiveHousePage::makeActive( char inFresh ) {
 
 
 
+void LiveHousePage::actionHappened() {
+    mLastActionTime = time( NULL );
+    }
+
+
+
 void LiveHousePage::step() {
     if( mWebRequest != -1 ) {
             

@@ -10,7 +10,6 @@
 #include "minorGems/util/stringUtils.h"
 
 
-#include <time.h>
 
 
 extern Font *mainFont;
@@ -428,6 +427,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         checkBuyButtonStatus();
         
         checkUndoStatus();
+
+        actionHappened();
         }
     else if( inTarget == &mBuyButton ) {
         int selectedObject = mToolPicker.getSelectedObject();
@@ -451,6 +452,7 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
             }
         
         checkBuyButtonStatus();
+        actionHappened();
         }
     else {
         
@@ -462,7 +464,9 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 int id = mPackSlots[i]->getObject();
                 
                 if( id != -1 ) {
-                    
+                    // click on a non-empty pack slot counts as an action
+                    actionHappened();
+
                     mPackSlots[i]->setObject( -1 );
                     
                     char foundInVault = false;
@@ -502,7 +506,9 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                     int id = mVaultSlots[i]->getObject();
                 
                     if( id != -1 ) {
-                        
+                        // click on a non-empty vault slot counts as an action
+                        actionHappened();
+
                         // but ignore them if backpack full
                         int emptyIndex = -1;
             

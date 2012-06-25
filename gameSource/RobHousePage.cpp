@@ -9,7 +9,6 @@
 #include "minorGems/util/stringUtils.h"
 
 
-#include <time.h>
 
 
 extern Font *mainFont;
@@ -37,10 +36,7 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
 
         
 RobHousePage::~RobHousePage() {
-    if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
-        }
-
+    
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
@@ -94,7 +90,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         else {
             
             // activity on house map
-            mLastActionTime = time( NULL );
+            actionHappened();
             }
         
         }

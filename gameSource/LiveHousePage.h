@@ -33,8 +33,18 @@ class LiveHousePage : public GamePage {
         // out.  
         static int sLastPingTime;
 
+        
 
     protected:
+
+        
+        // subclasses should call this every time user does something
+        // substatial (e.g., place object in house) to show that they are
+        // still present and in the game
+        virtual void actionHappened();
+
+
+    private:
         
         int mWebRequest;
 
