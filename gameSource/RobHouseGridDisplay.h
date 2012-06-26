@@ -33,6 +33,14 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // destroyed by caller
         char *getMoveList();
         
+        void startUsingTool( int inToolID );
+        void stopUsingTool( int inToolID );
+        
+        // can check whether a tool has been used since the last
+        // call to getToolJustUsed
+        char getToolJustUsed();
+        
+        
 
         // override to update visibility when map changes
         virtual void setHouseMap( const char *inHouseMap );
@@ -58,6 +66,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mDeathSourceState;
 
         SpriteHandle mLeaveSprite;
+        SpriteHandle mToolTargetSprite;
+
+        int mCurrentTool;
+        char mToolJustUsed;
 
 
         // 0 = visible (shroud transparent)

@@ -143,6 +143,30 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         else {
             
             // activity on house map
+
+            
+            if( mGridDisplay.getToolJustUsed() ) {    
+                // empty active slot in backpack
+                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    if( mPackSlots[j]->getRingOn() ) {
+                        mPackSlots[j]->setObject( -1 );
+                        mPackSlots[j]->setRingOn( false );
+                        break;
+                        }
+                   }
+                }
+            else {
+                // auto turn-off active slot
+                // player moved without using it
+                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    if( mPackSlots[j]->getRingOn() ) {
+                        mPackSlots[j]->setRingOn( false );
+                        break;
+                        }
+                    }
+                }
+            
+
             actionHappened();
             }        
         }
@@ -155,11 +179,31 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                 
                 // turn all other slots off first (only one ring at a time)
                 for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    
+                    if( mPackSlots[j]->getRingOn() ) {
+                        mGridDisplay.stopUsingTool( 
+                            mPackSlots[j]->getObject() );
+                        }
+                    
                     mPackSlots[j]->setRingOn( false );
                     }
                 
-                mPackSlots[i]->setRingOn( !oldOn );
+                if( mPackSlots[i]->getObject() != -1 ) {
+                    mPackSlots[i]->setRingOn( !oldOn );
 
+                    if( oldOn ) {
+                        mGridDisplay.stopUsingTool( 
+                            mPackSlots[i]->getObject() );
+                        }
+                    else {
+                        mGridDisplay.startUsingTool( 
+                            mPackSlots[i]->getObject() );
+                        }
+                    }
+                else {
+                    mPackSlots[i]->setRingOn( false );
+                    }
+                
                 break;
                 }
             }
