@@ -1005,7 +1005,31 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             if( mTargetFullIndices.getElementIndex( fullI ) != -1 ) {
                 
-                setDrawColor( 1, 1, 1, 0.5 );
+                // look at tile to the south
+                // if it's blocking, draw a half-strength highlight here
+                // (because we're going to overlay the other half-strength
+                //  layer later, after southern blocking tile is drawn).
+                // But if southern tile is not blocking, draw full-strength
+                // now (because no additional overlay is coming later
+
+                char southBlocking = true;
+                
+                int southI = fullI - mFullMapD;
+
+                if( southI >= 0 ) {
+                    southBlocking = 
+                        isPropertySet( mHouseMapIDs[ southI ],
+                                       mHouseMapCellStates[ southI ],
+                                       blocking );
+                    }
+                
+                double fade = 0.5;
+                
+                if( southBlocking ) {
+                    fade = 0.25;
+                    }
+
+                setDrawColor( 1, 1, 1, fade );
                 drawSprite( mToolTargetSprite, tilePos, 
                             1.0 / 16.0 );
 
@@ -1193,7 +1217,46 @@ void HouseGridDisplay::draw() {
 
 
 
+    // draw target highlights one more time, faint
+    // so they "show through" overlapping tiles and objects a bit
+    // only do this if south tile below highlight is blocking
+
+    for( int i=0; i<mTargetFullIndices.size(); i++ ) {
+        int fullI = *( mTargetFullIndices.getElement(i) );
+        
+        int subI = fullToSub( fullI );
+        
+        if( subI != -1 ) {
+            char southBlocking = true;
+        
+            int southI = fullI - mFullMapD;
+            
+            if( southI >= 0 ) {
+                southBlocking = 
+                    isPropertySet( mHouseMapIDs[ southI ],
+                                   mHouseMapCellStates[ southI ],
+                                   blocking );
+                }
+
+            if( southBlocking ) {
+                
+                doublePair tilePos = getTilePos( subI );
+                
+                setDrawColor( 1, 1, 1, 0.25 );
+                drawSprite( mToolTargetSprite, tilePos, 
+                            1.0 / 16.0 );
+                
+                setDrawColor( 1, 1, 1, 0.25 );
+                drawSprite( mToolTargetBorderSprite, tilePos, 
+                            1.0 / 16.0 );
+                }
+            }
+        }
     
+
+
+    
+    // noise over everything
     int i = 0;
     for( int y=0; y<HOUSE_D; y++ ) {
         for( int x=0; x<HOUSE_D; x++ ) {
