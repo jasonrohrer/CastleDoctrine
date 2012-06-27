@@ -41,6 +41,9 @@ RobCheckinHousePage::~RobCheckinHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
@@ -59,6 +62,15 @@ char RobCheckinHousePage::getReturnToHome() {
 
 char RobCheckinHousePage::getStartOver() {
     return mStartOver;
+    }
+
+
+
+void RobCheckinHousePage::setBackpackContents( char *inBackpackContents ) {
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+    mBackpackContents = stringDuplicate( inBackpackContents );
     }
 
 
@@ -196,11 +208,11 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         "action=end_rob_house&user_id=%d"
         "&%s"
         "&success=%d"
-        // loadout placeholder for now
-        "&loadout=x"
+        "&backpack_contents=%s"
         "&move_list=%s"
         "&house_map=%s",
-        userID, ticketHash, mSuccess, mMoveList, mHouseMap );
+        userID, ticketHash, mSuccess, mBackpackContents, 
+        mMoveList, mHouseMap );
     delete [] ticketHash;
             
     

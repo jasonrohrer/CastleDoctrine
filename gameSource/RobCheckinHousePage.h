@@ -27,6 +27,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         virtual void setSuccess( char inSuccess );
 
         // destoryed by caller
+        virtual void setBackpackContents( char *inBackpackContents );
+
+        // destoryed by caller
         virtual void setMoveList( char *inMoveList );
         
 
@@ -44,6 +47,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
         int mWebRequest;
 
+        char *mBackpackContents;
         char *mMoveList;
         char *mHouseMap;
         

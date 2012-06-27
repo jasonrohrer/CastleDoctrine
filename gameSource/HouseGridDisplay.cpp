@@ -1003,7 +1003,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             // draw target highlights on top of tiles or mobile objects
 
-            if( mTargetFullIndices.getElementIndex( fullI ) != -1 ) {
+            if( mToolTargetFullIndices.getElementIndex( fullI ) != -1 ) {
                 
                 // look at tile to the south
                 // if it's blocking, draw a half-strength highlight here
@@ -1221,8 +1221,8 @@ void HouseGridDisplay::draw() {
     // so they "show through" overlapping tiles and objects a bit
     // only do this if south tile below highlight is blocking
 
-    for( int i=0; i<mTargetFullIndices.size(); i++ ) {
-        int fullI = *( mTargetFullIndices.getElement(i) );
+    for( int i=0; i<mToolTargetFullIndices.size(); i++ ) {
+        int fullI = *( mToolTargetFullIndices.getElement(i) );
         
         int subI = fullToSub( fullI );
         
@@ -2110,14 +2110,14 @@ int HouseGridDisplay::undo() {
 
 
 void HouseGridDisplay::setTargetHighlights( 
-    SimpleVector<int> *inTargetFullIndices ) {
+    SimpleVector<int> *inToolTargetFullIndices ) {
 
-    mTargetFullIndices.deleteAll();
+    mToolTargetFullIndices.deleteAll();
     
-    int *array = inTargetFullIndices->getElementArray();
-    int size = inTargetFullIndices->size();
+    int *array = inToolTargetFullIndices->getElementArray();
+    int size = inToolTargetFullIndices->size();
     
-    mTargetFullIndices.push_back( array, size );
+    mToolTargetFullIndices.push_back( array, size );
     
     delete [] array;
     }

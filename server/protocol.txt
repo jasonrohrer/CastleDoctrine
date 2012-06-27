@@ -239,7 +239,7 @@ server.php?action=end_rob_house&user_id=[id number]
                                &sequence_number=[number]
                                &ticket_hash=[sha1 hash, hex-encoded]
                                &success=[0 or 1(reach vault) or 2(chicken out)]
-							   $loadout=[loadout as ASCII string]
+							   $backpack_contents=[contents as ASCII string]
                                &move_list=[move list as ASCII string]
                                &house_map=[house map ASCII string]
 Returns:
@@ -249,6 +249,7 @@ OK
 
 Note:
 dollar_value 0 on failure
+backpack_contents is what's left over in backpack after robbery ends
 
 
 

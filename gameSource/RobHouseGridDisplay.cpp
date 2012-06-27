@@ -482,6 +482,25 @@ void RobHouseGridDisplay::pointerDrag( float inX, float inY ) {
 
 void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
     pointerOver( inX, inY );
+
+    if( mCurrentTool != -1 ) {
+        // see if this is in our target region
+        int index = subToFull( getTileIndex( inX, inY ) );
+
+        if( mToolTargetFullIndices.getElementIndex( index ) != -1 ) {
+            // hit
+
+            mMoveList.push_back( 
+                autoSprintf( "t%d@%d", mCurrentTool, index ) );
+            
+            stopUsingTool( mCurrentTool );
+            mToolJustUsed = true;
+
+            fireActionPerformed( this );
+            }
+        }
+    
+
     }
 
 

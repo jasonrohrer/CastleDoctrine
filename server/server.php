@@ -1786,6 +1786,27 @@ function cd_endRobHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
+
+
+    
+    $query = "SELECT backpack_contents ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    
+    $old_backpack_contents = mysql_result( $result, 0, "backpack_contents" );
+
+    
+    
+    
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
     
@@ -1810,6 +1831,21 @@ function cd_endRobHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
+    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
+
+
+    // FIXME:  should check that contents is a subset of old contents
+    // and also that missing items are properly present in move list
+
+    // for now, just
+    // update contents of backpack
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "backpack_contents = '$backpack_contents'".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    
+    
     $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
 
     $house_money = $row[ "loot_value" ];
@@ -1859,9 +1895,7 @@ function cd_endRobHouse() {
         // log robbery
         $robber_name = cd_getCharacterName( $user_id );
 
-        // FIXME:
-        // add real regex for loadout
-        $loadout = cd_requestFilter( "loadout", "/x/" );
+        $loadout = $old_backpack_contents;
 
         $move_list = cd_requestFilter( "move_list", "/[m0-9_]+/" );
 

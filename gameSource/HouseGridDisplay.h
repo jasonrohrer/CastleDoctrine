@@ -260,13 +260,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         
         // set locations of target highlights
-        void setTargetHighlights( SimpleVector<int> *inTargetFullIndices );
+        void setTargetHighlights( SimpleVector<int> *inToolTargetFullIndices );
         
 
         SpriteHandle mToolTargetSprite;
         SpriteHandle mToolTargetBorderSprite;
         
-        SimpleVector<int> mTargetFullIndices;
+        SimpleVector<int> mToolTargetFullIndices;
     };
 
 

@@ -1154,12 +1154,15 @@ void drawFrame( char inUpdate ) {
             else if( robHousePage->getDone() ) {
                 char *houseMap = robHousePage->getHouseMap();
                 char *moveList = robHousePage->getMoveList();
-
+                char *backpackContents = robHousePage->getBackpackContents();
+                
+                robCheckinHousePage->setBackpackContents( backpackContents );
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
                                 
                 robCheckinHousePage->setMoveList( moveList );
 
+                delete [] backpackContents;
                 delete [] moveList;
                 delete [] houseMap;
                 
