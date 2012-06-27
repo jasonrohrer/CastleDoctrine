@@ -611,6 +611,9 @@ void RobHouseGridDisplay::recomputeVisibility() {
                   ( flipY / (double)VIS_BLOWUP ) 
                   * 2 * mTileRadius - mTileRadius / 2 };
             
+            int visTileIndex = getTileIndex( visPos.x, visPos.y );
+            
+            int selfBlockingSteps = 0;
 
             // steps
             int numSteps = lrint( distance( visPos, robPos ) * 8 );
@@ -625,8 +628,14 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
-                if( isSubMapPropertySet( stepIndex, visionBlocking ) ) {
-                    
+                // avoid self-blocking on first steps into self
+
+                if( selfBlockingSteps < 2 && stepIndex == visTileIndex ) {
+                    // blocked by self for few steps
+                    // don't count this as vision blocking
+                    selfBlockingSteps ++;
+                    }
+                else if( isSubMapPropertySet( stepIndex, visionBlocking ) ) {
                     hit = true;
                     }
                 }
