@@ -66,7 +66,6 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mDeathSourceState;
 
         SpriteHandle mLeaveSprite;
-        SpriteHandle mToolTargetSprite;
 
         int mCurrentTool;
         char mToolJustUsed;

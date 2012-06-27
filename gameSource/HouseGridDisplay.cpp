@@ -55,7 +55,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mGoalSet( false ),
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
-          mLastPlacedObject( 0 ) {
+          mLastPlacedObject( 0 ),
+          mToolTargetSprite( loadSprite( "toolTarget.tga" ) ) {
 
 
     if( !sNoiseTileBankPopulated ) {
@@ -199,6 +200,8 @@ HouseGridDisplay::~HouseGridDisplay() {
 
         freeSprite( sDropShadowSprite );
         }
+
+    freeSprite( mToolTargetSprite );
     }
 
 
@@ -995,6 +998,17 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
 
             
+
+            // draw target highlights on top of tiles or mobile objects
+
+            if( mTargetFullIndices.getElementIndex( fullI ) != -1 ) {
+                
+                setDrawColor( 1, 1, 1, 0.5 );
+                drawSprite( mToolTargetSprite, tilePos, 
+                            1.0 / 16.0 );
+                }
+            
+
             
             
 
@@ -2021,5 +2035,21 @@ int HouseGridDisplay::undo() {
     mEditHistory.deleteElement( numSteps - 1 );
 
     return cost;
+    }
+
+
+
+
+void HouseGridDisplay::setTargetHighlights( 
+    SimpleVector<int> *inTargetFullIndices ) {
+
+    mTargetFullIndices.deleteAll();
+    
+    int *array = inTargetFullIndices->getElementArray();
+    int size = inTargetFullIndices->size();
+    
+    mTargetFullIndices.push_back( array, size );
+    
+    delete [] array;
     }
 

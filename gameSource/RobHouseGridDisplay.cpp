@@ -34,7 +34,6 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mDeathSourceID( -1 ),
           mDeathSourceState( 1 ),
           mLeaveSprite( loadSprite( "left.tga" ) ),
-          mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
           mCurrentTool( -1 ),
           mToolJustUsed( false ) {
 
@@ -49,7 +48,6 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
     clearMoveList();
 
     freeSprite( mLeaveSprite );
-    freeSprite( mToolTargetSprite );
     }
 
 
@@ -104,12 +102,66 @@ char *RobHouseGridDisplay::getMoveList() {
 
 void RobHouseGridDisplay::startUsingTool( int inToolID ) {
     mCurrentTool = inToolID;
+
+    if( mCurrentTool != -1 ) {
+        int reach = getToolReach( mCurrentTool );
+        
+        SimpleVector<int> hitSquares;
+        hitSquares.push_back( mRobberIndex );
+        
+        int dX[] = { -1,  0,  1,  0 };
+        int dY[] = {  0,  1,  0, -1 };
+        
+
+        for( int i=0; i<reach; i++ ) {
+            // expand by one
+            int existingSize = hitSquares.size();
+            for( int j=0; j<existingSize; j++ ) {
+                
+                int index = *( hitSquares.getElement( j ) );
+                
+                // if this cell is blocking, go no further beyond it
+                if( isPropertySet( mHouseMapIDs[ index ],
+                                   mHouseMapCellStates[ index ],
+                                   blocking ) ) {
+                    continue;
+                    }
+
+                int y = index / mFullMapD;
+                int x = index % mFullMapD;
+                
+                for( int d=0; d<4; d++ ) {
+                    int yNew = y + dY[d];
+                    int xNew = x + dX[d];
+                    
+                    if( xNew >= 0 && xNew < mFullMapD &&
+                        yNew >= 0 && yNew < mFullMapD ) {
+                        
+                        int indexNew = yNew * mFullMapD + xNew;
+
+                        if( hitSquares.getElementIndex( indexNew ) == -1 ) {
+                            // not already hit, add it
+                            hitSquares.push_back( indexNew );
+                            }
+                        }
+                    }
+                }
+            }
+
+        // don't draw highlight over robber
+        hitSquares.deleteElementEqualTo( mRobberIndex );
+            
+        setTargetHighlights( &hitSquares );
+        }
     }
 
 
 
 void RobHouseGridDisplay::stopUsingTool( int inToolID ) {
     mCurrentTool = -1;
+
+    SimpleVector<int> emptyVector;
+    setTargetHighlights( &emptyVector );
     }
 
 
@@ -214,69 +266,6 @@ void RobHouseGridDisplay::draw() {
                    2 * ( HOUSE_D * mTileRadius ) );
     
 
-    if( mCurrentTool != -1 ) {
-        int reach = getToolReach( mCurrentTool );
-        
-        SimpleVector<int> hitSquares;
-        hitSquares.push_back( mRobberIndex );
-        
-        int dX[] = { -1,  0,  1,  0 };
-        int dY[] = {  0,  1,  0, -1 };
-        
-
-        for( int i=0; i<reach; i++ ) {
-            // expand by one
-            int existingSize = hitSquares.size();
-            for( int j=0; j<existingSize; j++ ) {
-                
-                int index = *( hitSquares.getElement( j ) );
-                
-                // if this cell is blocking, go no further beyond it
-                if( isPropertySet( mHouseMapIDs[ index ],
-                                   mHouseMapCellStates[ index ],
-                                   blocking ) ) {
-                    continue;
-                    }
-
-                int y = index / mFullMapD;
-                int x = index % mFullMapD;
-                
-                for( int d=0; d<4; d++ ) {
-                    int yNew = y + dY[d];
-                    int xNew = x + dX[d];
-                    
-                    if( xNew >= 0 && xNew < mFullMapD &&
-                        yNew >= 0 && yNew < mFullMapD ) {
-                        
-                        int indexNew = yNew * mFullMapD + xNew;
-
-                        if( hitSquares.getElementIndex( indexNew ) == -1 ) {
-                            // not already hit, add it
-                            hitSquares.push_back( indexNew );
-                            }
-                        }
-                    }
-                }
-            }
-
-        // don't draw highlight over robber
-        hitSquares.deleteElementEqualTo( mRobberIndex );
-        
-        // draw highlights for hit
-        for( int i=0; i<hitSquares.size(); i++ ) {
-            int subIndex = fullToSub( *( hitSquares.getElement( i ) ) );
-            
-            if( subIndex != -1 ) {
-                doublePair tilePos = getTilePos( subIndex );
-                
-                setDrawColor( 1, 1, 1, 0.5 );
-                drawSprite( mToolTargetSprite, tilePos, 
-                            1.0 / 16.0 );
-                }
-            
-            }
-        
-        }
     
 
 
@@ -496,7 +485,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
     if( mCurrentTool != -1 ) {
         // turn tool off when robber moves
-        mCurrentTool = -1;
+        stopUsingTool( mCurrentTool );
         mToolJustUsed = false;
         }
     

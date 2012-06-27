@@ -257,7 +257,15 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void drawDropShadow( doublePair inPosition );
         void drawRobber( doublePair inPosition );
 
+        
+        
+        // set locations of target highlights
+        void setTargetHighlights( SimpleVector<int> *inTargetFullIndices );
+        
 
+        SpriteHandle mToolTargetSprite;
+        
+        SimpleVector<int> mTargetFullIndices;
     };
 
 
