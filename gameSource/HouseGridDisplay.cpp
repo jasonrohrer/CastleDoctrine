@@ -56,7 +56,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
-          mToolTargetSprite( loadSprite( "toolTarget.tga" ) ) {
+          mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
+          mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ) {
 
 
     if( !sNoiseTileBankPopulated ) {
@@ -202,6 +203,7 @@ HouseGridDisplay::~HouseGridDisplay() {
         }
 
     freeSprite( mToolTargetSprite );
+    freeSprite( mToolTargetBorderSprite );
     }
 
 
@@ -1005,6 +1007,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 setDrawColor( 1, 1, 1, 0.5 );
                 drawSprite( mToolTargetSprite, tilePos, 
+                            1.0 / 16.0 );
+
+                setDrawColor( 1, 1, 1, 1 );
+                drawSprite( mToolTargetBorderSprite, tilePos, 
                             1.0 / 16.0 );
                 }
             

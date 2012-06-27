@@ -264,6 +264,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
 
         SpriteHandle mToolTargetSprite;
+        SpriteHandle mToolTargetBorderSprite;
         
         SimpleVector<int> mTargetFullIndices;
     };
