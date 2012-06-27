@@ -140,8 +140,17 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
                         int indexNew = yNew * mFullMapD + xNew;
 
                         if( hitSquares.getElementIndex( indexNew ) == -1 ) {
-                            // not already hit, add it
-                            hitSquares.push_back( indexNew );
+                            // not already hit, add it?
+                            
+                            // but only if it's visible
+                            int subIndexNew = fullToSub( indexNew );
+                            
+                            if( subIndexNew != -1 ) {
+                                
+                                if( mTileVisbleMap[ subIndexNew ] ) {
+                                    hitSquares.push_back( indexNew );
+                                    }
+                                }
                             }
                         }
                     }
@@ -565,6 +574,10 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
 
 void RobHouseGridDisplay::recomputeVisibility() {
 
+    // clear
+    memset( mTileVisbleMap, 0, HOUSE_D * HOUSE_D );
+
+
     int robSubIndex = fullToSub( mRobberIndex );
     
     if( robSubIndex == -1 ) {
@@ -623,6 +636,11 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 }
             else {
                 mTargetVisibleMap[i] = true;
+                
+                // at least one sub-area of tile is visible
+                int visTileIndex = getTileIndex( visPos.x, visPos.y );
+                
+                mTileVisbleMap[ visTileIndex ] = true;
                 }
 
             i++;

@@ -80,6 +80,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // (for smooth transitions)
         char mTargetVisibleMap[ VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
+        // for each tile, true if (even partly) visible
+        // false if completely invisible
+        char mTileVisbleMap[ HOUSE_D * HOUSE_D ];
+
 
         SimpleVector<char *> mMoveList;
 
