@@ -1173,7 +1173,7 @@ function cd_endEditHouse() {
     
     $edit_count ++;
     
-    $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
+    $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
 
     $vault_contents = cd_requestFilter( "vault_contents", "/[#0-9:]+/" );
 
@@ -1846,7 +1846,7 @@ function cd_endRobHouse() {
 
     
     
-    $house_map = cd_requestFilter( "house_map", "/[#0-9,]+/" );
+    $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
 
     $house_money = $row[ "loot_value" ];
 
