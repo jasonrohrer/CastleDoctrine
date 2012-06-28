@@ -20,6 +20,7 @@ extern int userID;
 
 RobCheckinHousePage::RobCheckinHousePage() 
         : mWebRequest( -1 ),
+          mBackpackContents( NULL ),
           mMoveList( NULL ),
           mHouseMap( NULL ),
           mSuccess( false ),
