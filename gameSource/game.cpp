@@ -378,10 +378,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         }
 
 
-    initHouseObjects();
-    initHouseTransitions();
-    
+    initHouseObjects();    
     initTools();
+
+    initHouseTransitions();
     
 
     loginPage = new LoginPage();

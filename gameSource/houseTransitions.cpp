@@ -2,6 +2,7 @@
 
 
 #include "houseObjects.h"
+#include "tools.h"
 
 
 
@@ -83,8 +84,14 @@ static int getTriggerID( char *inTriggerName ) {
             }
         }
 
+    int toolID = getToolID( inTriggerName );
     
-    return getObjectID( inTriggerName );
+    if( toolID != -1 ) {
+        return toolID;
+        }
+    else {
+        return getObjectID( inTriggerName );
+        }
     }
 
 
@@ -983,6 +990,66 @@ int checkTransition( int inTargetID, int inTargetState,
     
     // default
     return inTargetState;
+    }
+
+
+
+
+// applies transition rule for a tool to transform inMapIDs and inMapStates
+void applyToolTransition( int *inMapIDs, int *inMapStates, 
+                          int *inMapMobileIDs, int *inMapMobileStates,
+                          int inMapW, int inMapH,
+                          int inToolID, int inToolTargetIndex ) {
+
+    printf( "Applying transition for %d at index %d\n", inToolID,
+            inToolTargetIndex );
+    
+    
+    int tileID = inMapIDs[ inToolTargetIndex ];
+    int tileState = inMapStates[ inToolTargetIndex ];
+    
+    int mobileID = inMapMobileIDs[ inToolTargetIndex ];
+    int mobileState = inMapMobileStates[ inToolTargetIndex ];
+
+    
+    // all transitions triggered by this trigger
+    TransitionTriggerRecord *r = &( triggerRecords[ inToolID ] );
+    
+    for( int i=0; i<r->numTransitions; i++ ) {
+        
+        TransitionRecord *transRecord = &( r->transitions[i] );
+        
+        // affects tile?
+        if( transRecord->targetID == tileID
+            &&
+            ( transRecord->targetStartState == tileState
+              ||
+              transRecord->targetStartState == -1 )
+            &&
+            transRecord->targetEndState != tileState ) {
+            
+            inMapStates[ inToolTargetIndex ] = transRecord->targetEndState;
+            
+            // return after first one found
+            return;
+            }
+        // affects mobile?
+        else if( transRecord->targetID == mobileID
+            &&
+            ( transRecord->targetStartState == mobileState
+              ||
+              transRecord->targetStartState == -1 )
+            &&
+            transRecord->targetEndState != mobileState ) {
+            
+            inMapMobileStates[ inToolTargetIndex ] = 
+                transRecord->targetEndState;
+            
+            // return after first one found
+            return;
+            }
+
+        }
     }
 
 

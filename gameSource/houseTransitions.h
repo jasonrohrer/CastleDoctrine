@@ -29,4 +29,12 @@ int checkTransition( int inTargetID, int inTargetState,
 
 
 
+// applies transition rule for a tool to transform inMapIDs and inMapStates
+void applyToolTransition( int *inMapIDs, int *inMapStates, 
+                          int *inMapMobileIDs, int *inMapMobileStates,
+                          int inMapW, int inMapH,
+                          int inToolID, int inToolTargetIndex );
+
+
+
 #endif

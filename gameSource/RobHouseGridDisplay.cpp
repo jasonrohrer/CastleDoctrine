@@ -493,6 +493,14 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
             mMoveList.push_back( 
                 autoSprintf( "t%d@%d", mCurrentTool, index ) );
             
+            
+            applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
+                                 mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                                 mFullMapD, mFullMapD,
+                                 mCurrentTool, index );
+            copyAllIntoSubCells();
+            recomputeVisibility();
+
             stopUsingTool( mCurrentTool );
             mToolJustUsed = true;
 

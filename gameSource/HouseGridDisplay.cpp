@@ -1790,6 +1790,7 @@ void HouseGridDisplay::copyAllIntoSubCells() {
                 mHouseMapCellStates[ bigIndex ];
             }
         }
+    recomputeWallShadows();
     }
 
 
