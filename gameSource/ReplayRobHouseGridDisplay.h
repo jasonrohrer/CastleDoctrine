@@ -24,6 +24,12 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         // list as a whitespace-free string
         // destroyed by caller
         void setMoveList( char *inMoveList );
+
+
+        // can check whether a tool has been picked since the last
+        // call to getToolIDJustPicked
+        // returns ID of pickedtool, or -1
+        int getToolIDJustPicked();
         
 
         virtual void step();
@@ -53,6 +59,8 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         int mStepsUntilNextPlayStep;
 
         char mVisibilityToggle;
+        
+        int mToolIDJustPicked;
 
         void takeStep();
         

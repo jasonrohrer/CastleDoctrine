@@ -100,6 +100,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         void applyTransitionsAndProcess();
 
+        void applyCurrentTool( int inTargetFullIndex );
+
+
         
         // override from HouseGridDisplay
         void pointerOver( float inX, float inY );

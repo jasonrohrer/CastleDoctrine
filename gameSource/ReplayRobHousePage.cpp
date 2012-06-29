@@ -97,6 +97,29 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
         if( mGridDisplay.getSuccess() ) {
             mDone = true;
             }
+        else {
+            int pickedID = mGridDisplay.getToolIDJustPicked();
+            
+            if( pickedID != -1 ) {
+                // select one of our matching backpack slots
+                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    if( mPackSlots[j]->getObject() == pickedID ) {
+                        mPackSlots[j]->setRingOn( true );
+                        break;
+                        }
+                    }
+                }
+            else if( mGridDisplay.getToolJustUsed() ) {
+                // clear our selected slot
+                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                    if( mPackSlots[j]->getRingOn() ) {
+                        mPackSlots[j]->setObject( -1 );
+                        mPackSlots[j]->setRingOn( false );
+                        break;
+                        }
+                    }
+                }
+            }
         }
     }
 

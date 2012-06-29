@@ -30,7 +30,8 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
                              translate( "toggleVisibility" ) ),
           mPlaying( false ),
           mStepsUntilNextPlayStep( 0 ),
-          mVisibilityToggle( false ) {
+          mVisibilityToggle( false ),
+          mToolIDJustPicked( -1 ) {
 
     mStopButton.setVisible( false );
     
@@ -73,6 +74,15 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
 
 
 
+int ReplayRobHouseGridDisplay::getToolIDJustPicked() {
+    int temp = mToolIDJustPicked;
+    mToolIDJustPicked = -1;
+
+    return temp;
+    }
+
+
+
 void ReplayRobHouseGridDisplay::step() {
     RobHouseGridDisplay::step();
     
@@ -94,9 +104,8 @@ void ReplayRobHouseGridDisplay::takeStep() {
     if( mMoveList.size() > 0 ) {
         
         char *move = *( mMoveList.getElement( 0 ) );
-
-        mMoveList.deleteElement( 0 );
         
+        char shouldDeleteMove = true;
 
         if( strlen( move ) > 0 ) {
             if( move[0] == 'm' ) {
@@ -109,10 +118,43 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 // which we don't want to do during replay
                 HouseGridDisplay::moveRobber( newIndex );
                 
+                shouldDeleteMove = true;
+                
                 applyTransitionsAndProcess();
                 }
+            else if( move[0] == 't' ) {
+                int toolID, targetIndex;
+                
+                sscanf( move, "t%d@%d", &toolID, &targetIndex );
+                
+                if( mCurrentTool == -1 ) {
+                    
+                    // display that tool is being used
+                    startUsingTool( toolID );
+                    mToolIDJustPicked = toolID;
+                    fireActionPerformed( this );
+                    
+                    shouldDeleteMove = false;
+                    }
+                else {
+                    // already started using tool last step
+                    
+                    // actually use it this step
+
+                    applyCurrentTool( targetIndex );
+                    fireActionPerformed( this );
+
+                    shouldDeleteMove = true;
+                    }
+                }
             }
-        delete [] move;
+
+        if( shouldDeleteMove ) {
+            mMoveList.deleteElement( 0 );
+            
+            delete [] move;
+            }
+        
         }
 
     if( mMoveList.size() == 0 ) {

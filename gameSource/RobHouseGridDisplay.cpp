@@ -176,7 +176,10 @@ void RobHouseGridDisplay::stopUsingTool( int inToolID ) {
 
 
 char RobHouseGridDisplay::getToolJustUsed() {
-    return mToolJustUsed;
+    char temp = mToolJustUsed;
+    mToolJustUsed = false;
+
+    return temp;
     }
 
 
@@ -457,6 +460,24 @@ void RobHouseGridDisplay::draw() {
     }
 
 
+
+
+void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
+    
+    applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
+                         mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                         mFullMapD, mFullMapD,
+                         mCurrentTool, inTargetFullIndex );
+    copyAllIntoSubCells();
+    recomputeVisibility();
+    
+    stopUsingTool( mCurrentTool );
+    mToolJustUsed = true;
+    }
+
+
+
+
 void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
     // base behavior (display tool tip)
     HouseGridDisplay::pointerOver( inX, inY );
@@ -494,16 +515,8 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
                 autoSprintf( "t%d@%d", mCurrentTool, index ) );
             
             
-            applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
-                                 mHouseMapMobileIDs, mHouseMapMobileCellStates,
-                                 mFullMapD, mFullMapD,
-                                 mCurrentTool, index );
-            copyAllIntoSubCells();
-            recomputeVisibility();
-
-            stopUsingTool( mCurrentTool );
-            mToolJustUsed = true;
-
+            applyCurrentTool( index );
+            
             fireActionPerformed( this );
             }
         }
