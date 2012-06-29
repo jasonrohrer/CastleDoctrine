@@ -52,6 +52,7 @@ noPowerNorth   #   power_relay_inverted:2   =>  1
 
 
 saw   #   wall_wood:1  =>  2
+torch   #   wall_wood:1  =>  3
 
 
 
