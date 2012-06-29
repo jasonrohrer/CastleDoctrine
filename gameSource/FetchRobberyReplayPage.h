@@ -15,7 +15,7 @@ typedef struct RobberyLog {
         char *robberName;
         char *victimName;
         char *houseMap;
-        char *loadout;
+        char *backpackContents;
         char *moveList;
         int lootValue;
     } RobberyLog;

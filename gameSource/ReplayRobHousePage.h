@@ -5,6 +5,8 @@
 #include "ReplayRobHouseGridDisplay.h"
 #include "FetchRobberyReplayPage.h"
 
+#include "inventory.h"
+
 
 #include "minorGems/ui/event/ActionListener.h"
 
@@ -47,6 +49,9 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
 
         ReplayRobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
+        
+        InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
+
         
         char mDone;
         

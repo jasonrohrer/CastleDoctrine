@@ -31,6 +31,30 @@ ReplayRobHousePage::ReplayRobHousePage()
 
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
+
+    
+    doublePair slotCenter = { 7.25, 4 };
+
+    int currentSlot = 0;
+    for( int c=0; c<2; c++ ) {
+        
+        for( int i=0; i<NUM_PACK_SLOTS / 2; i++ ) {
+            
+            mPackSlots[currentSlot] = 
+                new InventorySlotButton( mainFont, 
+                                         slotCenter.x, slotCenter.y,
+                                         1 / 16.0 );
+            slotCenter.y -= 1.5;
+            
+            addComponent( mPackSlots[currentSlot] );
+            mPackSlots[currentSlot]->addActionListener( this );
+            currentSlot++;
+            }
+        
+        // next column
+        slotCenter.y = 4;
+        slotCenter.x += 1.5;
+        }
     }
 
 
@@ -59,6 +83,8 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
                                 inLog.robberName,
                                 inLog.victimName,
                                 inLog.lootValue );
+
+    backpackSlotsFromString( inLog.backpackContents, mPackSlots );
     }
 
 
@@ -127,6 +153,9 @@ void ReplayRobHousePage::draw( doublePair inViewCenter,
         
         drawMessage( mDescription, labelPos, false );
         }
+
+    doublePair labelPos = { 8, 5.5 };
+    drawMessage( "robBackpack", labelPos );
     }
 
 

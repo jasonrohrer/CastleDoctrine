@@ -304,7 +304,7 @@ Returns:
 robber_name
 victim_name
 houseMap
-loadout
+backpack_contents
 moveList
 loot_value
 OK
@@ -312,7 +312,7 @@ OK
 Where:
 robber_name and victim_name have spaces repaced by "_"
 houseMap = ASCII string representing the house layout
-loadout = ASCII string representing loadout
+backpack_contents = ASCII string representing loadout
 moveList = ASCII string representing moves made
 
 

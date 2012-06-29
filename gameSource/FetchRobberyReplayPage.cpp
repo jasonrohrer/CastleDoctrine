@@ -49,14 +49,14 @@ void FetchRobberyReplayPage::clearRecord() {
         delete [] mLogRecord.robberName;
         delete [] mLogRecord.victimName;
         delete [] mLogRecord.houseMap;
-        delete [] mLogRecord.loadout;
+        delete [] mLogRecord.backpackContents;
         delete [] mLogRecord.moveList;        
         }
 
     mLogRecord.robberName = NULL;
     mLogRecord.victimName = NULL;
     mLogRecord.houseMap = NULL;
-    mLogRecord.loadout = NULL;
+    mLogRecord.backpackContents = NULL;
     mLogRecord.moveList = NULL;
     
     mRecordReady = false;
@@ -150,7 +150,8 @@ void FetchRobberyReplayPage::step() {
                         mLogRecord.victimName = 
                             nameParse( *( tokens->getElement( 1 ) ) );
                         mLogRecord.houseMap = *( tokens->getElement( 2 ) );
-                        mLogRecord.loadout = *( tokens->getElement( 3 ) );
+                        mLogRecord.backpackContents = 
+                            *( tokens->getElement( 3 ) );
                         mLogRecord.moveList = *( tokens->getElement( 4 ) );
 
                         sscanf( *( tokens->getElement( 5 ) ),

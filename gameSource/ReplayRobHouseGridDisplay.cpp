@@ -14,19 +14,19 @@ extern double frameRateFactor;
 
 #define STEP_DELAY (int)( 30 * frameRateFactor )
 
-#define BUTTON_X 8
+#define BUTTON_X -8
 
 
 
 ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
         : RobHouseGridDisplay( inX, inY ),
-          mStepButton( mainFont, BUTTON_X, 0, 
+          mStepButton( mainFont, BUTTON_X, -5, 
                        translate( "step" ) ),
-          mPlayButton( mainFont, BUTTON_X, 1.5, 
+          mPlayButton( mainFont, BUTTON_X, -3.5, 
                        translate( "play" ) ),
-          mStopButton( mainFont, BUTTON_X, 3, 
+          mStopButton( mainFont, BUTTON_X, -2, 
                        translate( "stop" ) ),
-          mVisibilityButton( mainFont, BUTTON_X, -2, 
+          mVisibilityButton( mainFont, BUTTON_X, 5, 
                              translate( "toggleVisibility" ) ),
           mPlaying( false ),
           mStepsUntilNextPlayStep( 0 ),
