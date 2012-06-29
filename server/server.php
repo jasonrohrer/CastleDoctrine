@@ -1819,34 +1819,43 @@ function cd_endRobHouse() {
 
     // make sure tools used in move_list agrees with change to backpack
     // contents
+    $toolsUsedString = "#";
 
-    $toolsUsedArray = array();
-
-    $moves = $pairArray = preg_split( "/#/", $move_list );
-
-    foreach( $moves as $move ) {
-        if( $move[0] == 't' ) {
-            // tool use
-
-            $parts = preg_split( "/@/", substr( $move, 1 ) );
-
-            if( count( $parts ) != 2 ) {
-                cd_log( "Robbery end with bad move list ($move_list) denied" );
-                cd_transactionDeny();
-                }
-            $tool_id = $parts[0];
-
-            if( array_key_exists( $tool_id, $toolsUsedArray ) ) {
-                $toolsUsedArray[ $tool_id ] ++;
-                }
-            else {
-                $toolsUsedArray[ $tool_id ] = 1;
-                }
-            }
+    if( $move_list != "" ) {
         
+
+    
+        $toolsUsedArray = array();
+
+        $moves = $pairArray = preg_split( "/#/", $move_list );
+
+        foreach( $moves as $move ) {
+            if( $move[0] == 't' ) {
+                // tool use
+
+                $parts = preg_split( "/@/", substr( $move, 1 ) );
+
+                if( count( $parts ) != 2 ) {
+                    cd_log( "Robbery end with bad move list ".
+                            "($move_list) denied" );
+                    cd_transactionDeny();
+                    return;
+                    }
+                $tool_id = $parts[0];
+
+                if( array_key_exists( $tool_id, $toolsUsedArray ) ) {
+                    $toolsUsedArray[ $tool_id ] ++;
+                    }
+                else {
+                    $toolsUsedArray[ $tool_id ] = 1;
+                    }
+                }
+        
+            }
+
+        $toolsUsedString = cd_idQuanityArrayToString( $toolsUsedArray );
         }
 
-    $toolsUsedString = cd_idQuanityArrayToString( $toolsUsedArray );
     
     $totalBackpack =
         cd_idQuantityUnion( $backpack_contents, $toolsUsedString );
@@ -1861,6 +1870,7 @@ function cd_endRobHouse() {
         cd_log( "Robbery end with tools used not adding up with remaining ".
                 "backpack contents denied" );
         cd_transactionDeny();
+        return;
         }
     
         
