@@ -62,7 +62,7 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-
+        char mShowBackpack;
 
         RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;

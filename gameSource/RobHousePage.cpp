@@ -21,7 +21,8 @@ extern int userID;
 
 
 RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
-        : mGridDisplay( 0, 0 ),
+        : mShowBackpack( true ),
+          mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( inDoneButtonKey ) ),
           mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ) {
@@ -77,6 +78,7 @@ void RobHousePage::showBackpack( char inShow ) {
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         mPackSlots[i]->setVisible( inShow );
         }
+    mShowBackpack = inShow;
     }
 
 
@@ -243,9 +245,12 @@ void RobHousePage::draw( doublePair inViewCenter,
         drawMessage( mDescription, labelPos );
         }
     
-    doublePair labelPos = { 8, 5.5 };
-    drawMessage( "robBackpack", labelPos );
+    if( mShowBackpack ) {
+        doublePair labelPos = { 8, 5.5 };
+        drawMessage( "robBackpack", labelPos );
+        }
     }
+
 
         
 
