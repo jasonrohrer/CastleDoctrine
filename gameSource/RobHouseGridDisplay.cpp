@@ -91,7 +91,7 @@ char *RobHouseGridDisplay::getMoveList() {
     
     char **moveArray = mMoveList.getElementArray();
     
-    char *moveString = join( moveArray, mMoveList.size(), "_" );
+    char *moveString = join( moveArray, mMoveList.size(), "#" );
     
     delete [] moveArray;
 

@@ -1087,6 +1087,27 @@ function cd_idQuanityStringToArray( $inIDQuantityString ) {
 
 
 
+function cd_idQuanityArrayToString( $inArray ) {
+    ksort( $inArray );
+    
+    $pairArray = array();
+    
+    foreach( $inArray as $id => $quantity ) {
+        // append
+        $pairArray[] = "$id:$quantity";
+        }
+
+    $resultString = implode( "#", $pairArray );
+
+    if( $resultString == "" ) {
+        $resultString = "#";
+        }
+
+    return $resultString;
+    }
+
+
+
 // takes strings that are ID:quantity pairs, like:
 // 101:3#3:10#5:1#102:1
 //
@@ -1112,22 +1133,7 @@ function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
             }
         }
 
-    ksort( $result );
-    
-    $pairArray = array();
-    
-    foreach( $result as $id => $quantity ) {
-        // append
-        $pairArray[] = "$id:$quantity";
-        }
-
-    $resultString = implode( "#", $pairArray );
-
-    if( $resultString == "" ) {
-        $resultString = "#";
-        }
-
-    return $resultString;
+    return cd_idQuanityArrayToString( $result );
     }
 
 
@@ -1783,6 +1789,8 @@ function cd_endRobHouse() {
 
     $success = cd_requestFilter( "success", "/[012]/" );
 
+    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
+
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
@@ -1804,7 +1812,58 @@ function cd_endRobHouse() {
     
     $old_backpack_contents = mysql_result( $result, 0, "backpack_contents" );
 
+
+
+    $move_list = cd_requestFilter( "move_list", "/[mt0-9@#]+/" );
     
+
+    // make sure tools used in move_list agrees with change to backpack
+    // contents
+
+    $toolsUsedArray = array();
+
+    $moves = $pairArray = preg_split( "/#/", $move_list );
+
+    foreach( $moves as $move ) {
+        if( $move[0] == 't' ) {
+            // tool use
+
+            $parts = preg_split( "/@/", substr( $move, 1 ) );
+
+            if( count( $parts ) != 2 ) {
+                cd_log( "Robbery end with bad move list ($move_list) denied" );
+                cd_transactionDeny();
+                }
+            $tool_id = $parts[0];
+
+            if( array_key_exists( $tool_id, $toolsUsedArray ) ) {
+                $toolsUsedArray[ $tool_id ] ++;
+                }
+            else {
+                $toolsUsedArray[ $tool_id ] = 1;
+                }
+            }
+        
+        }
+
+    $toolsUsedString = cd_idQuanityArrayToString( $toolsUsedArray );
+    
+    $totalBackpack =
+        cd_idQuantityUnion( $backpack_contents, $toolsUsedString );
+
+    // make sure $old_backpack_contents is sorted the same way before
+    // doing the compare
+    $totalBackpackShouldBe =
+        cd_idQuantityUnion( $old_backpack_contents, "#" );
+    
+    
+    if( $totalBackpack != $totalBackpackShouldBe ) {
+        cd_log( "Robbery end with tools used not adding up with remaining ".
+                "backpack contents denied" );
+        cd_transactionDeny();
+        }
+    
+        
     
     
     // automatically ignore blocked users and houses already checked
@@ -1831,7 +1890,6 @@ function cd_endRobHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
-    $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
 
     // FIXME:  should check that contents is a subset of old contents
@@ -1897,7 +1955,7 @@ function cd_endRobHouse() {
 
         $loadout = $old_backpack_contents;
 
-        $move_list = cd_requestFilter( "move_list", "/[m0-9_]+/" );
+        
 
         /*
         $query =

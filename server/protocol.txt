@@ -247,6 +247,21 @@ dollar_value
 OK
 
 
+Where:
+
+
+move_list is encoded as follows:
+
+List of moves separated by # where a move is either:
+mX   (where X is the index of move destination)
+or
+tW@X (where W is the tool ID and X is the index of the tool target)
+
+move_list example:
+
+m328#m329#m297#t500@298#m297
+
+
 Note:
 dollar_value 0 on failure
 backpack_contents is what's left over in backpack after robbery ends

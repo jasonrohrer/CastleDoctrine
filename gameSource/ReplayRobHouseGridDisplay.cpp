@@ -57,7 +57,7 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     clearMoveList();
     
     int numMoves;
-    char **moves = split( inMoveList, "_", &numMoves );
+    char **moves = split( inMoveList, "#", &numMoves );
 
     mMoveList.appendArray( moves, numMoves );
     
