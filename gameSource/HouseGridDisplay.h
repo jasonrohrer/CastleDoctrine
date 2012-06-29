@@ -199,7 +199,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
-        // returns object ID
+        // returns neighbor full map index, or -1 if out of bounds
         int getTileNeighbor( int inFullIndex, int inNeighbor );
         // checks structural property of neighbor
         int getTileNeighborStructural( int inFullIndex, int inNeighbor );

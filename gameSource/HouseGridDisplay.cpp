@@ -617,11 +617,11 @@ int HouseGridDisplay::getTileNeighbor( int inFullIndex, int inNeighbor ) {
         ||
         nX < 0 || nX >= mFullMapD ) {
         
-        // out of bounds, empty floor
-        return 0;
+        // out of bounds
+        return -1;
         }
 
-    return mHouseMapIDs[ nY * mFullMapD + nX ];
+    return nY * mFullMapD + nX;
     }
 
 
@@ -672,7 +672,12 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
         int neighborsEqual[4] = { 0, 0, 0, 0 };
 
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighbor( inFullIndex, n ) == inTileID ) {
+            
+            int neighborIndex = getTileNeighbor( inFullIndex, n );
+            
+            if( neighborIndex != -1 &&
+                mHouseMapIDs[neighborIndex] == inTileID &&
+                mHouseMapCellStates[neighborIndex] == inTileState ) {
                 neighborsEqual[n] = 1;
                 }
             }                
