@@ -493,13 +493,29 @@ void RobHouseGridDisplay::pointerMove( float inX, float inY ) {
     pointerOver( inX, inY );
     }
 
+
 void RobHouseGridDisplay::pointerDown( float inX, float inY ) {
-    pointerOver( inX, inY );
+    pointerDrag( inX, inY );
     }
+
+
 
 void RobHouseGridDisplay::pointerDrag( float inX, float inY ) {
     pointerOver( inX, inY );
+    
+    setPickedTargetHighlight( -1 );
+    
+    if( mCurrentTool != -1 ) {
+        // see if this is in our target region
+        int index = subToFull( getTileIndex( inX, inY ) );
+
+        if( mToolTargetFullIndices.getElementIndex( index ) != -1 ) {
+            // hit
+            setPickedTargetHighlight( index );
+            }
+        }
     }
+
 
 void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
     pointerOver( inX, inY );

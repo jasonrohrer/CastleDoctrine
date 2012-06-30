@@ -262,11 +262,17 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // set locations of target highlights
         void setTargetHighlights( SimpleVector<int> *inToolTargetFullIndices );
         
+        // sets one of the targets as picked (different color)
+        // set to -1 to turn picked color off
+        void setPickedTargetHighlight( int inPickedFullIndex );
 
         SpriteHandle mToolTargetSprite;
         SpriteHandle mToolTargetBorderSprite;
         
         SimpleVector<int> mToolTargetFullIndices;
+
+        int mToolTargetPickedFullIndex;
+        
     };
 
 

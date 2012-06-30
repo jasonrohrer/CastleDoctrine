@@ -134,11 +134,20 @@ void ReplayRobHouseGridDisplay::takeStep() {
                     mToolIDJustPicked = toolID;
                     fireActionPerformed( this );
                     
+                    // save tool move for next step (further processing)
+                    shouldDeleteMove = false;
+                    }
+                else if( mToolTargetPickedFullIndex == -1 ) {
+                    // display where user is clicking
+                    setPickedTargetHighlight( targetIndex );
+                    
+                    // save tool move for next step (further processing)
                     shouldDeleteMove = false;
                     }
                 else {
                     // already started using tool last step
-                    
+                    // AND shown where user clicked
+
                     // actually use it this step
 
                     applyCurrentTool( targetIndex );
@@ -165,6 +174,22 @@ void ReplayRobHouseGridDisplay::takeStep() {
         mPlayButton.setVisible( false );
         mStopButton.setVisible( false );
         }
+    }
+
+
+
+void ReplayRobHouseGridDisplay::pointerDrag( float inX, float inY ) {
+    pointerOver( inX, inY );
+    
+    // ignore mouse (beyond tool tips)
+    }
+
+
+
+void ReplayRobHouseGridDisplay::pointerUp( float inX, float inY ) {
+    pointerOver( inX, inY );
+        
+    // ignore mouse (beyond tool tips)
     }
 
 

@@ -42,6 +42,13 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         virtual void actionPerformed( GUIComponent *inTarget );
         
 
+        // override from RobHouseGridDisplay so that tool targeting not
+        // triggered by mouse
+        virtual void pointerDrag( float inX, float inY );
+
+        virtual void pointerUp( float inX, float inY );
+
+
     protected:
         
         

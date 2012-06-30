@@ -57,7 +57,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
           mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
-          mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ) {
+          mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ),
+          mToolTargetPickedFullIndex( -1 ) {
 
 
     if( !sNoiseTileBankPopulated ) {
@@ -1034,7 +1035,13 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     fade = 0.25;
                     }
 
-                setDrawColor( 1, 1, 1, fade );
+                if( fullI == mToolTargetPickedFullIndex ) {
+                    setDrawColor( 1, 0, 0, fade );
+                    }
+                else {
+                    setDrawColor( 1, 1, 1, fade );
+                    }
+
                 drawSprite( mToolTargetSprite, tilePos, 
                             1.0 / 16.0 );
 
@@ -1247,7 +1254,13 @@ void HouseGridDisplay::draw() {
                 
                 doublePair tilePos = getTilePos( subI );
                 
-                setDrawColor( 1, 1, 1, 0.25 );
+                if( fullI == mToolTargetPickedFullIndex ) {
+                    setDrawColor( 1, 0, 0, 0.25 );
+                    }
+                else {
+                    setDrawColor( 1, 1, 1, 0.25 );
+                    }
+
                 drawSprite( mToolTargetSprite, tilePos, 
                             1.0 / 16.0 );
                 
@@ -2120,11 +2133,19 @@ void HouseGridDisplay::setTargetHighlights(
 
     mToolTargetFullIndices.deleteAll();
     
+    mToolTargetPickedFullIndex = -1;
+
     int *array = inToolTargetFullIndices->getElementArray();
     int size = inToolTargetFullIndices->size();
     
     mToolTargetFullIndices.push_back( array, size );
     
     delete [] array;
+    }
+
+
+
+void HouseGridDisplay::setPickedTargetHighlight( int inPickedFullIndex ) {
+    mToolTargetPickedFullIndex = inPickedFullIndex;
     }
 
