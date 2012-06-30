@@ -67,6 +67,10 @@ ReplayRobHousePage::~ReplayRobHousePage() {
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
+
+    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+        delete mPackSlots[i];
+        }
     }
 
 
