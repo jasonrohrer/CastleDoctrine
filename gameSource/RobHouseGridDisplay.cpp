@@ -479,11 +479,16 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
 
 
 void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
-    // base behavior (display tool tip)
-    HouseGridDisplay::pointerOver( inX, inY );
     
-    // but override so that highlight is never shown
-    mHighlightIndex = -1;
+    // don't show tool tips for invisible tiles (shrouded)
+    if( mTileVisbleMap[ getTileIndex( inX, inY ) ] ) {
+
+        // base behavior (display tool tip)
+        HouseGridDisplay::pointerOver( inX, inY );
+        
+        // but override so that highlight is never shown
+        mHighlightIndex = -1;
+        }
     }
 
 

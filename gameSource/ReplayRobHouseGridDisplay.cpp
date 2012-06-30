@@ -241,6 +241,16 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
                 i++;
                 }
             }
+        
+        i = 0;
+        for( int y=0; y<HOUSE_D; y++ ) {
+            for( int x=0; x<HOUSE_D; x++ ) {
+
+                mTileVisbleMap[i] = true;
+
+                i++;
+                }
+            }
         }
     else {
         RobHouseGridDisplay::recomputeVisibility();
