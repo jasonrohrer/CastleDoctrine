@@ -69,7 +69,8 @@ $defaultPrices = array(
     array( 110, 20, "Electric Floor" ),
 
     array( 500, 20, "Saw" ),
-    array( 501, 100, "Cutting Torch" )
+    array( 501, 100, "Cutting Torch" ),
+    array( 502, 470, "S&W Model 36" )
     );
 
 
