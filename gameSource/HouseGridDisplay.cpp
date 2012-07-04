@@ -1426,9 +1426,11 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
             mPointerDownObjectID != -1 ) {
             
             int old = mHouseSubMapIDs[ index ];
+            int oldMobile = mHouseMapMobileIDs[ fullIndex ];
 
             if( mPlaceOnDrag && 
-                old != mPointerDownObjectID ) {
+                old != mPointerDownObjectID &&
+                oldMobile != mPointerDownObjectID ) {
                 
                 // drag-place
                 if( mAllowPlacement ) {
@@ -1448,7 +1450,10 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                     fireActionPerformed( this );
                     }
                 }
-            else if( !mPlaceOnDrag && old == mPointerDownObjectID ) {
+            else if( !mPlaceOnDrag && 
+                     ( old == mPointerDownObjectID ||
+                       oldMobile == mPointerDownObjectID ) ) {
+                
                 // drag-erase of like-objects
                 mHouseSubMapIDs[ index ] = 0;
                 mLastPlacedObject = 0;
@@ -1528,11 +1533,12 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
             
         
             int old = mHouseSubMapIDs[ index ];
-
+            int oldMobile = mHouseMapMobileIDs[ fullIndex ];
+            
             int picked = mPicker->getSelectedObject();
             
         
-            if( old != picked ) {
+            if( old != picked && oldMobile != picked ) {
                 // place mode (or replace mode)
                 if( mAllowPlacement ) {
                     mHouseSubMapIDs[ index ] = picked;
