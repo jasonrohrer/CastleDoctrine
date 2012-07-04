@@ -1903,11 +1903,7 @@ function cd_endRobHouse() {
 
 
 
-    // FIXME:  should check that contents is a subset of old contents
-    // and also that missing items are properly present in move list
-
-    // for now, just
-    // update contents of backpack
+    // update contents of backpac (checked to be okay above)
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "backpack_contents = '$backpack_contents'".
         "WHERE user_id = $user_id;";
@@ -1942,7 +1938,13 @@ function cd_endRobHouse() {
         $stuffTaken = "#";
         
         if( $success == 0 ) {
-            // robber dies, starts over as new character, house destroyed
+            // robber dies
+
+            // drops backpack in this house's vault
+            $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                        $backpack_contents );
+            
+            // starts over as new character, house destroyed
             cd_newHouseForUser( $user_id );
             }
         }
