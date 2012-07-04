@@ -17,6 +17,8 @@ extern char *serverURL;
 extern int userID;
 
 
+#define SLOT_Y 5.5
+
 
 RobCheckinHousePage::RobCheckinHousePage() 
         : mWebRequest( -1 ),
@@ -36,14 +38,14 @@ RobCheckinHousePage::RobCheckinHousePage()
     mStartOverButton.addActionListener( this );
 
 
-    doublePair slotCenter = { -8, 2 };
+    doublePair slotCenter = { -5.25, SLOT_Y };
 
     int numVaultRows = NUM_VAULT_SLOTS / NUM_PACK_SLOTS;
     
     int slot = 0;
     
     for( int r=0; r<numVaultRows; r++ ) {
-        slotCenter.x = -8;
+        slotCenter.x = -5.25;
 
         for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
             
@@ -59,9 +61,6 @@ RobCheckinHousePage::RobCheckinHousePage()
             }
         slotCenter.y -= 1.5;
         }
-
-
-
     }
 
 
@@ -182,35 +181,49 @@ void RobCheckinHousePage::step() {
                         mHomeButton.setVisible( true );                    
                         }
                     else {
-                        int value;
-
                         sscanf( *( tokens->getElement( 0 ) ), 
-                                "%d", &value );
-                        
-
+                                "%d", &mMoneyTaken );
                         
                         if( mSuccess != 0 ) {
                             mStatusError = false;
-
-                            char *robReport = 
-                                autoSprintf( translate( "robSuccess" ), 
-                                             value );
                             
-                            setStatusDirect( robReport, false );
-                            
-                            delete [] robReport;
-
                             vaultSlotsFromString( *( tokens->getElement( 1 ) ),
                                                   mVaultSlots );
+                            
+                            int numVisible = 0;
+                            
                             for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
                                 if( mVaultSlots[i]->getQuantity() == 0 ) {
                                     mVaultSlots[i]->setVisible( false );
                                     }
                                 else {
                                     mVaultSlots[i]->setVisible( true );
+                                    numVisible ++;
                                     }
                                 }
                             
+                            
+                            if( numVisible < NUM_PACK_SLOTS && 
+                                numVisible > 0 ) {
+                                // less than one full row
+                                // recenter them
+                                
+                                double length = (numVisible - 1) * 1.5;
+                                
+                                doublePair slotCenter = { -(length/2), 
+                                                          SLOT_Y };
+                                
+                                for( int i=0; i<numVisible; i++ ) {
+                                    mVaultSlots[i]->setPosition( 
+                                        slotCenter.x,
+                                        slotCenter.y );
+                                    
+                                    slotCenter.x += 1.5;
+                                    }
+                                }
+                            
+                            
+
                             mHomeButton.setVisible( true );
                             }
                         else {
@@ -280,9 +293,79 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     mHomeButton.setVisible( false );
     mStartOverButton.setVisible( false );
 
-    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
-        mVaultSlots[i]->setVisible( false );
+
+
+    // reset slot positioning and visibility
+
+    doublePair slotCenter = { -5.25, SLOT_Y };
+
+    int numVaultRows = 
+        NUM_VAULT_SLOTS / NUM_PACK_SLOTS;
+    
+    int slot = 0;
+                                
+    for( int r=0; r<numVaultRows; r++ ) {
+        slotCenter.x = -5.25;
+ 
+        for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+                                        
+            mVaultSlots[slot]->setPosition(
+                slotCenter.x, slotCenter.y );
+            
+            mVaultSlots[slot]->setVisible( false );
+            
+            slotCenter.x += 1.5;
+            slot ++;
+            }
+        slotCenter.y -= 1.5;
         }
+
+    }
+
+
+
+
+void RobCheckinHousePage::draw( doublePair inViewCenter, 
+                                double inViewSize ) {
+    
+    if( ! mHomeButton.isVisible() ) {
+        return;
+        }
+    
+
+    const char *robReportKey;
+    
+    if( ! mVaultSlots[0]->isVisible() ) {
+        robReportKey = "robSuccess";
+        }
+    else {
+        int totalQuantity = 0;
+        for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+            if( mVaultSlots[i]->isVisible() ) {
+                totalQuantity += mVaultSlots[i]->getQuantity();
+                }
+            else {
+                break;
+                }
+            }
+
+        if( totalQuantity > 1 ) {
+            robReportKey = "robStuffSuccess";
+            }
+        else {
+            robReportKey = "robOneItemSuccess";
+            }
+        }
+    
+    
+    char *robReport = autoSprintf( translate( robReportKey ), mMoneyTaken );
+        
+    
+    doublePair labelPos = { 0, 6.75 };
+    
+    drawMessage( robReport, labelPos, false );
+    
+    delete [] robReport;
     }
 
 

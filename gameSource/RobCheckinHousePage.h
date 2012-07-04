@@ -39,7 +39,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
 
         virtual void step();
-
+        
+        virtual void draw( doublePair inViewCenter, 
+                           double inViewSize );
         
         virtual void makeActive( char inFresh );
 
@@ -53,6 +55,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         char *mHouseMap;
         
         char mSuccess;
+        
+        int mMoneyTaken;
+
 
         TextButton mHomeButton;
         TextButton mStartOverButton;

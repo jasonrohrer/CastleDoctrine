@@ -102,6 +102,10 @@ startOver "Fresh Start"
 
 robSuccess "You stole $%d"
 
+robStuffSuccess "You stole $%d and these items:"
+
+robOneItemSuccess "You stole $%d and this item:"
+
 
 
 listFetchFailed "Failed to fetch house list"
