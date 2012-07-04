@@ -703,7 +703,9 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
             
             if( inMapMobileIDs[destI] == 0 &&
                 ! isPropertySet( inMapIDs[destI], inMapStates[destI],
-                                 blocking ) ) {
+                                 blocking ) &&
+                ! isPropertySet( inMapIDs[destI], inMapStates[destI],
+                                 mobileBlocking ) ) {
                 
                 inMapMobileIDs[destI] = inMapMobileIDs[i];
                 inMapMobileStates[destI] = inMapMobileStates[i];
