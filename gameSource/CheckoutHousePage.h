@@ -32,6 +32,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         virtual int getLootValue();
         
+        virtual char getMustSelfTest();
+
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
@@ -49,6 +51,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         char *mPriceList;
         
         int mLootValue;
+
+        char mMustSelfTest;
 
         TextButton mMenuButton;
 

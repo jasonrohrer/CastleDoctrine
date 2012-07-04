@@ -864,6 +864,7 @@ void drawFrame( char inUpdate ) {
                     checkoutHousePage->getBackpackContents();
                 char *priceList = checkoutHousePage->getPriceList();
                 int lootValue = checkoutHousePage->getLootValue();
+                char mustSelfTest = checkoutHousePage->getMustSelfTest();
                 
                 if( houseMap != NULL && 
                     vaultContents != NULL &&
@@ -875,6 +876,7 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setBackpackContents( backpackContents );
                     editHousePage->setPriceList( priceList );
                     editHousePage->setLootValue( lootValue );
+                    editHousePage->setMustSelfTest( mustSelfTest );
                     
                     // empty, because house just checked out an nothing
                     // bought yet

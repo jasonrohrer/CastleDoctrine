@@ -111,6 +111,11 @@ int CheckoutHousePage::getLootValue() {
     }
 
 
+char CheckoutHousePage::getMustSelfTest() {
+    return mMustSelfTest;
+    }
+
+
 
 void CheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
@@ -152,9 +157,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 6
+                    if( lines->size() != 7
                         ||
-                        strcmp( *( lines->getElement( 5 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 6 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -173,8 +178,20 @@ void CheckoutHousePage::step() {
                         sscanf( *( lines->getElement( 4 ) ),
                                 "%d", &mLootValue );
 
+                        int selfTestValue = 0;
+                        sscanf( *( lines->getElement( 5 ) ),
+                                "%d", &selfTestValue );
+
+                        if( selfTestValue == 1 ) {
+                            mMustSelfTest = true;
+                            }
+                        else {
+                            mMustSelfTest = false;
+                            }
+
                         delete [] *( lines->getElement( 4 ) );
                         delete [] *( lines->getElement( 5 ) );
+                        delete [] *( lines->getElement( 6 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Vault = %s\n", mVaultContents );

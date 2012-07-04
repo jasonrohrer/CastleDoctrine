@@ -68,6 +68,7 @@ vault_contents
 backpack_contents
 price_list
 current_balance
+must_self_test
 OK
 
 Where:
@@ -118,9 +119,13 @@ Where "." is concatonate.
 Each LIST_NUMBER can only be used once by a given user in a house 
 modification, and then it becomes stale.
 
+
 And:
+
 current_balance = player's current money balance in whole dollars.
 
+must_self_test = 1 if player must test house before submitting it, or 
+                 0 otherwise
 
 
 

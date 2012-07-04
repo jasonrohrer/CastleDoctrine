@@ -55,8 +55,12 @@ class EditHousePage : public LiveHousePage, public ActionListener {
             return mLootValue;
             }
         
+        void setMustSelfTest( char inMustSelfTest );
+        
+
 
         // true if map changed since last setHouseMap call
+        // or if self-map-test required for any other reason
         char houseMapChanged();
         
 
@@ -91,6 +95,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *mPurchaseList;
 
         int mLootValue;
+
+        char mMustSelfTest;
 
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;

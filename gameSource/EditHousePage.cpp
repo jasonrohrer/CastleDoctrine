@@ -171,6 +171,12 @@ void EditHousePage::setLootValue( int inLootValue ) {
 
 
 
+void EditHousePage::setMustSelfTest( char inMustSelfTest ) {
+    mMustSelfTest = inMustSelfTest;
+    }
+
+
+
 void EditHousePage::checkIfPlacementAllowed() {
     int placementCost = 
         mObjectPicker.getPrice( mObjectPicker.getSelectedObject() );
@@ -190,7 +196,7 @@ void EditHousePage::checkIfPlacementAllowed() {
 
 
 char EditHousePage::houseMapChanged() {
-    if( mStartHouseMap == NULL ) {
+    if( mStartHouseMap == NULL || mMustSelfTest ) {
         return true;
         }
 

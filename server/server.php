@@ -958,7 +958,7 @@ function cd_startEditHouse() {
     // out for robbery
     
     $query = "SELECT house_map, vault_contents, backpack_contents, ".
-        "loot_value FROM $tableNamePrefix"."houses ".
+        "loot_value, edit_count FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -976,6 +976,7 @@ function cd_startEditHouse() {
     $vault_contents = $row[ "vault_contents" ];
     $backpack_contents = $row[ "backpack_contents" ];
     $loot_value = $row[ "loot_value" ];
+    $edit_count = $row[ "edit_count" ];
 
 
     
@@ -1043,7 +1044,12 @@ function cd_startEditHouse() {
     $signature =
         sha1( $last_price_list_number . $priceListBody . $serverSecretKey );
 
-    
+
+    $must_self_test = 0;
+
+    if( $edit_count == 0 ) {
+        $must_self_test = 1;
+        }
         
         
     
@@ -1056,6 +1062,8 @@ function cd_startEditHouse() {
     echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
     echo "\n";
     echo $loot_value;
+    echo "\n";
+    echo $must_self_test;
     echo "\nOK";
     }
 
