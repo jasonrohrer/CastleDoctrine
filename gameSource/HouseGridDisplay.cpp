@@ -1008,8 +1008,13 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
 
             // draw target highlights on top of tiles or mobile objects
+            if( inBeneathShadowsOnly && mHouseMapMobileIDs[fullI] != 0 ) {
+                // don't draw any target highlights here
+                // because there's a mobile here that will be drawn later
+                // with any target highlight on top
 
-            if( mToolTargetFullIndices.getElementIndex( fullI ) != -1 ) {
+                }
+            else if( mToolTargetFullIndices.getElementIndex( fullI ) != -1 ) {
                 
                 // look at tile to the south
                 // if it's blocking, draw a half-strength highlight here
