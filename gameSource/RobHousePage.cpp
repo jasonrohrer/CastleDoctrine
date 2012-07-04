@@ -30,6 +30,8 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
 
+    
+    mDoneButton.setMouseOverTip( "" );
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
 

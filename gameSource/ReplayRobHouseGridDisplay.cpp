@@ -44,6 +44,13 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
     mPlayButton.addActionListener( this );
     mStopButton.addActionListener( this );
     mVisibilityButton.addActionListener( this );
+    
+
+    mStepButton.setMouseOverTip( "" );
+    mPlayButton.setMouseOverTip( "" );
+    mStopButton.setMouseOverTip( "" );
+    
+    mVisibilityButton.setMouseOverTip( translate( "toggleVisibilityTip" ) );
     }
 
 

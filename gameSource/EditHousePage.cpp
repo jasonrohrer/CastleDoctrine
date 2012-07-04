@@ -37,6 +37,8 @@ EditHousePage::EditHousePage()
     addComponent( &mGridDisplay );
     addComponent( &mObjectPicker );
 
+    mDoneButton.setMouseOverTip( "" );
+    mUndoButton.setMouseOverTip( "" );
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
 
     mDoneButton.addActionListener( this );

@@ -134,6 +134,7 @@ stop "Stop"
 
 toggleVisibility "Visibility"
 
+toggleVisibilityTip "Toggle visibility shroud"
 
 
 playbackTag           "Playback %:"

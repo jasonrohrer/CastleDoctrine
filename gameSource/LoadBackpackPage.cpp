@@ -30,6 +30,8 @@ LoadBackpackPage::LoadBackpackPage()
     addComponent( &mToolPicker );
     addComponent( &mBuyButton );
 
+    mDoneButton.setMouseOverTip( "" );
+
     mDoneButton.addActionListener( this );
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );

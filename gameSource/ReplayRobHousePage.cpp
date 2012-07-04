@@ -32,6 +32,8 @@ ReplayRobHousePage::ReplayRobHousePage()
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
 
+    mDoneButton.setMouseOverTip( "" );
+
     
     doublePair slotCenter = { 7.25, 4 };
 

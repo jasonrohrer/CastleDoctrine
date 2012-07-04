@@ -37,6 +37,8 @@ RobCheckinHousePage::RobCheckinHousePage()
     addComponent( &mStartOverButton );
     mStartOverButton.addActionListener( this );
 
+    mHomeButton.setMouseOverTip( "" );
+
 
     doublePair slotCenter = { -5.25, SLOT_Y };
 

@@ -31,7 +31,7 @@ void InventorySlotButton::setObject( int inID ) {
     mObjectID = inID;
     
     if( mObjectID == -1 ) {
-        setMouseOverTip( NULL );
+        setMouseOverTip( "" );
         mSprite = NULL;
         mQuantity = 0;
         }
