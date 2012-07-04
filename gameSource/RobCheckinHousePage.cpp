@@ -34,6 +34,34 @@ RobCheckinHousePage::RobCheckinHousePage()
 
     addComponent( &mStartOverButton );
     mStartOverButton.addActionListener( this );
+
+
+    doublePair slotCenter = { -8, 2 };
+
+    int numVaultRows = NUM_VAULT_SLOTS / NUM_PACK_SLOTS;
+    
+    int slot = 0;
+    
+    for( int r=0; r<numVaultRows; r++ ) {
+        slotCenter.x = -8;
+
+        for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+            
+            mVaultSlots[slot] = 
+                new InventorySlotButton( mainFont, slotCenter.x, slotCenter.y,
+                                         1 / 16.0 );
+            slotCenter.x += 1.5;
+        
+            addComponent( mVaultSlots[slot] );
+            mVaultSlots[slot]->addActionListener( this );
+            mVaultSlots[slot]->setVisible( false );
+            slot ++;
+            }
+        slotCenter.y -= 1.5;
+        }
+
+
+
     }
 
 
@@ -50,6 +78,10 @@ RobCheckinHousePage::~RobCheckinHousePage() {
         }
     if( mMoveList != NULL ) {
         delete [] mMoveList;
+        }
+
+    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+        delete mVaultSlots[i];
         }
     }
 
@@ -143,8 +175,8 @@ void RobCheckinHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 2 ||
-                        strcmp( *( tokens->getElement( 1 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 3 ||
+                        strcmp( *( tokens->getElement( 2 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mHomeButton.setVisible( true );                    
@@ -157,7 +189,7 @@ void RobCheckinHousePage::step() {
                         
 
                         
-                        if( mSuccess ) {
+                        if( mSuccess != 0 ) {
                             mStatusError = false;
 
                             char *robReport = 
@@ -167,6 +199,17 @@ void RobCheckinHousePage::step() {
                             setStatusDirect( robReport, false );
                             
                             delete [] robReport;
+
+                            vaultSlotsFromString( *( tokens->getElement( 1 ) ),
+                                                  mVaultSlots );
+                            for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+                                if( mVaultSlots[i]->getQuantity() == 0 ) {
+                                    mVaultSlots[i]->setVisible( false );
+                                    }
+                                else {
+                                    mVaultSlots[i]->setVisible( true );
+                                    }
+                                }
                             
                             mHomeButton.setVisible( true );
                             }
@@ -236,6 +279,10 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
 
     mHomeButton.setVisible( false );
     mStartOverButton.setVisible( false );
+
+    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+        mVaultSlots[i]->setVisible( false );
+        }
     }
 
 

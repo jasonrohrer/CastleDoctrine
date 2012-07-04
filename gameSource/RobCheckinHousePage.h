@@ -2,6 +2,7 @@
 
 #include "TextField.h"
 #include "TextButton.h"
+#include "inventory.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
@@ -55,7 +56,8 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
 
         TextButton mHomeButton;
         TextButton mStartOverButton;
-
+        
+        InventorySlotButton *mVaultSlots[ NUM_VAULT_SLOTS ];
 
         char mReturnToHome;
         char mStartOver;

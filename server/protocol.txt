@@ -243,7 +243,8 @@ server.php?action=end_rob_house&user_id=[id number]
                                &move_list=[move list as ASCII string]
                                &house_map=[house map ASCII string]
 Returns:
-dollar_value
+money_taken
+stuff_taken
 OK
 
 
@@ -262,8 +263,13 @@ move_list example:
 m328#m329#m297#t500@298#m297
 
 
+stuff_taken is an ASCII encoded quantity list (see vault_contents for 
+start_edit_house)
+
+
 Note:
-dollar_value 0 on failure
+money_taken    is "0" on failure
+stuff_taken  is "#" on failure
 backpack_contents is what's left over in backpack after robbery ends
 
 
