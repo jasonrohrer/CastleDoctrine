@@ -810,7 +810,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 // the mobile that overlaps with player
                 break;
                 }
-}
+            }
         }
     
     
