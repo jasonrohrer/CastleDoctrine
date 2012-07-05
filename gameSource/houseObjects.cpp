@@ -69,6 +69,22 @@ typedef struct houseObjectRecord {
         houseObjectState *states;
         
 
+        // ids of other objects that group with this object
+        // for tile orientation purposes
+        int numGroupWith;
+        
+        int *groupWith;
+
+        
+        // only used temporarily during file parsing
+        // names of groupWith objects
+        // (we need this because we don't know their IDs until we're
+        //  done reading all objects, so we can't fill in groupWith with ids
+        //  until after all are read)
+        // but these are deleted after the names are converted to ids to
+        // fill in groupWith
+        char **groupWithNames;
+        
     } houseObjectRecord;
 
 
@@ -344,6 +360,33 @@ void initHouseObjects() {
 
 
             if( completeRecord ) {
+
+                // look for groupWith
+                r.numGroupWith = 0;
+                r.groupWithNames = NULL;
+                r.groupWith = NULL;
+                
+                File *groupWithFile = f->getChildFile( "groupWith.txt" );
+                
+                if( groupWithFile->exists() ) {
+                    char *groupWithContents = 
+                        groupWithFile->readFileContents();
+                    
+                    SimpleVector<char *> *tokens = 
+                        tokenizeString( groupWithContents );
+        
+                    r.numGroupWith = tokens->size();
+                    
+                    if( r.numGroupWith > 0 ) {    
+                        r.groupWithNames = tokens->getElementArray();
+                        }
+                    
+                    delete tokens;
+
+                    delete [] groupWithContents;
+                    }
+                delete groupWithFile;
+
                 
                 // read states
 
@@ -446,7 +489,26 @@ void initHouseObjects() {
         idToIndexMap[r.id] = i;
         }
     
+
+    // now translate groupWith names into IDs (since all objects loaded now)
+    for( int i=0; i<objects.size(); i++ ) {
+        houseObjectRecord *r = objects.getElement( i );
+        
+        if( r->numGroupWith > 0 ) {
+            r->groupWith = new int[ r->numGroupWith ];
+
+            for( int n=0; n < r->numGroupWith; n++ ) {                
+                r->groupWith[ n ] = getObjectID( r->groupWithNames[n] );
+                delete [] r->groupWithNames[n];
+                }
+            delete [] r->groupWithNames;
+            r->groupWithNames = NULL;
+            }
+        }
+    
+
     }
+
 
 
 
@@ -471,6 +533,10 @@ void freeHouseObjects() {
                 }
             }
         delete [] r.states;
+
+        if( r.groupWith != NULL ) {
+            delete [] r.groupWith;
+            }
         }
 
     objects.deleteAll();
@@ -626,5 +692,31 @@ char isPropertySet( int inObjectID, int inState, propertyID inProperty ) {
     
     return state->properties[ inProperty ];
     }
+
+
+
+char isInGroup( int inObjectID, int inOtherObjectID ) {
+    if( inObjectID == inOtherObjectID ) {
+        // in same group as self
+        return true;
+        }
+
+    houseObjectRecord *r = objects.getElement( idToIndexMap[inObjectID] );
+    
+    if( r->numGroupWith == 0 ) {
+        // empty
+        return false;
+        }
+
+    for( int i=0; i< r->numGroupWith; i++ ) {
+        if( r->groupWith[i] == inOtherObjectID ) {
+            return true;
+            }
+        }
+    
+    return false;
+    }
+
+    
 
 

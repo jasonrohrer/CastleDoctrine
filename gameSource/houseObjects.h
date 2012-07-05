@@ -80,6 +80,9 @@ char isPropertySet( int inObjectID, int inState, propertyID inProperty );
 
 
 
+// tests if inOtherObjectID is in inObjectID's group
+char isInGroup( int inObjectID, int inOtherObjectID );
+
 
 
 

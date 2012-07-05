@@ -22,9 +22,13 @@ pitbull:4 # player => 4
 
 
 
-power   #   wire:1   =>  2
-
+power     #   wire:1   =>  2
 noPower   #   wire:2   =>  1
+
+
+power     #   wall_wood_wired:1   =>  2
+noPower   #   wall_wood_wired:2   =>  1
+
 
 
 power   #   power_door:1   =>  2
@@ -51,8 +55,13 @@ noPowerNorth   #   power_relay_inverted:2   =>  1
 
 
 
-saw   #   wall_wood:1  =>  2
+saw     #   wall_wood:1  =>  2
 torch   #   wall_wood:1  =>  3
+
+saw     #   wall_wood_wired:1  =>  3
+saw     #   wall_wood_wired:2  =>  3
+torch   #   wall_wood_wired:1  =>  4
+torch   #   wall_wood_wired:2  =>  4
 
 gun  # pitbull:1 => 5
 
