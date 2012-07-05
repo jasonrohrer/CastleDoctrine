@@ -468,6 +468,12 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
                          mHouseMapMobileIDs, mHouseMapMobileCellStates,
                          mFullMapD, mFullMapD,
                          mCurrentTool, inTargetFullIndex );
+    
+    // tool use triggers a step
+    applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
+                      mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                      mFullMapD, mFullMapD, mRobberIndex );
+
     copyAllIntoSubCells();
     recomputeVisibility();
     
