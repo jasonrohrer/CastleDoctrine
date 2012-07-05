@@ -664,12 +664,14 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
     
     int orientationIndex = 0;
     
-    numOrientations = getNumOrientations( inTileID, 0 );            
+    numOrientations = getNumOrientations( inTileID, inTileState );            
             
                 
     if( numOrientations == 16 ) {
         // full binary LBRT flags based on neighbors of same type 
-                
+        // (different states okay, but only if tile in that state has
+        //  the same number of orientations)
+
         int neighborsEqual[4] = { 0, 0, 0, 0 };
 
         for( int n=0; n<4; n++ ) {
@@ -678,7 +680,9 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
             
             if( neighborIndex != -1 &&
                 mHouseMapIDs[neighborIndex] == inTileID &&
-                mHouseMapCellStates[neighborIndex] == inTileState ) {
+                getNumOrientations( 
+                    inTileID, 
+                    mHouseMapCellStates[neighborIndex] ) == numOrientations ) {
                 neighborsEqual[n] = 1;
                 }
             }                
