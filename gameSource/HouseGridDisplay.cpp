@@ -1612,6 +1612,38 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
 
 
 
+
+void HouseGridDisplay::keyDown( unsigned char inASCII ) {    
+    switch( inASCII ) {
+        case 'w':
+        case 'W':
+        case 'i':
+        case 'I':
+            specialKeyDown( MG_KEY_UP );
+            break;
+        case 'a':
+        case 'A':
+        case 'j':
+        case 'J':
+            specialKeyDown( MG_KEY_LEFT );
+            break;
+        case 's':
+        case 'S':
+        case 'k':
+        case 'K':
+            specialKeyDown( MG_KEY_DOWN );
+            break;
+        case 'd':
+        case 'D':
+        case 'l':
+        case 'L':
+            specialKeyDown( MG_KEY_RIGHT );
+            break;
+        }
+    }
+
+
+
 // arrow key movement
 void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     

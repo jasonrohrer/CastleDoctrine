@@ -742,6 +742,15 @@ void deleteCharFromUserTypedMessage() {
 void drawFrame( char inUpdate ) {
     
 
+    // disable keyboard mapping while paused and on login page
+    if( isPaused() || currentGamePage == loginPage ) {
+        toggleKeyMapping( false );
+        }
+    else {
+        toggleKeyMapping( true );
+        }
+    
+
 
     if( !inUpdate ) {
         drawFrameNoUpdate( false );
@@ -831,7 +840,31 @@ void drawFrame( char inUpdate ) {
     
 
     if( !firstDrawFrameCalled ) {
-                
+        
+        // do final init step... stuff that shouldn't be done until
+        // we have control of screen
+        
+        char *moveKeyMapping = 
+            SettingsManager::getStringSetting( "upLeftDownRightKeys" );
+    
+        if( moveKeyMapping != NULL ) {
+            char *temp = stringToLowerCase( moveKeyMapping );
+            delete [] moveKeyMapping;
+            moveKeyMapping = temp;
+        
+            if( strlen( moveKeyMapping ) == 4 &&
+                strcmp( moveKeyMapping, "wasd" ) != 0 ) {
+                // different assignment
+
+                mapKey( moveKeyMapping[0], 'w' );
+                mapKey( moveKeyMapping[1], 'a' );
+                mapKey( moveKeyMapping[2], 's' );
+                mapKey( moveKeyMapping[3], 'd' );
+                }
+            delete [] moveKeyMapping;
+            }
+
+
         firstDrawFrameCalled = true;
         }
 

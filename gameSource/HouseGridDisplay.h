@@ -108,6 +108,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         virtual void pointerUp( float inX, float inY );
 
         
+        // WASD/IJKL key movement
+        void keyDown( unsigned char inASCII );
+        
         // arrow key movement
         virtual void specialKeyDown( int inKeyCode );
         virtual void specialKeyUp( int inKeyCode );
