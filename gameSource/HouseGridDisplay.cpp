@@ -1651,7 +1651,8 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newRobberIndex = newY * mFullMapD + newX;
     
-    if( ! isSubMapPropertySet( fullToSub( newRobberIndex ), blocking ) ) {
+    if( newRobberIndex != mRobberIndex &&
+        ! isSubMapPropertySet( fullToSub( newRobberIndex ), blocking ) ) {
         
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
