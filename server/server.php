@@ -159,6 +159,9 @@ else if( $action == "list_logged_robberies" ) {
 else if( $action == "get_robbery_log" ) {
     cd_getRobberyLog();
     }
+else if( $action == "list_auctions" ) {
+    cd_listAuctions();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -221,6 +224,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
         cd_doesTableExist( $tableNamePrefix."prices" ) &&
+        cd_doesTableExist( $tableNamePrefix."auction" ) &&
         cd_doesTableExist( $tableNamePrefix."last_names" ) &&
         cd_doesTableExist( $tableNamePrefix."first_names" );
     
@@ -378,14 +382,63 @@ function cd_restoreDefaultPrices() {
     foreach( $defaultPrices as $tuple ) {
         $object_id = $tuple[0];
         $price = $tuple[1];
-        $note = mysql_real_escape_string( $tuple[2] );
+        $in_gallery = $tuple[2];
+        $note = mysql_real_escape_string( $tuple[3] );
         
         $query = "INSERT INTO $tableName ".
-            "VALUES ( '$object_id', '$price', '$note' )";
+            "VALUES ( '$object_id', '$price', '$in_gallery', '$note' )";
 
         cd_queryDatabase( $query );
         }
     
+    }
+
+
+function cd_startAuction( $object_id, $start_price ) {
+    global $tableNamePrefix, $auctionPriceDropInterval;
+
+    $tableName = $tableNamePrefix . "auction";
+    
+    $dropInt = $auctionPriceDropInterval;
+        
+    // DATE_SUB trick to round time down to nearest 3-minute interval
+    // found here:
+    // http://stackoverflow.com/questions/9680144/
+    //        mysql-date-time-round-to-nearest-hour
+    $query = "INSERT INTO $tableName ".
+        "VALUES ( '$object_id', '$start_price', " .
+        "DATE_SUB( ".
+        "  DATE_SUB( CURRENT_TIMESTAMP, ".
+        "            INTERVAL MOD( MINUTE(CURRENT_TIMESTAMP), ".
+        "                          $dropInt ) MINUTE ), ".
+        "  INTERVAL SECOND(CURRENT_TIMESTAMP) SECOND ) )";
+    
+    cd_queryDatabase( $query );
+    }
+
+
+
+function cd_startInitialAuctions() {
+    
+    global $tableNamePrefix;    
+
+    // clear any old
+    cd_queryDatabase( "DELETE FROM $tableNamePrefix"."auction" );
+    
+    
+    $query = "SELECT object_id, price FROM ".
+        "$tableNamePrefix"."prices WHERE in_gallery = 1;";
+    
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $object_id = mysql_result( $result, $i, "object_id" );
+        $price = mysql_result( $result, $i, "price" );
+        
+        cd_startAuction( $object_id, $price );
+        }    
     }
 
 
@@ -567,12 +620,11 @@ function cd_setupDatabase() {
     $tableName = $tableNamePrefix . "prices";
     if( ! cd_doesTableExist( $tableName ) ) {
 
-        // this table contains general info about each user's house
-        // EVERY user has EXACTLY ONE house
         $query =
             "CREATE TABLE $tableName(" .
             "object_id INT NOT NULL PRIMARY KEY," .
             "price INT NOT NULL, ".
+            "in_gallery TINYINT NOT NULL, ".
             "note LONGTEXT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -584,6 +636,26 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+    
+    $tableName = $tableNamePrefix . "auction";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        $query =
+            "CREATE TABLE $tableName(" .
+            "object_id INT NOT NULL PRIMARY KEY," .
+            "start_price INT NOT NULL, ".
+            "start_time DATETIME NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        cd_startInitialAuctions();
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+    
     
     
 
@@ -2168,6 +2240,89 @@ function cd_getRobberyLog() {
 
 
 
+function cd_computeAuctionPrice( $start_price, $elapsed_seconds ) {
+    global $auctionPriceDropInterval, $auctionPriceHalfLife;
+
+    $priceDropIntervalSeconds = $auctionPriceDropInterval * 60;
+    
+    
+    $intervalsPerHalfLife = $auctionPriceHalfLife / $auctionPriceDropInterval;
+
+    // want D ^ ($intervalsPerHalfLife) = 0.5;
+    // where D is the price shrink factor per interval
+    // $D = pow( 0.5, 1 / $intervalsPerHalfLife );
+
+    // but we're just going to raise D ^ (numIntervalsPassed) anyway
+    // so might as well just rais 0.5 to the multiplied power instead
+    
+    $numIntervalsPassed =
+        floor( $elapsed_seconds / $priceDropIntervalSeconds );
+    
+    $price = floor( $start_price *
+                    pow( 0.5, $numIntervalsPassed / $intervalsPerHalfLife ) );
+
+    if( $price < 1 ) {
+        $price = 1;
+        }
+    
+    return $price;
+    }
+
+
+
+function cd_listAuctions() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $tableName = $tableNamePrefix ."auction";
+    
+    $query = "SELECT object_id, start_price, ".
+        "TIME_TO_SEC( ".
+        "  TIMEDIFF( CURRENT_TIMESTAMP, start_time ) ) as elapsed_seconds ".
+        "FROM $tableName ".
+        "ORDER BY elapsed_seconds DESC;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $seconds_until_price_drop = 0;
+
+    global $auctionPriceDropInterval, $auctionPriceHalfLife;
+
+    $priceDropIntervalSeconds = $auctionPriceDropInterval * 60;
+    
+    if( $numRows > 0 ) {
+        $elapsed_seconds = mysql_result( $result, 0, "elapsed_seconds" );
+
+        // subtract whole multiple of 3 minutes
+        $seconds_until_price_drop =
+            $priceDropIntervalSeconds -
+            $elapsed_seconds % $priceDropIntervalSeconds;
+        
+        }
+
+    echo "$seconds_until_price_drop\n";
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $object_id = mysql_result( $result, $i, "object_id" );
+        $start_price = mysql_result( $result, $i, "start_price" );
+        $elapsed_seconds = mysql_result( $result, $i, "elapsed_seconds" );
+
+
+        $price = cd_computeAuctionPrice( $start_price, $elapsed_seconds );
+                
+        echo "$object_id#$price\n";
+        }
+    echo "OK";
+    }
+
+
+
+
 
 
 
@@ -2638,7 +2793,7 @@ function cd_showData() {
     echo "<hr>";
 
 
-    $query = "SELECT object_id, price, note ".
+    $query = "SELECT object_id, price, in_gallery, note ".
         "FROM $tableNamePrefix"."prices;";
     $result = cd_queryDatabase( $query );
     
@@ -2661,9 +2816,16 @@ function cd_showData() {
     for( $i=0; $i<$numRows; $i++ ) {
         $object_id = mysql_result( $result, $i, "object_id" );
         $price = mysql_result( $result, $i, "price" );
+        $in_gallery = mysql_result( $result, $i, "in_gallery" );
         $note = mysql_result( $result, $i, "note" );
 
         $note = htmlspecialchars( $note, ENT_QUOTES );
+
+        $checked = "";
+
+        if( $in_gallery ) {
+            $checked = "CHECKED";
+            }
         
         echo "<tr>\n";
         echo "<td bgcolor=$bgColor>".
@@ -2672,6 +2834,8 @@ function cd_showData() {
         echo "<td bgcolor=$bgColor>Price: $<INPUT TYPE='text' ".
                           "MAXLENGTH=40 SIZE=20 NAME='price_$i' ".
                           "VALUE='$price'></td>\n";
+        echo "<td bgcolor=$bgColor>Gallery: <INPUT TYPE='checkbox' ".
+                          "NAME='in_gallery_$i' VALUE='1' $checked></td>\n";
         echo "<td bgcolor=$bgColor>Note: <INPUT TYPE='text' ".
                           "MAXLENGTH=255 SIZE=30 NAME='note_$i' ".
                           "VALUE='$note'></td>\n";
@@ -2686,13 +2850,15 @@ function cd_showData() {
         }
     
     echo "<tr>\n";
-    echo "<td colspan=3>New Price:</td><tr>\n";
+    echo "<td colspan=5>New Price:</td><tr>\n";
     echo "<tr>\n";
     echo "<td>Object ID: <INPUT TYPE='text' MAXLENGTH=40 SIZE=20 NAME='id_NEW'
              VALUE=''></td>\n";
     echo "<td>Price: $<INPUT TYPE='text' ".
         "MAXLENGTH=40 SIZE=20 NAME='price_NEW' ".
         "VALUE=''></td>\n";
+    echo "<td>Gallery: <INPUT TYPE='checkbox' ".
+        "NAME='in_gallery_NEW' VALUE='1'></td>\n";
     echo "<td>Note: <INPUT TYPE='text' ".
         "MAXLENGTH=255 SIZE=30 NAME='note_NEW' ".
         "VALUE=''></td>\n";
@@ -2719,6 +2885,52 @@ function cd_showData() {
     </FORM>
          
 <?php
+
+         
+    echo "<hr>";
+
+    // Show auction list
+    echo "Auction:<br>";
+    
+    $query = "SELECT object_id, start_price, start_time, ".
+        "TIME_TO_SEC( ".
+        "  TIMEDIFF( CURRENT_TIMESTAMP, start_time ) ) as elapsed_seconds ".
+        "FROM $tableNamePrefix"."auction;";
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    echo "<table border=1 cellpadding=5>\n";
+
+    $bgColor = "#EEEEEE";
+    $altBGColor = "#CCCCCC";
+                 
+    for( $i=0; $i<$numRows; $i++ ) {
+        $object_id = mysql_result( $result, $i, "object_id" );
+        $start_price = mysql_result( $result, $i, "start_price" );
+        $start_time = mysql_result( $result, $i, "start_time" );
+        $elapsed_seconds = mysql_result( $result, $i, "elapsed_seconds" );
+
+        $price = cd_computeAuctionPrice( $start_price, $elapsed_seconds );
+        
+        echo "<tr>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Object ID: <b>$object_id</b></td>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Start Price: <b>\$$start_price</b></td>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Start Time: <b>$start_time</b></td>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Elapsed Seconds: <b>$elapsed_seconds</b></td>\n";
+        echo "<td bgcolor=$bgColor>".
+            "Current Price: <b>\$$price</b></td>\n";
+        echo "</tr>\n\n";
+
+        $temp = $bgColor;
+        $bgColor = $altBGColor;
+        $altBGColor = $temp;
+        }
+    echo "</table>\n";
     
     
     echo "<hr>";
@@ -2889,6 +3101,8 @@ function cd_updatePrices() {
         for( $i=0; $i<$num_prices; $i++ ) {
             $id = cd_requestFilter( "id_$i", "/\d+/" );
             $price = cd_requestFilter( "price_$i", "/\d+/" );
+            $in_gallery = cd_requestFilter( "in_gallery_$i", "/1/", "0" );
+            
             $note = cd_requestFilter( "note_$i", "/[A-Z0-9.' _-]+/i" );
             
             if( $id != "" && $price != "" ) {
@@ -2897,7 +3111,8 @@ function cd_updatePrices() {
                 $note = mysql_real_escape_string( $note );
                 
                 $query = "UPDATE $tableNamePrefix"."prices SET " .
-                    "price = '$price', note = '$note' " .
+                    "price = '$price', in_gallery = '$in_gallery', ".
+                    "note = '$note' " .
                     "WHERE object_id = '$id';";
                 
                 $result = cd_queryDatabase( $query );
@@ -2912,6 +3127,8 @@ function cd_updatePrices() {
     $id = cd_requestFilter( "id_NEW", "/\d+/" );
 
     $price = cd_requestFilter( "price_NEW", "/\d+/" );
+
+    $in_gallery = cd_requestFilter( "in_gallery_NEW", "/1/", "0" );
 
     $note = cd_requestFilter( "note_NEW", "/[A-Z0-9.' _-]+/i" );
 
@@ -2933,12 +3150,21 @@ function cd_updatePrices() {
         
         
         $query = "INSERT INTO $tableNamePrefix"."prices VALUES ( " .
-            "'$id', '$price', '$note' );";
+            "'$id', '$price', '$in_gallery', '$note' );";
         $result = cd_queryDatabase( $query );
 
         if( $result ) {
-            cd_log( "New price ($id, \$$price, '$note' ) ".
+            $galleryLabel = "";
+            if( $in_gallery ) {
+                $galleryLabel = "gallery ";
+                }
+            
+            cd_log( "New $galleryLabel"."price ($id, \$$price, '$note' ) ".
                     "created by $remoteIP" );
+            }
+
+        if( $in_gallery == 1 ) {
+            cd_startAuction( $id, $price );
             }
         
         }

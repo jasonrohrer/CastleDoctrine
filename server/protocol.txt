@@ -281,11 +281,11 @@ backpack_contents is what's left over in backpack after robbery ends
 
 
 === Call:
-server.php?action=list_loggged_robberies&user_id=[id number]
-                                        &skip=[number]
-                                        &limit=[number]
-                                        &sequence_number=[number]
-                                        &ticket_hash=[sha1 hash, hex-encoded]
+server.php?action=list_logged_robberies&user_id=[id number]
+                                       &skip=[number]
+                                       &limit=[number]
+                                       &sequence_number=[number]
+                                       &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
 log_id#character_name#last_robber_name#loot_value#rob_attempts
 log_id#character_name#last_robber_name#loot_value#rob_attempts
@@ -330,4 +330,23 @@ moveList = ASCII string representing moves made
 Note:
 If robber or victim is user_id, corresponding "_name" field is set to "You".
 
+
+
+
+=== Call:
+server.php?action=list_auctions&user_id=[id number]
+                               &sequence_number=[number]
+                               &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+seconds_until_price_drop
+object_id#current_price
+object_id#current_price
+object_id#current_price
+....
+OK
+
+Where:
+current_price has been rounded down to whole dollars
+
+seconds_until_price_drop can be meaningless if list is empty
 
