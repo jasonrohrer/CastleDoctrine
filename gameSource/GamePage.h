@@ -24,7 +24,7 @@ class GamePage : public PageComponent {
         // override these from PageComponent to actually SHOW
         // the tool tip, instead of passing it further up the parent chain
         virtual void setToolTip( const char *inTipKey );
-        virtual void setToolTipDirect( char *inTipMessage );
+        virtual void setToolTipDirect( const char *inTipMessage );
         
 
         

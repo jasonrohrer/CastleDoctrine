@@ -49,6 +49,7 @@ tools.cpp \
 inventory.cpp \
 LoadBackpackPage.cpp \
 InventorySlotButton.cpp \
+AuctionPage.cpp \
 
 
 

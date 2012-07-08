@@ -47,6 +47,11 @@ loadBackpackTip "Load your backpack before leaving"
 
 backpackUndoTip "Undo purchase of %s"
 
+openAuctionList "Auctions"
+
+openAuctionListTip "View currently running gallery auctions"
+
+
 
 doneEdit "Done"
 
@@ -59,6 +64,13 @@ buyTip "Buy %s for backpack"
 
 selfTestDescription "Prove that your house is fair:"
 
+
+auctionDescription "Currently running auctions:"
+
+auctionTimeString "Prices will drop in"
+auctionPricesStale "New prices available"
+auctionUpdateButton "Update"
+auctionUpdateButtonTip "Fetch latest auction prices"
 
 houseCheckedIn "House checked back in."
 houseCheckInFailed "House check in failed."
@@ -109,6 +121,7 @@ robOneItemSuccess "You stole $%d and this item:"
 
 
 listFetchFailed "Failed to fetch house list"
+auctionListFetchFailed "Failed to fetch auction list"
 
 
 

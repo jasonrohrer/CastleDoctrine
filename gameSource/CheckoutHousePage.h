@@ -28,6 +28,9 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         virtual char *getBackpackContents();
 
         // destroyed by caller if not NULL
+        virtual char *getGalleryContents();
+
+        // destroyed by caller if not NULL
         virtual char *getPriceList();
 
         virtual int getLootValue();
@@ -48,6 +51,7 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         char *mHouseMap;
         char *mVaultContents;
         char *mBackpackContents;
+        char *mGalleryContents;
         char *mPriceList;
         
         int mLootValue;

@@ -70,7 +70,7 @@ void GamePage::setToolTip( const char *inTipKey ) {
 
 
 
-void GamePage::setToolTipDirect( char *inTip ) {
+void GamePage::setToolTipDirect( const char *inTip ) {
     if( mTip != NULL ) {
         delete [] mTip;
         mTip = NULL;

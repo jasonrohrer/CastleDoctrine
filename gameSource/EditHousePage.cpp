@@ -28,11 +28,13 @@ EditHousePage::EditHousePage()
           mGridDisplay( 0, 0, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
+          mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
           mDone( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mBackpackButton );
+    addComponent( &mAuctionButton );
     addComponent( &mUndoButton );
     addComponent( &mGridDisplay );
     addComponent( &mObjectPicker );
@@ -40,9 +42,11 @@ EditHousePage::EditHousePage()
     mDoneButton.setMouseOverTip( "" );
     mUndoButton.setMouseOverTip( "" );
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
+    mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );
 
     mDoneButton.addActionListener( this );
     mBackpackButton.addActionListener( this );
+    mAuctionButton.addActionListener( this );
     mUndoButton.addActionListener( this );
     mUndoButton.setVisible( false );
     mGridDisplay.addActionListener( this );
@@ -243,6 +247,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mBackpackButton ) {
         mShowLoadBackpack = true;
         }
+    else if( inTarget == &mAuctionButton ) {
+        mShowAuctions = true;
+        }
     else if( inTarget == &mDoneButton ) {
         
         // Reset any states
@@ -293,6 +300,7 @@ void EditHousePage::makeActive( char inFresh ) {
     
     mDone = false;
     mShowLoadBackpack = false;
+    mShowAuctions = false;
     }
         
 

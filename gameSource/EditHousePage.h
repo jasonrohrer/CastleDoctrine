@@ -71,6 +71,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char showLoadBackpack() {
             return mShowLoadBackpack;
             }
+        
+        char showAuctions() {
+            return mShowAuctions;
+            }
             
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -102,10 +106,12 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         HouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
         TextButton mBackpackButton;
+        TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
         
         char mDone;
         char mShowLoadBackpack;
+        char mShowAuctions;
 
         void checkIfPlacementAllowed();
 

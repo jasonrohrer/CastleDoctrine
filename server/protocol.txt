@@ -66,6 +66,7 @@ Returns:
 houseMap
 vault_contents
 backpack_contents
+gallery_contents
 price_list
 current_balance
 must_self_test
@@ -103,6 +104,11 @@ vault_contents = ASCII string containing ID:quantity pairs, like:
 
 
 backpack_contents = ASCII string, same format as vault_contents
+
+gallery_contents = ASCII string containing list of IDs, like:
+2001#2010#2200
+
+(If empty, string is a single "#")
 
 
 
@@ -350,3 +356,24 @@ current_price has been rounded down to whole dollars
 
 seconds_until_price_drop can be meaningless if list is empty
 
+
+
+
+=== Call:
+server.php?action=buy_auction&user_id=[id number]
+                             &sequence_number=[number]
+                             &ticket_hash=[sha1 hash, hex-encoded]
+                             &object_id=[id_number]
+Returns:
+purchase_price
+OK
+
+or
+
+DENIED
+(If player balance is insufficient or object bought by someone else first
+ our house is not checked out.)
+
+Note:
+House must be actively checked out in edit mode by owner to make auction 
+purchases

@@ -47,6 +47,7 @@ CustomRandomSource randSource;
 #include "CheckoutHousePage.h"
 #include "EditHousePage.h"
 #include "LoadBackpackPage.h"
+#include "AuctionPage.h"
 #include "CheckinHousePage.h"
 #include "MenuPage.h"
 #include "RobCheckoutHousePage.h"
@@ -70,6 +71,7 @@ LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 LoadBackpackPage *loadBackpackPage;
+AuctionPage *auctionPage;
 RobHousePage *selfHouseTestPage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
@@ -388,6 +390,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
+    auctionPage = new AuctionPage();
     
     selfHouseTestPage = new RobHousePage();
     selfHouseTestPage->showBackpack( false );
@@ -424,6 +427,7 @@ void freeFrameDrawer() {
     delete checkoutHousePage;
     delete editHousePage;
     delete loadBackpackPage;
+    delete auctionPage;
     delete selfHouseTestPage;
     delete checkinHousePage;
     delete menuPage;
@@ -966,6 +970,19 @@ void drawFrame( char inUpdate ) {
                 delete [] purchaseList;
                 delete [] priceList;
                 }
+            else if( editHousePage->showAuctions() ) {
+                // FIXME
+                // char *galleryContents = editHousePage->getGalleryContents();
+                
+                // auctionPage->setGalleryContents( galleryContents );
+                // delete [] galleryContents;
+
+                // auctionPage->setLootValue( 
+                //    editHousePage->getLootValue() );
+                                
+                currentGamePage = auctionPage;
+                currentGamePage->base_makeActive( true );
+                }
             else if( editHousePage->getDone() ) {
 
                 char *houseMap = editHousePage->getHouseMap();
@@ -1036,6 +1053,25 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] purchaseList;
+                
+                // back to editing
+                currentGamePage = editHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == auctionPage ) {
+            if( auctionPage->getDone() ) {
+                // done with auctions, back to editor
+                
+                // FIXME
+                // char *galleryContents = auctionPage->getGalleryContents();
+                
+                // editHousePage->setGalleryContents( galleryContents );
+                                
+                // editHousePage->setLootValue( auctionPage->getLootValue() );
+
+
+                // delete [] galleryContents;
                 
                 // back to editing
                 currentGamePage = editHousePage;

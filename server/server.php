@@ -535,6 +535,7 @@ function cd_setupDatabase() {
             "house_map LONGTEXT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
+            "gallery_contents LONGTEXT NOT NULL," .
             // times edited since last successful robbery
             "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
@@ -1030,6 +1031,7 @@ function cd_startEditHouse() {
     // out for robbery
     
     $query = "SELECT house_map, vault_contents, backpack_contents, ".
+        "gallery_contents, ".
         "loot_value, edit_count FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
@@ -1047,6 +1049,7 @@ function cd_startEditHouse() {
     $house_map = $row[ "house_map" ];
     $vault_contents = $row[ "vault_contents" ];
     $backpack_contents = $row[ "backpack_contents" ];
+    $gallery_contents = $row[ "gallery_contents" ];
     $loot_value = $row[ "loot_value" ];
     $edit_count = $row[ "edit_count" ];
 
@@ -1130,6 +1133,8 @@ function cd_startEditHouse() {
     echo $vault_contents;
     echo "\n";
     echo $backpack_contents;
+    echo "\n";
+    echo $gallery_contents;
     echo "\n";
     echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
     echo "\n";
@@ -2539,6 +2544,7 @@ function cd_newHouseForUser( $user_id ) {
     
     $vault_contents = "#";
     $backpack_contents = "#";
+    $gallery_contnets = '#';
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
@@ -2546,7 +2552,7 @@ function cd_newHouseForUser( $user_id ) {
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', '$house_map', ".
-            "'$vault_contents', '$backpack_contents', ".
+            "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "0, 1000, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
