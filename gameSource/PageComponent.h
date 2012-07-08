@@ -26,7 +26,7 @@ class PageComponent : public GUIComponent {
         virtual void setToolTip( const char *inTipKey );
         
         // inTipMessage destroyed by caller
-        virtual void setToolTipDirect( char *inTipMessage );
+        virtual void setToolTipDirect( const char *inTipMessage );
 
 
         

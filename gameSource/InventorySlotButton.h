@@ -19,7 +19,7 @@ class InventorySlotButton : public SpriteButton {
                              double inDrawScale = 1.0 );
 
         // if ID is -1, slot is cleared
-        void setObject( int inID );
+        virtual void setObject( int inID );
 
         // set to 0 clears object ID
         void setQuantity( int inQuantity );

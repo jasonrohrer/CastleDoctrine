@@ -38,6 +38,31 @@ AuctionPage::AuctionPage()
     mUpdateButton.setMouseOverTip( translate( "auctionUpdateButtonTip" ) );
     
     mUpdateButton.setVisible( false );
+
+    
+    doublePair slotCenter = { -8, 3 };
+    
+    int numAuctionRows = NUM_AUCTION_SLOTS / NUM_AUCTION_SLOTS_PER_ROW;
+    
+    int slot = 0;
+    
+    for( int r=0; r<numAuctionRows; r++ ) {
+        slotCenter.x = -8;
+
+        for( int i=0; i<NUM_AUCTION_SLOTS_PER_ROW; i++ ) {
+            
+            mAuctionSlots[slot] = 
+                new GallerySlotButton( mainFont, slotCenter.x, slotCenter.y,
+                                       1 / 16.0 );
+            slotCenter.x += 3;
+        
+            addComponent( mAuctionSlots[slot] );
+            mAuctionSlots[slot]->addActionListener( this );
+            slot ++;
+            }
+        slotCenter.y -= 3;
+        }
+
     }
 
 
@@ -51,6 +76,10 @@ AuctionPage::~AuctionPage() {
         delete [] *( mAuctionItems.getElement( i ) );
         }
     mAuctionItems.deleteAll();
+
+    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+        delete mAuctionSlots[i];
+        }
     }
 
 
@@ -131,48 +160,36 @@ void AuctionPage::step() {
                             }
                         }
                         
+                    int slotNumber = 0;
+
                     // last line should be OK
                     for( int i=1; i<lines->size() - 1; i++ ) {
                         char *line = *( lines->getElement( i ) );
                         
-                        mAuctionItems.push_back( line );
-                        
-                        /*
                         int numParts;
                         char **parts = split( line, "#", &numParts );
                         
-                        if( numParts != 5 ) {
-                            printf( "Unexpected number of parts on house "
+                        if( numParts != 2 ) {
+                            printf( "Unexpected number of parts on auction "
                                     "list line: %d\n", numParts );
                             badParse = true;
                             }
                         else {
-                            HouseRecord r;
                             
-                            r.selected = false;
-                            r.draw = false;
-                            r.position.x = 0;
-                            r.position.y = topOffset - i * lineHeight;
+                            int id;
                             
-                            sscanf( parts[0], "%d", &( r.uniqueID ) );
+                            sscanf( parts[0], "%d", &id );
                             
+                            if( slotNumber < NUM_AUCTION_SLOTS ) {
+                                mAuctionSlots[ slotNumber ]->setObject( id );
+                                }
                             
-                            char found;
-                            r.characterName = 
-                                trimName(
-                                    replaceAll( parts[1], "_", " ", &found ),
-                                    lineWidthLeft - 0.125 );
-                            
-                            r.lastRobberName = 
-                                trimName (
-                                    replaceAll( parts[2], "_", " ", &found ),
-                                    lineWidthLeft - 0.125 );
-                            
+                            int price;
+                            sscanf( parts[1], "%d", &price );
 
-                            sscanf( parts[3], "%d", &( r.lootValue ) );
-                            sscanf( parts[4], "%d", &( r.robAttempts ) );
+                            // FIXME:  do something with price!
 
-                            mHouseList.push_back( r );
+                            slotNumber ++;
                             }
                         
                         for( int j=0; j<numParts; j++ ) {
@@ -182,7 +199,6 @@ void AuctionPage::step() {
 
                         
                         delete [] line;
-                        */
                         }
                     
                     if( lines->size() > 0 ) {
@@ -320,6 +336,10 @@ void AuctionPage::refreshPrices() {
         delete [] *( mAuctionItems.getElement( i ) );
         }
     mAuctionItems.deleteAll();
+
+    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+        mAuctionSlots[i]->setObject( -1 );
+        }
     
     mSecondsUntilUpdate = -1;
     mBaseTimestamp = -1;

@@ -62,6 +62,7 @@ CustomRandomSource randSource;
 #include "houseObjects.h"
 #include "houseTransitions.h"
 #include "tools.h"
+#include "galleryObjects.h"
 
 
 GamePage *currentGamePage = NULL;
@@ -382,7 +383,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     initHouseObjects();    
     initTools();
-
+    initGalleryObjects();
+    
     initHouseTransitions();
     
 
@@ -444,7 +446,7 @@ void freeFrameDrawer() {
     freeHouseTransitions();
     
     freeTools();
-    
+    freeGalleryObjects();
 
     if( serverURL != NULL ) {
         delete [] serverURL;

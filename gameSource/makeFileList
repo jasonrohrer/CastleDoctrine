@@ -50,6 +50,8 @@ inventory.cpp \
 LoadBackpackPage.cpp \
 InventorySlotButton.cpp \
 AuctionPage.cpp \
+galleryObjects.cpp \
+GallerySlotButton.cpp \
 
 
 

@@ -1,6 +1,7 @@
 #include "LiveHousePage.h"
 
 #include "TextButton.h"
+#include "GallerySlotButton.h"
 
 #include "minorGems/util/SimpleVector.h"
 
@@ -8,6 +9,10 @@
 #include "minorGems/ui/event/ActionListener.h"
 
 
+
+#define NUM_AUCTION_SLOTS  8
+
+#define NUM_AUCTION_SLOTS_PER_ROW  4
 
 
 class AuctionPage : public LiveHousePage, public ActionListener {
@@ -35,6 +40,8 @@ class AuctionPage : public LiveHousePage, public ActionListener {
     protected:
         TextButton mDoneButton;
         TextButton mUpdateButton;
+        
+        GallerySlotButton *mAuctionSlots[ NUM_AUCTION_SLOTS ];
 
         int mWebRequest;
 

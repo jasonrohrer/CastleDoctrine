@@ -32,7 +32,7 @@ void PageComponent::setToolTip( const char *inTipKey ) {
 
 
         
-void PageComponent::setToolTipDirect( char *inTipMessage ) {
+void PageComponent::setToolTipDirect( const char *inTipMessage ) {
     if( mParent != NULL ) {
         mParent->setToolTipDirect( inTipMessage );
         }
