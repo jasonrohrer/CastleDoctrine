@@ -2280,8 +2280,8 @@ function cd_listAuctions() {
     $tableName = $tableNamePrefix ."auction";
     
     $query = "SELECT object_id, start_price, ".
-        "TIME_TO_SEC( ".
-        "  TIMEDIFF( CURRENT_TIMESTAMP, start_time ) ) as elapsed_seconds ".
+        "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
+        "   as elapsed_seconds ".
         "FROM $tableName ".
         "ORDER BY elapsed_seconds DESC;";
 
@@ -2893,8 +2893,8 @@ function cd_showData() {
     echo "Auction:<br>";
     
     $query = "SELECT object_id, start_price, start_time, ".
-        "TIME_TO_SEC( ".
-        "  TIMEDIFF( CURRENT_TIMESTAMP, start_time ) ) as elapsed_seconds ".
+        "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
+        "   as elapsed_seconds ".
         "FROM $tableNamePrefix"."auction;";
     $result = cd_queryDatabase( $query );
     
