@@ -107,7 +107,8 @@ void initGalleryObjects() {
 
 
                 if( tgaPath != NULL ) {
-                    r.sprite = loadSpriteBase( tgaPath );
+                    // art has no transparency
+                    r.sprite = loadSpriteBase( tgaPath, false );
                     delete [] tgaPath;
                     }
                 else {

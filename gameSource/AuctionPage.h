@@ -10,9 +10,9 @@
 
 
 
-#define NUM_AUCTION_SLOTS  8
+#define NUM_AUCTION_SLOTS  18
 
-#define NUM_AUCTION_SLOTS_PER_ROW  4
+#define NUM_AUCTION_SLOTS_PER_ROW  6
 
 
 class AuctionPage : public LiveHousePage, public ActionListener {
@@ -42,6 +42,8 @@ class AuctionPage : public LiveHousePage, public ActionListener {
         TextButton mUpdateButton;
         
         GallerySlotButton *mAuctionSlots[ NUM_AUCTION_SLOTS ];
+
+        int mAuctionPrices[ NUM_AUCTION_SLOTS ];
 
         int mWebRequest;
 

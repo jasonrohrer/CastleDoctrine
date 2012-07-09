@@ -40,14 +40,14 @@ AuctionPage::AuctionPage()
     mUpdateButton.setVisible( false );
 
     
-    doublePair slotCenter = { -8, 3 };
+    doublePair slotCenter = { -7.5, 5 };
     
     int numAuctionRows = NUM_AUCTION_SLOTS / NUM_AUCTION_SLOTS_PER_ROW;
     
     int slot = 0;
     
     for( int r=0; r<numAuctionRows; r++ ) {
-        slotCenter.x = -8;
+        slotCenter.x = -7.5;
 
         for( int i=0; i<NUM_AUCTION_SLOTS_PER_ROW; i++ ) {
             
@@ -60,7 +60,7 @@ AuctionPage::AuctionPage()
             mAuctionSlots[slot]->addActionListener( this );
             slot ++;
             }
-        slotCenter.y -= 3;
+        slotCenter.y -= 3.5;
         }
 
     }
@@ -177,18 +177,16 @@ void AuctionPage::step() {
                         else {
                             
                             int id;
-                            
                             sscanf( parts[0], "%d", &id );
-                            
-                            if( slotNumber < NUM_AUCTION_SLOTS ) {
-                                mAuctionSlots[ slotNumber ]->setObject( id );
-                                }
                             
                             int price;
                             sscanf( parts[1], "%d", &price );
 
-                            // FIXME:  do something with price!
-
+                            if( slotNumber < NUM_AUCTION_SLOTS ) {
+                                mAuctionSlots[ slotNumber ]->setObject( id );
+                                mAuctionPrices[ slotNumber ] = price;
+                                }
+                            
                             slotNumber ++;
                             }
                         
@@ -255,11 +253,17 @@ void AuctionPage::draw( doublePair inViewCenter,
 
     labelPos.y = 0;
 
-    for( int i=0; i<mAuctionItems.size(); i++ ) {
-        char *string = *( mAuctionItems.getElement( i ) );
+    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+        if( mAuctionPrices[i] > 0 ) {
         
-        drawMessage( string, labelPos, false );
-        labelPos.y -= 0.5;
+            char *priceString = autoSprintf( "$%d", mAuctionPrices[i] );
+            doublePair pricePos = mAuctionSlots[i]->getCenter();
+            pricePos.y -= 1.5625;
+            
+            drawMessage( priceString, pricePos, false );
+
+            delete [] priceString;
+            }
         }
     
     if( mSecondsUntilUpdate > 0 ) {
@@ -339,6 +343,7 @@ void AuctionPage::refreshPrices() {
 
     for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
         mAuctionSlots[i]->setObject( -1 );
+        mAuctionPrices[i] = -1;
         }
     
     mSecondsUntilUpdate = -1;
