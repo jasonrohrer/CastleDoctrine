@@ -1244,7 +1244,7 @@ function cd_endEditHouse() {
     // out for robbery
     
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
-        "vault_contents, backpack_contents ".
+        "vault_contents, backpack_contents, gallery_contents ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -1264,6 +1264,7 @@ function cd_endEditHouse() {
     $old_house_map = $row[ "house_map" ];
     $old_vault_contents = $row[ "vault_contents" ];
     $old_backpack_contents = $row[ "backpack_contents" ];
+    $old_gallery_contents = $row[ "gallery_contents" ];
     
     $edit_count ++;
     
@@ -1272,6 +1273,8 @@ function cd_endEditHouse() {
     $vault_contents = cd_requestFilter( "vault_contents", "/[#0-9:]+/" );
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
+
+    $gallery_contents = cd_requestFilter( "gallery_contents", "/[#0-9]+/" );
 
     $price_list = cd_requestFilter( "price_list",
                                     "/\d+:[0-9@#]+:[A-F0-9]+/i" );
@@ -1669,6 +1672,32 @@ function cd_endEditHouse() {
         cd_transactionDeny();
         return;
         }
+
+    
+    // also, make sure gallery contains no unexpected items
+
+    if( $old_gallery_contents != "#" ) {
+    
+        $oldGalleryArray = preg_split( "/#/", $old_gallery_contents );
+        $newGalleryArray = preg_split( "/#/", $gallery_contents );
+
+        foreach( $newGalleryArray as $item ) {    
+            if( ! in_array( $item, $oldGalleryArray ) ) {
+                cd_log( "House check-in with ".
+                        " extra gallery items denied" );
+                cd_transactionDeny();
+                return;
+                }
+            }
+        }
+    else if( $gallery_contents != "#" ) {
+        cd_log( "House check-in with ".
+                " extra gallery items denied" );
+        cd_transactionDeny();
+        return;
+        }
+    
+        
     
 
     // map and edits okay
@@ -1680,6 +1709,7 @@ function cd_endEditHouse() {
         "edit_checkout = 0, house_map='$house_map', ".
         "vault_contents='$vault_contents', ".
         "backpack_contents='$backpack_contents', ".
+        "gallery_contents='$gallery_contents', ".
         "edit_count='$edit_count', loot_value='$loot_value' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );

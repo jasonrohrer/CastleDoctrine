@@ -22,6 +22,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
         virtual void setHouseMap( char *inHouseMap );        
         virtual void setVaultContents( char *inVaultContents );
         virtual void setBackpackContents( char *inBackpackContents );
+        virtual void setGalleryContents( char *inGalleryContents );
         virtual void setEditList( char *inEditList );
         virtual void setPurchaseList( char *inPurchaseList );
         virtual void setPriceList( char *inPriceList );
@@ -47,6 +48,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
         char *mHouseMap;
         char *mVaultContents;
         char *mBackpackContents;
+        char *mGalleryContents;
         char *mEditList;
         char *mPurchaseList;
         char *mPriceList;

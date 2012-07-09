@@ -23,6 +23,7 @@ CheckinHousePage::CheckinHousePage()
           mHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
+          mGalleryContents( NULL ),
           mEditList( NULL ),
           mPurchaseList( NULL ),
           mPriceList( NULL ),
@@ -53,6 +54,9 @@ CheckinHousePage::~CheckinHousePage() {
         }
     if( mBackpackContents != NULL ) {
         delete [] mBackpackContents;
+        }
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
         }
     if( mEditList != NULL ) {
         delete [] mEditList;
@@ -101,6 +105,15 @@ void CheckinHousePage::setBackpackContents( char *inBackpackContents ) {
         delete [] mBackpackContents;
         }
     mBackpackContents = stringDuplicate( inBackpackContents );
+    }
+
+
+
+void CheckinHousePage::setGalleryContents( char *inGalleryContents ) {
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
+        }
+    mGalleryContents = stringDuplicate( inGalleryContents );
     }
 
 
@@ -215,9 +228,11 @@ void CheckinHousePage::makeActive( char inFresh ) {
     char *actionString = autoSprintf( 
         "action=end_edit_house&user_id=%d"
         "&%s&died=%d&house_map=%s&vault_contents=%s"
-        "&backpack_contents=%s&price_list=%s&edit_list=%s&purchase_list=%s",
+        "&backpack_contents=%s&gallery_contents=%s"
+        "&price_list=%s&edit_list=%s&purchase_list=%s",
         userID, ticketHash, mDied, mHouseMap, mVaultContents, 
-        mBackpackContents,mPriceList, mEditList, mPurchaseList );
+        mBackpackContents, mGalleryContents, 
+        mPriceList, mEditList, mPurchaseList );
     delete [] ticketHash;
             
     

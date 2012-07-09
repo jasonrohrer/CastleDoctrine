@@ -1001,6 +1001,7 @@ void drawFrame( char inUpdate ) {
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
+                char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *priceList = editHousePage->getPriceList();
@@ -1021,6 +1022,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setVaultContents( vaultContents );
                     checkinHousePage->setBackpackContents( backpackContents );
+                    checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setPriceList( priceList );
@@ -1032,6 +1034,7 @@ void drawFrame( char inUpdate ) {
                 delete [] houseMap;
                 delete [] vaultContents;
                 delete [] backpackContents;
+                delete [] galleryContents;
                 delete [] editList;
                 delete [] purchaseList;
                 delete [] priceList;

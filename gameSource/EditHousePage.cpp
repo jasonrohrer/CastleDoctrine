@@ -192,7 +192,27 @@ char *EditHousePage::getGalleryContents() {
     // FIXME:  eventually, have this call rebuild string based on
     // how user has re-arranged gallery
 
-    return stringDuplicate( mGalleryContents );
+    SimpleVector<char *> parts;
+    
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        int id = mGallerySlots[i]->getObject();
+        
+        if( id != -1 ) {
+            parts.push_back( autoSprintf( "%d", id ) );
+            }
+        }
+    char **partsArray = parts.getElementArray();
+    
+    
+    char *fullString = join( partsArray, parts.size(), "#" );
+
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        delete [] partsArray[i];
+        }
+    delete [] partsArray;
+
+
+    return fullString;
     }
 
 
@@ -351,6 +371,22 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         // change to house map
         actionHappened();
         }
+    else {
+        for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+            if( inTarget == mGallerySlots[i] ) {
+                int thisID = mGallerySlots[i]->getObject();
+                
+                if( thisID != -1 && i != 0 ) {
+                    // swap with top slot
+                    int topID = mGallerySlots[0]->getObject();
+                    mGallerySlots[0]->setObject( thisID );
+                    mGallerySlots[i]->setObject( topID );
+                    }
+                break;
+                }
+            }
+        }
+    
     
     }
 
