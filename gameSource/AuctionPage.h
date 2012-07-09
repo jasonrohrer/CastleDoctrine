@@ -40,6 +40,7 @@ class AuctionPage : public LiveHousePage, public ActionListener {
     protected:
         TextButton mDoneButton;
         TextButton mUpdateButton;
+        TextButton mBuyButton;
         
         GallerySlotButton *mAuctionSlots[ NUM_AUCTION_SLOTS ];
 
@@ -55,6 +56,10 @@ class AuctionPage : public LiveHousePage, public ActionListener {
         char mDone;
 
         void refreshPrices();
+
+        void turnAllRingsOff();
+
+        char getPricesStale();
         
     };
 

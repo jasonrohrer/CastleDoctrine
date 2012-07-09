@@ -72,6 +72,11 @@ auctionPricesStale "New prices available"
 auctionUpdateButton "Update"
 auctionUpdateButtonTip "Fetch latest auction prices"
 
+buyButton "Buy"
+
+buyButtonTip "Buy %s for $%d"
+
+
 houseCheckedIn "House checked back in."
 houseCheckInFailed "House check in failed."
 

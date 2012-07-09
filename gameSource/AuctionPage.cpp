@@ -6,6 +6,7 @@
 
 #include "message.h"
 #include "ticketHash.h"
+#include "galleryObjects.h"
 
 
 #include <time.h>
@@ -23,6 +24,7 @@ extern int userID;
 AuctionPage::AuctionPage() 
         : mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUpdateButton( mainFont, 0, -5, translate( "auctionUpdateButton" ) ),
+          mBuyButton( mainFont, 5, -5, translate( "buyButton" ) ),
           mWebRequest( -1 ),
           mSecondsUntilUpdate( -1 ),
           mBaseTimestamp( -1 ),
@@ -30,14 +32,17 @@ AuctionPage::AuctionPage()
 
     addComponent( &mDoneButton );
     addComponent( &mUpdateButton );
+    addComponent( &mBuyButton );
     
     mDoneButton.addActionListener( this );
     mUpdateButton.addActionListener( this );
+    mBuyButton.addActionListener( this );
     
     mDoneButton.setMouseOverTip( "" );
     mUpdateButton.setMouseOverTip( translate( "auctionUpdateButtonTip" ) );
     
     mUpdateButton.setVisible( false );
+    mBuyButton.setVisible( false );
 
     
     doublePair slotCenter = { -7.5, 5 };
@@ -89,6 +94,24 @@ char AuctionPage::getDone() {
     }
 
 
+void AuctionPage::turnAllRingsOff() {
+    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+        mAuctionSlots[i]->setRingOn( false );
+        }
+    }
+
+
+char AuctionPage::getPricesStale() {
+    if( mSecondsUntilUpdate <= 0 ) {
+        return true;
+        }
+    if( ( time(NULL) - mBaseTimestamp ) >= mSecondsUntilUpdate ) {
+        return true;
+        }
+    return false;
+    }
+
+
 
 void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mDoneButton ) {
@@ -102,6 +125,54 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
         // keep house checked out as long as user is still actively
         // watching the auctions with the Update button
         actionHappened();
+        }
+    else if( !getPricesStale() ) {
+        // don't allow user to pick items to buy if prices are stale
+
+        char hit = false;
+        for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+            if( inTarget == mAuctionSlots[i] ) {
+                
+                char ringWasOn = mAuctionSlots[i]->getRingOn();
+
+                turnAllRingsOff();
+                
+                int hitObject = mAuctionSlots[i]->getObject();
+                
+
+                if( !ringWasOn && hitObject != -1 ) {
+                    mAuctionSlots[i]->setRingOn( true );
+                    
+                    mBuyButton.setVisible( true );
+                    
+                    const char *objectDescription = 
+                        getGalleryObjectDescription( hitObject );
+                    
+                    char *quotedDescription = 
+                        autoSprintf( "\"%s\"", objectDescription );
+                    
+
+
+                    char *tipString = autoSprintf( 
+                        translate( "buyButtonTip" ),
+                        quotedDescription, mAuctionPrices[i] );
+                    
+                    delete [] quotedDescription;
+
+                    mBuyButton.setMouseOverTip( tipString );
+                    
+                    delete []tipString;
+                    }
+                else {
+                    mBuyButton.setVisible( false );
+                    }
+                
+
+                hit = true;
+                break;
+                }
+            }
+        
         }
     }
 
@@ -236,9 +307,11 @@ void AuctionPage::step() {
     
     // else no web request
 
-    if( ( time(NULL) - mBaseTimestamp ) >= mSecondsUntilUpdate ) {
+    if( getPricesStale() ) {
         // expired
         mUpdateButton.setVisible( true );
+        turnAllRingsOff();
+        mBuyButton.setVisible( false );
         }
     }
 
@@ -317,8 +390,7 @@ void AuctionPage::makeActive( char inFresh ) {
     mDone = false;
 
     if( mWebRequest == -1 ) {
-        if( mSecondsUntilUpdate <= 0 ||
-            ( time(NULL) - mBaseTimestamp ) >= mSecondsUntilUpdate ) {
+        if( mSecondsUntilUpdate <= 0 || getPricesStale() ) {
             
             refreshPrices();
             }
@@ -345,7 +417,9 @@ void AuctionPage::refreshPrices() {
         mAuctionSlots[i]->setObject( -1 );
         mAuctionPrices[i] = -1;
         }
-    
+    turnAllRingsOff();
+    mBuyButton.setVisible( false );
+
     mSecondsUntilUpdate = -1;
     mBaseTimestamp = -1;
 
