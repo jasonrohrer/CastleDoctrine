@@ -77,6 +77,12 @@ buyButton "Buy"
 buyButtonTip "Buy %s for $%d"
 
 
+auctionBuyFailed "Someone else bought the item before you."
+auctionBuySucceed "You bought %s for $%d"
+
+
+
+
 houseCheckedIn "House checked back in."
 houseCheckInFailed "House check in failed."
 

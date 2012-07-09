@@ -26,6 +26,11 @@ class AuctionPage : public LiveHousePage, public ActionListener {
 
         virtual char getDone();
 
+        virtual char getBuy();
+        
+        int getBoughtObject();
+        
+
         void setLootValue( int inLootValue );
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -57,6 +62,13 @@ class AuctionPage : public LiveHousePage, public ActionListener {
         SimpleVector<char*> mAuctionItems;
 
         char mDone;
+        char mBuyExecuted;
+        int mBoughtObjectID;
+
+        // after buy button pressed, force refresh on next display
+        // whether or not prices are stale
+        char mForceRefresh;
+        
 
         void refreshPrices();
 

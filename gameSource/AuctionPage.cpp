@@ -29,7 +29,10 @@ AuctionPage::AuctionPage()
           mWebRequest( -1 ),
           mSecondsUntilUpdate( -1 ),
           mBaseTimestamp( -1 ),
-          mDone( false ) {
+          mDone( false ),
+          mBuyExecuted( false ), 
+          mBoughtObjectID( -1 ),
+          mForceRefresh( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mUpdateButton );
@@ -94,6 +97,15 @@ char AuctionPage::getDone() {
     return mDone;
     }
 
+char AuctionPage::getBuy() {
+    return mBuyExecuted;
+    }
+
+
+int AuctionPage::getBoughtObject() {
+    return mBoughtObjectID;
+    }
+
 
 
 void AuctionPage::setLootValue( int inLootValue ) {
@@ -135,6 +147,16 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
         // watching the auctions with the Update button
         actionHappened();
         }
+    else if( inTarget == &mBuyButton ) {
+        for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+            if( mAuctionSlots[i]->getRingOn() ) {
+                mBoughtObjectID = mAuctionSlots[i]->getObject();
+                mBuyExecuted = true;
+                mForceRefresh = true;
+                break;
+                }
+            }
+        }
     else if( !getPricesStale() ) {
         // don't allow user to pick items to buy if prices are stale
 
@@ -173,7 +195,7 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
 
                     mBuyButton.setMouseOverTip( tipString );
                     
-                    delete []tipString;
+                    delete [] tipString;
                     }
                 else {
                     mBuyButton.setVisible( false );
@@ -414,9 +436,11 @@ void AuctionPage::makeActive( char inFresh ) {
         }
 
     mDone = false;
-
+    mBuyExecuted = false;
+    mBoughtObjectID = -1;
+    
     if( mWebRequest == -1 ) {
-        if( mSecondsUntilUpdate <= 0 || getPricesStale() ) {
+        if( mForceRefresh || mSecondsUntilUpdate <= 0 || getPricesStale() ) {
             
             refreshPrices();
             }
@@ -429,6 +453,7 @@ void AuctionPage::makeActive( char inFresh ) {
 
 void AuctionPage::refreshPrices() {
     
+    mForceRefresh = false;
 
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );

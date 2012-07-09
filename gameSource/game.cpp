@@ -48,6 +48,7 @@ CustomRandomSource randSource;
 #include "EditHousePage.h"
 #include "LoadBackpackPage.h"
 #include "AuctionPage.h"
+#include "BuyAuctionPage.h"
 #include "CheckinHousePage.h"
 #include "MenuPage.h"
 #include "RobCheckoutHousePage.h"
@@ -73,6 +74,7 @@ CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 LoadBackpackPage *loadBackpackPage;
 AuctionPage *auctionPage;
+BuyAuctionPage *buyAuctionPage;
 RobHousePage *selfHouseTestPage;
 CheckinHousePage *checkinHousePage;
 MenuPage *menuPage;
@@ -393,6 +395,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
     auctionPage = new AuctionPage();
+    buyAuctionPage = new BuyAuctionPage();
     
     selfHouseTestPage = new RobHousePage();
     selfHouseTestPage->showBackpack( false );
@@ -430,6 +433,7 @@ void freeFrameDrawer() {
     delete editHousePage;
     delete loadBackpackPage;
     delete auctionPage;
+    delete buyAuctionPage;
     delete selfHouseTestPage;
     delete checkinHousePage;
     delete menuPage;
@@ -1075,6 +1079,31 @@ void drawFrame( char inUpdate ) {
                 // delete [] galleryContents;
                 
                 // back to editing
+                currentGamePage = editHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( auctionPage->getBuy() ) {
+                // FIXME
+                
+                buyAuctionPage->setObject( auctionPage->getBoughtObject() );
+                buyAuctionPage->setLootValue( editHousePage->getLootValue() );
+
+                // FIXME
+                buyAuctionPage->setGalleryContents( "#" );
+                
+
+                currentGamePage = buyAuctionPage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == buyAuctionPage ) {
+            if( buyAuctionPage->getReturnToHome() ) {
+
+                // FIXME
+                // editHousePage->setGalleryContents( galleryContents );
+                                
+                editHousePage->setLootValue( buyAuctionPage->getLootValue() );
+
                 currentGamePage = editHousePage;
                 currentGamePage->base_makeActive( true );
                 }

@@ -162,6 +162,9 @@ else if( $action == "get_robbery_log" ) {
 else if( $action == "list_auctions" ) {
     cd_listAuctions();
     }
+else if( $action == "buy_auction" ) {
+    cd_buyAuction();
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -2322,6 +2325,109 @@ function cd_listAuctions() {
                 
         echo "$object_id#$price\n";
         }
+    echo "OK";
+    }
+
+
+
+function cd_buyAuction() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+
+    $user_id = cd_getUserID();
+
+
+    $object_id = cd_requestFilter( "object_id", "/\d+/" );
+    
+    
+    
+    $auctionTable = $tableNamePrefix ."auction";
+    $houseTable = $tableNamePrefix ."houses";
+
+    // make sure it's there, and check it's current price
+    $query = "SELECT start_price, ".
+        "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
+        "   as elapsed_seconds ".
+        "FROM $auctionTable WHERE object_id = '$object_id' FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+
+    $start_price = mysql_result( $result, 0, "start_price" );
+    $elapsed_seconds = mysql_result( $result, 0, "elapsed_seconds" );
+    
+    $price = cd_computeAuctionPrice( $start_price, $elapsed_seconds );
+
+
+    // make sure user has enough balance in house, and house checked out
+
+    $query = "SELECT gallery_contents, loot_value ".
+        "FROM $houseTable ".
+        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "AND edit_checkout = 1 FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+
+    $old_balance = mysql_result( $result, 0, "loot_value" );
+
+    if( $old_balance < $price ) {
+        cd_transactionDeny();
+        return;
+        }
+
+    // user has enough money!
+    $new_balance = $old_balance - $price;
+
+    $old_gallery_contents = mysql_result( $result, 0, "gallery_contents" );
+    $new_gallery_contents = "";
+    
+    if( $old_gallery_contents == "#" ) {
+        // empty
+        $new_gallery_contents = "$object_id";
+        }
+    else {
+        // prepend
+        $new_gallery_contents = "$object_id#". $old_gallery_contents;
+        }
+
+
+    
+    // now make changes
+
+    $query = "UPDATE $houseTable SET ".
+        "loot_value = '$new_balance', ".
+        "gallery_contents = '$new_gallery_contents' ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+
+
+    $query = "DELETE FROM $auctionTable WHERE object_id = '$object_id';";
+    
+    $result = cd_queryDatabase( $query );
+
+
+    cd_queryDatabase( "COMMIT;" );
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
+
+    echo "$price\n";
     echo "OK";
     }
 
