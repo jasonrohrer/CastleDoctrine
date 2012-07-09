@@ -1075,40 +1075,26 @@ void drawFrame( char inUpdate ) {
         else if( currentGamePage == auctionPage ) {
             if( auctionPage->getDone() ) {
                 // done with auctions, back to editor
-                
-                // FIXME
-                // char *galleryContents = auctionPage->getGalleryContents();
-                
-                // editHousePage->setGalleryContents( galleryContents );
-                                
-                // editHousePage->setLootValue( auctionPage->getLootValue() );
-
-
-                // delete [] galleryContents;
-                
-                // back to editing
                 currentGamePage = editHousePage;
                 currentGamePage->base_makeActive( true );
                 }
             else if( auctionPage->getBuy() ) {
-                // FIXME
-                
                 buyAuctionPage->setObject( auctionPage->getBoughtObject() );
                 buyAuctionPage->setLootValue( editHousePage->getLootValue() );
 
-                // FIXME
-                buyAuctionPage->setGalleryContents( "#" );
-                
+                char *galleryContents = editHousePage->getGalleryContents();
+                buyAuctionPage->setGalleryContents( galleryContents );
+                delete [] galleryContents;
 
                 currentGamePage = buyAuctionPage;
                 currentGamePage->base_makeActive( true );
                 }
             }
         else if( currentGamePage == buyAuctionPage ) {
-            if( buyAuctionPage->getReturnToHome() ) {
-
-                // FIXME
-                // editHousePage->setGalleryContents( galleryContents );
+            if( buyAuctionPage->getReturnToHome() ) {                
+                char *galleryContents = buyAuctionPage->getGalleryContents();
+                editHousePage->setGalleryContents( galleryContents );
+                delete [] galleryContents;
                                 
                 editHousePage->setLootValue( buyAuctionPage->getLootValue() );
 

@@ -188,6 +188,15 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
     }
 
 
+char *EditHousePage::getGalleryContents() {
+    // FIXME:  eventually, have this call rebuild string based on
+    // how user has re-arranged gallery
+
+    return stringDuplicate( mGalleryContents );
+    }
+
+
+
 
 
 char *EditHousePage::getEditList() {
