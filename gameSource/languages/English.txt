@@ -57,6 +57,8 @@ doneEdit "Done"
 
 undo "Undo"
 
+galleryLabel "Gallery:"
+
 editBalance "Balance:"
 
 buyTip "Buy %s for backpack"

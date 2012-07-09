@@ -7,9 +7,12 @@
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
 
+#include "GallerySlotButton.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
+
+#define NUM_GALLERY_SLOTS   3
 
 
 class EditHousePage : public LiveHousePage, public ActionListener {
@@ -34,6 +37,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // destroyed by caller
         void setBackpackContents( const char *inBackpackContents );
         char *getBackpackContents();
+
+        // destroyed by caller
+        void setGalleryContents( const char *inGalleryContents );
+        char *getGalleryContents();
 
 
         // destroyed by caller
@@ -93,6 +100,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         char *mVaultContents;
         char *mBackpackContents;
+        char *mGalleryContents;
 
         char *mPriceList;
         
@@ -109,6 +117,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
         
+
+        GallerySlotButton *mGallerySlots[ NUM_GALLERY_SLOTS ];
+
         char mDone;
         char mShowLoadBackpack;
         char mShowAuctions;

@@ -905,6 +905,8 @@ void drawFrame( char inUpdate ) {
                 char *vaultContents = checkoutHousePage->getVaultContents();
                 char *backpackContents = 
                     checkoutHousePage->getBackpackContents();
+                char *galleryContents = 
+                    checkoutHousePage->getGalleryContents();
                 char *priceList = checkoutHousePage->getPriceList();
                 int lootValue = checkoutHousePage->getLootValue();
                 char mustSelfTest = checkoutHousePage->getMustSelfTest();
@@ -912,11 +914,13 @@ void drawFrame( char inUpdate ) {
                 if( houseMap != NULL && 
                     vaultContents != NULL &&
                     backpackContents != NULL && 
+                    galleryContents != NULL && 
                     priceList != NULL ) {
                     
                     editHousePage->setHouseMap( houseMap );
                     editHousePage->setVaultContents( vaultContents );
                     editHousePage->setBackpackContents( backpackContents );
+                    editHousePage->setGalleryContents( galleryContents );
                     editHousePage->setPriceList( priceList );
                     editHousePage->setLootValue( lootValue );
                     editHousePage->setMustSelfTest( mustSelfTest );
@@ -929,6 +933,7 @@ void drawFrame( char inUpdate ) {
                     delete [] houseMap;
                     delete [] vaultContents;
                     delete [] backpackContents;
+                    delete [] galleryContents;
                     delete [] priceList;
 
                     currentGamePage = editHousePage;
@@ -943,6 +948,9 @@ void drawFrame( char inUpdate ) {
                         }
                     if( backpackContents != NULL ) {
                         delete [] backpackContents;
+                        }
+                    if( galleryContents != NULL ) {
+                        delete [] galleryContents;
                         }
                     if( priceList != NULL ) {
                         delete [] priceList;

@@ -21,6 +21,7 @@ EditHousePage::EditHousePage()
         : mStartHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
+          mGalleryContents( NULL ),
           mPriceList( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
@@ -51,6 +52,21 @@ EditHousePage::EditHousePage()
     mUndoButton.setVisible( false );
     mGridDisplay.addActionListener( this );
     mObjectPicker.addActionListener( this );
+
+    
+    doublePair slotCenter = { -8, 5 };
+    
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        mGallerySlots[i] = 
+            new GallerySlotButton( mainFont, slotCenter.x, slotCenter.y,
+                                   1 / 16.0 );
+        
+        addComponent( mGallerySlots[i] );
+        mGallerySlots[i]->addActionListener( this );
+
+
+        slotCenter.y -= 2.5;
+        }
     }
 
 
@@ -69,6 +85,10 @@ EditHousePage::~EditHousePage() {
         delete [] mBackpackContents;
         }
 
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
+        }
+
     if( mPriceList != NULL ) {
         delete [] mPriceList;
         }
@@ -76,6 +96,11 @@ EditHousePage::~EditHousePage() {
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
         }
+
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        delete mGallerySlots[i];
+        }
+
     }
 
 
@@ -127,6 +152,40 @@ char *EditHousePage::getBackpackContents() {
     return stringDuplicate( mBackpackContents );
     }
 
+
+
+void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
+        }
+    mGalleryContents = stringDuplicate( inGalleryContents );
+    
+    // clear all
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        mGallerySlots[i]->setObject( -1 );
+        }
+
+    if( strcmp( mGalleryContents, "#" ) != 0 ) {
+        // non-empty
+        
+        int numParts;
+        char **parts = split( mGalleryContents, "#", &numParts );
+
+        for( int j=0; j<numParts; j++ ) {
+            if( j < NUM_GALLERY_SLOTS ) {
+                int id;
+                sscanf( parts[j], "%d", &id );
+                
+                mGallerySlots[j]->setObject( id );
+                }
+            
+            delete [] parts[j];
+            }
+        delete [] parts;
+
+        }
+
+    }
 
 
 
@@ -313,6 +372,11 @@ void EditHousePage::draw( doublePair inViewCenter,
     
     drawMessage( "editDescription", labelPos, false );
     
+
+    labelPos = mGallerySlots[0]->getCenter();
+    labelPos.y += 1.5;
+    
+    drawMessage( "galleryLabel", labelPos, false );
 
 
     labelPos.x = 8;
