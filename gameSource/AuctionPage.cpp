@@ -25,6 +25,7 @@ AuctionPage::AuctionPage()
         : mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUpdateButton( mainFont, 0, -5, translate( "auctionUpdateButton" ) ),
           mBuyButton( mainFont, 5, -5, translate( "buyButton" ) ),
+          mLootValue( -1 ),
           mWebRequest( -1 ),
           mSecondsUntilUpdate( -1 ),
           mBaseTimestamp( -1 ),
@@ -94,6 +95,14 @@ char AuctionPage::getDone() {
     }
 
 
+
+void AuctionPage::setLootValue( int inLootValue ) {
+    mLootValue = inLootValue;
+    }
+
+
+
+
 void AuctionPage::turnAllRingsOff() {
     for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
         mAuctionSlots[i]->setRingOn( false );
@@ -140,7 +149,10 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
                 int hitObject = mAuctionSlots[i]->getObject();
                 
 
-                if( !ringWasOn && hitObject != -1 ) {
+                if( !ringWasOn && 
+                    hitObject != -1 &&
+                    mAuctionPrices[i] <= mLootValue ) {
+                    
                     mAuctionSlots[i]->setRingOn( true );
                     
                     mBuyButton.setVisible( true );
@@ -376,6 +388,20 @@ void AuctionPage::draw( doublePair inViewCenter,
                                   labelPos, alignRight );
             }
         }
+
+
+    labelPos.x = 8;
+    labelPos.y = 2;
+    
+    drawMessage( "editBalance", labelPos, false );
+    
+    labelPos.y = 1.25;
+
+    char *balanceMessage = autoSprintf( "$%d", mLootValue );
+    
+    drawMessage( balanceMessage, labelPos, false );
+    
+    delete [] balanceMessage;
     }
 
 
@@ -419,6 +445,8 @@ void AuctionPage::refreshPrices() {
         }
     turnAllRingsOff();
     mBuyButton.setVisible( false );
+
+    mUpdateButton.setVisible( false );
 
     mSecondsUntilUpdate = -1;
     mBaseTimestamp = -1;

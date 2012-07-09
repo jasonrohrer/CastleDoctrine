@@ -979,8 +979,7 @@ void drawFrame( char inUpdate ) {
                 // auctionPage->setGalleryContents( galleryContents );
                 // delete [] galleryContents;
 
-                // auctionPage->setLootValue( 
-                //    editHousePage->getLootValue() );
+                auctionPage->setLootValue( editHousePage->getLootValue() );
                                 
                 currentGamePage = auctionPage;
                 currentGamePage->base_makeActive( true );

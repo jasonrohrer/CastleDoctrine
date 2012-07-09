@@ -10,9 +10,9 @@
 
 
 
-#define NUM_AUCTION_SLOTS  18
+#define NUM_AUCTION_SLOTS  15
 
-#define NUM_AUCTION_SLOTS_PER_ROW  6
+#define NUM_AUCTION_SLOTS_PER_ROW  5
 
 
 class AuctionPage : public LiveHousePage, public ActionListener {
@@ -25,7 +25,8 @@ class AuctionPage : public LiveHousePage, public ActionListener {
 
 
         virtual char getDone();
-        
+
+        void setLootValue( int inLootValue );
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -46,6 +47,8 @@ class AuctionPage : public LiveHousePage, public ActionListener {
 
         int mAuctionPrices[ NUM_AUCTION_SLOTS ];
 
+        int mLootValue;
+        
         int mWebRequest;
 
         int mSecondsUntilUpdate;
