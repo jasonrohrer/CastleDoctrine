@@ -31,6 +31,7 @@ EditHousePage::EditHousePage()
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
+          mGalleryArchive( mainFont, -8, -3 ),
           mDone( false ) {
 
     addComponent( &mDoneButton );
@@ -67,6 +68,10 @@ EditHousePage::EditHousePage()
 
         slotCenter.y -= 2.5;
         }
+    
+    addComponent( &mGalleryArchive );
+    mGalleryArchive.addActionListener( this );
+
     }
 
 
@@ -164,6 +169,8 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
         mGallerySlots[i]->setObject( -1 );
         }
+    mGalleryArchive.clearObjects();
+    
 
     if( strcmp( mGalleryContents, "#" ) != 0 ) {
         // non-empty
@@ -172,11 +179,14 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
         char **parts = split( mGalleryContents, "#", &numParts );
 
         for( int j=0; j<numParts; j++ ) {
-            if( j < NUM_GALLERY_SLOTS ) {
-                int id;
-                sscanf( parts[j], "%d", &id );
+            int id;
+            sscanf( parts[j], "%d", &id );
                 
+            if( j < NUM_GALLERY_SLOTS ) {    
                 mGallerySlots[j]->setObject( id );
+                }
+            else {
+                mGalleryArchive.addObject( id );
                 }
             
             delete [] parts[j];
@@ -188,10 +198,8 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
     }
 
 
-char *EditHousePage::getGalleryContents() {
-    // FIXME:  eventually, have this call rebuild string based on
-    // how user has re-arranged gallery
 
+char *EditHousePage::getGalleryContents() {
     SimpleVector<char *> parts;
     
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
@@ -201,6 +209,14 @@ char *EditHousePage::getGalleryContents() {
             parts.push_back( autoSprintf( "%d", id ) );
             }
         }
+
+    if( parts.size() == 0 ) {
+        // know that archive is empty too
+        return stringDuplicate( "#" );
+        }
+    
+    
+
     char **partsArray = parts.getElementArray();
     
     
@@ -212,7 +228,21 @@ char *EditHousePage::getGalleryContents() {
     delete [] partsArray;
 
 
-    return fullString;
+    char *archiveString = mGalleryArchive.getContentsString();
+    
+    if( strcmp( archiveString, "#" ) == 0 ) {
+        delete [] archiveString;
+        
+        return fullString;
+        }
+    else {
+        char *finalString = autoSprintf( "%s#%s", fullString, archiveString );
+        
+        delete [] fullString;
+        delete [] archiveString;
+        
+        return finalString;
+        }
     }
 
 
@@ -372,19 +402,38 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         actionHappened();
         }
     else {
+        char hit = false;
+
         for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
             if( inTarget == mGallerySlots[i] ) {
                 int thisID = mGallerySlots[i]->getObject();
                 
                 if( thisID != -1 && i != 0 ) {
-                    // swap with top slot
-                    int topID = mGallerySlots[0]->getObject();
-                    mGallerySlots[0]->setObject( thisID );
+                    // swap with next higher slot
+                    int topID = mGallerySlots[i-1]->getObject();
+                    mGallerySlots[i-1]->setObject( thisID );
                     mGallerySlots[i]->setObject( topID );
                     }
+                hit = true;
                 break;
                 }
             }
+
+        if( !hit ) {
+            
+            if( inTarget == &mGalleryArchive ) {
+                
+                int pulledObject =
+                    mGalleryArchive.swapSelectedObject( 
+                        mGallerySlots[ NUM_GALLERY_SLOTS - 1 ]->getObject() );
+                
+                mGallerySlots[ NUM_GALLERY_SLOTS - 1 ]->setObject( 
+                    pulledObject );
+
+                hit = true;
+                }
+            }
+        
         }
     
     
@@ -422,6 +471,11 @@ void EditHousePage::draw( doublePair inViewCenter,
     labelPos.y += 1.5;
     
     drawMessage( "galleryLabel", labelPos, false );
+
+    labelPos = mGalleryArchive.getCenter();
+    labelPos.y += 1.5;
+
+    drawMessage( "galleryArchiveLabel", labelPos, false );
 
 
     labelPos.x = 8;

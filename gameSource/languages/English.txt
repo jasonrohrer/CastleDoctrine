@@ -58,6 +58,7 @@ doneEdit "Done"
 undo "Undo"
 
 galleryLabel "Gallery:"
+galleryArchiveLabel "Archive:"
 
 editBalance "Balance:"
 

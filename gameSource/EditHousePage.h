@@ -8,6 +8,7 @@
 #include "HouseObjectPicker.h"
 
 #include "GallerySlotButton.h"
+#include "GalleryArchive.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
@@ -119,6 +120,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
 
         GallerySlotButton *mGallerySlots[ NUM_GALLERY_SLOTS ];
+
+        GalleryArchive mGalleryArchive;
 
         char mDone;
         char mShowLoadBackpack;

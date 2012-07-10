@@ -75,7 +75,9 @@ $defaultPrices = array(
 
     array( 2000, 10000, 1, "Owl - Rohrer" ),
     array( 2001, 10000, 1, "Untitled 2 - Rohrer" ),
-    array( 2002, 10000, 1, "Untitled 3 - Rohrer" )
+    array( 2002, 10000, 1, "Untitled 3 - Rohrer" ),
+    array( 2003, 10000, 1, "Untitled 4 - Rohrer" ),
+    array( 2004, 10000, 1, "Untitled 5 - Rohrer" )
     );
     
 
