@@ -2105,7 +2105,7 @@ function cd_endRobHouse() {
             }
         else {
             $new_robber_gallery_contents =
-                $stuffTaken . "#" . $old_robber_gallery_contents;
+                $galleryStuffTaken . "#" . $old_robber_gallery_contents;
             }
         
         $query = "UPDATE $tableNamePrefix"."houses SET ".
