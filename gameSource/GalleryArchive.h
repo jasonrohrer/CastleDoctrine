@@ -24,17 +24,20 @@ class  GalleryArchive : public PageComponent, public ActionListener,
         
         virtual void actionPerformed( GUIComponent *inTarget );
         
-        virtual void clearObjects();
+        void clearObjects();
         
-        virtual void addObject( int inObjectID );
+        void addObject( int inObjectID );
         
         // returns ID of selected object
-        virtual int swapSelectedObject( int inReplacementObjectID );
+        int swapSelectedObject( int inReplacementObjectID );
         
         
+        int getObjectCount();
+        
+
         // "#" on empty
         // destroyed by caller
-        virtual char *getContentsString();
+        char *getContentsString();
 
         
         // auto-hides itself when empty

@@ -28,6 +28,7 @@ RobCheckinHousePage::RobCheckinHousePage()
           mSuccess( false ),
           mHomeButton( mainFont, 4, -4, translate( "returnHome" ) ),
           mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
+          mGalleryDisplay( mainFont, 0, 0 ),
           mReturnToHome( false ),
           mStartOver( true ) {
 
@@ -36,6 +37,9 @@ RobCheckinHousePage::RobCheckinHousePage()
 
     addComponent( &mStartOverButton );
     mStartOverButton.addActionListener( this );
+
+    addComponent( &mGalleryDisplay );
+    
 
     mHomeButton.setMouseOverTip( "" );
 
@@ -176,8 +180,8 @@ void RobCheckinHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 3 ||
-                        strcmp( *( tokens->getElement( 2 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 4 ||
+                        strcmp( *( tokens->getElement( 3 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mHomeButton.setVisible( true );                    
@@ -224,6 +228,25 @@ void RobCheckinHousePage::step() {
                                     }
                                 }
                             
+                            char *galleryString = *( tokens->getElement( 2 ) );
+
+                            
+                            if( strcmp( galleryString, "#" ) != 0 ) {
+                                
+                                int numParts;
+                                char **parts = split( galleryString, 
+                                                      "#", &numParts );
+
+                                for( int j=0; j<numParts; j++ ) {
+                                    int id;
+                                    sscanf( parts[j], "%d", &id );
+                                    
+                                    mGalleryDisplay.addObject( id );
+                                    
+                                    delete [] parts[j];
+                                    }
+                                delete [] parts;
+                                }
                             
 
                             mHomeButton.setVisible( true );
@@ -322,6 +345,7 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         slotCenter.y -= 1.5;
         }
 
+    mGalleryDisplay.clearObjects();
     }
 
 
@@ -337,7 +361,9 @@ void RobCheckinHousePage::draw( doublePair inViewCenter,
 
     const char *robReportKey;
     
-    if( ! mVaultSlots[0]->isVisible() ) {
+    int numGalleryItems = mGalleryDisplay.getObjectCount();
+
+    if( ! mVaultSlots[0]->isVisible() && numGalleryItems == 0 ) {
         robReportKey = "robSuccess";
         }
     else {
@@ -351,6 +377,8 @@ void RobCheckinHousePage::draw( doublePair inViewCenter,
                 }
             }
 
+        totalQuantity += numGalleryItems;
+        
         if( totalQuantity > 1 ) {
             robReportKey = "robStuffSuccess";
             }

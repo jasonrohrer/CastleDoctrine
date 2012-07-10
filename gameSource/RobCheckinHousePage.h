@@ -3,6 +3,7 @@
 #include "TextField.h"
 #include "TextButton.h"
 #include "inventory.h"
+#include "GalleryArchive.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
@@ -64,6 +65,8 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         
         InventorySlotButton *mVaultSlots[ NUM_VAULT_SLOTS ];
 
+        GalleryArchive mGalleryDisplay;
+        
         char mReturnToHome;
         char mStartOver;
 

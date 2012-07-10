@@ -118,6 +118,13 @@ int GalleryArchive::swapSelectedObject( int inReplacementObjectID ) {
 
 
 
+
+int GalleryArchive::getObjectCount() {
+    return mObjectList.size();
+    }
+
+
+
 char *GalleryArchive::getContentsString() {
     if( mObjectList.size() == 0 ) {
         return stringDuplicate( "#" );

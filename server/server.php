@@ -1677,7 +1677,14 @@ function cd_endEditHouse() {
     // also, make sure gallery contains no unexpected items
 
     if( $old_gallery_contents != "#" ) {
-    
+
+        if( $gallery_contents == "#" ) {
+            cd_log( "House check-in with ".
+                        " unexpected empty gallery denied" );
+            cd_transactionDeny();
+            return;
+            }
+        
         $oldGalleryArray = preg_split( "/#/", $old_gallery_contents );
         $newGalleryArray = preg_split( "/#/", $gallery_contents );
 
@@ -2002,7 +2009,8 @@ function cd_endRobHouse() {
     // out for robbery and limbo houses for this user
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
-        "loot_value, vault_contents, rob_attempts, edit_count ".
+        "loot_value, vault_contents, gallery_contents, ".
+        "rob_attempts, edit_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
@@ -2036,9 +2044,11 @@ function cd_endRobHouse() {
 
     $house_money = $row[ "loot_value" ];
     $house_vault_contents = $row[ "vault_contents" ];
+    $gallery_contents = $row[ "gallery_contents" ];
     
     $amountTaken = $house_money;
     $stuffTaken = $house_vault_contents;
+    $galleryStuffTaken = $gallery_contents;
 
     
     $old_house_map = $row[ "house_map" ];
@@ -2057,6 +2067,7 @@ function cd_endRobHouse() {
         // or vault
         $amountTaken = 0;
         $stuffTaken = "#";
+        $galleryStuffTaken = "#";
         
         if( $success == 0 ) {
             // robber dies
@@ -2146,6 +2157,7 @@ function cd_endRobHouse() {
 
     echo "$amountTaken\n";
     echo "$stuffTaken\n";
+    echo "$galleryStuffTaken\n";
     echo "OK";
     }
 
