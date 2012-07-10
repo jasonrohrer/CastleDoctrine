@@ -187,3 +187,16 @@ void Gallery::actionPerformed( GUIComponent *inTarget ) {
         }
     }
 
+
+
+void Gallery::setVisible( char inIsVisible ) {
+    mVisible = inIsVisible;
+    }
+
+
+
+char Gallery::isVisible() {
+    return mVisible;
+    }
+
+

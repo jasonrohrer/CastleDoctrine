@@ -41,6 +41,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char getToolJustUsed();
         
         
+        // true if robber standing in the entrance
+        char getAboutToLeave();
+        
 
         // override to update visibility when map changes
         virtual void setHouseMap( const char *inHouseMap );

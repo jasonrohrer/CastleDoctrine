@@ -461,6 +461,12 @@ void RobHouseGridDisplay::draw() {
 
 
 
+char RobHouseGridDisplay::getAboutToLeave() {
+    return ( mRobberIndex == mStartIndex );
+    }
+
+
+
 
 void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
     

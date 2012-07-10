@@ -29,9 +29,9 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );
+    addComponent( &mGallery );
     addComponent( &mGridDisplay );
 
-    addComponent( &mGallery );
 
     mGallery.setAllowEdit( false );
     
@@ -93,6 +93,8 @@ void RobHousePage::showBackpack( char inShow ) {
 
 void RobHousePage::setHouseMap( char *inHouseMap ) {
     mGridDisplay.setHouseMap( inHouseMap );
+    
+    mGallery.setVisible( ! mGridDisplay.getAboutToLeave() );
     }
 
 
@@ -137,6 +139,8 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mGridDisplay ) {
+        mGallery.setVisible( ! mGridDisplay.getAboutToLeave() );
+        
         if( mGridDisplay.getSuccess() ) {
             mDone = true;
             }

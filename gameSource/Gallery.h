@@ -29,6 +29,10 @@ class  Gallery : public PageComponent, public ActionListener {
         
         void actionPerformed( GUIComponent *inTarget );
 
+        void setVisible( char inIsVisible );
+
+        virtual char isVisible();
+
     protected:
         
         GallerySlotButton *mGallerySlots[ NUM_GALLERY_SLOTS ];
@@ -36,6 +40,8 @@ class  Gallery : public PageComponent, public ActionListener {
         GalleryArchive mGalleryArchive;
         
         char mAllowEdit;
+
+        char mVisible;
 
     };
 
