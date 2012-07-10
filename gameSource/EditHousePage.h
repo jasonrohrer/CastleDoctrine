@@ -101,8 +101,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         char *mVaultContents;
         char *mBackpackContents;
-        char *mGalleryContents;
-
+        
         char *mPriceList;
         
         char *mPurchaseList;

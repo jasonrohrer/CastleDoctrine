@@ -21,7 +21,6 @@ EditHousePage::EditHousePage()
         : mStartHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
-          mGalleryContents( NULL ),
           mPriceList( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
@@ -90,10 +89,6 @@ EditHousePage::~EditHousePage() {
         delete [] mBackpackContents;
         }
 
-    if( mGalleryContents != NULL ) {
-        delete [] mGalleryContents;
-        }
-
     if( mPriceList != NULL ) {
         delete [] mPriceList;
         }
@@ -160,10 +155,6 @@ char *EditHousePage::getBackpackContents() {
 
 
 void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
-    if( mGalleryContents != NULL ) {
-        delete [] mGalleryContents;
-        }
-    mGalleryContents = stringDuplicate( inGalleryContents );
     
     // clear all
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
@@ -172,11 +163,11 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
     mGalleryArchive.clearObjects();
     
 
-    if( strcmp( mGalleryContents, "#" ) != 0 ) {
+    if( strcmp( inGalleryContents, "#" ) != 0 ) {
         // non-empty
         
         int numParts;
-        char **parts = split( mGalleryContents, "#", &numParts );
+        char **parts = split( inGalleryContents, "#", &numParts );
 
         for( int j=0; j<numParts; j++ ) {
             int id;
