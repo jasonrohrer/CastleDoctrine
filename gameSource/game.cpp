@@ -1010,6 +1010,8 @@ void drawFrame( char inUpdate ) {
                     // force player to test own house first
                     selfHouseTestPage->setHouseMap( houseMap );
                     
+                    selfHouseTestPage->setGalleryContents( galleryContents );
+                    
                     selfHouseTestPage->setDescription( 
                         translate( "selfTestDescription" ) );
 
