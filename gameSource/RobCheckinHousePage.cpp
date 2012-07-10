@@ -248,6 +248,22 @@ void RobCheckinHousePage::step() {
                                 delete [] parts;
                                 }
                             
+                            if( numVisible > 0 ) {
+                                // put gallery widget below last row of
+                                // slots
+                                
+                                doublePair lastRowCenter =
+                                    mVaultSlots[numVisible-1]->getCenter();
+                            
+                                mGalleryDisplay.setPosition( 
+                                    0, 
+                                    lastRowCenter.y - 2.5 );
+                                }
+                            else {
+                                // put right below robbery result text
+                                mGalleryDisplay.setPosition( 0, 4.5 );
+                                }
+                            
 
                             mHomeButton.setVisible( true );
                             }
