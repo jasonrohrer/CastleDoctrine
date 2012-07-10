@@ -94,7 +94,7 @@ void RobHousePage::showBackpack( char inShow ) {
 void RobHousePage::setHouseMap( char *inHouseMap ) {
     mGridDisplay.setHouseMap( inHouseMap );
     
-    mGallery.setVisible( ! mGridDisplay.getAboutToLeave() );
+    mGallery.instantFadeOut( mGridDisplay.getAboutToLeave() );
     }
 
 
@@ -139,7 +139,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mGridDisplay ) {
-        mGallery.setVisible( ! mGridDisplay.getAboutToLeave() );
+        mGallery.fadeOut( mGridDisplay.getAboutToLeave() );
         
         if( mGridDisplay.getSuccess() ) {
             mDone = true;

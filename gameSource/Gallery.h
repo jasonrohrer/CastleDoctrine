@@ -29,8 +29,11 @@ class  Gallery : public PageComponent, public ActionListener {
         
         void actionPerformed( GUIComponent *inTarget );
 
-        void setVisible( char inIsVisible );
+        // toggles fadeOut or fadeIn status (triggering gradual fade change)
+        void fadeOut( char inShouldFade );
 
+        void instantFadeOut( char inShouldFade );
+        
         virtual char isVisible();
 
     protected:
@@ -40,9 +43,10 @@ class  Gallery : public PageComponent, public ActionListener {
         GalleryArchive mGalleryArchive;
         
         char mAllowEdit;
-
-        char mVisible;
-
+        
+        float mFade;
+        char mShouldFade;
+        
     };
 
 

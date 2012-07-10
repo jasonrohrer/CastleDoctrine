@@ -4,13 +4,19 @@
 
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/game/drawUtils.h"
 
+
+
+extern double frameRateFactor;
 
 
 Gallery::Gallery( Font *inDisplayFont, double inX, double inY )
         : PageComponent( inX, inY ), 
           mGalleryArchive( inDisplayFont, 0, -3 ),
-          mAllowEdit( true ) {
+          mAllowEdit( true ),
+          mFade( 1 ),
+          mShouldFade( false ) {
 
     doublePair slotCenter = { 0, 5 };
     
@@ -130,6 +136,25 @@ char *Gallery::getGalleryContents() {
 
 
 void Gallery::draw() {
+
+    if( mShouldFade && mFade > 0 ) {
+        mFade -= 0.02 * frameRateFactor;
+        
+        if( mFade < 0 ) {
+            mFade = 0;
+            }
+        }
+    else if( !mShouldFade && mFade < 1 ) {
+        mFade += 0.02 * frameRateFactor;
+        
+        if( mFade > 1 ) {
+            mFade = 1;
+            }
+        }
+    
+        
+    
+
     if( mGallerySlots[0]->isVisible() ) {
         
         doublePair labelPos = mGallerySlots[0]->getCenter();
@@ -146,7 +171,15 @@ void Gallery::draw() {
         
         drawMessage( "galleryArchiveLabel", labelPos, false );
         }
+
+    if( mFade < 1 ) {
+        
+        setDrawColor( 0, 0, 0, 1 - mFade );
+    
+        drawRect( -2, -5, 3, 10 );
+        }
     }
+
 
         
 void Gallery::actionPerformed( GUIComponent *inTarget ) {
@@ -189,14 +222,29 @@ void Gallery::actionPerformed( GUIComponent *inTarget ) {
 
 
 
-void Gallery::setVisible( char inIsVisible ) {
-    mVisible = inIsVisible;
+void Gallery::fadeOut( char inShouldFade ) {
+    mShouldFade = inShouldFade;
     }
 
 
+void Gallery::instantFadeOut( char inShouldFade ) {
+    mShouldFade = inShouldFade;
+    if( mShouldFade ) {
+        mFade = 0;
+        }
+    else {
+        mFade = 1;
+        }
+    }
+
 
 char Gallery::isVisible() {
-    return mVisible;
+    if( mFade == 0 ) {
+        // faded out, and not about to fade in
+        return ! mShouldFade;
+        }
+    
+    return true;
     }
 
 
