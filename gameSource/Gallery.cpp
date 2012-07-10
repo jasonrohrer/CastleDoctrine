@@ -57,6 +57,7 @@ void Gallery::setGalleryContents( const char *inGalleryContents ) {
     // clear all
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
         mGallerySlots[i]->setObject( -1 );
+        mGallerySlots[i]->setVisible( false );
         }
     mGalleryArchive.clearObjects();
     
