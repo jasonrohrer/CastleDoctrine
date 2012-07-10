@@ -7,13 +7,11 @@
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
 
-#include "GallerySlotButton.h"
-#include "GalleryArchive.h"
+#include "Gallery.h"
 
 #include "minorGems/ui/event/ActionListener.h"
 
 
-#define NUM_GALLERY_SLOTS   3
 
 
 class EditHousePage : public LiveHousePage, public ActionListener {
@@ -117,11 +115,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
         
-
-        GallerySlotButton *mGallerySlots[ NUM_GALLERY_SLOTS ];
-
-        GalleryArchive mGalleryArchive;
-
+        
+        Gallery mGallery;
+        
         char mDone;
         char mShowLoadBackpack;
         char mShowAuctions;
