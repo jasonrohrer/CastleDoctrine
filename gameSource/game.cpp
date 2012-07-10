@@ -1112,7 +1112,7 @@ void drawFrame( char inUpdate ) {
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
-                char *galleryContents = editHousePage->getBackpackContents();
+                char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *priceList = editHousePage->getPriceList();
