@@ -150,6 +150,15 @@ char *GalleryArchive::getContentsString() {
 
 
 
+char GalleryArchive::isVisible() {
+    if( mObjectList.size() == 0 ) {
+        return false;
+        }
+    return true;
+    }
+
+
+
 void GalleryArchive::triggerToolTip() {
     
     if( mSelectedIndex != -1 ) {

@@ -64,7 +64,7 @@ EditHousePage::EditHousePage()
         
         addComponent( mGallerySlots[i] );
         mGallerySlots[i]->addActionListener( this );
-
+        mGallerySlots[i]->setVisible( false );
 
         slotCenter.y -= 2.5;
         }
@@ -184,6 +184,7 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
                 
             if( j < NUM_GALLERY_SLOTS ) {    
                 mGallerySlots[j]->setObject( id );
+                mGallerySlots[j]->setVisible( true );
                 }
             else {
                 mGalleryArchive.addObject( id );
@@ -467,16 +468,23 @@ void EditHousePage::draw( doublePair inViewCenter,
     drawMessage( "editDescription", labelPos, false );
     
 
-    labelPos = mGallerySlots[0]->getCenter();
-    labelPos.y += 1.5;
+    if( mGallerySlots[0]->isVisible() ) {
+        
+        labelPos = mGallerySlots[0]->getCenter();
+        labelPos.y += 1.5;
+        
+        drawMessage( "galleryLabel", labelPos, false );
+        }
     
-    drawMessage( "galleryLabel", labelPos, false );
-
-    labelPos = mGalleryArchive.getCenter();
-    labelPos.y += 1.5;
-
-    drawMessage( "galleryArchiveLabel", labelPos, false );
-
+    
+    if( mGalleryArchive.isVisible() ) {
+        
+        labelPos = mGalleryArchive.getCenter();
+        labelPos.y += 1.5;
+        
+        drawMessage( "galleryArchiveLabel", labelPos, false );
+        }
+    
 
     labelPos.x = 8;
     labelPos.y = 2;

@@ -37,6 +37,10 @@ class  GalleryArchive : public PageComponent, public ActionListener,
         virtual char *getContentsString();
 
         
+        // auto-hides itself when empty
+        virtual char isVisible();
+        
+        
     protected:
         
 
