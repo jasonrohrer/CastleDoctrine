@@ -110,7 +110,7 @@ char *Gallery::getGalleryContents() {
     
     char *fullString = join( partsArray, parts.size(), "#" );
 
-    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+    for( int i=0; i<parts.size(); i++ ) {
         delete [] partsArray[i];
         }
     delete [] partsArray;
