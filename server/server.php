@@ -2640,7 +2640,8 @@ function cd_newHouseForUser( $user_id ) {
     // row gap.  In the case of concurrent inserts for the same user_id,
     // the second insert will fail (user_id is the primary key)
     
-    $query = "select user_id from $tableNamePrefix"."houses ".
+    $query = "select user_id, gallery_contents ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = $user_id;";
 
     $result = cd_queryDatabase( $query );
@@ -2648,6 +2649,36 @@ function cd_newHouseForUser( $user_id ) {
     $numRows = mysql_numrows( $result );
 
     if( $numRows > 0 ) {
+
+        // user had a house (past life)
+
+        // return gallery items to auciton house
+        $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
+        if( $gallery_contents != "#" ) {
+
+            $galleryArray = preg_split( "/#/", $gallery_contents );
+
+            foreach( $galleryArray as $galleryID ) {
+                
+            
+                $query = "SELECT price FROM ".
+                    "$tableNamePrefix"."prices WHERE ".
+                    "in_gallery = 1 AND object_id = '$galleryID';";
+    
+                $result = cd_queryDatabase( $query );
+            
+                $numRows = mysql_numrows( $result );
+
+                if( $numRows > 0 ) {
+                    $price = mysql_result( $result, 0, "price" );
+                
+                    cd_startAuction( $galleryID, $price );
+                    }
+                }
+            }
+        
+
+        
         $query = "delete from $tableNamePrefix"."houses ".
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
