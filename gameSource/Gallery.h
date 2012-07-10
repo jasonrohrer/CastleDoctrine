@@ -19,6 +19,8 @@ class  Gallery : public PageComponent, public ActionListener {
 
         ~Gallery();
 
+        void setAllowEdit( char inAllow );
+
         void setGalleryContents( const char *inGalleryContents );
         
         char *getGalleryContents();
@@ -33,6 +35,7 @@ class  Gallery : public PageComponent, public ActionListener {
 
         GalleryArchive mGalleryArchive;
         
+        char mAllowEdit;
 
     };
 

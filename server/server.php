@@ -1855,7 +1855,8 @@ function cd_startRobHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
     
-    $query = "SELECT house_map, character_name, rob_attempts ".
+    $query = "SELECT house_map, gallery_contents, ".
+        "character_name, rob_attempts ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 AND rob_checkout = 0 ".
@@ -1875,6 +1876,7 @@ function cd_startRobHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $house_map = $row[ "house_map" ];
+    $gallery_contents = $row[ "gallery_contents" ];
     $character_name = $row[ "character_name" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
@@ -1891,6 +1893,7 @@ function cd_startRobHouse() {
     echo "$character_name\n";
     echo "$house_map\n";
     echo "$backpack_contents\n";
+    echo "$gallery_contents\n";
     echo "OK";
     }
 

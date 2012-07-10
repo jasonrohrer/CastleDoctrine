@@ -9,7 +9,8 @@
 
 Gallery::Gallery( Font *inDisplayFont, double inX, double inY )
         : PageComponent( inX, inY ), 
-          mGalleryArchive( inDisplayFont, 0, -3 ) {
+          mGalleryArchive( inDisplayFont, 0, -3 ),
+          mAllowEdit( true ) {
 
     doublePair slotCenter = { 0, 5 };
     
@@ -36,6 +37,13 @@ Gallery::~Gallery() {
         delete mGallerySlots[i];
         }
     }
+
+
+
+void Gallery::setAllowEdit( char inAllow ) {
+    mAllowEdit = inAllow;
+    }
+
 
 
 void Gallery::setGalleryContents( const char *inGalleryContents ) {
@@ -142,6 +150,10 @@ void Gallery::draw() {
 
         
 void Gallery::actionPerformed( GUIComponent *inTarget ) {
+    if( !mAllowEdit ) {
+        return;
+        }
+    
     char hit = false;
 
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {

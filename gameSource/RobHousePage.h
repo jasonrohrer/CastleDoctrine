@@ -5,6 +5,8 @@
 
 #include "RobHouseGridDisplay.h"
 
+#include "Gallery.h"
+
 #include "inventory.h"
 
 
@@ -34,6 +36,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         // destroyed by caller
         void setBackpackContents( char *inBackpackContents );
         char *getBackpackContents();
+
+        void setGalleryContents( char *inGalleryContents );
 
 
         char getSuccess() {
@@ -67,6 +71,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
         
+        Gallery mGallery;
+
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
 
         const char *mDoneButtonKey;

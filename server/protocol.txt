@@ -235,12 +235,15 @@ Returns:
 character_name
 houseMap
 backpack_contents
+gallery_contents
 OK
 
 Where:
 character_name has spaces repaced by "_"
 houseMap = ASCII string representing the house layout
 backpack_contents = ASCII string encoded as described for start_edit_house
+                    (contents of robber's backpack)
+gallery_contents = ASCII string encoded as described for start_edit_house
 
 
 

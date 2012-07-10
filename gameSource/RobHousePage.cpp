@@ -24,13 +24,18 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( inDoneButtonKey ) ),
+          mGallery( mainFont, -8, 0 ),
           mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
 
+    addComponent( &mGallery );
+
+    mGallery.setAllowEdit( false );
     
+
     mDoneButton.setMouseOverTip( "" );
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
@@ -111,6 +116,11 @@ char *RobHousePage::getBackpackContents() {
     return stringFromInventorySlots( mPackSlots, NUM_PACK_SLOTS );
     }
 
+
+void RobHousePage::setGalleryContents( char *inGalleryContents ) {
+
+    mGallery.setGalleryContents( inGalleryContents );
+    }
 
 
 void RobHousePage::setDescription( const char *inDescription ) {

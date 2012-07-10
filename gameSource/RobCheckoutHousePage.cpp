@@ -26,6 +26,7 @@ RobCheckoutHousePage::RobCheckoutHousePage()
           mOwnerName( NULL ),
           mHouseMap( NULL ),
           mBackpackContents( NULL ),
+          mGalleryContents( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mReturnToMenu( false ) {
 
@@ -47,6 +48,9 @@ RobCheckoutHousePage::~RobCheckoutHousePage() {
         }
     if( mBackpackContents != NULL ) {
         delete [] mBackpackContents;
+        }
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
         }
     }
 
@@ -96,6 +100,17 @@ char *RobCheckoutHousePage::getBackpackContents() {
 
 
 
+char *RobCheckoutHousePage::getGalleryContents() {
+    if( mGalleryContents == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mGalleryContents );
+        }
+    }
+
+
+
 void RobCheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
         mReturnToMenu = true;
@@ -136,8 +151,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 4 ||
-                        strcmp( *( tokens->getElement( 3 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 5 ||
+                        strcmp( *( tokens->getElement( 4 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -150,12 +165,14 @@ void RobCheckoutHousePage::step() {
                         mOwnerName = nameParse( *( tokens->getElement( 0 ) ) );
                         mHouseMap = *( tokens->getElement( 1 ) );
                         mBackpackContents = *( tokens->getElement( 2 ) );
+                        mGalleryContents = *( tokens->getElement( 3 ) );
                         
                         printf( "OwnerName = %s\n", mOwnerName );
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Backpack = %s\n", mBackpackContents );
+                        printf( "Gallery = %s\n", mGalleryContents );
                         
-                        delete [] *( tokens->getElement( 3 ) );
+                        delete [] *( tokens->getElement( 4 ) );
 
                         // reset ping time, because house check-out
                         // counts as a ping

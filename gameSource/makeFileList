@@ -54,6 +54,7 @@ galleryObjects.cpp \
 GallerySlotButton.cpp \
 BuyAuctionPage.cpp \
 GalleryArchive.cpp \
+Gallery.cpp \
 
 
 
