@@ -1925,7 +1925,7 @@ function cd_endRobHouse() {
 
 
     
-    $query = "SELECT backpack_contents, vault_contents ".
+    $query = "SELECT backpack_contents, vault_contents, gallery_contents ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
 
@@ -1940,6 +1940,8 @@ function cd_endRobHouse() {
     
     $old_backpack_contents = mysql_result( $result, 0, "backpack_contents" );
     $old_robber_vault_contents = mysql_result( $result, 0, "vault_contents" );
+    $old_robber_gallery_contents =
+        mysql_result( $result, 0, "gallery_contents" );
 
 
 
@@ -2044,11 +2046,11 @@ function cd_endRobHouse() {
 
     $house_money = $row[ "loot_value" ];
     $house_vault_contents = $row[ "vault_contents" ];
-    $gallery_contents = $row[ "gallery_contents" ];
+    $house_gallery_contents = $row[ "gallery_contents" ];
     
     $amountTaken = $house_money;
     $stuffTaken = $house_vault_contents;
-    $galleryStuffTaken = $gallery_contents;
+    $galleryStuffTaken = $house_gallery_contents;
 
     
     $old_house_map = $row[ "house_map" ];
@@ -2092,17 +2094,31 @@ function cd_endRobHouse() {
 
         $new_robber_vault_contents =
             cd_idQuantityUnion( $old_robber_vault_contents, $stuffTaken );
-        
+
+        $new_robber_gallery_contents;
+
+        if( $old_robber_gallery_contents == "#" ) {
+            $new_robber_gallery_contents = $galleryStuffTaken;
+            }
+        else if( $galleryStuffTaken == "#" ) {
+            $new_robber_gallery_contents = $old_robber_gallery_contents;
+            }
+        else {
+            $new_robber_gallery_contents =
+                $stuffTaken . "#" . $old_robber_gallery_contents;
+            }
         
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "loot_value = loot_value + $house_money, ".
-            "vault_contents = '$new_robber_vault_contents' ".
+            "vault_contents = '$new_robber_vault_contents', ".
+            "gallery_contents = '$new_robber_gallery_contents' ".
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
 
         // all loot taken
         $house_money = 0;
         $house_vault_contents = "#";
+        $house_gallery_contents = "#";
 
         // log robbery
         $robber_name = cd_getCharacterName( $user_id );
@@ -2148,7 +2164,8 @@ function cd_endRobHouse() {
         "rob_checkout = 0, edit_count = '$edit_count', ".
         "house_map='$house_map', ".
         "loot_value = $house_money,  ".
-        "vault_contents = '$house_vault_contents' ".
+        "vault_contents = '$house_vault_contents', ".
+        "gallery_contents = '$house_gallery_contents' ".
         "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
     cd_queryDatabase( $query );
 
