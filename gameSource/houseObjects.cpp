@@ -98,13 +98,136 @@ static int *idToIndexMap = NULL;
 
 
 
+
+// doubles image with nearest neighbor interpolation
+// destroys inImage
+static Image *doubleImage( Image *inImage ) {
+    return inImage;
+    }
+
+
+
+static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
+    int h = inImage->getHeight();
+    int w = inImage->getWidth();
+    
+    if( inShadeMap->getHeight() != h ||
+        inShadeMap->getWidth() != w ) {
+        printf( "Failed to apply shade map, dimension mismatch\n" );
+        return;
+        }
+    
+    double *r = inImage->getChannel( 0 );
+    double *g = inImage->getChannel( 1 );
+    double *b = inImage->getChannel( 2 );
+    
+    double *rMap = inShadeMap->getChannel( 0 );
+    double *gMap = inShadeMap->getChannel( 1 );
+    double *bMap = inShadeMap->getChannel( 2 );
+        
+    // index of transparency
+    int tI = w * (h-1);
+            
+    // color of transparency
+    double tR = r[tI];
+    double tG = g[tI];
+    double tB = b[tI];
+
+
+    // color of shading anchors
+
+    // fixed at pure yellow
+    double anchorTopR = 1;
+    double anchorTopG = 1;
+    double anchorTopB = 0;
+
+    // fixed at pure red
+    double anchorBottomR = 1;
+    double anchorBottomG = 0;
+    double anchorBottomB = 0;
+
+
+    // shading at bottom, on red anchor
+    double shadeDark = 0.3;
+    // steps per double-res pixel
+    // as we walk up toward yellow anchor
+    double shadeStep = 0.1;
+
+
+    // start at bottom of shade map, walking up row by row
+    // when we encounter a bottom anchor, we walk up, shading image,
+    // until we hit the top anchor.
+    // Then we go back to row we were on and continue
+
+    for( int y=h-1; y>=0; y-- ) {        
+        for( int x=0; x<w; x++ ) {
+            int i = y * w + x;
+            
+            if( rMap[i] == anchorBottomR &&
+                gMap[i] == anchorBottomG &&
+                bMap[i] == anchorBottomB ) {
+                
+                // bottom anchor is 2 pixels tall
+                // we're hitting the bottom pixel here
+                // clear the top anchor now so that we
+                // don't run into it again later
+                rMap[i-w] = 0;
+                gMap[i-w] = 0;
+                bMap[i-w] = 0;
+                
+                // now walk upward, shading image, until we hit a top anchor
+                
+                int iUp = i;
+                double shadeLevel = shadeDark;
+                
+                while( iUp >= 0 &&
+                       ! ( rMap[iUp] == anchorTopR &&
+                           gMap[iUp] == anchorTopG &&
+                           bMap[iUp] == anchorTopB ) ) {
+                    // not hit top shading anchor yet
+
+                    // skip transparent pixels in image
+                    if( ! ( r[iUp] == tR &&
+                            g[iUp] == tG &&
+                            b[iUp] == tB ) ) {
+                                                
+                        // apply shade level to this image pixel
+                        r[iUp] *= shadeLevel;
+                        g[iUp] *= shadeLevel;
+                        b[iUp] *= shadeLevel;
+                        }
+                    
+                    shadeLevel += shadeStep;
+
+                    if( shadeLevel > 1 ) {
+                        shadeLevel = 1;
+                        }
+                    
+                    iUp -= w;
+                    }
+                
+                
+
+                }
+            }
+        }
+    
+    }
+
+
+
+
+
+
 static houseObjectState readState( File *inStateDir ) {
     
     int numChildFiles;
     File **childFiles = inStateDir->getChildFiles( &numChildFiles );
     
     char *tgaPath = NULL;
+    char *shadeMapTgaPath = NULL;
     char *behindTgaPath = NULL;
+    char *behindShadeMapTgaPath = NULL;
     char *propertiesContents = NULL;
     char *subInfoContents = NULL;
 
@@ -121,6 +244,18 @@ static houseObjectState readState( File *inStateDir ) {
                 delete [] behindTgaPath;
                 }
             behindTgaPath = f->getFullFileName();
+            }
+        else if( strstr( name, "_behind_shadeMap.tga" ) != NULL ) {
+            if( behindShadeMapTgaPath != NULL ) {
+                delete [] behindShadeMapTgaPath;
+                }
+            behindShadeMapTgaPath = f->getFullFileName();
+            }
+        else if( strstr( name, "_shadeMap.tga" ) != NULL ) {
+            if( shadeMapTgaPath != NULL ) {
+                delete [] shadeMapTgaPath;
+                }
+            shadeMapTgaPath = f->getFullFileName();
             }
         else if( strstr( name, ".tga" ) != NULL ) {
             if( tgaPath != NULL ) {
@@ -227,6 +362,24 @@ static houseObjectState readState( File *inStateDir ) {
 
     if( image == NULL ) {    
         return state;
+        }
+    
+    image = doubleImage( image );
+
+
+    if( shadeMapTgaPath != NULL ) {
+        printf( "Trying to read shade map tga from %s\n", shadeMapTgaPath );
+        
+        Image *shadeMapImage = readTGAFileBase( shadeMapTgaPath );
+        delete [] shadeMapTgaPath;
+    
+        if( shadeMapImage != NULL ) {
+            shadeMapImage = doubleImage( shadeMapImage );
+            
+            applyShadeMap( image, shadeMapImage );
+            
+            delete shadeMapImage;
+            }
         }
     
 
