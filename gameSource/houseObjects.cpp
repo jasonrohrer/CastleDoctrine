@@ -455,6 +455,26 @@ static houseObjectState readState( File *inStateDir ) {
         return state;
         }
     
+    image = doubleImage( image );
+    
+
+    // apply shade map to behind part too (behind-part-specific shade map)
+    if( behindShadeMapTgaPath != NULL ) {
+        printf( "Trying to read shade map tga from %s\n", 
+                behindShadeMapTgaPath );
+        
+        Image *shadeMapImage = readTGAFileBase( behindShadeMapTgaPath );
+        delete [] behindShadeMapTgaPath;
+    
+        if( shadeMapImage != NULL ) {
+            shadeMapImage = doubleImage( shadeMapImage );
+            
+            applyShadeMap( image, shadeMapImage );
+            
+            delete shadeMapImage;
+            }
+        }
+
 
     fullH = image->getHeight();
     fullW = image->getWidth();
