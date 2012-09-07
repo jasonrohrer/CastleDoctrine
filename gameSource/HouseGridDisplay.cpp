@@ -854,7 +854,7 @@ void HouseGridDisplay::drawRobber( doublePair inPosition ) {
                          mRobberOrientation, 
                          mRobberState );
     
-    drawSprite( sprite, inPosition, 1.0/16.0 );
+    drawSprite( sprite, inPosition, 1.0/32.0 );
     }
 
 
@@ -922,7 +922,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                orientationIndex, 
                                                houseTileState );
                 
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
                 }
             
@@ -964,7 +964,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                          mobOrientation, 
                                          mobState );
                 
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
                 }
 
@@ -996,7 +996,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                        orientationIndex, 
                                                        houseTileState );
                 
-                drawSprite( sprite, tilePos, 1.0/16.0 );
+                drawSprite( sprite, tilePos, 1.0/32.0 );
                 }
             else if( !inBeneathShadowsOnly && aboveShadows 
                      && houseTile != 0 ) {
@@ -1008,7 +1008,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                        orientationIndex, 
                                                        houseTileState );
                 
-                drawSprite( sprite, tilePos, 1.0/16.0 );
+                drawSprite( sprite, tilePos, 1.0/32.0 );
                 }
 
             
@@ -1107,7 +1107,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                            ghostOrientation, 
                                                            0 );
                 
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
                 else if( houseTile == highlightPick || houseTile == GOAL_ID ) {
                     // darken existing tile to imply removal on click
@@ -1117,7 +1117,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                            orientationIndex, 
                                                            0 );
                 
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
                 else if( houseTile != highlightPick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -1130,7 +1130,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                            ghostOrientation,
                                                            0 );
                     
-                    drawSprite( sprite, tilePos, 1.0/16.0 );
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
                 }
 
@@ -1167,7 +1167,7 @@ void HouseGridDisplay::draw() {
     setDrawColor( 1, 1, 1, 1 );
     for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
-            drawSprite( sprite, getTilePos( y * HOUSE_D + x ), 1.0/16.0 );
+            drawSprite( sprite, getTilePos( y * HOUSE_D + x ), 1.0/32.0 );
             }
         }
     
@@ -1185,7 +1185,7 @@ void HouseGridDisplay::draw() {
         SpriteHandle sprite = getObjectSprite( START_ID, 
                                                0, 
                                                0 );
-        drawSprite( sprite, getTilePos( startSubIndex ), 1.0/16.0 );
+        drawSprite( sprite, getTilePos( startSubIndex ), 1.0/32.0 );
         }
 
 
@@ -1234,7 +1234,7 @@ void HouseGridDisplay::draw() {
                                                    orientationIndex, 
                                                    houseTileState );
             
-            drawSprite( sprite, tilePos, 1.0/16.0 );
+            drawSprite( sprite, tilePos, 1.0/32.0 );
             }
         }
 

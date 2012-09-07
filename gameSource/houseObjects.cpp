@@ -102,7 +102,39 @@ static int *idToIndexMap = NULL;
 // doubles image with nearest neighbor interpolation
 // destroys inImage
 static Image *doubleImage( Image *inImage ) {
-    return inImage;
+    int h = inImage->getHeight();
+    int w = inImage->getWidth();
+    int n = inImage->getNumChannels();
+    
+    int dH = h * 2;
+    int dW = w * 2;
+    
+    Image *doubledImage = new Image( dW, dH, n, false );    
+    
+
+    for( int c=0; c<n; c++ ) {
+        double *channel = inImage->getChannel( c );
+        double *dChannel = doubledImage->getChannel( c );
+        
+        for( int dY=0; dY<dH; dY++ ) {
+            int y = dY / 2;
+            
+            for( int dX=0; dX<dW; dX++ ) {
+                int x = dX / 2;
+                
+                int dI = dY * dW + dX;
+                
+                int i = y * w + x;
+                
+                dChannel[dI] = channel[i];
+                }
+            }
+        }
+    
+    
+    delete inImage;
+
+    return doubledImage;
     }
 
 
@@ -151,7 +183,7 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
     double shadeDark = 0.3;
     // steps per double-res pixel
     // as we walk up toward yellow anchor
-    double shadeStep = 0.1;
+    double shadeStep = 0.05;
 
 
     // start at bottom of shade map, walking up row by row

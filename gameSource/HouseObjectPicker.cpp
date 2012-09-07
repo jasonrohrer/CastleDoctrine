@@ -215,7 +215,7 @@ void HouseObjectPicker::draw() {
         drawSquare( center, 1 - mPixWidth );
 
         setDrawColor( 1, 1, 1, 1 );
-        drawSprite( sprite, center, 1.0/16.0 );
+        drawSprite( sprite, center, 1.0/32.0 );
 
         char *priceString = autoSprintf( "$%d", r->price );
         
