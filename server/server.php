@@ -224,6 +224,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."log" ) &&
         cd_doesTableExist( $tableNamePrefix."users" ) &&
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
+        cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
         cd_doesTableExist( $tableNamePrefix."prices" ) &&
@@ -526,6 +527,10 @@ function cd_setupDatabase() {
     
     
     $tableName = $tableNamePrefix . "houses";
+    // make shadow table for storing dead houses that are still being
+    // robbed one last time
+    $shadowTableName = $tableNamePrefix . "houses_owner_died";
+
     if( ! cd_doesTableExist( $tableName ) ) {
 
         // this table contains general info about each user's house
@@ -553,11 +558,45 @@ function cd_setupDatabase() {
         $result = cd_queryDatabase( $query );
 
         echo "<B>$tableName</B> table created<BR>";
+
+        // table might not match structure of new houses table,
+        // delete it so it will be created below
+        if( cd_doesTableExist( $shadowTableName ) ) {
+            cd_queryDatabase( "DROP TABLE $shadowTableName;" );
+            }
         }
     else {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+    
+    if( ! cd_doesTableExist( $shadowTableName ) ) {
+        $query = "CREATE TABLE $shadowTableName LIKE $tableName;";
+
+        $result = cd_queryDatabase( $query );
+
+        // change properties to allow more than one house in here per user_id
+        // since a user can die multiple times in a row, potentially leaving
+        // a trail of still-being-robbed-by-someone-else houses in their wake
+        cd_queryDatabase( "ALTER TABLE $shadowTableName DROP PRIMARY KEY;" );
+
+        // unique key is now robbing_user_id
+        // (and EVERY house in here has rob_checkout set)
+        cd_queryDatabase( "ALTER TABLE $shadowTableName ".
+                          "ADD PRIMARY KEY( robbing_user_id );" );
+        
+        // and owner's character name not necessarily unique anymore
+        cd_queryDatabase( "ALTER TABLE $shadowTableName ".
+                          "DROP INDEX character_name;" );
+        
+        
+        echo "<B>$shadowTableName</B> table created to shadow $tableName<BR>";
+        }
+    else {
+        echo "<B>$shadowTableName</B> table already exists<BR>";
+        }
+    
 
     
     $tableName = $tableNamePrefix . "limbo_robberies";
@@ -1935,6 +1974,8 @@ function cd_endRobHouse() {
 
     if( $numRows < 1 ) {
         cd_transactionDeny();
+        cd_log( "Robbery end failed for robber $user_id, ".
+                "failed to find robber's house" );
         return;
         }
     
@@ -2009,6 +2050,8 @@ function cd_endRobHouse() {
     
     // automatically ignore blocked users and houses already checked
     // out for robbery and limbo houses for this user
+
+    $ownerDied = false;
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
@@ -2026,8 +2069,33 @@ function cd_endRobHouse() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
-        cd_transactionDeny();
-        return;
+        // not found in main table
+        
+        // check owner_died table, in case house was flushed while
+        // we were robbing it
+        $mainTableName = "$tableNamePrefix"."houses";
+        $shadowTableName = "$tableNamePrefix"."houses_owner_died";
+
+        // point same query at shadow table
+        $query = preg_replace( "/$mainTableName/", "$shadowTableName",
+                               $query );
+
+        $result = cd_queryDatabase( $query );
+        
+        $numRows = mysql_numrows( $result );
+
+        if( $numRows < 1 ) {
+            // not found in main table OR shadow table
+            
+            cd_log( "Robbery end failed for robber $user_id, ".
+                "failed to find target house in main or shadow house tables" );
+
+            cd_transactionDeny();
+            return;
+            }
+        else {
+            $ownerDied = true;
+            }
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
@@ -2107,7 +2175,8 @@ function cd_endRobHouse() {
             $new_robber_gallery_contents =
                 $galleryStuffTaken . "#" . $old_robber_gallery_contents;
             }
-        
+
+        // add stuff taken to robber's home vault/gallery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "loot_value = loot_value + $house_money, ".
             "vault_contents = '$new_robber_vault_contents', ".
@@ -2159,16 +2228,31 @@ function cd_endRobHouse() {
         }
     
         
-    
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0, edit_count = '$edit_count', ".
-        "house_map='$house_map', ".
-        "loot_value = $house_money,  ".
-        "vault_contents = '$house_vault_contents', ".
-        "gallery_contents = '$house_gallery_contents' ".
-        "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
-    cd_queryDatabase( $query );
+    if( ! $ownerDied ) {
+        // update main table with changes, post-robbery
+        $query = "UPDATE $tableNamePrefix"."houses SET ".
+            "rob_checkout = 0, edit_count = '$edit_count', ".
+            "house_map='$house_map', ".
+            "loot_value = $house_money,  ".
+            "vault_contents = '$house_vault_contents', ".
+            "gallery_contents = '$house_gallery_contents' ".
+            "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
+        cd_queryDatabase( $query );
+        }
+    else {
+        // owner died elsewhere while we were robbing, house
+        // scheduled to be destroyed
+        
+        // simply remove this house from the shadow table
+        $query = "DELETE FROM $tableNamePrefix"."houses_owner_died WHERE ".
+            " robbing_user_id = $user_id;";
+        cd_queryDatabase( $query );
 
+        // return any remaining gallery stuff to auction house
+        // (this will be an empty return if robbery successful)
+        cd_returnGalleryContents( $house_gallery_contents );
+        }
+    
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
@@ -2624,6 +2708,35 @@ function cd_verifyTransaction() {
 
 
 
+function cd_returnGalleryContents( $gallery_contents ) {
+    global $tableNamePrefix;
+
+    if( $gallery_contents != "#" ) {
+
+        $galleryArray = preg_split( "/#/", $gallery_contents );
+
+        foreach( $galleryArray as $galleryID ) {                
+            
+            $query = "SELECT price FROM ".
+                "$tableNamePrefix"."prices WHERE ".
+                "in_gallery = 1 AND object_id = '$galleryID';";
+    
+            $result = cd_queryDatabase( $query );
+            
+            $numRows = mysql_numrows( $result );
+
+            if( $numRows > 0 ) {
+                $price = mysql_result( $result, 0, "price" );
+                
+                cd_startAuction( $galleryID, $price );
+                }
+            }
+        }
+    }
+
+
+
+
 
 function cd_newHouseForUser( $user_id ) {
     global $tableNamePrefix;
@@ -2640,9 +2753,10 @@ function cd_newHouseForUser( $user_id ) {
     // row gap.  In the case of concurrent inserts for the same user_id,
     // the second insert will fail (user_id is the primary key)
     
-    $query = "select user_id, gallery_contents ".
+    $query = "select user_id, gallery_contents, rob_checkout ".
         "FROM $tableNamePrefix"."houses ".
-        "WHERE user_id = $user_id;";
+        "WHERE user_id = $user_id ".
+        "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
 
@@ -2652,32 +2766,32 @@ function cd_newHouseForUser( $user_id ) {
 
         // user had a house (past life)
 
-        // return gallery items to auciton house
-        $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
-        if( $gallery_contents != "#" ) {
+        // is anyone still robbing it?
+        $rob_checkout = mysql_result( $result, 0, "rob_checkout" );
 
-            $galleryArray = preg_split( "/#/", $gallery_contents );
+        if( $rob_checkout ) {
 
-            foreach( $galleryArray as $galleryID ) {
-                
+            // can't delete it and leave robber hanging
+
+            // copy it into temporary storage table
+
             
-                $query = "SELECT price FROM ".
-                    "$tableNamePrefix"."prices WHERE ".
-                    "in_gallery = 1 AND object_id = '$galleryID';";
-    
-                $result = cd_queryDatabase( $query );
-            
-                $numRows = mysql_numrows( $result );
+            $query = "INSERT INTO $tableNamePrefix"."houses_owner_died ".
+                "SELECT * FROM $tableNamePrefix"."houses ".
+                "WHERE user_id = $user_id;";
 
-                if( $numRows > 0 ) {
-                    $price = mysql_result( $result, 0, "price" );
-                
-                    cd_startAuction( $galleryID, $price );
-                    }
-                }
+            cd_queryDatabase( $query );
+            
+            // return gallery stuff to auction house later, after robber done
             }
-        
+        else {
+            // return gallery items to auciton house
+            $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
+            cd_returnGalleryContents( $gallery_contents );
+            }
 
+        
+        // in either case, delete house from main tables
         
         $query = "delete from $tableNamePrefix"."houses ".
             "WHERE user_id = $user_id;";
