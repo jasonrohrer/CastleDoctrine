@@ -2682,6 +2682,12 @@ function cd_newHouseForUser( $user_id ) {
         $query = "delete from $tableNamePrefix"."houses ".
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
+
+        
+        // don't leave in limbo
+        $query = "delete from $tableNamePrefix"."limbo_robberies ".
+            "WHERE house_user_id = $user_id;";
+        cd_queryDatabase( $query );
         }
     
     
