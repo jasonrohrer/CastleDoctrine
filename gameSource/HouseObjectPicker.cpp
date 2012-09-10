@@ -59,9 +59,11 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
 
     if( mShowTools ) {
         idList = getFullToolIDList( &numObjects );
+        mSpriteScale = 1.0/16.0;
         }
     else {
         idList = getFullObjectIDList( &numObjects );
+        mSpriteScale = 1.0/32.0;
         }
     
     for( int i=0; i<numObjects; i++ ) {
@@ -215,7 +217,7 @@ void HouseObjectPicker::draw() {
         drawSquare( center, 1 - mPixWidth );
 
         setDrawColor( 1, 1, 1, 1 );
-        drawSprite( sprite, center, 1.0/32.0 );
+        drawSprite( sprite, center, mSpriteScale );
 
         char *priceString = autoSprintf( "$%d", r->price );
         

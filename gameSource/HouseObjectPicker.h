@@ -70,7 +70,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         virtual void pointerDrag( float inX, float inY );
 
         char mShowTools;
-
+        double mSpriteScale;
+        
 
         SimpleVector<ObjectPriceRecord> mObjectList;
         // to block server-listed objects that we don't have locally
