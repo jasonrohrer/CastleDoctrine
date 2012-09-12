@@ -1875,7 +1875,7 @@ function cd_listHouses() {
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
         "  WHERE user_id = $user_id ) ".
-        "ORDER BY houses.loot_value DESC ".
+        "ORDER BY houses.loot_value DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $limit;";
 
     $result = cd_queryDatabase( $query );
