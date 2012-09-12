@@ -11,7 +11,7 @@ extern Font *mainFont;
 
 MenuPage::MenuPage() 
         : mPickList( 0, 0, false, this ),
-          mEditHouseButton( mainFont, 4, -4, translate( "startEditHouse" ) ),
+          mEditHouseButton( mainFont, 4, -4, translate( "returnHome" ) ),
           mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
           mShowReplayListButton( mainFont, -4, -6, 
                                  translate( "listRobberyReplays" ) ),

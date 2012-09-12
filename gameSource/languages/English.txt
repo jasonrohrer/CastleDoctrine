@@ -30,7 +30,7 @@ outOfDateClient "Please download the latest version."
 houseBeingRobbed "Your house is currently being robbed.##You can't work on it now."
 returnMenu "Menu"
 
-returnHome "Return Home"
+returnHome "Return to Your House"
 
 
 
@@ -91,7 +91,6 @@ houseCheckInFailed "House check in failed."
 
 
 
-startEditHouse "Return to Your House"
 startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 
