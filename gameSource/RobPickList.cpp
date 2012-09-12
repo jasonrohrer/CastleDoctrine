@@ -137,7 +137,7 @@ HouseRecord *RobPickList::getSelectedHouse() {
 
 static double lineHeight = 0.75;
 static double lineWidthLeft = 7;
-static double lineWidthRight = 6;
+static double lineWidthRight = 7;
 
 
 
@@ -244,9 +244,9 @@ void RobPickList::step() {
                         int numParts;
                         char **parts = split( line, "#", &numParts );
                         
-                        if( numParts != 5 ) {
-                            printf( "Unexpected number of parts on house "
-                                    "list line: %d\n", numParts );
+                        if( numParts != 6 ) {
+                            printf( "Unexpected number of parts (%d) on house "
+                                    "list line: %d\n", numParts, i );
                             badParse = true;
                             }
                         else {
@@ -274,6 +274,7 @@ void RobPickList::step() {
 
                             sscanf( parts[3], "%d", &( r.lootValue ) );
                             sscanf( parts[4], "%d", &( r.robAttempts ) );
+                            sscanf( parts[5], "%d", &( r.robberDeaths ) );
 
                             mHouseList.push_back( r );
                             }
@@ -426,6 +427,17 @@ void RobPickList::draw() {
             mainFont->drawString( attemptString, drawPos, alignRight );
 
             delete [] attemptString;
+
+            
+            setDrawColor( 1, 0, 0, 1 );
+            char *deathsString = autoSprintf( "%d", r->robberDeaths );
+        
+            drawPos = r->position;
+            drawPos.x += 6.5;
+        
+            mainFont->drawString( deathsString, drawPos, alignRight );
+
+            delete [] deathsString;
 
 
             altColor = ! altColor;

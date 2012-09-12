@@ -553,6 +553,7 @@ function cd_setupDatabase() {
             // ignored if not checked out for robbery
             "robbing_user_id INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
+            "robber_deaths INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
@@ -677,6 +678,7 @@ function cd_setupDatabase() {
             "house_user_id INT NOT NULL," .
             "loot_value INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
+            "robber_deaths INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
             "rob_time DATETIME NOT NULL,".
@@ -1863,7 +1865,7 @@ function cd_listHouses() {
     $tableName = $tableNamePrefix ."houses";
     
     $query = "SELECT houses.user_id, houses.character_name, ".
-        "houses.loot_value, houses.rob_attempts, ".
+        "houses.loot_value, houses.rob_attempts, houses.robber_deaths, ".
         "robbers.character_name as robber_name, ".
         "robbers.user_id as robber_id ".
         "FROM $tableName as houses ".
@@ -1890,6 +1892,7 @@ function cd_listHouses() {
         $robber_id = mysql_result( $result, $i, "robber_id" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+        $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
 
         if( $robber_name == NULL ) {
             $robber_name = "Null_Null_Null";
@@ -1901,7 +1904,7 @@ function cd_listHouses() {
             }
         
         echo "$house_user_id#$character_name#$robber_name".
-            "#$loot_value#$rob_attempts\n";
+            "#$loot_value#$rob_attempts#$robber_deaths\n";
         }
     echo "OK";
     }
@@ -2092,7 +2095,7 @@ function cd_endRobHouse() {
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
-        "rob_attempts, edit_count ".
+        "rob_attempts, robber_deaths, edit_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
@@ -2168,6 +2171,7 @@ function cd_endRobHouse() {
     $victim_name = $row[ "character_name" ];
     $loot_value = $row[ "loot_value" ];
     $rob_attempts = $row[ "rob_attempts" ];
+    $robber_deaths = $row[ "robber_deaths" ];
     $edit_count = $row[ "edit_count" ];
 
 
@@ -2209,7 +2213,8 @@ function cd_endRobHouse() {
         
         if( $success == 0 ) {
             // robber dies
-
+            $robber_deaths ++;
+            
             // drops backpack in this house's vault
             $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
                                                         $backpack_contents );
@@ -2266,12 +2271,14 @@ function cd_endRobHouse() {
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
-            "(user_id, house_user_id, loot_value, rob_attempts, ".
+            "(user_id, house_user_id, loot_value, ".
+            " rob_attempts, robber_deaths,".
             " robber_name, victim_name, rob_time, ".
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$loot_value', '$rob_attempts', ".
+            " $user_id, $victim_id, '$loot_value', ".
+            " '$rob_attempts', '$robber_deaths', ".
             " '$robber_name', '$victim_name', ".
             " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
             " '$old_house_map', '$loadout', '$move_list', ".
@@ -2279,11 +2286,12 @@ function cd_endRobHouse() {
         cd_queryDatabase( $query );
 
 
-        // clear rob_attempts now, because house loot is gone
-        // rob_attempts will build up again if loot ever replentished
-        // rob_attempts indicates how hard the current configuraiton is,
+        // clear rob stats now, because house loot is gone
+        // rob stats will build up again if loot ever replentished
+        // rob stats indicate how hard the current configuraiton is,
         // not the full history of the house
         $rob_attempts = 0;
+        $robber_deaths = 0;
         }
 
 
@@ -2322,6 +2330,7 @@ function cd_endRobHouse() {
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "rob_checkout = 0, edit_count = '$edit_count', ".
             "rob_attempts = '$rob_attempts', ".
+            "robber_deaths = '$robber_deaths',".
             "house_map='$house_map', ".
             "loot_value = $house_money,  ".
             "vault_contents = '$house_vault_contents', ".
@@ -2381,7 +2390,7 @@ function cd_listLoggedRobberies() {
     
     $query = "SELECT user_id, house_user_id, ".
         "log_id, victim_name, robber_name, ".
-        "loot_value, rob_attempts ".
+        "loot_value, rob_attempts, robber_deaths ".
         "FROM $tableName ".
         "ORDER BY rob_time DESC ".
         "LIMIT $skip, $limit;";
@@ -2400,6 +2409,7 @@ function cd_listLoggedRobberies() {
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+        $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
 
         if( $robber_id == $user_id ) {
             $robber_name = "You";
@@ -2410,7 +2420,7 @@ function cd_listLoggedRobberies() {
         
         
         echo "$log_id#$victim_name#$robber_name".
-            "#$loot_value#$rob_attempts\n";
+            "#$loot_value#$rob_attempts#$robber_deaths\n";
         }
     echo "OK";
     }
@@ -2960,7 +2970,7 @@ function cd_newHouseForUser( $user_id ) {
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', '$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, 1000, 0, 0, 0, 0, ".
+            "0, 1000, 0, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
@@ -2978,7 +2988,7 @@ function cd_newHouseForUser( $user_id ) {
 
             if( $errorNumber != 1062 ) {
                 cd_fatalError(
-                    "Database query failed:<BR>$inQueryString<BR><BR>" .
+                    "Database query failed:<BR>$query<BR><BR>" .
                     mysql_error() );
                 }
             }

@@ -18,7 +18,8 @@ typedef struct HouseRecord {
         char *lastRobberName;
         int lootValue;
         int robAttempts;
-
+        int robberDeaths;
+        
         char selected;
         doublePair position;
 
