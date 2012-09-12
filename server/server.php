@@ -227,6 +227,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
+        cd_doesTableExist( $tableNamePrefix."scouting_counts" ) &&
         cd_doesTableExist( $tableNamePrefix."prices" ) &&
         cd_doesTableExist( $tableNamePrefix."auction" ) &&
         cd_doesTableExist( $tableNamePrefix."last_names" ) &&
@@ -596,6 +597,40 @@ function cd_setupDatabase() {
     else {
         echo "<B>$shadowTableName</B> table already exists<BR>";
         }
+
+    
+
+    $tableName = $tableNamePrefix . "scouting_counts";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // contains information about lapsed robberies (user quits, power
+        // out, etc)
+        // User gets one success/failure(death) chance to rob each house
+        // with current life.  If user "bails out" mid-robbery,
+        // it's unfair to punish them (might not be their fault, game crash?),
+        // but we don't want them to exploit it as another chance to rob
+        // with new info.
+        // So, lapsed attempts go into the limbo list, and user is not
+        // allowed to try robbing that same house again.
+
+        // This maps a user ID to another user ID, where the second
+        // ID specifies a house that the first user cannot rob again.
+        $query =
+            "CREATE TABLE $tableName(" .
+            "robbing_user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "count INT NOT NULL," .
+            "last_scout_time DATETIME NOT NULL,".
+            "PRIMARY KEY( robbing_user_id, house_user_id ) ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
     
 
     
@@ -645,6 +680,8 @@ function cd_setupDatabase() {
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
             "rob_time DATETIME NOT NULL,".
+            "scouting_count INT NOT NULL,".
+            "last_scout_time DATETIME NOT NULL,".
             "house_start_map LONGTEXT NOT NULL," .
             "loadout LONGTEXT NOT NULL," .
             "move_list LONGTEXT NOT NULL," .
@@ -2102,12 +2139,17 @@ function cd_endRobHouse() {
 
 
 
-    // update contents of backpac (checked to be okay above)
+    // update contents of backpack (checked to be okay above)
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "backpack_contents = '$backpack_contents'".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
+
+
+    
+
+    
     
     
     $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
@@ -2127,6 +2169,32 @@ function cd_endRobHouse() {
     $loot_value = $row[ "loot_value" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $edit_count = $row[ "edit_count" ];
+
+
+
+    
+    // grab past scouting stats here, for inclusion in robbery log
+    $query = "SELECT count, last_scout_time ".
+        "FROM $tableNamePrefix"."scouting_counts ".
+        "WHERE robbing_user_id = '$user_id' ".
+        "AND house_user_id = '$victim_id'".
+        "FOR UPDATE;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $scouting_count = 0;
+    $last_scout_time = cd_getMySQLTimestamp();
+    
+    if( $numRows == 1 ) {
+        $scouting_count = mysql_result( $result, 0, "count" );
+        $last_scout_time = mysql_result( $result, 0, "last_scout_time" );
+        }
+
+
+
+
     
     
     if( $success == 0 || $success == 2 ) {
@@ -2194,38 +2262,52 @@ function cd_endRobHouse() {
 
         $loadout = $old_backpack_contents;
 
-        
-
-        /*
-        $query =
-            "CREATE TABLE $tableName(" .
-            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
-            "user_id INT NOT NULL," .
-            "house_user_id INT NOT NULL," .
-            "loot_value INT NOT NULL," .
-            "rob_attempts INT NOT NULL,".
-            "robber_name VARCHAR(62) NOT NULL," .
-            "victim_name VARCHAR(62) NOT NULL," .
-            "rob_time DATETIME NOT NULL,".
-            "house_start_map LONGTEXT NOT NULL," .
-            "loadout LONGTEXT NOT NULL," .
-            "move_list LONGTEXT NOT NULL," .
-            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
-        */
 
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
             "(user_id, house_user_id, loot_value, rob_attempts, ".
             " robber_name, victim_name, rob_time, ".
+            " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
             " $user_id, $victim_id, '$loot_value', '$rob_attempts', ".
             " '$robber_name', '$victim_name', ".
-            " CURRENT_TIMESTAMP, '$old_house_map', '$loadout', '$move_list', ".
+            " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
+            " '$old_house_map', '$loadout', '$move_list', ".
             " '$house_map' );";
         cd_queryDatabase( $query );        
         }
+
+
+
+    
+    
+    // all cases (death, reach vault, leave) provide scouting info
+    // and count as a scouting trip
+    $scouting_count++;
+
+    if( $scouting_count > 1 ) {
+        $query = "UPDATE $tableNamePrefix"."scouting_counts ".
+            "SET count = '$scouting_count', ".
+            "last_scout_time = CURRENT_TIMESTAMP ".
+            "WHERE robbing_user_id = '$user_id' ".
+            "AND house_user_id = '$victim_id';";
+        cd_queryDatabase( $query );
+        }
+    else {
+        // first scouting trip
+        $query =
+            "INSERT INTO $tableNamePrefix"."scouting_counts ".
+            "( robbing_user_id, house_user_id, count, last_scout_time ) ".
+            "VALUES( '$user_id', '$victim_id', ".
+            "        '$scouting_count', CURRENT_TIMESTAMP );";
+        cd_queryDatabase( $query );
+        }
+    
+
+
+    
     
         
     if( ! $ownerDied ) {
@@ -2248,6 +2330,12 @@ function cd_endRobHouse() {
             " robbing_user_id = $user_id;";
         cd_queryDatabase( $query );
 
+        // clear scouting counts for every robber, since house gone
+        $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
+            " house_user_id = $victim_id;";
+        cd_queryDatabase( $query );
+
+        
         // return any remaining gallery stuff to auction house
         // (this will be an empty return if robbery successful)
         cd_returnGalleryContents( $house_gallery_contents );
@@ -2782,9 +2870,17 @@ function cd_newHouseForUser( $user_id ) {
 
             cd_queryDatabase( $query );
             
-            // return gallery stuff to auction house later, after robber done
+            // return gallery stuff to auction house later,
+            // and clear scouting counts later, after this robber done
             }
         else {
+
+            // clear scouting counts for every robber, since house gone
+            $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
+                " house_user_id = $user_id;";
+            cd_queryDatabase( $query );
+
+            
             // return gallery items to auciton house
             $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
             cd_returnGalleryContents( $gallery_contents );
@@ -3587,6 +3683,17 @@ function cd_queryDatabase( $inQueryString ) {
 
     return $result;
     }
+
+
+
+/**
+ * Gets the CURRENT_TIMESTAMP string from MySQL database.
+ */
+function cd_getMySQLTimestamp() {
+    $result = cd_queryDatabase( "SELECT CURRENT_TIMESTAMP;" );
+    return mysql_result( $result, 0, "CURRENT_TIMESTAMP" );
+    }
+
 
 
 

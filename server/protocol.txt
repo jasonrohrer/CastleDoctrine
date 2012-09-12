@@ -253,7 +253,7 @@ gallery_contents = ASCII string encoded as described for start_edit_house
 server.php?action=end_rob_house&user_id=[id number]
                                &sequence_number=[number]
                                &ticket_hash=[sha1 hash, hex-encoded]
-                               &success=[0 or 1(reach vault) or 2(chicken out)]
+                               &success=[0(die) or 1(hit vault) or 2(leave)]
 							   $backpack_contents=[contents as ASCII string]
                                &move_list=[move list as ASCII string]
                                &house_map=[house map ASCII string]
