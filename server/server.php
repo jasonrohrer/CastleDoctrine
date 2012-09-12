@@ -2276,7 +2276,14 @@ function cd_endRobHouse() {
             " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
             " '$old_house_map', '$loadout', '$move_list', ".
             " '$house_map' );";
-        cd_queryDatabase( $query );        
+        cd_queryDatabase( $query );
+
+
+        // clear rob_attempts now, because house loot is gone
+        // rob_attempts will build up again if loot ever replentished
+        // rob_attempts indicates how hard the current configuraiton is,
+        // not the full history of the house
+        $rob_attempts = 0;
         }
 
 
@@ -2314,6 +2321,7 @@ function cd_endRobHouse() {
         // update main table with changes, post-robbery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "rob_checkout = 0, edit_count = '$edit_count', ".
+            "rob_attempts = '$rob_attempts', ".
             "house_map='$house_map', ".
             "loot_value = $house_money,  ".
             "vault_contents = '$house_vault_contents', ".
@@ -2368,22 +2376,6 @@ function cd_listLoggedRobberies() {
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
     
 
-    /*
-        $query =
-            "CREATE TABLE $tableName(" .
-            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
-            "user_id INT NOT NULL," .
-            "house_user_id INT NOT NULL," .
-            "loot_value INT NOT NULL," .
-            "rob_attempts INT NOT NULL,".
-            "robber_name VARCHAR(62) NOT NULL," .
-            "victim_name VARCHAR(62) NOT NULL," .
-            "rob_time DATETIME NOT NULL,".
-            "house_start_map LONGTEXT NOT NULL," .
-            "loadout LONGTEXT NOT NULL," .
-            "move_list LONGTEXT NOT NULL," .
-            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
-        */
     
     $tableName = $tableNamePrefix ."robbery_logs";
     
