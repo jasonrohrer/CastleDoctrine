@@ -170,6 +170,11 @@ void LoadBackpackPage::setLootValue( int inLootValue ) {
 void LoadBackpackPage::checkBuyButtonStatus() {
     int selectedObject = mToolPicker.getSelectedObject();
     
+    if( selectedObject == -1 ) {
+        mBuyButton.setVisible( false );
+        return;
+        }
+
     int price = mToolPicker.getPrice( selectedObject );
 
     if( price > mLootValue ) {
@@ -282,6 +287,7 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 mPackSlots[i]->setObject( selectedObject );
                 mLootValue -= price;
                 
+                mToolPicker.useSelectedObject();
 
                 addToQuantity( &mPurchaseRecords, selectedObject );
                 mPurchaseHistory.push_back( selectedObject );

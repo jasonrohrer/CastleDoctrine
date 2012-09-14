@@ -255,6 +255,8 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         
         if( cost != -1 ) {
             mLootValue -= cost;
+            mObjectPicker.useSelectedObject();
+
             checkIfPlacementAllowed();
             }
         mUndoButton.setVisible( mGridDisplay.canUndo() );

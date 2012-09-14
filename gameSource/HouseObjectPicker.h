@@ -35,6 +35,10 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         virtual int getSelectedObject();
         
+        // moves selected object to the top of the stack
+        virtual void useSelectedObject();
+        
+
         // gets list of object IDs that are actually shown on picker
         // (doesn't included unplaceable objects)
         // destroyed by caller

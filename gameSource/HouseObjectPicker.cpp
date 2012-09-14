@@ -67,16 +67,14 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
         }
     
     for( int i=0; i<numObjects; i++ ) {
-        ObjectPriceRecord r;
-        r.id = idList[i];
-        r.price = 10;
+        int id = idList[i];
         
         const char *name;
         if( mShowTools ) {
-            name = getToolName( r.id );
+            name = getToolName( id );
             }
         else {
-            name = getObjectName( r.id );
+            name = getObjectName( id );
             }
         
         char blocked = false;
@@ -88,18 +86,11 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
             }
         
         if( !blocked ) {
-            mObjectList.push_back( r );
-            mLocalPresentIDs.push_back( idList[i] );
+            mLocalPresentIDs.push_back( id );
             }
         }
-    delete [] idList;
-    
-    if( mObjectList.size() > 0 ) {
-        mSelectedIndex = 0;
-        mUpButton.setVisible( true );
-        mDownButton.setVisible( true );
-        }
-    
+
+    delete [] idList;    
     }
 
 
@@ -130,15 +121,17 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
     
     if( inTarget == &mUpButton ) {
         mSelectedIndex --;
-        if( mSelectedIndex < 0 ) {
-            mSelectedIndex = mObjectList.size() - 1;
+        mDownButton.setVisible( true );
+        if( mSelectedIndex == 0 ) {
+            mUpButton.setVisible( false );
             }
         change = true;
         }
     else if( inTarget == &mDownButton ) {
         mSelectedIndex ++;
-        if( mSelectedIndex > mObjectList.size() - 1 ) {
-            mSelectedIndex = 0;
+        mUpButton.setVisible( true );
+        if( mSelectedIndex == mObjectList.size() - 1 ) {
+            mDownButton.setVisible( false );
             }
         change = true;    
         }
@@ -165,6 +158,23 @@ int HouseObjectPicker::getSelectedObject() {
     else {
         return -1;
         }
+    }
+
+
+
+void HouseObjectPicker::useSelectedObject() {
+    ObjectPriceRecord r = *( mObjectList.getElement( mSelectedIndex ) );
+        
+    // move to top of stack
+    
+    mObjectList.deleteElement( mSelectedIndex );
+    
+    mObjectList.push_front( r );
+    
+    mSelectedIndex = 0;
+    
+    mUpButton.setVisible( false );
+    mDownButton.setVisible( true );
     }
 
 
@@ -323,6 +333,17 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
                 break;
                 }
             }
+        }
+
+    if( mObjectList.size() > 0 ) {
+        mSelectedIndex = 0;
+        mUpButton.setVisible( false );
+        mDownButton.setVisible( true );
+        }
+    else {
+        mSelectedIndex = -1;
+        mUpButton.setVisible( false );
+        mDownButton.setVisible( false );
         }
     }
 
