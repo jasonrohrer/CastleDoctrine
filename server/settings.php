@@ -79,35 +79,7 @@ $defaultPrices = array(
     array( 2001, 10000, 1, "Untitled 2 - Rohrer" ),
     array( 2002, 10000, 1, "Untitled 3 - Rohrer" ),
     array( 2003, 10000, 1, "Untitled 4 - Rohrer" ),
-    array( 2004, 10000, 1, "Untitled 5 - Rohrer" ),
-
-    array( 3000, 500, 1, "Dummy 0 --- by No One" ),
-    array( 3001, 500, 1, "Dummy 1 --- by No One" ),
-    array( 3002, 500, 1, "Dummy 2 --- by No One" ),
-    array( 3003, 500, 1, "Dummy 3 --- by No One" ),
-    array( 3004, 500, 1, "Dummy 4 --- by No One" ),
-    array( 3005, 500, 1, "Dummy 5 --- by No One" ),
-    array( 3006, 500, 1, "Dummy 6 --- by No One" ),
-    array( 3007, 500, 1, "Dummy 7 --- by No One" ),
-    array( 3008, 500, 1, "Dummy 8 --- by No One" ),
-    array( 3009, 500, 1, "Dummy 9 --- by No One" ),
-    array( 3010, 500, 1, "Dummy 10 --- by No One" ),
-    array( 3011, 500, 1, "Dummy 11 --- by No One" ),
-    array( 3012, 500, 1, "Dummy 12 --- by No One" ),
-    array( 3013, 500, 1, "Dummy 13 --- by No One" ),
-    array( 3014, 500, 1, "Dummy 14 --- by No One" ),
-    array( 3015, 500, 1, "Dummy 15 --- by No One" ),
-    array( 3016, 500, 1, "Dummy 16 --- by No One" ),
-    array( 3017, 500, 1, "Dummy 17 --- by No One" ),
-    array( 3018, 500, 1, "Dummy 18 --- by No One" ),
-    array( 3019, 500, 1, "Dummy 19 --- by No One" ),
-    array( 3020, 500, 1, "Dummy 20 --- by No One" ),
-    array( 3021, 500, 1, "Dummy 21 --- by No One" ),
-    array( 3022, 500, 1, "Dummy 22 --- by No One" ),
-    array( 3023, 500, 1, "Dummy 23 --- by No One" ),
-    array( 3024, 500, 1, "Dummy 24 --- by No One" ),
-    array( 3025, 500, 1, "Dummy 25 --- by No One" ),
-    array( 3026, 500, 1, "Dummy 26 --- by No One" )
+    array( 2004, 10000, 1, "Untitled 5 - Rohrer" )
     );
     
 
