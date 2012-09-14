@@ -27,7 +27,7 @@ for( $i=0; $i<$numPaintings; $i++ ) {
 
 	open( LIST_FILE, ">$infoName" );
 	
-	print LIST_FILE "$ID\n$title";
+	print LIST_FILE "$ID\n\"$title\"";
 	
 	close LIST_FILE;
 	
