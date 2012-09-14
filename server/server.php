@@ -1173,7 +1173,8 @@ function cd_startEditHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
-    $query = "SELECT object_id, price FROM $tableNamePrefix"."prices;";
+    $query = "SELECT object_id, price, in_gallery ".
+        "FROM $tableNamePrefix"."prices;";
 
     $result = cd_queryDatabase( $query );
 
@@ -1184,15 +1185,23 @@ function cd_startEditHouse() {
     $firstRow = true;
     
     for( $i=0; $i<$numRows; $i++ ) {
-        if( !$firstRow ) {
-            $priceListBody = $priceListBody . "#";
-            }
-        $firstRow = false;
-            
-        $object_id = mysql_result( $result, $i, "object_id" );
-        $price = mysql_result( $result, $i, "price" );
+        // leave gallery objects out of price list, because their
+        // prices are just start auction prices, and not current
+        // (and don't want to waste space in price list)
+        $in_gallery = mysql_result( $result, $i, "in_gallery" );
 
-        $priceListBody = $priceListBody . "$object_id"."@"."$price";
+        if( !$in_gallery ) {
+            
+            if( !$firstRow ) {
+                $priceListBody = $priceListBody . "#";
+                }
+            $firstRow = false;
+            
+            $object_id = mysql_result( $result, $i, "object_id" );
+            $price = mysql_result( $result, $i, "price" );
+            
+            $priceListBody = $priceListBody . "$object_id"."@"."$price";
+            }
         }
 
     global $serverSecretKey;
