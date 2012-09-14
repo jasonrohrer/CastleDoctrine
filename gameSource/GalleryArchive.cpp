@@ -13,17 +13,17 @@ GalleryArchive::GalleryArchive( Font *inDisplayFont, double inX, double inY )
         : PageComponent( inX, inY ),
           mSelectedIndex( -1 ),
           mSlot( inDisplayFont, 0, 0, 1/16.0 ),
-          mUpButton( "up.tga", -1.25, 1, 1/16.0 ),
-          mDownButton( "down.tga", -1.25, -1, 1/16.0 ) {
-
-    addComponent( &mSlot );
-    mSlot.addActionListener( this );
+          mUpButton( "up.tga", -1.3125, .75, 1/16.0 ),
+          mDownButton( "down.tga", -1.3125, -.75, 1/16.0 ) {
 
     addComponent( &mUpButton );
     addComponent( &mDownButton );
 
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
+
+    addComponent( &mSlot );
+    mSlot.addActionListener( this );
 
     clearObjects();
     }
