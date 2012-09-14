@@ -2536,7 +2536,7 @@ function cd_listAuctions() {
         "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
         "   as elapsed_seconds ".
         "FROM $tableName ".
-        "ORDER BY elapsed_seconds DESC;";
+        "ORDER BY elapsed_seconds DESC, start_price ASC;";
 
     $result = cd_queryDatabase( $query );
 
