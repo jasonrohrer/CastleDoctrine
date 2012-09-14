@@ -47,6 +47,8 @@ class PageComponent : public GUIComponent {
         
         void setPosition( double inX, double inY );
 
+        doublePair getPosition();
+        
 
         void base_pointerMove( float inX, float inY );
 

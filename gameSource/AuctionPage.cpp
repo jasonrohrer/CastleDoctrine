@@ -25,6 +25,9 @@ AuctionPage::AuctionPage()
         : mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mUpdateButton( mainFont, 0, -5, translate( "auctionUpdateButton" ) ),
           mBuyButton( mainFont, 5, -5, translate( "buyButton" ) ),
+          mDisplayOffset( 0 ),
+          mUpButton( "up.tga", 7, 1, 1/16.0 ),
+          mDownButton( "down.tga", 7, -1, 1/16.0 ),
           mLootValue( -1 ),
           mWebRequest( -1 ),
           mSecondsUntilUpdate( -1 ),
@@ -72,6 +75,24 @@ AuctionPage::AuctionPage()
         slotCenter.y -= 3.5;
         }
 
+    // up/down button to right of top/bottom rows
+    doublePair upPosition = 
+        mAuctionSlots[ NUM_AUCTION_SLOTS_PER_ROW - 1 ]->getPosition();
+    doublePair downPosition = 
+        mAuctionSlots[ NUM_AUCTION_SLOTS - 1 ]->getPosition();
+    
+    upPosition.x += 2;
+    downPosition.x += 2;
+    
+    mUpButton.setPosition( upPosition.x, upPosition.y );
+    mDownButton.setPosition( downPosition.x, downPosition.y );
+    
+    addComponent( &mUpButton );
+    addComponent( &mDownButton );
+    
+    mUpButton.addActionListener( this );
+    mDownButton.addActionListener( this );
+    setUpDownVisibility();
     }
 
 
@@ -81,13 +102,43 @@ AuctionPage::~AuctionPage() {
         clearWebRequest( mWebRequest );
         }
 
-    for( int i=0; i<mAuctionItems.size(); i++ ) {
-        delete [] *( mAuctionItems.getElement( i ) );
-        }
-    mAuctionItems.deleteAll();
 
     for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
         delete mAuctionSlots[i];
+        }
+    }
+
+
+
+void AuctionPage::setUpDownVisibility() {
+    mUpButton.setVisible( mDisplayOffset > 0 );
+    
+    mDownButton.setVisible( mFullIDList.size() - mDisplayOffset > 
+                            NUM_AUCTION_SLOTS );
+    }
+    
+
+
+void AuctionPage::populateSlots() {
+    
+    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
+        mAuctionSlots[i]->setObject( -1 );
+        mAuctionPrices[i] = -1;
+        }
+    turnAllRingsOff();
+    mBuyButton.setVisible( false );
+
+    int slotNumber = 0;
+    for( int i=mDisplayOffset; 
+         i<mFullIDList.size() && slotNumber < NUM_AUCTION_SLOTS; 
+         i++ ) {
+        
+        mAuctionSlots[ slotNumber ]->setObject( 
+            *( mFullIDList.getElement( i ) ) );
+
+        mAuctionPrices[ slotNumber ] = *( mFullPriceList.getElement( i ) );
+        
+        slotNumber++;
         }
     }
 
@@ -156,6 +207,16 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
                 break;
                 }
             }
+        }
+    else if( inTarget == &mUpButton ) {
+        mDisplayOffset -= NUM_AUCTION_SLOTS;
+        populateSlots();
+        setUpDownVisibility();
+        }
+    else if( inTarget == &mDownButton ) {
+        mDisplayOffset += NUM_AUCTION_SLOTS;
+        populateSlots();
+        setUpDownVisibility();
         }
     else if( !getPricesStale() ) {
         // don't allow user to pick items to buy if prices are stale
@@ -287,10 +348,9 @@ void AuctionPage::step() {
                             int price;
                             sscanf( parts[1], "%d", &price );
 
-                            if( slotNumber < NUM_AUCTION_SLOTS ) {
-                                mAuctionSlots[ slotNumber ]->setObject( id );
-                                mAuctionPrices[ slotNumber ] = price;
-                                }
+                            
+                            mFullIDList.push_back( id );
+                            mFullPriceList.push_back( price );
                             
                             slotNumber ++;
                             }
@@ -322,12 +382,11 @@ void AuctionPage::step() {
 
                     
                     if( badParse ) {
-                        for( int i=0; i<mAuctionItems.size(); i++ ) {
-                            delete [] *( mAuctionItems.getElement( i ) );
-                            }
-                        mAuctionItems.deleteAll();
                         setStatus( "auctionListFetchFailed", true );
                         }
+
+                    populateSlots();
+                    setUpDownVisibility();
                     }
                         
                         
@@ -459,18 +518,14 @@ void AuctionPage::refreshPrices() {
         clearWebRequest( mWebRequest );
         }
 
-    for( int i=0; i<mAuctionItems.size(); i++ ) {
-        delete [] *( mAuctionItems.getElement( i ) );
-        }
-    mAuctionItems.deleteAll();
+    mDisplayOffset = 0;
+    mFullIDList.deleteAll();
+    mFullPriceList.deleteAll();
 
-    for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
-        mAuctionSlots[i]->setObject( -1 );
-        mAuctionPrices[i] = -1;
-        }
-    turnAllRingsOff();
-    mBuyButton.setVisible( false );
-
+    // populate slots with empty list to clear them
+    populateSlots();
+    
+    
     mUpdateButton.setVisible( false );
 
     mSecondsUntilUpdate = -1;

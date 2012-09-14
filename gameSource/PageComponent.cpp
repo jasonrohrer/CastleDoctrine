@@ -84,6 +84,15 @@ void PageComponent::setPosition( double inX, double inY ) {
 
 
 
+doublePair PageComponent::getPosition() {
+    doublePair p;
+    p.x = mX;
+    p.y = mY;
+    return p;
+    }
+
+
+
 void PageComponent::base_clearState(){
     
     for( int i=0; i<mComponents.size(); i++ ) {

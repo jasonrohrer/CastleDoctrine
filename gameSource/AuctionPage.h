@@ -52,14 +52,21 @@ class AuctionPage : public LiveHousePage, public ActionListener {
 
         int mAuctionPrices[ NUM_AUCTION_SLOTS ];
 
+        
+        int mDisplayOffset;
+        SimpleVector<int> mFullIDList;
+        SimpleVector<int> mFullPriceList;
+
+        SpriteButton mUpButton;
+        SpriteButton mDownButton;
+
+
         int mLootValue;
         
         int mWebRequest;
 
         int mSecondsUntilUpdate;
         int mBaseTimestamp;
-
-        SimpleVector<char*> mAuctionItems;
 
         char mDone;
         char mBuyExecuted;
@@ -75,6 +82,9 @@ class AuctionPage : public LiveHousePage, public ActionListener {
         void turnAllRingsOff();
 
         char getPricesStale();
+
+        void populateSlots();
         
+        void setUpDownVisibility();
     };
 
