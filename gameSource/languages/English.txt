@@ -70,7 +70,7 @@ selfTestDescription "Prove that your house is fair:"
 
 auctionDescription "Currently running auctions:"
 
-auctionTimeString "Prices will drop in"
+auctionTimeString "Prices will drop in:"
 auctionPricesStale "New prices available"
 auctionUpdateButton "Update"
 auctionUpdateButtonTip "Fetch latest auction prices"
