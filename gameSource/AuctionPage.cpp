@@ -52,14 +52,14 @@ AuctionPage::AuctionPage()
     mBuyButton.setVisible( false );
 
     
-    doublePair slotCenter = { -7.5, 5 };
+    doublePair slotCenter = { -4.5, 5 };
     
     int numAuctionRows = NUM_AUCTION_SLOTS / NUM_AUCTION_SLOTS_PER_ROW;
     
     int slot = 0;
     
     for( int r=0; r<numAuctionRows; r++ ) {
-        slotCenter.x = -7.5;
+        slotCenter.x = -4.5;
 
         for( int i=0; i<NUM_AUCTION_SLOTS_PER_ROW; i++ ) {
             

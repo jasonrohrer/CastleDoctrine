@@ -10,9 +10,9 @@
 
 
 
-#define NUM_AUCTION_SLOTS  15
+#define NUM_AUCTION_SLOTS  12
 
-#define NUM_AUCTION_SLOTS_PER_ROW  5
+#define NUM_AUCTION_SLOTS_PER_ROW  4
 
 
 class AuctionPage : public LiveHousePage, public ActionListener {
