@@ -24,7 +24,7 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( inDoneButtonKey ) ),
-          mGallery( mainFont, -8, 0 ),
+          mGallery( mainFont, -8, -1 ),
           mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ) {
 
