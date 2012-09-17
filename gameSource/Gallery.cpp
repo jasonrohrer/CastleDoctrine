@@ -11,6 +11,15 @@
 extern double frameRateFactor;
 
 
+// for an archive that only has 1 item (don't mark it specially as an archive
+// or offset it more)
+static doublePair lightAcrchivePosition = { 0, -2.5 };
+
+// for an archive that has more than 1 item (leave room for archive heading).
+static doublePair heavyAcrchivePosition = { 0, -3 };
+
+
+
 Gallery::Gallery( Font *inDisplayFont, double inX, double inY )
         : PageComponent( inX, inY ), 
           mGalleryArchive( inDisplayFont, 0, -3 ),
@@ -78,6 +87,15 @@ void Gallery::setGalleryContents( const char *inGalleryContents ) {
                 }
             else {
                 mGalleryArchive.addObject( id );
+
+                if( mGalleryArchive.getObjectCount() > 1 ) {
+                    mGalleryArchive.setPosition( heavyAcrchivePosition.x,
+                                                 heavyAcrchivePosition.y );
+                    }
+                else {
+                    mGalleryArchive.setPosition( lightAcrchivePosition.x,
+                                                 lightAcrchivePosition.y );
+                    }
                 }
             
             delete [] parts[j];
@@ -165,7 +183,7 @@ void Gallery::draw() {
         }
     
     
-    if( mGalleryArchive.isVisible() ) {
+    if( mGalleryArchive.isVisible() && mGalleryArchive.getObjectCount() > 1 ) {
         
         doublePair labelPos = mGalleryArchive.getCenter();
         labelPos.y += 1.5;
