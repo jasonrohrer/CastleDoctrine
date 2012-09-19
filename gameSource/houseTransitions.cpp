@@ -61,11 +61,12 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 6
+#define NUM_BUILT_IN_TRIGGERS 7
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
     "player",
     "mobile",
+    "noMobile",
     "power",
     "noPower",
     "powerNorth",
@@ -778,6 +779,33 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 }
             }
         }
+
+    
+
+    // handle transitions triggered by lack of mobile presense
+    r = &( triggerRecords[ getTriggerID( (char*)"noMobile" ) ] );
+    
+    for( int i=0; i<numCells; i++ ) {
+        if( inMapMobileIDs[i] == 0 && inRobberIndex != i ) {
+            for( int j=0; j<r->numTransitions; j++ ) {
+
+                TransitionRecord *transRecord = &( r->transitions[j] );
+
+                if( transRecord->targetID == inMapIDs[i]
+                    &&
+                    ( transRecord->targetStartState == inMapStates[i]
+                      ||
+                      transRecord->targetStartState == -1 )
+                    &&
+                    transRecord->targetEndState != inMapStates[i] ) {
+                
+                    inMapStates[i] = transRecord->targetEndState;
+                    }
+                }
+            }        
+        }
+    
+
 
 
     // now process any transitions for mobile objects

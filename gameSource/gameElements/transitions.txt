@@ -6,6 +6,9 @@ mobile   #   toggle_switch:1   =>  2
 
 mobile   #   toggle_switch:2   =>  1
 
+mobile   #   power_door:2  => 3
+noMobile #   power_door:3  => 2
+
 
 floor_trap:2   #   pitbull   =>   2
 
