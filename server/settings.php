@@ -62,7 +62,6 @@ $defaultPrices = array(
     array( 30, 50, 0, "Automatic Door" ),
     array( 51, 20, 0, "Wired Wooden Wall" ),
     array( 70, 200, 0, "Pit Bull" ),
-    array( 100, 100, 0, "Invisible Floor Trap" ),
     array( 101, 50, 0, "Pressure Toggle Switch" ),
     array( 102, 5, 0, "Wiring" ),
     array( 103, 100, 0, "Power Source" ),
