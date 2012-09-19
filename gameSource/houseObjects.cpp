@@ -180,10 +180,10 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
 
 
     // shading at bottom, on red anchor
-    double shadeDark = 0.3;
+    double shadeDark = 0.5;
     // steps per double-res pixel
     // as we walk up toward yellow anchor
-    double shadeStep = 0.05;
+    double shadeStep = 0.035;
 
 
     // start at bottom of shade map, walking up row by row
