@@ -93,14 +93,19 @@ char isInGroup( int inObjectID, int inOtherObjectID );
 int getNumOrientations( int inObjectID, int inState );
 
 char isBehindSpritePresent( int inObjectID, int inState );
+char isUnderSpritePresent( int inObjectID, int inState );
 
 
 // orientations based on binary interpretation of LBRT "neighbor present"
 // flags
 SpriteHandle getObjectSprite( int inObjectID, int inOrientation, int inState );
 
+// drawn behind mobile objects
 SpriteHandle getObjectSpriteBehind( int inObjectID, int inOrientation, 
                                     int inState );
+// drawn under shadow layer
+SpriteHandle getObjectSpriteUnder( int inObjectID, int inOrientation, 
+                                   int inState );
 
 
 

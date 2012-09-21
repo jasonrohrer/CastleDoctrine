@@ -42,6 +42,10 @@ typedef struct houseObjectState {
         char behindSpritePresent;
 
         SpriteHandle stateSpriteBehind[ MAX_ORIENTATIONS ];
+
+        char underSpritePresent;
+
+        SpriteHandle stateSpriteUnder[ MAX_ORIENTATIONS ];
         
         char properties[ endPropertyID ];
 
@@ -249,6 +253,65 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
 
 
 
+// inTgaPath and inShadeMapTgaPath are deleted if not NULL
+// returns number of orientaitons
+static int readSprites( char *inTgaPath, char *inShadeMapTgaPath,
+                        SpriteHandle *inSpriteOrientationArray ) {
+    
+    Image *image = readTGAFileBase( inTgaPath );
+    delete [] inTgaPath;
+
+    if( image == NULL ) {    
+        return 0;
+        }
+    
+    image = doubleImage( image );
+
+
+    if( inShadeMapTgaPath != NULL ) {
+        printf( "Trying to read shade map tga from %s\n", inShadeMapTgaPath );
+        
+        Image *shadeMapImage = readTGAFileBase( inShadeMapTgaPath );
+        delete [] inShadeMapTgaPath;
+    
+        if( shadeMapImage != NULL ) {
+            shadeMapImage = doubleImage( shadeMapImage );
+            
+            applyShadeMap( image, shadeMapImage );
+            
+            delete shadeMapImage;
+            }
+        }
+    
+    char transCorner = true;
+
+    int fullH = image->getHeight();
+    int fullW = image->getWidth();
+
+    int tileH = fullW;
+
+    int numOrientations = fullH / tileH;
+    
+    printf( "  Reading %d orientations\n", numOrientations );
+
+    for( int o=0; o<numOrientations; o++ ) {
+        
+        Image *subImage = image->getSubImage( 0, tileH * o,
+                                              fullW, tileH );
+        
+        inSpriteOrientationArray[o] = fillSprite( subImage, transCorner );
+        
+        delete subImage;
+        }
+
+    delete image;
+    
+    return numOrientations;
+    }
+
+
+
+
 
 
 static houseObjectState readState( File *inStateDir ) {
@@ -260,10 +323,11 @@ static houseObjectState readState( File *inStateDir ) {
     char *shadeMapTgaPath = NULL;
     char *behindTgaPath = NULL;
     char *behindShadeMapTgaPath = NULL;
+    char *underTgaPath = NULL;
+    char *underShadeMapTgaPath = NULL;
     char *propertiesContents = NULL;
     char *subInfoContents = NULL;
 
-    char transCorner = true;
 
     for( int i=0; i<numChildFiles; i++ ) {
         
@@ -282,6 +346,18 @@ static houseObjectState readState( File *inStateDir ) {
                 delete [] behindShadeMapTgaPath;
                 }
             behindShadeMapTgaPath = f->getFullFileName();
+            }
+        else if( strstr( name, "_under.tga" ) != NULL ) {
+            if( underTgaPath != NULL ) {
+                delete [] underTgaPath;
+                }
+            underTgaPath = f->getFullFileName();
+            }
+        else if( strstr( name, "_under_shadeMap.tga" ) != NULL ) {
+            if( underShadeMapTgaPath != NULL ) {
+                delete [] underShadeMapTgaPath;
+                }
+            underShadeMapTgaPath = f->getFullFileName();
             }
         else if( strstr( name, "_shadeMap.tga" ) != NULL ) {
             if( shadeMapTgaPath != NULL ) {
@@ -319,6 +395,7 @@ static houseObjectState readState( File *inStateDir ) {
 
     state.numOrientations = 0;
     state.behindSpritePresent = false;
+    state.underSpritePresent = false;
     state.subDescription = NULL;
 
     // init property array, all off
@@ -386,127 +463,52 @@ static houseObjectState readState( File *inStateDir ) {
         return state;
         }
     
+
     
     printf( "Trying to read tga from %s\n", tgaPath );
 
-    Image *image = readTGAFileBase( tgaPath );
-    delete [] tgaPath;
-
-    if( image == NULL ) {    
-        return state;
-        }
+    state.numOrientations =
+        readSprites( tgaPath, shadeMapTgaPath, state.stateSprite );
     
-    image = doubleImage( image );
 
 
-    if( shadeMapTgaPath != NULL ) {
-        printf( "Trying to read shade map tga from %s\n", shadeMapTgaPath );
+    if( behindTgaPath != NULL ) {
         
-        Image *shadeMapImage = readTGAFileBase( shadeMapTgaPath );
-        delete [] shadeMapTgaPath;
-    
-        if( shadeMapImage != NULL ) {
-            shadeMapImage = doubleImage( shadeMapImage );
-            
-            applyShadeMap( image, shadeMapImage );
-            
-            delete shadeMapImage;
+        printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
+
+        int numOrientationsPresent = 
+            readSprites( behindTgaPath, behindShadeMapTgaPath, 
+                         state.stateSpriteBehind );
+        
+        if( numOrientationsPresent != state.numOrientations ) {
+            printf( "  Orientations (%d) doesn't match "
+                    "what is in front TGA (%d)\n",
+                    numOrientationsPresent, state.numOrientations );
+            return state;
             }
-        }
-    
-
-    int fullH = image->getHeight();
-    int fullW = image->getWidth();
-
-    int tileH = fullW;
-
-    state.numOrientations = fullH / tileH;
-    
-    printf( "  Reading %d orientations\n", state.numOrientations );
-
-    for( int o=0; o<state.numOrientations; o++ ) {
         
-        Image *subImage = image->getSubImage( 0, tileH * o,
-                                              fullW, tileH );
-        
-        state.stateSprite[o] = fillSprite( subImage, transCorner );
-        
-        delete subImage;
+        state.behindSpritePresent = true;
         }
 
-    delete image;
-    
 
-    
-
-    if( behindTgaPath == NULL ) {
-        return state;
-        }
-    
-
-
-    printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
-
-    image = readTGAFileBase( behindTgaPath );
-
-    delete [] behindTgaPath;
-
-    if( image == NULL ) {
-        return state;
-        }
-    
-    image = doubleImage( image );
-    
-
-    // apply shade map to behind part too (behind-part-specific shade map)
-    if( behindShadeMapTgaPath != NULL ) {
-        printf( "Trying to read shade map tga from %s\n", 
-                behindShadeMapTgaPath );
+    if( underTgaPath != NULL ) {
         
-        Image *shadeMapImage = readTGAFileBase( behindShadeMapTgaPath );
-        delete [] behindShadeMapTgaPath;
-    
-        if( shadeMapImage != NULL ) {
-            shadeMapImage = doubleImage( shadeMapImage );
-            
-            applyShadeMap( image, shadeMapImage );
-            
-            delete shadeMapImage;
+        printf( "Trying to read under-image tga from %s\n", underTgaPath );
+
+        int numOrientationsPresent = 
+            readSprites( underTgaPath, underShadeMapTgaPath, 
+                         state.stateSpriteUnder );
+        
+        if( numOrientationsPresent != state.numOrientations ) {
+            printf( "  Orientations (%d) doesn't match "
+                    "what is in front TGA (%d)\n",
+                    numOrientationsPresent, state.numOrientations );
+            return state;
             }
+        
+        state.underSpritePresent = true;
         }
-
-
-    fullH = image->getHeight();
-    fullW = image->getWidth();
-
-    tileH = fullW;
-
-    int numOrientationsPresent = fullH / tileH;
     
-    if( numOrientationsPresent != state.numOrientations ) {
-        printf( "  Orientations (%d) doesn't match "
-                "what is in front TGA (%d)\n",
-                numOrientationsPresent, state.numOrientations );
-        delete image;
-        return state;
-        }
-
-    printf( "  Reading %d orientations\n", state.numOrientations );
-
-    for( int o=0; o<state.numOrientations; o++ ) {
-        
-        Image *subImage = image->getSubImage( 0, tileH * o,
-                                              fullW, tileH );
-        
-        state.stateSpriteBehind[o] = fillSprite( subImage, transCorner );
-        
-        delete subImage;
-        }
-
-    delete image;
-
-    state.behindSpritePresent = true;
-
     
 
     return state;
@@ -732,6 +734,9 @@ void freeHouseObjects() {
                 if( r.states[s].behindSpritePresent ) {
                     freeSprite( r.states[s].stateSpriteBehind[o] );
                     }
+                if( r.states[s].underSpritePresent ) {
+                    freeSprite( r.states[s].stateSpriteUnder[o] );
+                    }
                 if( r.states[s].subDescription != NULL ) {
                     delete [] r.states[s].subDescription;
                     }
@@ -874,6 +879,21 @@ SpriteHandle getObjectSpriteBehind( int inObjectID,
 
 
 
+SpriteHandle getObjectSpriteUnder( int inObjectID, 
+                                   int inOrientation, int inState ) {
+    
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    if( inOrientation >= state->numOrientations ) {
+        // default
+        inOrientation = 0;
+        }    
+
+    return state->stateSpriteUnder[inOrientation];
+    }
+
+
+
 
 int getNumOrientations( int inObjectID, int inState ) {
     houseObjectState *state = getObjectState( inObjectID, inState );
@@ -887,6 +907,13 @@ char isBehindSpritePresent( int inObjectID, int inState ) {
     houseObjectState *state = getObjectState( inObjectID, inState );
 
     return state->behindSpritePresent;
+    }
+
+
+char isUnderSpritePresent( int inObjectID, int inState ) {
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    return state->underSpritePresent;
     }
 
 
