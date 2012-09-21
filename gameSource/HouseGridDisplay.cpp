@@ -882,6 +882,26 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             if( inBeneathShadowsOnly && aboveShadows ) {
                 // skip this blocking tile
+                
+                // but draw any parts under shadows
+                if( isUnderSpritePresent( houseTile, 
+                                          houseTileState ) ) {
+                    
+                    int orientationIndex = 
+                        getOrientationIndex( fullI, 
+                                             houseTile, houseTileState );
+                    
+                    setDrawColor( 1, 1, 1, 1 );
+                    
+                    
+                    SpriteHandle sprite = 
+                        getObjectSpriteUnder( houseTile, 
+                                               orientationIndex, 
+                                               houseTileState );
+                
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
+                
 
                 if( mHighlightIndex != i ) {
                     // nothing left to draw, if no highlight is here
