@@ -450,6 +450,9 @@ char *HouseGridDisplay::getHouseMap() {
                     // only mobile part present, above empty floor
 
                     parts[i] = mobilePart;
+                    if( nonMobilePart != NULL ) {
+                        delete [] nonMobilePart;
+                        }
                     }
                 else {
                     // both mobile and non-mobile
