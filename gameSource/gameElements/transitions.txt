@@ -1,6 +1,4 @@
 
-mobile   #   floor_trap:1   =>  2
-
 
 mobile   #   toggle_switch:1   =>  2
 
