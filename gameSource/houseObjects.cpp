@@ -182,6 +182,11 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
     double anchorBottomG = 0;
     double anchorBottomB = 0;
 
+    // fixed at pure green
+    double anchorSkipR = 0;
+    double anchorSkipG = 1;
+    double anchorSkipB = 0;
+
 
     // shading at bottom, on red anchor
     double shadeDark = 0.5;
@@ -223,9 +228,14 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
                     // not hit top shading anchor yet
 
                     // skip transparent pixels in image
+                    // and pixels flagged with the skip anchor color
                     if( ! ( r[iUp] == tR &&
                             g[iUp] == tG &&
-                            b[iUp] == tB ) ) {
+                            b[iUp] == tB ) 
+                        &&
+                        ! ( rMap[iUp] == anchorSkipR &&
+                            gMap[iUp] == anchorSkipG &&
+                            bMap[iUp] == anchorSkipB ) ) {
                                                 
                         // apply shade level to this image pixel
                         r[iUp] *= shadeLevel;
