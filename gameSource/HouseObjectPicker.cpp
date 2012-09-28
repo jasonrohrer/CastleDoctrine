@@ -207,12 +207,21 @@ void HouseObjectPicker::draw() {
         
         
         SpriteHandle sprite;
-
+        SpriteHandle underSprite = NULL;
+        SpriteHandle behindSprite = NULL;
+        
         if( mShowTools ) {
             sprite = getToolSprite( r->id );
             }
         else {
             sprite = getObjectSprite( r->id, orientation, 0 );
+            
+            if( isUnderSpritePresent( r->id, 0 ) ) {
+                underSprite = getObjectSpriteUnder( r->id, orientation, 0 );
+                }
+            if( isBehindSpritePresent( r->id, 0 ) ) {
+                behindSprite = getObjectSpriteBehind( r->id, orientation, 0 );
+                }
             }
         
         doublePair center = { 0, 0 };
@@ -226,7 +235,18 @@ void HouseObjectPicker::draw() {
 
         drawSquare( center, 1 - mPixWidth );
 
+        if( underSprite != NULL ) {
+            // darken a bit
+            setDrawColor( 0.75, 0.75, 0.75, 1 );
+            drawSprite( underSprite, center, mSpriteScale );
+            }
+
         setDrawColor( 1, 1, 1, 1 );
+        
+        if( behindSprite != NULL ) {
+            drawSprite( behindSprite, center, mSpriteScale );
+            }
+
         drawSprite( sprite, center, mSpriteScale );
 
         char *priceString = autoSprintf( "$%d", r->price );
