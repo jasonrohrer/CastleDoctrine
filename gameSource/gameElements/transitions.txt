@@ -58,6 +58,7 @@ torch   #   wall_wood:1  =>  3
 
 torch   #   wall_metal:1  =>  2
 
+torch   #   window:1 => 2
 
 saw     #   wall_wood_wired:1  =>  3
 saw     #   wall_wood_wired:2  =>  3
