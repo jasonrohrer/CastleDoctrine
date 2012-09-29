@@ -657,6 +657,7 @@ void initHouseObjects() {
                     
                     // set numOrientations to zero to mark non-present states
                     r.states[s].numOrientations = 0;
+                    r.states[s].subDescription = NULL;
                     
                     char *stateDirName = autoSprintf( "%d", s );
                     
@@ -747,9 +748,10 @@ void freeHouseObjects() {
                 if( r.states[s].underSpritePresent ) {
                     freeSprite( r.states[s].stateSpriteUnder[o] );
                     }
-                if( r.states[s].subDescription != NULL ) {
-                    delete [] r.states[s].subDescription;
-                    }
+                }
+            
+            if( r.states[s].subDescription != NULL ) {
+                delete [] r.states[s].subDescription;
                 }
             }
         delete [] r.states;
