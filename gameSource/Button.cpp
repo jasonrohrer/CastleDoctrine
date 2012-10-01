@@ -100,10 +100,10 @@ void Button::draw() {
               rectEndX, rectEndY );
 
     if( mDragOver ) {    
-        setDrawColor( 0.75, 0.75, 0, 1 );
+        setDrawColor( 0.828, 0.647, 0.212, 1 );
         }
     else if( mHover ) {
-        setDrawColor( 1, 1, 0, 1 );
+        setDrawColor( 0.886, 0.764, 0.475, 1 );
         }
     else {
         setDrawColor( 1, 1, 1, 1 );
