@@ -68,3 +68,5 @@ torch   #   wall_wood_wired:2  =>  4
 gun  # pitbull:1 => 5
 
 
+brick # window:1 => 3
+

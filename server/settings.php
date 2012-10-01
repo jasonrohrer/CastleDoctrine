@@ -73,6 +73,7 @@ $defaultPrices = array(
     array( 500, 20, 0, "Saw" ),
     array( 501, 100, 0, "Cutting Torch" ),
     array( 502, 470, 0, "S-W Model 36" ),
+    array( 503, 1, 0, "Brick" ),
 
     array( 2000, 10000, 1, "Owl - Rohrer" ),
     array( 2001, 10000, 1, "Untitled 2 - Rohrer" ),
