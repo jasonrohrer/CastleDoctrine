@@ -1135,10 +1135,26 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 else if( houseTile == highlightPick || houseTile == GOAL_ID ) {
                     // darken existing tile to imply removal on click
                     setDrawColor( 0, 0, 0, 0.35 );
+                    
+                    SpriteHandle sprite;
 
-                    SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                           orientationIndex, 
-                                                           0 );
+                    if( isUnderSpritePresent( houseTile, 0 ) ) {
+                        sprite = getObjectSpriteUnder( houseTile, 
+                                                       orientationIndex,
+                                                       0 );
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }
+                    if( isBehindSpritePresent( houseTile, 0 ) ) {
+                        sprite = getObjectSpriteBehind( houseTile, 
+                                                       orientationIndex,
+                                                       0 );
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }
+                    
+
+                    sprite = getObjectSprite( houseTile, 
+                                              orientationIndex, 
+                                              0 );
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
@@ -1149,9 +1165,26 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                                 highlightPick, 
                                                                 0 );
 
-                    SpriteHandle sprite = getObjectSprite( highlightPick, 
-                                                           ghostOrientation,
-                                                           0 );
+                    SpriteHandle sprite;
+
+
+                    if( isUnderSpritePresent( highlightPick, 0 ) ) {
+                        sprite = getObjectSpriteUnder( highlightPick, 
+                                                       ghostOrientation,
+                                                       0 );
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }
+                    if( isBehindSpritePresent( highlightPick, 0 ) ) {
+                        sprite = getObjectSpriteBehind( highlightPick, 
+                                                       ghostOrientation,
+                                                       0 );
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }
+
+
+                    sprite = getObjectSprite( highlightPick, 
+                                              ghostOrientation,
+                                              0 );
                     
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
