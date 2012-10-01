@@ -231,8 +231,14 @@ void HouseObjectPicker::draw() {
 
         drawSquare( center, 1 );
         
-        setDrawColor( 0, 0, 0, 1 );
-
+        if( mShowTools ) {
+            // gray background to match backpack slot backgrounds
+            setDrawColor( 0.25, 0.25, 0.25, 1 );
+            }
+        else {
+            setDrawColor( 0, 0, 0, 1 );
+            }
+        
         drawSquare( center, 1 - mPixWidth );
 
         if( underSprite != NULL ) {
