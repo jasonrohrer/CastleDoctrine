@@ -159,7 +159,36 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
 
         // don't draw highlight over robber
         hitSquares.deleteElementEqualTo( mRobberIndex );
+        
+        
+        // filter target squares based on which targets can actually
+        // be changed by the current tool
+        
+        for( int i=0; i<hitSquares.size(); i++ ) {
+            int index = *( hitSquares.getElement( i ) );
             
+            if( checkTransition( mHouseMapIDs[ index ],
+                                 mHouseMapCellStates[ index ],
+                                 inToolID,
+                                 -1 )
+                != 
+                mHouseMapCellStates[ index ]
+                ||
+                checkTransition( mHouseMapMobileIDs[ index ],
+                                 mHouseMapMobileCellStates[ index ],
+                                 inToolID,
+                                 -1 )
+                != 
+                mHouseMapMobileCellStates[ index ] ) {
+                // keep target
+                }
+            else {
+                hitSquares.deleteElement( i );
+                i--;
+                }
+            }
+        
+
         setTargetHighlights( &hitSquares );
         }
     }
