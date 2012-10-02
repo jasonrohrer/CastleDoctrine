@@ -45,6 +45,8 @@ power   #   power_door:1   =>  2
 noPower   #   power_door:2   =>  1
 
 
+doorstop # power_door:2 => 4
+
 
 power   #   floor_electric:1   =>  2
 
