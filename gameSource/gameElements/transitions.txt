@@ -14,6 +14,10 @@ floor_electric:2 # pitbull => 3
 floor_electric:2 # player => 3
 
 
+pit # pitbull => 2
+pit # player => 2
+
+
 player # pitbull:1 => 4
 
 pitbull:4 # player => 4
