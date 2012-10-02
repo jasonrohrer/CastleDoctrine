@@ -28,6 +28,13 @@ power     #   wire:1   =>  2
 noPower   #   wire:2   =>  1
 
 
+voltageDetector # wire:1 => 3
+voltageDetector # wire:2 => 4
+
+power     #   wire:3   =>  4
+noPower   #   wire:4   =>  3
+
+
 power     #   wall_wood_wired:1   =>  2
 noPower   #   wall_wood_wired:2   =>  1
 
