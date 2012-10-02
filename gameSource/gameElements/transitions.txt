@@ -11,10 +11,12 @@ noMobile #   power_door:3  => 2
 
 
 floor_electric:2 # pitbull => 3
+floor_electric:2 # chihuahua => 3
 floor_electric:2 # player => 3
 
 
 pit # pitbull => 2
+pit # chihuahua => 2
 pit # player => 2
 
 
@@ -79,6 +81,7 @@ torch   #   wall_wood_wired:1  =>  4
 torch   #   wall_wood_wired:2  =>  4
 
 gun  # pitbull:1 => 5
+gun  # chihuahua:1 => 5
 
 
 brick # window:1 => 3
