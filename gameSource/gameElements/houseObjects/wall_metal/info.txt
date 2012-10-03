@@ -1,2 +1,2 @@
 2
-"Metal Wall"
+"Steel Wall"
