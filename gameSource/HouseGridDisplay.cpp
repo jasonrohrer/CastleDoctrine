@@ -761,7 +761,14 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
             int dY = robberY - y;
             
             if( dX == 0 && dY == 0 ) {
-                // leave environment-based orientation
+                // same square as player
+                // face same direction as player
+                orientationIndex = mRobberOrientation;
+                // but only if player facing left/right
+                // (otherwise, always face right)
+                if( orientationIndex != 1 && orientationIndex != 3 ) {
+                    orientationIndex = 1;
+                    }
                 }
             else {
                 if( abs( dX ) > abs( dY ) ) {
