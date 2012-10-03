@@ -735,7 +735,12 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     mobileIndices.push_back( inRobberIndex );
 
     for( int i=0; i<numCells; i++ ) {
-        if( inMapMobileIDs[i] != 0 ) {
+        // ignore objects that are moving in synch with player, to the 
+        // same destination as player (would cause double mobile triggers
+        // at that destination)
+        // Note that non-player mobiles never co-occupy spaces with each other
+        if( i != inRobberIndex &&
+            inMapMobileIDs[i] != 0 ) {
             // ignore other mobiles that didn't move just now
             // (so we don't trigger same switch over and over with a stationary
             //  mobile)
