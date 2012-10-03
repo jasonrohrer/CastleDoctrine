@@ -58,6 +58,7 @@ $accessPasswords = array( "secret", "secret2" );
 $defaultPrices = array(
     array( 1, 10, 0, "Wooden Wall" ),
     array( 2, 20, 0, "Steel Wall" ),
+    array( 3, 50, 0, "Concrete Wall" ),
     array( 20, 15, 0, "Window" ),
     array( 30, 50, 0, "Automatic Door" ),
     array( 51, 20, 0, "Wired Wooden Wall" ),
