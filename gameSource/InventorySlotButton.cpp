@@ -74,11 +74,48 @@ void InventorySlotButton::drawContents() {
     
     if( mQuantity > 1 ) {
         
+        
+        // darken corner
+
+        double verts[6];
+        float colors[12];
+        
+        verts[0] = -mWide / 2;
+        verts[1] = -mHigh / 2;
+
+        colors[0] = 0;
+        colors[1] = 0;
+        colors[2] = 0;
+        colors[3] = 0;
+        
+        
+        verts[2] = mWide / 2;
+        verts[3] = -mHigh / 2;
+
+        colors[4] = 0;
+        colors[5] = 0;
+        colors[6] = 0;
+        colors[7] = 0.75;
+
+
+        verts[4] = mWide / 2;
+        verts[5] = mHigh / 2;
+
+        
+        colors[8] = 0;
+        colors[9] = 0;
+        colors[10] = 0;
+        colors[11] = 0;
+
+        drawTrianglesColor( 1, verts, colors );
+        
+
+
         doublePair textPos = { 0.5 - mDrawScale, -0.5 };
         
         char *text = autoSprintf( "%d", mQuantity );
         
-        setDrawColor( 1, 1, 0, 1 );
+        setDrawColor( 0.828, 0.647, 0.212, 1 );
 
         mFont->drawString( text, textPos, alignRight );
     
