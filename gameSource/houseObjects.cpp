@@ -265,8 +265,8 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
 
 // inTgaPath and inShadeMapTgaPath are deleted if not NULL
 // returns number of orientaitons
-static int readSprites( char *inTgaPath, char *inShadeMapTgaPath,
-                        SpriteHandle *inSpriteOrientationArray ) {
+int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
+                            SpriteHandle *inSpriteOrientationArray ) {
     
     Image *image = readTGAFileBase( inTgaPath );
     delete [] inTgaPath;
@@ -478,7 +478,7 @@ static houseObjectState readState( File *inStateDir ) {
     printf( "Trying to read tga from %s\n", tgaPath );
 
     state.numOrientations =
-        readSprites( tgaPath, shadeMapTgaPath, state.stateSprite );
+        readShadeMappedSprites( tgaPath, shadeMapTgaPath, state.stateSprite );
     
 
 
@@ -487,8 +487,8 @@ static houseObjectState readState( File *inStateDir ) {
         printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
 
         int numOrientationsPresent = 
-            readSprites( behindTgaPath, behindShadeMapTgaPath, 
-                         state.stateSpriteBehind );
+            readShadeMappedSprites( behindTgaPath, behindShadeMapTgaPath, 
+                                    state.stateSpriteBehind );
         
         if( numOrientationsPresent != state.numOrientations ) {
             printf( "  Orientations (%d) doesn't match "
@@ -506,8 +506,8 @@ static houseObjectState readState( File *inStateDir ) {
         printf( "Trying to read under-image tga from %s\n", underTgaPath );
 
         int numOrientationsPresent = 
-            readSprites( underTgaPath, underShadeMapTgaPath, 
-                         state.stateSpriteUnder );
+            readShadeMappedSprites( underTgaPath, underShadeMapTgaPath, 
+                                    state.stateSpriteUnder );
         
         if( numOrientationsPresent != state.numOrientations ) {
             printf( "  Orientations (%d) doesn't match "

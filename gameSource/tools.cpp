@@ -3,6 +3,8 @@
 
 #include "gameElements.h"
 
+#include "houseObjects.h"
+
 
 
 typedef struct toolRecord {
@@ -103,13 +105,20 @@ void initTools() {
                 File **childFiles = f->getChildFiles( &numChildFiles );
     
                 char *tgaPath = NULL;
-
+                char *shadeMapTgaPath = NULL;
+                
                 for( int j=0; j<numChildFiles; j++ ) {
         
                     File *f = childFiles[j];
         
                     char *name = f->getFileName();
-                    if( strstr( name, ".tga" ) != NULL ) {
+                    if( strstr( name, "_shadeMap.tga" ) != NULL ) {
+                        if( shadeMapTgaPath != NULL ) {
+                            delete [] shadeMapTgaPath;
+                            }
+                        shadeMapTgaPath = f->getFullFileName();
+                        }
+                    else if( strstr( name, ".tga" ) != NULL ) {
                         if( tgaPath != NULL ) {
                             delete [] tgaPath;
                             }
@@ -124,10 +133,29 @@ void initTools() {
 
 
                 if( tgaPath != NULL ) {
-                    r.sprite = loadSpriteBase( tgaPath );
-                    delete [] tgaPath;
+                    // assume only one orientation here
+                    // discard extras
+                    SpriteHandle readSprites[ MAX_ORIENTATIONS ];
+                    
+                    int numOrientations = 
+                        readShadeMappedSprites( tgaPath, shadeMapTgaPath,
+                                                readSprites );
+                    
+                    if( numOrientations == 0 ) {
+                        completeRecord = false;
+                        }
+                    else {
+                        r.sprite = readSprites[0];
+                    
+                        for( int o=1; o<numOrientations; o++ ) {
+                            freeSprite( readSprites[o] );
+                            }
+                        }
                     }
                 else {
+                    if( shadeMapTgaPath != NULL ) {
+                        delete [] shadeMapTgaPath;
+                        }
                     completeRecord = false;
                     }
                 }

@@ -109,5 +109,18 @@ SpriteHandle getObjectSpriteUnder( int inObjectID, int inOrientation,
 
 
 
+
+// utility function that other systems can use
+
+// reads a TGA sprite and shade map, applies the shade map, and
+// creates a sprite for each orientation square in the file
+
+// inTgaPath and inShadeMapTgaPath are deleted if not NULL
+// returns number of orientaitons
+int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
+                            SpriteHandle *inSpriteOrientationArray );
+
+
+
 #endif
 

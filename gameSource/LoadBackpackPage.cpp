@@ -47,7 +47,7 @@ LoadBackpackPage::LoadBackpackPage()
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         mPackSlots[i] = new InventorySlotButton( mainFont, 
                                                  slotCenter.x, slotCenter.y,
-                                                 1 / 16.0 );
+                                                 1 / 32.0 );
         slotCenter.x += 1.5;
         
         addComponent( mPackSlots[i] );
@@ -69,7 +69,7 @@ LoadBackpackPage::LoadBackpackPage()
             
             mVaultSlots[slot] = 
                 new InventorySlotButton( mainFont, slotCenter.x, slotCenter.y,
-                                         1 / 16.0 );
+                                         1 / 32.0 );
             slotCenter.x += 1.5;
         
             addComponent( mVaultSlots[slot] );

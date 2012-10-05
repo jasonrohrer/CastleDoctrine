@@ -51,7 +51,7 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
             mPackSlots[currentSlot] = 
                 new InventorySlotButton( mainFont, 
                                          slotCenter.x, slotCenter.y,
-                                         1 / 16.0 );
+                                         1 / 32.0 );
             slotCenter.y -= 1.5;
             
             addComponent( mPackSlots[currentSlot] );

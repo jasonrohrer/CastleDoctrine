@@ -39,6 +39,7 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
                                       char inTools )
         : PageComponent( inX, inY ),
           mShowTools( inTools ), 
+          mSpriteScale( 1 / 32.0 ),
           mSelectedIndex( -1 ),
           mPixWidth( 1/16.0 ),
           mUpButton( "up.tga", -1.25, 1, mPixWidth ),
@@ -59,13 +60,12 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
 
     if( mShowTools ) {
         idList = getFullToolIDList( &numObjects );
-        mSpriteScale = 1.0/16.0;
         }
     else {
         idList = getFullObjectIDList( &numObjects );
-        mSpriteScale = 1.0/32.0;
         }
-    
+
+        
     for( int i=0; i<numObjects; i++ ) {
         int id = idList[i];
         

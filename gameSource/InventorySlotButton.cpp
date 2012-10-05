@@ -16,11 +16,13 @@ InventorySlotButton::InventorySlotButton( Font *inDisplayFont,
                                           double inDrawScale )
         :
         // lie about sprite size so that button padding isn't so huge 
-        SpriteButton( NULL, 9, 9, inX, inY, inDrawScale ),
+        SpriteButton( NULL, 18, 18, inX, inY, inDrawScale ),
         mFont( inDisplayFont ),
         mObjectID( -1 ),
         mQuantity( 0 ),
         mRingOn( false ) {
+    
+    mPixWidth *= 2;
     
     mOverrideHighlightColor = true;
     }
@@ -101,7 +103,7 @@ void InventorySlotButton::draw() {
     if( mRingOn ) {
 
         // ring
-        setDrawColor( 0.75, 0.75, 0, 1 );
+        setDrawColor( 0.25, 1.0, 0.93, 1 );
         
         double fullWide = mWide + 4 * mPixWidth;
         double fullHigh = mHigh + 4 * mPixWidth;
