@@ -142,6 +142,13 @@ static Image *doubleImage( Image *inImage ) {
     }
 
 
+// shading at bottom, on red anchor
+// and for forced under shading
+static double shadeDark = 0.5;
+// steps per double-res pixel
+// as we walk up toward yellow anchor
+static double shadeStep = 0.035;
+
 
 static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
     int h = inImage->getHeight();
@@ -186,13 +193,6 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
     double anchorSkipR = 0;
     double anchorSkipG = 1;
     double anchorSkipB = 0;
-
-
-    // shading at bottom, on red anchor
-    double shadeDark = 0.5;
-    // steps per double-res pixel
-    // as we walk up toward yellow anchor
-    double shadeStep = 0.035;
 
 
     // start at bottom of shade map, walking up row by row
@@ -266,7 +266,8 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
 // inTgaPath and inShadeMapTgaPath are deleted if not NULL
 // returns number of orientaitons
 int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
-                            SpriteHandle *inSpriteOrientationArray ) {
+                            SpriteHandle *inSpriteOrientationArray,
+                            char inForceUnderShading ) {
     
     Image *image = readTGAFileBase( inTgaPath );
     delete [] inTgaPath;
@@ -292,6 +293,19 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
             delete shadeMapImage;
             }
         }
+    else if( inForceUnderShading ) {
+        double *r = image->getChannel( 0 );
+        double *g = image->getChannel( 1 );
+        double *b = image->getChannel( 2 );
+
+        int numPixels = image->getHeight() * image->getWidth();
+        for( int i=0; i<numPixels; i++ ) {
+            r[i] *= shadeDark;
+            g[i] *= shadeDark;
+            b[i] *= shadeDark;
+            }
+        }
+    
     
     char transCorner = true;
 
@@ -507,7 +521,10 @@ static houseObjectState readState( File *inStateDir ) {
 
         int numOrientationsPresent = 
             readShadeMappedSprites( underTgaPath, underShadeMapTgaPath, 
-                                    state.stateSpriteUnder );
+                                    state.stateSpriteUnder,
+                                    // force under shading if no
+                                    // shade map present
+                                    true );
         
         if( numOrientationsPresent != state.numOrientations ) {
             printf( "  Orientations (%d) doesn't match "

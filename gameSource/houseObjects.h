@@ -117,8 +117,12 @@ SpriteHandle getObjectSpriteUnder( int inObjectID, int inOrientation,
 
 // inTgaPath and inShadeMapTgaPath are deleted if not NULL
 // returns number of orientaitons
+
+// inForceUnderShading shades whole sprite at darkest shading level,
+// but ONLY if no shade map present
 int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
-                            SpriteHandle *inSpriteOrientationArray );
+                            SpriteHandle *inSpriteOrientationArray,
+                            char inForceUnderShading = false );
 
 
 
