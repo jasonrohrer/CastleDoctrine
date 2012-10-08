@@ -83,6 +83,8 @@ saw     #   wall_wood_wired:2  =>  3
 torch   #   wall_wood_wired:1  =>  4
 torch   #   wall_wood_wired:2  =>  4
 
+ammoniumNitrateBomb # wall_concrete:1 => 4
+
 gun  # pitbull:1 => 5
 gun  # chihuahua:1 => 5
 
