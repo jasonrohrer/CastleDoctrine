@@ -524,7 +524,7 @@ static houseObjectState readState( File *inStateDir ) {
                                     state.stateSpriteUnder,
                                     // force under shading if no
                                     // shade map present
-                                    true );
+                                    state.properties[ underLayerShaded ] );
         
         if( numOrientationsPresent != state.numOrientations ) {
             printf( "  Orientations (%d) doesn't match "
