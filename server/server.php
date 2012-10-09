@@ -383,6 +383,8 @@ function cd_restoreDefaultPrices() {
     $query = "DELETE FROM $tableName";
     cd_queryDatabase( $query );
 
+
+    $order_number = 0;
     
     foreach( $defaultPrices as $tuple ) {
         $object_id = $tuple[0];
@@ -391,9 +393,12 @@ function cd_restoreDefaultPrices() {
         $note = mysql_real_escape_string( $tuple[3] );
         
         $query = "INSERT INTO $tableName ".
-            "VALUES ( '$object_id', '$price', '$in_gallery', '$note' )";
+            "VALUES ( '$object_id', '$price', '$in_gallery', ".
+            "         '$order_number','$note' )";
 
         cd_queryDatabase( $query );
+        
+        $order_number ++;
         }
     
     }
@@ -707,6 +712,7 @@ function cd_setupDatabase() {
             "object_id INT NOT NULL PRIMARY KEY," .
             "price INT NOT NULL, ".
             "in_gallery TINYINT NOT NULL, ".
+            "order_number INT NOT NULL, ".
             "note LONGTEXT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -1174,7 +1180,7 @@ function cd_startEditHouse() {
 
 
     $query = "SELECT object_id, price, in_gallery ".
-        "FROM $tableNamePrefix"."prices;";
+        "FROM $tableNamePrefix"."prices ORDER BY order_number;";
 
     $result = cd_queryDatabase( $query );
 
@@ -3225,8 +3231,8 @@ function cd_showData() {
     echo "<hr>";
 
 
-    $query = "SELECT object_id, price, in_gallery, note ".
-        "FROM $tableNamePrefix"."prices;";
+    $query = "SELECT object_id, price, in_gallery, order_number, note ".
+        "FROM $tableNamePrefix"."prices ORDER BY order_number;";
     $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
@@ -3244,15 +3250,22 @@ function cd_showData() {
 
     $bgColor = "#EEEEEE";
     $altBGColor = "#CCCCCC";
-                 
+
+    $max_order_number = 0;
+    
     for( $i=0; $i<$numRows; $i++ ) {
         $object_id = mysql_result( $result, $i, "object_id" );
         $price = mysql_result( $result, $i, "price" );
         $in_gallery = mysql_result( $result, $i, "in_gallery" );
+        $order_number = mysql_result( $result, $i, "order_number" );
         $note = mysql_result( $result, $i, "note" );
 
         $note = htmlspecialchars( $note, ENT_QUOTES );
 
+        if( $order_number > $max_order_number ) {
+            $max_order_number = $order_number;
+            }
+        
         $checked = "";
 
         if( $in_gallery ) {
@@ -3260,11 +3273,14 @@ function cd_showData() {
             }
         
         echo "<tr>\n";
+        echo "<td bgcolor=$bgColor><INPUT TYPE='text' ".
+                          "MAXLENGTH=10 SIZE=4 NAME='order_number_$i' ".
+                          "VALUE='$order_number'></td>\n";
         echo "<td bgcolor=$bgColor>".
             "Object ID: <b>$object_id</b>".
             "<INPUT TYPE='hidden' NAME='id_$i' VALUE='$object_id'></td>\n";
         echo "<td bgcolor=$bgColor>Price: $<INPUT TYPE='text' ".
-                          "MAXLENGTH=40 SIZE=20 NAME='price_$i' ".
+                          "MAXLENGTH=20 SIZE=10 NAME='price_$i' ".
                           "VALUE='$price'></td>\n";
         echo "<td bgcolor=$bgColor>Gallery: <INPUT TYPE='checkbox' ".
                           "NAME='in_gallery_$i' VALUE='1' $checked></td>\n";
@@ -3280,18 +3296,23 @@ function cd_showData() {
         $bgColor = $altBGColor;
         $altBGColor = $temp;
         }
+
+    $max_order_number++;
+    
     
     echo "<tr>\n";
-    echo "<td colspan=5>New Price:</td><tr>\n";
+    echo "<td colspan=6>New Price:</td><tr>\n";
     echo "<tr>\n";
+    echo "<td><INPUT TYPE='text' MAXLENGTH=10 SIZE=4 NAME='order_number_NEW'
+             VALUE='$max_order_number'></td>\n";
     echo "<td>Object ID: <INPUT TYPE='text' MAXLENGTH=40 SIZE=20 NAME='id_NEW'
              VALUE=''></td>\n";
     echo "<td>Price: $<INPUT TYPE='text' ".
-        "MAXLENGTH=40 SIZE=20 NAME='price_NEW' ".
+        "MAXLENGTH=20 SIZE=10 NAME='price_NEW' ".
         "VALUE=''></td>\n";
     echo "<td>Gallery: <INPUT TYPE='checkbox' ".
         "NAME='in_gallery_NEW' VALUE='1'></td>\n";
-    echo "<td>Note: <INPUT TYPE='text' ".
+    echo "<td colspan=2>Note: <INPUT TYPE='text' ".
         "MAXLENGTH=255 SIZE=30 NAME='note_NEW' ".
         "VALUE=''></td>\n";
     echo "<td></td>\n";
@@ -3534,17 +3555,18 @@ function cd_updatePrices() {
             $id = cd_requestFilter( "id_$i", "/\d+/" );
             $price = cd_requestFilter( "price_$i", "/\d+/" );
             $in_gallery = cd_requestFilter( "in_gallery_$i", "/1/", "0" );
+            $order_number = cd_requestFilter( "order_number_$i", "/\d+/" );
             
             $note = cd_requestFilter( "note_$i", "/[A-Z0-9.' _-]+/i" );
             
-            if( $id != "" && $price != "" ) {
+            if( $id != "" && $price != "" && $order_number != "" ) {
 
                 // note may have ' in it
                 $note = mysql_real_escape_string( $note );
                 
                 $query = "UPDATE $tableNamePrefix"."prices SET " .
                     "price = '$price', in_gallery = '$in_gallery', ".
-                    "note = '$note' " .
+                    "order_number = '$order_number', note = '$note' " .
                     "WHERE object_id = '$id';";
                 
                 $result = cd_queryDatabase( $query );
@@ -3562,10 +3584,12 @@ function cd_updatePrices() {
 
     $in_gallery = cd_requestFilter( "in_gallery_NEW", "/1/", "0" );
 
+    $order_number = cd_requestFilter( "order_number_NEW", "/\d+/" );
+    
     $note = cd_requestFilter( "note_NEW", "/[A-Z0-9.' _-]+/i" );
 
     
-    if( $id != "" && $price != "" ) {
+    if( $id != "" && $price != "" && $order_number != "" ) {
         // first, make sure it doesn't already exist
         $query = "SELECT COUNT(object_id) FROM $tableNamePrefix"."prices ".
             "WHERE object_id = '$id';";
@@ -3582,7 +3606,7 @@ function cd_updatePrices() {
         
         
         $query = "INSERT INTO $tableNamePrefix"."prices VALUES ( " .
-            "'$id', '$price', '$in_gallery', '$note' );";
+            "'$id', '$price', '$in_gallery', '$order_number', '$note' );";
         $result = cd_queryDatabase( $query );
 
         if( $result ) {
