@@ -1,2 +1,2 @@
 504
-"Fluke Voltage Detector"
+"Voltage Detector"
