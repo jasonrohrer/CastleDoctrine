@@ -1441,7 +1441,8 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
     
     if( index != -1 && 
         mPointerDownIndex != -1 &&
-        mDraggedAway ) {
+        mDraggedAway &&
+        ! isSubMapPropertySet( index, permanent ) ) {
     
         // pointer dropped on grid after being dragged somewhere else
         int fullIndex = subToFull( index );
@@ -1483,7 +1484,8 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
 
     if( index != -1 && 
         mPointerDownIndex != -1 &&
-        index != mPointerDownIndex  ) {
+        index != mPointerDownIndex &&
+        ! isSubMapPropertySet( index, permanent ) ) {
 
         mDraggedAway = true;
 
