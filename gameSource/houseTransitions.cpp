@@ -662,9 +662,16 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 
     for( int i=0; i<numCells; i++ ) {
         if( !moveHappened[i] &&
-            isPropertySet( inMapMobileIDs[i], 
-                           inMapMobileStates[i], playerSeeking ) ) {
+            ( isPropertySet( inMapMobileIDs[i], 
+                             inMapMobileStates[i], playerSeeking )
+              ||
+              isPropertySet( inMapMobileIDs[i], 
+                             inMapMobileStates[i], playerAvoiding ) ) ) {
             
+            // seek or avoid?
+            char seek = isPropertySet( inMapMobileIDs[i], 
+                                       inMapMobileStates[i], playerSeeking );
+
             int x = i % inMapW;
             int y = i / inMapW;
             
@@ -672,8 +679,44 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
             int dY = robberY - y;
             
             if( dX == 0 && dY == 0 ) {
-                continue;
+                if( seek ) {
+                    // no move, already on top of player
+                    continue;
+                    }
+                else {
+                    // avoiding player AND on top of player
+                    // move in any available direction
+                
+                    int possibleDX[4] = { -1, 1, 0 , 0 };
+                    int possibleDY[4] = { 0, 0, -1 , 1 };
+                    
+                    for( int d=0; d<4; d++ ) {
+                        int destX = x + possibleDX[d];
+                        int destY = y + possibleDY[d];
+                        int destI = destY * inMapW + destX;
+                        
+                        if( inMapMobileIDs[destI] == 0 &&
+                            ! isPropertySet( inMapIDs[destI], 
+                                             inMapStates[destI],
+                                             blocking ) &&
+                            ! isPropertySet( inMapIDs[destI], 
+                                             inMapStates[destI],
+                                             mobileBlocking ) ) {
+                            
+                            dX = possibleDX[d];
+                            dY = possibleDY[d];
+                            break;
+                            }
+                        }
+                    }
                 }
+            else if( !seek ) {
+                // move away from player
+                dX *= -1;
+                dY *= -1;
+                }
+            
+
 
             int destX = x;
             int destY = y;

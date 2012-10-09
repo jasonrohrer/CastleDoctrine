@@ -12,11 +12,13 @@ noMobile #   power_door:3  => 2
 
 floor_electric:2 # pitbull => 3
 floor_electric:2 # chihuahua => 3
+floor_electric:2 # cat => 3
 floor_electric:2 # player => 3
 
 
 pit # pitbull => 2
 pit # chihuahua => 2
+pit # cat => 2
 pit # player => 2
 
 
@@ -92,6 +94,7 @@ ammoniumNitrateBomb # wall_wood_wired:2 => 5
 
 gun  # pitbull:1 => 5
 gun  # chihuahua:1 => 5
+gun  # cat:1 => 5
 
 
 brick # window:1 => 3
