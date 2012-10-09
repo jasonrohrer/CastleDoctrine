@@ -98,6 +98,12 @@ gun  # pitbull:1 => 5
 gun  # chihuahua:1 => 5
 gun  # cat:1 => 5
 
+druggedMeat  # pitbull:1 => 6
+druggedMeat  # chihuahua:1 => 6
+
+player # pitbull:6 => 4
+player # chihuahua:6 => 1
+
 
 brick # window:1 => 3
 
