@@ -85,6 +85,10 @@ torch   #   wall_wood_wired:2  =>  4
 
 ammoniumNitrateBomb # wall_concrete:1 => 4
 ammoniumNitrateBomb # window:1 => 3
+ammoniumNitrateBomb # wall_wood:1 => 4
+ammoniumNitrateBomb # wall_wood_wired:1 => 5
+ammoniumNitrateBomb # wall_wood_wired:2 => 5
+
 
 gun  # pitbull:1 => 5
 gun  # chihuahua:1 => 5
