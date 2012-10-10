@@ -834,6 +834,9 @@ function cd_checkForFlush() {
     if( !cd_doesTableExist( $tableName ) ) {
         return;
         }
+
+    $flushInterval = "0 0:02:0.000";
+    $staleTimeout = "0 0:05:0.000";
     
     
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
@@ -841,7 +844,7 @@ function cd_checkForFlush() {
     
     $query = "SELECT last_flush_time FROM $tableName ".
         "WHERE last_flush_time < ".
-        "SUBTIME( CURRENT_TIMESTAMP, '0 0:02:0.000' ) ".
+        "SUBTIME( CURRENT_TIMESTAMP, '$flushInterval' ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -857,7 +860,7 @@ function cd_checkForFlush() {
         $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
             "WHERE rob_checkout = 1 ".
             "AND last_ping_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' ) FOR UPDATE;";
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
 
         $result = cd_queryDatabase( $query );
 
@@ -872,6 +875,30 @@ function cd_checkForFlush() {
 
         $totalFlushCount = $numRows;
 
+
+        // repeat for owner-died shadow table
+        // for each robber who quit game mid-robbery, clear robbery checkout
+        $query = "SELECT robbing_user_id FROM ".
+            "$tableNamePrefix"."houses_owner_died ".
+            "WHERE rob_checkout = 1 ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+    
+        for( $i=0; $i<$numRows; $i++ ) {
+
+            $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
+
+            cd_processStaleCheckouts( $robbing_user_id );
+            }
+
+        $totalFlushCount += $numRows;
+
+
+
         
         // for each owner who quit game mid-self-test, clear checkout
         // this will force-kill the owner
@@ -881,7 +908,7 @@ function cd_checkForFlush() {
         $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
             "WHERE edit_checkout = 1 AND self_test_running = 1 ".
             "AND last_ping_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' ) FOR UPDATE;";
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
 
         $result = cd_queryDatabase( $query );
 
@@ -903,7 +930,7 @@ function cd_checkForFlush() {
             "SET rob_checkout = 0, edit_checkout = 0 ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
             "AND last_ping_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' );";
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
 
         $result = cd_queryDatabase( $query );
 
@@ -1085,6 +1112,50 @@ function cd_processStaleCheckouts( $user_id ) {
         }
 
 
+
+    // next find all stale robberies in shadow table (for houses
+    // where owner died)
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses_owner_died ".
+        "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
+    $staleShadowRobberyCount = mysql_result( $result, 0, 0 );
+
+    if( $staleShadowRobberyCount ) {
+        // clear all the robberies themselves
+
+        $query = "SELECT user_id, gallery_contents ".
+            "FROM $tableNamePrefix"."houses_owner_died ".
+            "WHERE robbing_user_id = '$user_id' FOR UPDATE;";
+
+        $result = cd_queryDatabase( $query );
+        
+        $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+        
+        $gallery_contents = $row[ "gallery_contents" ];
+        $owner_id = $row[ "user_id" ];
+
+        
+        // remove this house from the shadow table
+        $query = "DELETE FROM $tableNamePrefix"."houses_owner_died WHERE ".
+            " robbing_user_id = $user_id;";
+        cd_queryDatabase( $query );
+
+        
+        // clear scouting counts for every robber, since house gone
+        $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
+            " house_user_id = $owner_id;";
+        cd_queryDatabase( $query );
+
+        
+        // return any remaining gallery stuff to auction house
+        cd_returnGalleryContents( $gallery_contents );
+        }
+
+
+    
+    
+
     // now find stale self tests
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
         "WHERE edit_checkout = 1 AND self_test_running = 1 ".
@@ -1095,7 +1166,8 @@ function cd_processStaleCheckouts( $user_id ) {
 
     
     if( $staleRobberyCount > 0 ||
-        $staleSelfTestCount > 0 ) {
+        $staleSelfTestCount > 0 ||
+        $staleShadowRobberyCount > 0 ) {
 
         // user abandonned game while in danger of dying
 
@@ -3084,28 +3156,24 @@ function cd_logout() {
 
 
 
+function orderLink( $inOrderBy, $inLinkText ) {
+        global $skip, $search, $order_by;
+        if( $inOrderBy == $order_by ) {
+            // already displaying this order, don't show link
+            return "<b>$inLinkText</b>";
+            }
+
+        // else show a link to switch to this order
+        return "<a href=\"server.php?action=show_data" .
+            "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
+        }
 
 
-
-function cd_showData() {
-
-    global $tableNamePrefix, $remoteIP;
-
+function cd_showDataHouseList( $inTableName ) {
+    global $tableNamePrefix;
+    
     // these are global so they work in embeded function call below
     global $skip, $search, $order_by;
-
-    cd_checkPassword( "show_data" );
-    
-
-    echo "<table width='100%' border=0><tr>".
-        "<td>[<a href=\"server.php?action=show_data" .
-            "\">Main</a>]</td>".
-        "<td align=right>[<a href=\"server.php?action=logout" .
-            "\">Logout</a>]</td>".
-        "</tr></table><br><br><br>";
-
-
-
 
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
 
@@ -3133,7 +3201,8 @@ function cd_showData() {
     
 
     // first, count results
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses $keywordClause;";
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."$inTableName $keywordClause;";
 
     $result = cd_queryDatabase( $query );
     $totalHouses = mysql_result( $result, 0, 0 );
@@ -3144,7 +3213,7 @@ function cd_showData() {
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
         "robber_deaths, last_ping_time, ".
         "blocked ".
-        "FROM $tableNamePrefix"."houses $keywordClause".
+        "FROM $tableNamePrefix"."$inTableName $keywordClause".
         "ORDER BY $order_by DESC ".
         "LIMIT $skip, $housesPerPage;";
     $result = cd_queryDatabase( $query );
@@ -3161,18 +3230,7 @@ function cd_showData() {
 
 
 
-        // form for searching houses
-?>
-        <hr>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
-    <INPUT TYPE="hidden" NAME="order_by" VALUE="<?php echo $order_by;?>">
-    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
-             VALUE="<?php echo $search;?>">
-    <INPUT TYPE="Submit" VALUE="Search">
-    </FORM>
-        <hr>
-<?php
+
 
     
 
@@ -3201,17 +3259,7 @@ function cd_showData() {
     echo "<table border=1 cellpadding=5>\n";
 
 
-    function orderLink( $inOrderBy, $inLinkText ) {
-        global $skip, $search, $order_by;
-        if( $inOrderBy == $order_by ) {
-            // already displaying this order, don't show link
-            return "<b>$inLinkText</b>";
-            }
-
-        // else show a link to switch to this order
-        return "<a href=\"server.php?action=show_data" .
-            "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
-        }
+    
     
     echo "<tr>\n";
     echo "<td>".orderLink( "user_id", "User ID" )."</td>\n";
@@ -3294,10 +3342,69 @@ function cd_showData() {
         echo "</tr>\n";
         }
     echo "</table>";
+    }
+
+
+
+
+
+
+
+function cd_showData() {
+
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_data" );
+    
+
+    echo "<table width='100%' border=0><tr>".
+        "<td>[<a href=\"server.php?action=show_data" .
+            "\">Main</a>]</td>".
+        "<td align=right>[<a href=\"server.php?action=logout" .
+            "\">Logout</a>]</td>".
+        "</tr></table><br><br><br>";
+
+    
+    $search = cd_requestFilter( "search", "/[A-Z0-9_@. -]+/i" );
+    $order_by = cd_requestFilter( "order_by", "/[A-Z_]+/i", "last_ping_time" );
+    
+    // form for searching houses
+?>
+        <hr>
+            <FORM ACTION="server.php" METHOD="post">
+    <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
+    <INPUT TYPE="hidden" NAME="order_by" VALUE="<?php echo $order_by;?>">
+    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
+             VALUE="<?php echo $search;?>">
+    <INPUT TYPE="Submit" VALUE="Search">
+    </FORM>
+        <hr>
+<?php
+
+             
+    cd_showDataHouseList( "houses" );
+    
+
 
 
     echo "<hr>";
 
+
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."houses_owner_died;";
+
+    $result = cd_queryDatabase( $query );
+    $totalShadowHouses = mysql_result( $result, 0, 0 );
+
+    if( $totalShadowHouses > 0 ) {
+        echo "<b>Shadow houses</b>:<br>";
+
+        cd_showDataHouseList( "houses_owner_died" );
+
+        echo "<hr>";
+        }
+    
 
     $query = "SELECT object_id, price, in_gallery, order_number, note ".
         "FROM $tableNamePrefix"."prices ORDER BY order_number;";
