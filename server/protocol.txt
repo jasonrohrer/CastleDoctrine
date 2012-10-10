@@ -136,6 +136,47 @@ must_self_test = 1 if player must test house before submitting it, or
 
 
 
+
+=== Call:
+server.php?action=start_self_test&user_id=[id number]
+                                 &sequence_number=[number]
+                                 &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+OK
+or
+FAILED  (in the case of a house that has gone stale)
+
+Note:
+Tells server that house owner has started a self test.
+If house goes stale during self test, it is assumed that user quit
+during self test and thus died (example:  quit right before unavoidable death).
+Counts as a house ping.
+
+
+
+
+=== Call:
+server.php?action=end_self_test&user_id=[id number]
+                               &sequence_number=[number]
+                               &ticket_hash=[sha1 hash, hex-encoded]
+Returns:
+OK
+or
+FAILED  (in the case of a house that has gone stale)
+
+Note:
+Tells server that house owner has left a self test (Leave action) without dying
+or completing it.  Owner has returned to editing the house.
+On house test success or death, end_self_test should not be sent (instead,
+house should be checked in with the result).
+Counts as a house ping.
+
+
+
+
+
+
+
 === Call:
 server.php?action=end_edit_house&user_id=[id number]
                                 &sequence_number=[number]

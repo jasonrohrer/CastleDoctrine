@@ -25,7 +25,8 @@ int LiveHousePage::sLastPingTime = time( NULL );
 LiveHousePage::LiveHousePage()
         : mWebRequest( -1 ),
           mLastActionTime( time( NULL ) ),
-          mCheckoutStale( false ) {
+          mCheckoutStale( false ),
+          mStartSelfTestPending( false ), mEndSelfTestPending( false ) {
     }
 
 
@@ -55,6 +56,16 @@ void LiveHousePage::actionHappened() {
     }
 
 
+void LiveHousePage::startSelfTest() {
+    mStartSelfTestPending = true;
+    }
+
+
+void LiveHousePage::endSelfTest() {
+    mEndSelfTestPending = true;
+    }
+
+
 
 void LiveHousePage::step() {
     if( mWebRequest != -1 ) {
@@ -70,9 +81,21 @@ void LiveHousePage::step() {
                 case 1: {
                     char *result = getWebResult( mWebRequest );
 
+                    // same OK result expected whether we
+                    // have sent a ping or a self-test start/end
                     if( strstr( result, "OK" ) == NULL ) {
                         mCheckoutStale = true;
                         }
+                    else {
+                        // handled the send of the start or end message
+                        if( mStartSelfTestPending ) {
+                            mStartSelfTestPending = false;
+                            }
+                        else if( mEndSelfTestPending ) {
+                            mEndSelfTestPending = false;
+                            }
+                        }
+
                     delete [] result;
                     }
                 }
@@ -80,6 +103,34 @@ void LiveHousePage::step() {
             clearWebRequest( mWebRequest );
             mWebRequest = -1;
             }
+        }
+    else if( mStartSelfTestPending || mEndSelfTestPending ) {
+
+        const char *command = "start_self_test";
+        
+        if( ! mStartSelfTestPending ) {
+            command = "end_self_test";
+            }
+        
+
+        char *ticketHash = getTicketHash();
+            
+        char *fullRequestURL = autoSprintf( 
+            "%s?action=%s&user_id=%d"
+            "&%s",
+            serverURL, command, userID, ticketHash );
+        delete [] ticketHash;
+        
+        mWebRequest = startWebRequest( "GET", 
+                                       fullRequestURL, 
+                                       NULL );
+        
+        printf( "Sending web request:  %s\n", fullRequestURL );
+        
+        delete [] fullRequestURL;
+        
+        // counts as a ping
+        sLastPingTime = time( NULL );
         }
     else if( ! mCheckoutStale ) {
         int currentTime = time( NULL );

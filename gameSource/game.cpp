@@ -1017,6 +1017,7 @@ void drawFrame( char inUpdate ) {
 
                     currentGamePage = selfHouseTestPage;
                     currentGamePage->base_makeActive( true );
+                    selfHouseTestPage->startSelfTest();
                     }
                 else {
                     // not changed, check it right in
@@ -1159,6 +1160,7 @@ void drawFrame( char inUpdate ) {
                     
                     currentGamePage = editHousePage;
                     currentGamePage->base_makeActive( true );
+                    editHousePage->endSelfTest();
                     }
                 delete [] houseMap;
                 delete [] vaultContents;

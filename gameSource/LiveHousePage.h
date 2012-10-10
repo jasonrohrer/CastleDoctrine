@@ -25,7 +25,13 @@ class LiveHousePage : public GamePage {
         virtual char isStale() {
             return mCheckoutStale;
             }
+        
+        // tells server that owner is self testing house
+        virtual void startSelfTest();
 
+        // tells server that owner is done self testing house
+        virtual void endSelfTest();
+        
 
         // track this globally
         // User only has one house checked out at a time, but they
@@ -57,6 +63,10 @@ class LiveHousePage : public GamePage {
         // becomes true when a ping fails
         char mCheckoutStale;
         
+
+        char mStartSelfTestPending;
+        
+        char mEndSelfTestPending;
 
     };
 

@@ -138,6 +138,12 @@ else if( $action == "check_hash" ) {
 else if( $action == "start_edit_house" ) {
     cd_startEditHouse();
     }
+else if( $action == "start_self_test" ) {
+    cd_startSelfTest();
+    }
+else if( $action == "end_self_test" ) {
+    cd_endSelfTest();
+    }
 else if( $action == "end_edit_house" ) {
     cd_endEditHouse();
     }
@@ -226,7 +232,6 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
-        cd_doesTableExist( $tableNamePrefix."limbo_robberies" ) &&
         cd_doesTableExist( $tableNamePrefix."scouting_counts" ) &&
         cd_doesTableExist( $tableNamePrefix."prices" ) &&
         cd_doesTableExist( $tableNamePrefix."auction" ) &&
@@ -554,6 +559,7 @@ function cd_setupDatabase() {
             "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
+            "self_test_running TINYINT NOT NULL,".
             "rob_checkout TINYINT NOT NULL,".
             // ignored if not checked out for robbery
             "robbing_user_id INT NOT NULL," .
@@ -609,18 +615,8 @@ function cd_setupDatabase() {
     $tableName = $tableNamePrefix . "scouting_counts";
     if( ! cd_doesTableExist( $tableName ) ) {
 
-        // contains information about lapsed robberies (user quits, power
-        // out, etc)
-        // User gets one success/failure(death) chance to rob each house
-        // with current life.  If user "bails out" mid-robbery,
-        // it's unfair to punish them (might not be their fault, game crash?),
-        // but we don't want them to exploit it as another chance to rob
-        // with new info.
-        // So, lapsed attempts go into the limbo list, and user is not
-        // allowed to try robbing that same house again.
-
-        // This maps a user ID to another user ID, where the second
-        // ID specifies a house that the first user cannot rob again.
+        // how many time has a give user scouted a given house?
+        // may be useful for catching cheaters
         $query =
             "CREATE TABLE $tableName(" .
             "robbing_user_id INT NOT NULL," .
@@ -640,34 +636,6 @@ function cd_setupDatabase() {
     
 
     
-    $tableName = $tableNamePrefix . "limbo_robberies";
-    if( ! cd_doesTableExist( $tableName ) ) {
-
-        // contains information about lapsed robberies (user quits, power
-        // out, etc)
-        // User gets one success/failure(death) chance to rob each house
-        // with current life.  If user "bails out" mid-robbery,
-        // it's unfair to punish them (might not be their fault, game crash?),
-        // but we don't want them to exploit it as another chance to rob
-        // with new info.
-        // So, lapsed attempts go into the limbo list, and user is not
-        // allowed to try robbing that same house again.
-
-        // This maps a user ID to another user ID, where the second
-        // ID specifies a house that the first user cannot rob again.
-        $query =
-            "CREATE TABLE $tableName(" .
-            "user_id INT NOT NULL," .
-            "house_user_id INT NOT NULL," .
-            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
-
-        $result = cd_queryDatabase( $query );
-
-        echo "<B>$tableName</B> table created<BR>";
-        }
-    else {
-        echo "<B>$tableName</B> table already exists<BR>";
-        }
 
 
     
@@ -886,7 +854,6 @@ function cd_checkForFlush() {
 
 
         // for each robber who quit game mid-robbery, clear robbery checkout
-        // and add entry to limbo table
         $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
             "WHERE rob_checkout = 1 ".
             "AND last_ping_time < ".
@@ -900,22 +867,49 @@ function cd_checkForFlush() {
 
             $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
 
-            cd_processStaleRobberies( $robbing_user_id );
+            cd_processStaleCheckouts( $robbing_user_id );
             }
+
+        $totalFlushCount = $numRows;
+
+        
+        // for each owner who quit game mid-self-test, clear checkout
+        // this will force-kill the owner
+        // (Do this now to return paintings to auction house, otherwise
+        //  an owner that quits suring self test and never comes back could
+        //  trap the paintings forever even though they are logically dead)
+        $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+            "WHERE edit_checkout = 1 AND self_test_running = 1 ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' ) FOR UPDATE;";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+    
+        for( $i=0; $i<$numRows; $i++ ) {
+            $user_id = mysql_result( $result, $i, "user_id" );
+
+            cd_processStaleCheckouts( $user_id );
+            }
+
+        $totalFlushCount += $numRows;
+
         
         
-        // now clear checkout status on stale edit checkouts
+        // now clear checkout status on stale edit checkouts that were
+        // not in the middle of self-test
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET rob_checkout = 0, edit_checkout = 0 ".
-            "WHERE edit_checkout = 1 ".
+            "WHERE edit_checkout = 1 AND self_test_running = 0 ".
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.000' );";
 
         $result = cd_queryDatabase( $query );
 
-        $numRowsRemoved = mysql_affected_rows();
+        $totalFlushCount += mysql_affected_rows();
 
-        cd_log( "Flush operation checked back in $numRowsRemoved ".
+        cd_log( "Flush operation checked back in $totalFlushCount ".
                 "stale houses." );
 
         global $enableLog;
@@ -1068,33 +1062,43 @@ function cd_checkHash() {
     }
 
 
-function cd_processStaleRobberies( $user_id ) {
+function cd_processStaleCheckouts( $user_id ) {
     global $tableNamePrefix;
 
 
     // first find all stale robberies
-    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
         "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
+    $staleRobberyCount = mysql_result( $result, 0, 0 );
 
-    
-    $numRows = mysql_numrows( $result );
-    
-    for( $i=0; $i<$numRows; $i++ ) {
-        $house_user_id = mysql_result( $result, $i, "user_id" );
-
-        // add each one to the limbo table
-        $query = "INSERT INTO $tableNamePrefix"."limbo_robberies VALUES(" .
-            " $user_id, $house_user_id );";
+    if( $staleRobberyCount ) {
+        // clear all the robberies themselves
+        $query = "UPDATE $tableNamePrefix"."houses SET ".
+            "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
         cd_queryDatabase( $query );
         }
-    
 
-    // finally clear all the robberies themselves
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
-    cd_queryDatabase( $query );
+
+    // now find stale self tests
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+        "WHERE edit_checkout = 1 AND self_test_running = 1 ".
+        "AND user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
+    $staleSelfTestCount = mysql_result( $result, 0, 0 );
+
+    
+    if( $staleRobberyCount > 0 ||
+        $staleSelfTestCount > 0 ) {
+
+        // user abandonned game while in danger of dying
+
+        // force kill them
+
+        cd_newHouseForUser( $user_id );
+        }
     }
 
 
@@ -1111,7 +1115,7 @@ function cd_startEditHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
-    cd_processStaleRobberies( $user_id );
+    cd_processStaleCheckouts( $user_id );
     
     
     // automatically ignore blocked users and houses already checked
@@ -1806,7 +1810,7 @@ function cd_endEditHouse() {
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "edit_checkout = 0, house_map='$house_map', ".
+        "edit_checkout = 0, self_test_running = 0, house_map='$house_map', ".
         "vault_contents='$vault_contents', ".
         "backpack_contents='$backpack_contents', ".
         "gallery_contents='$gallery_contents', ".
@@ -1854,6 +1858,70 @@ function cd_pingHouse() {
 
 
 
+
+function cd_startSelfTest() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = cd_getUserID();
+
+    
+    // automatically ignore blocked users and houses not checked out
+
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "last_ping_time = CURRENT_TIMESTAMP, self_test_running = 1 ".
+        "WHERE user_id = $user_id ".
+        "AND blocked='0' ".
+        "AND edit_checkout = 1 AND self_test_running = 0;";
+    
+    $result = cd_queryDatabase( $query );
+
+    
+    if( mysql_affected_rows() == 1 ) {
+        echo "OK";
+        }
+    else {
+        echo "FAILED";
+        }
+    }
+
+
+
+function cd_endSelfTest() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = cd_getUserID();
+
+    
+    // automatically ignore blocked users and houses not checked out
+
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "last_ping_time = CURRENT_TIMESTAMP, self_test_running = 0 ".
+        "WHERE user_id = $user_id ".
+        "AND blocked='0' ".
+        "AND edit_checkout = 1 AND self_test_running = 1;";
+    
+    $result = cd_queryDatabase( $query );
+
+    
+    if( mysql_affected_rows() == 1 ) {
+        echo "OK";
+        }
+    else {
+        echo "FAILED";
+        }
+    }
+
+
+
+
 function cd_listHouses() {
     global $tableNamePrefix;
 
@@ -1871,8 +1939,7 @@ function cd_listHouses() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery and houses that haven't been edited yet and
-    // limbo houses for this user
+    // out for robbery and houses that haven't been edited yet
 
     // join to include last robber name for each result
     // (maps each robbing_user_id to the corresponding character_name
@@ -1889,9 +1956,6 @@ function cd_listHouses() {
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count > 0 ".        
-        "AND houses.user_id NOT IN ".
-        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
-        "  WHERE user_id = $user_id ) ".
         "ORDER BY houses.loot_value DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $limit;";
 
@@ -1940,7 +2004,7 @@ function cd_startRobHouse() {
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
-    cd_processStaleRobberies( $user_id );
+    cd_processStaleCheckouts( $user_id );
     
     // get user's backpack contents
     $query = "SELECT backpack_contents ".
@@ -1954,16 +2018,13 @@ function cd_startRobHouse() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery and limbo houses for this user
+    // out for robbery
     
     $query = "SELECT house_map, gallery_contents, ".
         "character_name, rob_attempts ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 AND rob_checkout = 0 ".
-        "AND user_id NOT IN ".
-        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
-        "  WHERE user_id = $user_id ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -2104,8 +2165,8 @@ function cd_endRobHouse() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery and limbo houses for this user
-
+    // out for robbery
+    
     $ownerDied = false;
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
@@ -2114,9 +2175,6 @@ function cd_endRobHouse() {
         "FROM $tableNamePrefix"."houses ".
         "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
-        "AND user_id NOT IN ".
-        "( SELECT house_user_id FROM $tableNamePrefix"."limbo_robberies ".
-        "  WHERE user_id = $user_id ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -2909,12 +2967,6 @@ function cd_newHouseForUser( $user_id ) {
         $query = "delete from $tableNamePrefix"."houses ".
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
-
-        
-        // don't leave in limbo
-        $query = "delete from $tableNamePrefix"."limbo_robberies ".
-            "WHERE house_user_id = $user_id;";
-        cd_queryDatabase( $query );
         }
     
     
@@ -2985,7 +3037,7 @@ function cd_newHouseForUser( $user_id ) {
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', '$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, 1000, 0, 0, 0, 0, 0, ".
+            "0, 1000, 0, 0, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
@@ -3085,7 +3137,8 @@ function cd_showData() {
     
              
     $query = "SELECT user_id, character_name, loot_value, edit_checkout, ".
-        "rob_checkout, robbing_user_id, rob_attempts, last_ping_time, ".
+        "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
+        "last_ping_time, ".
         "blocked ".
         "FROM $tableNamePrefix"."houses $keywordClause".
         "ORDER BY $order_by DESC ".
@@ -3174,6 +3227,7 @@ function cd_showData() {
         $character_name = mysql_result( $result, $i, "character_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
         $edit_checkout = mysql_result( $result, $i, "edit_checkout" );
+        $self_test_running = mysql_result( $result, $i, "self_test_running" );
         $rob_checkout = mysql_result( $result, $i, "rob_checkout" );
         $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
@@ -3200,7 +3254,12 @@ function cd_showData() {
         $checkout = " ";
 
         if( $edit_checkout ) {
-            $checkout = "edit";
+            if( $self_test_running ) {
+                $checkout = "edit (self-test)";
+                }
+            else {
+                $checkout = "edit";
+                }
             }
         if( $rob_checkout ) {
             $checkout = "rob";
