@@ -1075,8 +1075,12 @@ function cd_processStaleCheckouts( $user_id ) {
 
     if( $staleRobberyCount ) {
         // clear all the robberies themselves
+
+        // each abandonned robbery counts as a death that occurred in that
+        // house
         $query = "UPDATE $tableNamePrefix"."houses SET ".
-            "rob_checkout = 0 WHERE robbing_user_id = '$user_id';";
+            "rob_checkout = 0, robber_deaths = robber_deaths + 1 ".
+            "WHERE robbing_user_id = '$user_id';";
         cd_queryDatabase( $query );
         }
 
@@ -3138,7 +3142,7 @@ function cd_showData() {
              
     $query = "SELECT user_id, character_name, loot_value, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
-        "last_ping_time, ".
+        "robber_deaths, last_ping_time, ".
         "blocked ".
         "FROM $tableNamePrefix"."houses $keywordClause".
         "ORDER BY $order_by DESC ".
@@ -3215,6 +3219,7 @@ function cd_showData() {
     echo "<td>".orderLink( "character_name", "Character Name" )."</td>\n";
     echo "<td>".orderLink( "loot_value", "Loot Value" )."</td>\n";
     echo "<td>".orderLink( "rob_attempts", "Rob Attempts" )."</td>\n";
+    echo "<td>".orderLink( "robber_deaths", "Deaths" )."</td>\n";
     echo "<td>Checkout?</td>\n";
     echo "<td>Robbing User</td>\n";
     echo "<td>".orderLink( "last_ping_time", "PingTime" )."</td>\n";
@@ -3231,6 +3236,7 @@ function cd_showData() {
         $rob_checkout = mysql_result( $result, $i, "rob_checkout" );
         $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+        $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
         $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
         $blocked = mysql_result( $result, $i, "blocked" );
         
@@ -3279,8 +3285,11 @@ function cd_showData() {
         echo "<td>$character_name</td>\n";
         echo "<td>$loot_value</td>\n";
         echo "<td>$rob_attempts</td>\n";
+        echo "<td>$robber_deaths</td>\n";
         echo "<td>$checkout</td>\n";
-        echo "<td>$robbing_user_id</td>\n";
+        echo "<td>$robbing_user_id ";
+        echo "[<a href=\"server.php?action=show_detail" .
+            "&user_id=$robbing_user_id\">detail</a>]</td>\n";
         echo "<td>$last_ping_time</td>\n";
         echo "</tr>\n";
         }
