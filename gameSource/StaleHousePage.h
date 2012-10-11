@@ -10,7 +10,7 @@ class StaleHousePage : public GamePage, public ActionListener {
         
     public:
         
-        StaleHousePage();
+        StaleHousePage( char inDead );
         
         virtual char getDone();
         
@@ -27,6 +27,7 @@ class StaleHousePage : public GamePage, public ActionListener {
         TextButton mDoneButton;
 
         char mDone;
-
+        
+        char mDead;
     };
 

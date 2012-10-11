@@ -9,9 +9,12 @@
 extern Font *mainFont;
 
 
-StaleHousePage::StaleHousePage() 
-        : mDoneButton( mainFont, 4, -4, translate( "doneStale" ) ),
-          mDone( false ) {
+StaleHousePage::StaleHousePage( char inDead ) 
+        : mDoneButton( mainFont, 4, -4, 
+                       translate( 
+                           ( inDead ? "startOver" : "doneStale" ) ) ),
+          mDone( false ),
+          mDead( inDead ) {    
 
     addComponent( &mDoneButton );
     mDoneButton.addActionListener( this );
@@ -41,7 +44,13 @@ void StaleHousePage::makeActive( char inFresh ) {
     mDone = false;
     
     mStatusError = true;
-    mStatusMessageKey = "houseStale";
+
+    if( mDead ) {
+        mStatusMessageKey = "houseStaleDead";
+        }
+    else {
+        mStatusMessageKey = "houseStale";
+        }
     }
 
 

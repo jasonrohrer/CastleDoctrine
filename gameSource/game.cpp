@@ -85,6 +85,7 @@ RobberyReplayMenuPage *robberyReplayMenuPage;
 FetchRobberyReplayPage *fetchRobberyReplayPage;
 ReplayRobHousePage *replayRobHousePage;
 StaleHousePage *staleHousePage;
+StaleHousePage *staleHouseDeadPage;
 
 
 // position of view in world
@@ -408,7 +409,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robberyReplayMenuPage = new RobberyReplayMenuPage();
     fetchRobberyReplayPage = new FetchRobberyReplayPage();
     replayRobHousePage = new ReplayRobHousePage();
-    staleHousePage = new StaleHousePage();
+    staleHousePage = new StaleHousePage( false );
+    staleHouseDeadPage = new StaleHousePage( true );
 
     currentGamePage = loginPage;
 
@@ -444,6 +446,7 @@ void freeFrameDrawer() {
     delete fetchRobberyReplayPage;
     delete replayRobHousePage;
     delete staleHousePage;
+    delete staleHouseDeadPage;
 
 
     freeHouseObjects();
@@ -1045,7 +1048,16 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == staleHousePage ) {
             if( staleHousePage->getDone() ) {
-                // either robbery or house edit became stale
+                // house edit became stale
+                
+                // return to own house
+                currentGamePage = checkoutHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == staleHouseDeadPage ) {
+            if( staleHouseDeadPage->getDone() ) {
+                // either robbery or house self-test became stale
                 
                 // return to own house in either case
                 currentGamePage = checkoutHousePage;
@@ -1109,7 +1121,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == selfHouseTestPage ) {
-            if( selfHouseTestPage->getDone() ) {
+            if( selfHouseTestPage->isStale() ) {
+                currentGamePage = staleHouseDeadPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( selfHouseTestPage->getDone() ) {
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
@@ -1261,7 +1277,7 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == robHousePage ) {
             if( robHousePage->isStale() ) {
-                currentGamePage = staleHousePage;
+                currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
                 }
             else if( robHousePage->getDone() ) {
