@@ -837,6 +837,9 @@ function cd_checkForFlush() {
 
     $flushInterval = "0 0:02:0.000";
     $staleTimeout = "0 0:05:0.000";
+    // for testing:
+    //$flushInterval = "0 0:00:30.000";
+    //$staleTimeout = "0 0:01:0.000";
     
     
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
@@ -2076,7 +2079,8 @@ function cd_startRobHouse() {
     $user_id = cd_getUserID();
 
     $to_rob_user_id = cd_requestFilter( "to_rob_user_id", "/\d+/" );
-
+    $to_rob_character_name =
+        cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
@@ -2118,6 +2122,14 @@ function cd_startRobHouse() {
     $character_name = $row[ "character_name" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
+
+    if( $character_name != $to_rob_character_name ) {
+        // character names don't match
+        // user must have died and respawned as a new character
+        // rob request is no longer valid (old house gone)
+        echo "RECLAIMED";
+        return;
+        }
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "rob_checkout = 1, robbing_user_id = '$user_id', ".

@@ -1212,7 +1212,11 @@ void drawFrame( char inUpdate ) {
                 
                 if( r != NULL ) {
                     currentGamePage = robCheckoutHousePage;
+                    
                     robCheckoutHousePage->setToRobUserID( r->uniqueID );
+                    robCheckoutHousePage->setToRobCharacterName( 
+                        r->rawCharacterName );
+                    
                     currentGamePage->base_makeActive( true );
                     }
                 }

@@ -28,7 +28,8 @@ RobCheckoutHousePage::RobCheckoutHousePage()
           mBackpackContents( NULL ),
           mGalleryContents( NULL ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
-          mReturnToMenu( false ) {
+          mReturnToMenu( false ),
+          mToRobCharacterName( NULL ) {
 
     addComponent( &mMenuButton );
     mMenuButton.addActionListener( this );
@@ -52,12 +53,23 @@ RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mGalleryContents != NULL ) {
         delete [] mGalleryContents;
         }
+    if( mToRobCharacterName != NULL ) {
+        delete [] mToRobCharacterName;
+        }
     }
 
 
 
 void RobCheckoutHousePage::setToRobUserID( int inID ) {
     mToRobUserID = inID;
+    }
+
+
+void RobCheckoutHousePage::setToRobCharacterName( const char *inName ) {
+    if( mToRobCharacterName != NULL ) {
+        delete [] mToRobCharacterName;
+        }
+    mToRobCharacterName = stringDuplicate( inName );
     }
 
 
@@ -145,6 +157,11 @@ void RobCheckoutHousePage::step() {
                     mStatusMessageKey = "houseBeingRobbedOrEdited";
                     mMenuButton.setVisible( true );
                     }
+                else if( strstr( result, "RECLAIMED" ) != NULL ) {
+                    mStatusError = true;
+                    mStatusMessageKey = "houseReclaimed";
+                    mMenuButton.setVisible( true );
+                    }
                 else {
                     // house checked out!
                     
@@ -211,8 +228,8 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
 
     char *fullRequestURL = autoSprintf( 
         "%s?action=start_rob_house&user_id=%d&to_rob_user_id=%d"
-        "&%s",
-        serverURL, userID, mToRobUserID, ticketHash );
+        "&to_rob_character_name=%s&%s",
+        serverURL, userID, mToRobUserID, mToRobCharacterName, ticketHash );
     delete [] ticketHash;
     
     mWebRequest = startWebRequest( "GET", 

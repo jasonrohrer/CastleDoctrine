@@ -270,6 +270,7 @@ If last_robber is user_id, last_robber_name is set to "You".
 === Call:
 server.php?action=start_rob_house&user_id=[id number]
                                  &to_rob_user_id=[id number]
+								 &to_rob_character_name=[name]
                                  &sequence_number=[number]
                                  &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
@@ -278,6 +279,19 @@ houseMap
 backpack_contents
 gallery_contents
 OK
+
+--OR--
+
+RECLAIMED
+
+(if owner died)
+
+--OR--
+
+DENIED
+
+(if rob request fails for some reason, including owner home or another
+ robber present)
 
 Where:
 character_name has spaces repaced by "_"

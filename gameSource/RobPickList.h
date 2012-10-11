@@ -14,6 +14,9 @@ typedef struct HouseRecord {
         // might be userID (in case of houses-to-rob list)
         //       or logID (in the case of a list of past robberies to replay)
         int uniqueID;
+        // full name with "_" for spaces as sent by server
+        char *rawCharacterName;
+        // trimmed and spaced name for human display
         char *characterName;
         char *lastRobberName;
         int lootValue;

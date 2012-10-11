@@ -261,6 +261,9 @@ void RobPickList::step() {
                             
                             
                             char found;
+                            
+                            r.rawCharacterName = stringDuplicate( parts[1] );
+                            
                             r.characterName = 
                                 trimName(
                                     replaceAll( parts[1], "_", " ", &found ),
