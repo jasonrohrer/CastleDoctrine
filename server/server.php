@@ -3856,6 +3856,7 @@ function cd_deletePrice() {
 
 
 
+$cd_mysqlLink;
 
 
 
@@ -3867,16 +3868,18 @@ function cd_deletePrice() {
  */  
 function cd_connectToDatabase() {
     global $databaseServer,
-        $databaseUsername, $databasePassword, $databaseName;
+        $databaseUsername, $databasePassword, $databaseName,
+        $cd_mysqlLink;
     
     
-    mysql_connect( $databaseServer, $databaseUsername, $databasePassword )
-        or cd_fatalError( "Could not connect to database server: " .
-                       mysql_error() );
+    $cd_mysqlLink =
+        mysql_connect( $databaseServer, $databaseUsername, $databasePassword )
+        or cd_operationError( "Could not connect to database server: " .
+                              mysql_error() );
     
-	mysql_select_db( $databaseName )
-        or cd_fatalError( "Could not select $databaseName database: " .
-                       mysql_error() );
+    mysql_select_db( $databaseName )
+        or cd_operationError( "Could not select $databaseName database: " .
+                              mysql_error() );
     }
 
 
@@ -3885,7 +3888,9 @@ function cd_connectToDatabase() {
  * Closes the database connection.
  */
 function cd_closeDatabase() {
-    mysql_close();
+    global $cd_mysqlLink;
+    
+    mysql_close( $cd_mysqlLink );
     }
 
 
@@ -3898,10 +3903,45 @@ function cd_closeDatabase() {
  * @return a result handle that can be passed to other mysql functions.
  */
 function cd_queryDatabase( $inQueryString ) {
+    global $cd_mysqlLink;
 
-    $result = mysql_query( $inQueryString )
-        or cd_fatalError( "Database query failed:<BR>$inQueryString<BR><BR>" .
-                       mysql_error() );
+    if( gettype( $cd_mysqlLink ) != "resource" ) {
+        // not a valid mysql link?
+        cd_connectToDatabase();
+        }
+    
+    $result = mysql_query( $inQueryString, $cd_mysqlLink );
+    
+    if( $result == FALSE ) {
+
+        $errorNumber = mysql_errno();
+
+        // server lost or gone?
+        if( $errorNumber == 2006 ||
+            $errorNumber == 2013 ||
+            // access denied?
+            $errorNumber == 1044 ||
+            $errorNumber == 1045 ||
+            // no db selected?
+            $errorNumber == 1046 ) {
+
+            // connect again?
+            cd_closeDatabase();
+            cd_connectToDatabase();
+
+            $result = mysql_query( $inQueryString, $cd_mysqlLink )
+                or cd_operationError(
+                    "Database query failed:<BR>$inQueryString<BR><BR>" .
+                    mysql_error() );
+            }
+        else {
+            // some other error (we're still connected, so we can
+            // add log messages to database
+            cd_fatalError( "Database query failed:<BR>$inQueryString<BR><BR>" .
+                           mysql_error() );
+            }
+        }
+    
 
     return $result;
     }
