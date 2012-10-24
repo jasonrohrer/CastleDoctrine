@@ -19,13 +19,13 @@
 <br>
 <br>
 
-This page is intended for you, but only if I sent you a link directly.  I'm not equipped to handle painting submissions from hundreds of people, nor would the game benefit from such an overload.
+If I sent you this link directly, then this page is intended for you.  I'm not equipped to handle painting submissions from hundreds of people, nor would the game benefit from such an overload.
 
 <br>
 <br>
 
 <h3>Quick intro</h3>
-The Castle Doctrine is a massively multiplayer game where each person maintains and secures a house against robbery, but also goes out into the night to rob the houses of other players.  These two activities form a tight, resource constrained loop:  you only get more money for adding security to your house by successfully robbing the houses of others.
+The Castle Doctrine is a massively multiplayer game where each person maintains and secures a house against robbery, but also goes out into the night to rob the houses of other players.  These two activities form a tight, resource-constrained loop:  you only get more money for adding security to your house by successfully robbing the houses of others.
 <br>
 <br>
 The intended aesthetic experience is one of violation, with players themselves motivated to fill the role of the violators.  There's nothing like coming home to find that everything has been taken, especially if your prized, irreplaceable possessions are gone.  And that's where you folks come in.
