@@ -19,7 +19,7 @@
 <br>
 <br>
 
-If I sent you this link directly, then this page is intended for you.  I'm not equipped to handle painting submissions from hundreds of people, nor would the game benefit from such an overload.
+If I sent this link to you directly, then this page is intended for you.  Unfortunately, I'm not equipped to handle painting submissions from hundreds of people.
 
 <br>
 <br>
@@ -37,6 +37,10 @@ Along with money and other generic in-game objects, your house can also hold one
 My aim is to populate the game with paintings from various people that I know.  If you decide to help me out, your artwork will be auctioned, bought, prized, collected, coveted, stolen, re-stolen, reclaimed by the state, and auctioned again.  Over and over, for the effective life of my game.  I hope this sounds like something you'll want to be part of.  Fortunately, you don't have to do much---all I need from you is <b>1024 little pixels</b>.
 
 <h3>Specs</h3>
+First of all, the <b>deadline</b> for your contribution:  <b>Wednesday, November 7, 2012</b>.
+<br>
+<br>
+
 All paintings in the game are <b>32 x 32 pixel RGB images</b>.  Save it into a lossless format like PNG (preferred) or TIFF.  I also need a <b>title</b> and a <b>by line</b> from you.  Email it all to me.  That's it.  Make one or many---your choice.<br>
 <br>
 Contents are totally up to you.  Drawings, paintings, scans, photographs, or even words.  Whatever you can fit in a 32 x 32 image.  Here are two samples that I made:
@@ -59,7 +63,12 @@ Yeah, they're really tiny!  Here they are blown up so you can see the pixels bet
 </center>
 
 Your paintings will be blown up somewhat in the game (depending on the player's screen size), with sharp pixels preserved.
+<br>
+<br>
 
+
+    
+    
 <h3>Beginner Tips</h3>
 Some of you may have no experience making pixel art or even digital images in general.  Here are some tips.
 <br>
@@ -91,6 +100,11 @@ October 2012
 </td>
 </tr>
 </table>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(100540297); }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100540297ns.gif" /></p></noscript>
 
 </body>
 
