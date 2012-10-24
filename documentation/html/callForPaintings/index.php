@@ -81,6 +81,13 @@ Create a new 32 x 32 image, and zoom into it so that it almost fills the screen.
 
 <h3>Details</h3>
 No transparency, please.  The background that the paintings will be displayed on is pure black, if that matters to you.  Your title and by line together should not be more than 44 letters long.
+<br>
+<br>
+Here's the color palette that is used for all the graphics in the game:
+<br>
+<br>
+<center><img src="palette.png" width=516 height=98></center><br>
+You don't have to stick with this palette for your paintings, though.
 
 <br>
 <br>
