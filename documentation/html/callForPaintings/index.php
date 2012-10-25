@@ -41,14 +41,16 @@ First of all, the <b>deadline</b> for your contribution:  <b>Wednesday, November
 <br>
 <br>
 
-All paintings in the game are <b>32 x 32 pixel RGB images</b>.  Save it into a lossless format like PNG (preferred) or TIFF.  I also need a <b>title</b> and a <b>by line</b> from you.  Email it all to me.  That's it.  Make one or many---your choice.<br>
+All paintings in the game are <b>32 x 32 pixel RGB images</b>.  Save it into a lossless format like PNG (preferred) or TIFF.  I also need a <b>title</b> and a <b>credit line</b> from you.  Email it all to me.  That's it.  Make one or many---your choice.<br>
 <br>
-Contents are totally up to you.  Drawings, paintings, scans, photographs, or even words.  Whatever you can fit in a 32 x 32 image.  Here are two samples that I made:
+Contents are totally up to you, but one request:  <b>please make original, handmade work at the 32x32 scale, instead of down-scaling existing work</b>.  I'm really looking for <b>low-res pixel art</b> to match the game's visual aesthetic, and I've decided that low-res photos aren't a good fit after all.  Also, someone asked about indie game character cameos---I'd like to avoid that kind of thing, generally.<br>
+<br>
+Here are two samples that I made:
 <center>
 <table border=0 cellspacing=30>
 <tr>
 <td><img src="rohrerOwl.png" width=32 height=32"></td>
-<td><img src="rohrerChicory.png" width=32 height=32"></td>
+<td><img src="rohrerSky.png" width=32 height=32"></td>
 </tr>
 </table>
 </center>
@@ -57,12 +59,12 @@ Yeah, they're really tiny!  Here they are blown up so you can see the pixels bet
 <table border=0 cellspacing=30>
 <tr>
 <td><img src="rohrerOwl_big.png" width=128 height=128"></td>
-<td><img src="rohrerChicory_big.png" width=128 height=128"></td>
+<td><img src="rohrerSky_big.png" width=128 height=128"></td>
 </tr>
 </table>
 </center>
 
-Your paintings will be blown up somewhat in the game (depending on the player's screen size), with sharp pixels preserved.
+Your paintings will be blown up somewhat in the game (depending on the player's screen size), with sharp pixels preserved (downscaled work, with anti-aliasing, etc., doesn't look too good in this context).
 <br>
 <br>
 
@@ -80,7 +82,7 @@ Create a new 32 x 32 image, and zoom into it so that it almost fills the screen.
 
 
 <h3>Details</h3>
-No transparency, please.  The background that the paintings will be displayed on is pure black, if that matters to you.  Your title and by line together should not be more than 44 letters long.
+No transparency, please.  The background that the paintings will be displayed on is pure black, if that matters to you.  Your title and credit line together should not be more than 44 letters long.
 <br>
 <br>
 Here's the color palette that is used for all the graphics in the game:
