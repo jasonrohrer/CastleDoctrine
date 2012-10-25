@@ -86,7 +86,7 @@ $defaultPrices = array(
     array( 508, 8, 0, "Drugged Meat" ),
 
     array( 2000, 10000, 1, "Owl - Rohrer" ),
-    array( 2001, 10000, 1, "Chicory - Rohrer" )
+    array( 2001, 10000, 1, "Sky - Rohrer" )
     );
     
 
