@@ -4,6 +4,11 @@
 #include "gameElements.h"
 
 
+#include "houseObjects.h"
+
+#include "minorGems/graphics/filters/BoxBlurFilter.h"
+
+
 
 typedef struct galleryObjectRecord {
         int id;
@@ -107,9 +112,76 @@ void initGalleryObjects() {
 
 
                 if( tgaPath != NULL ) {
-                    // art has no transparency
-                    r.sprite = loadSpriteBase( tgaPath, false );
+                    
+
+                    Image *image = readTGAFileBase( tgaPath );
                     delete [] tgaPath;
+
+                    if( image == NULL ) {    
+                        completeRecord = false;
+                        }
+                    else {
+                        image = doubleImage( image );
+                        
+                        int w = image->getWidth();
+                        int h = image->getHeight();
+
+                        // make shadow map larger than image
+                        // so that box blur filter weird edge behavior
+                        // doesn't happen
+                        Image *shadow = new Image( w * 2, h * 2, 1, true );
+                        
+                        double *shadowChannel = shadow->getChannel( 0 );
+                        
+                        // white center square, with black bleeding in 
+                        // a bit (white square slightly smaller than
+                        // target image)
+                        for( int y=2; y<h-2; y++ ) {
+                            int yFull = y + h/2;
+                            for( int x=2; x<w-2; x++ ) {
+                                int xFull = x + w/2;
+                                shadowChannel[ yFull * w * 2 + xFull ] = 1;
+                                }
+                            }
+                        BoxBlurFilter f( 1 );
+                        
+                        shadow->filter( &f );
+                        shadow->filter( &f );
+                        shadow->filter( &f );
+                        shadow->filter( &f );
+                        
+                        
+                        double *red = image->getChannel( 0 );
+                        double *green = image->getChannel( 1 );
+                        double *blue = image->getChannel( 2 );
+                        
+                        for( int y=0; y<h; y++ ) {
+                            int yFull = y + h/2;
+                            for( int x=0; x<w; x++ ) {
+                                int xFull = x + w/2;
+                                
+                                // mute it's effect a bit, only allowing
+                                // it to achieve max of 0.75 darkness
+                                double level = 0.25 + 
+                                    0.75 *
+                                    shadowChannel[ yFull * w * 2 + xFull ];
+                                
+                                int i = y * w + x;
+                                red[i] *= level;
+                                green[i] *= level;
+                                blue[i] *= level;
+                                }
+                            }
+                        
+                        
+                        delete shadow;
+                        
+
+
+                        // art has no transparency
+                        r.sprite = fillSprite( image, false );
+                        delete image;
+                        }
                     }
                 else {
                     completeRecord = false;

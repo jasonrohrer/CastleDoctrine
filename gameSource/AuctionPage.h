@@ -59,7 +59,8 @@ class AuctionPage : public LiveHousePage, public ActionListener {
 
         SpriteButton mUpButton;
         SpriteButton mDownButton;
-
+        
+        SpriteHandle mFrameSprite;
 
         int mLootValue;
         

@@ -15,6 +15,7 @@ class GallerySlotButton : public InventorySlotButton {
     public:
 
         GallerySlotButton( Font *inDisplayFont,
+                           SpriteHandle inFrameSprite,
                            double inX, double inY, 
                            double inDrawScale = 1.0 );
 
@@ -22,6 +23,12 @@ class GallerySlotButton : public InventorySlotButton {
         // instead of tools
         virtual void setObject( int inID );
         
+    protected:
+        
+        // override to draw a frame
+        virtual void drawBorder();
+
+        SpriteHandle mFrameSprite;
     };
 
 

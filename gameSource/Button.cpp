@@ -79,9 +79,8 @@ void Button::draw() {
         setDrawColor( 0.5, 0.5, 0.5, 1 );
         }
     
-
-    drawRect( - mWide / 2, - mHigh / 2, 
-              mWide / 2, mHigh / 2 );
+    drawBorder();
+    
 
     if( mDragOver ) {
         setDrawColor( 0.1, 0.1, 0.1, 1 );
@@ -117,6 +116,11 @@ void Button::draw() {
 void Button::drawContents() {
     }
 
+
+void Button::drawBorder() {
+    drawRect( - mWide / 2, - mHigh / 2, 
+              mWide / 2, mHigh / 2 );
+    }
 
 
 

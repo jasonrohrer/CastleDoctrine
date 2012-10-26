@@ -127,6 +127,11 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
                             char inForceUnderShading = false );
 
 
+// doubles image with nearest neighbor interpolation
+// destroys inImage
+Image *doubleImage( Image *inImage );
+
+
 
 #endif
 

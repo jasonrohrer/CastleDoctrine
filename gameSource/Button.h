@@ -69,7 +69,12 @@ class Button : public PageComponent, public ActionListenerList {
         // (default implementation draws nothing)
         virtual void drawContents();
         
-
+        
+        // draws the border of the button
+        // default is just a rectangle
+        // Button class sets the draw color before calling drawBorder
+        virtual void drawBorder();
+        
         
     };
 

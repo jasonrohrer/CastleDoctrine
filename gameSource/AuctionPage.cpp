@@ -57,15 +57,18 @@ AuctionPage::AuctionPage()
     int numAuctionRows = NUM_AUCTION_SLOTS / NUM_AUCTION_SLOTS_PER_ROW;
     
     int slot = 0;
-    
+
+    mFrameSprite = loadSprite( "frame.tga", true );
+        
     for( int r=0; r<numAuctionRows; r++ ) {
         slotCenter.x = -4.5;
 
         for( int i=0; i<NUM_AUCTION_SLOTS_PER_ROW; i++ ) {
             
             mAuctionSlots[slot] = 
-                new GallerySlotButton( mainFont, slotCenter.x, slotCenter.y,
-                                       1 / 16.0 );
+                new GallerySlotButton( mainFont, mFrameSprite,
+                                       slotCenter.x, slotCenter.y,
+                                       1 / 32.0 );
             slotCenter.x += 3;
         
             addComponent( mAuctionSlots[slot] );
@@ -106,6 +109,8 @@ AuctionPage::~AuctionPage() {
     for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
         delete mAuctionSlots[i];
         }
+
+    freeSprite( mFrameSprite );
     }
 
 

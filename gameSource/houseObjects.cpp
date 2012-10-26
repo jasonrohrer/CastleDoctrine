@@ -105,7 +105,7 @@ static int *idToIndexMap = NULL;
 
 // doubles image with nearest neighbor interpolation
 // destroys inImage
-static Image *doubleImage( Image *inImage ) {
+Image *doubleImage( Image *inImage ) {
     int h = inImage->getHeight();
     int w = inImage->getWidth();
     int n = inImage->getNumChannels();

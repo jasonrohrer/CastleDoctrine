@@ -37,7 +37,8 @@ class  Gallery : public PageComponent, public ActionListener {
         virtual char isVisible();
 
     protected:
-        
+        SpriteHandle mFrameSprite;
+
         GallerySlotButton *mGallerySlots[ NUM_GALLERY_SLOTS ];
 
         GalleryArchive mGalleryArchive;
