@@ -64,10 +64,10 @@ Yeah, they're really tiny!  Here they are blown up so you can see the pixels bet
 </table>
 </center>
 
-Your paintings will be blown up somewhat in the game (depending on the player's screen size), with sharp pixels preserved (downscaled work, with anti-aliasing, etc., doesn't look too good in this context).
+Your paintings will be blown up somewhat in the game (depending on the player's screen size), with sharp pixels preserved (downscaled work, with anti-aliasing, etc., doesn't look too good in this context).  <b>Wooden frames</b> and <b>slight edge shadows</b> under the frames will be added automatically by the game engine.  Here's how it looks in the current working game:
 <br>
 <br>
-
+<center><img src="inFrames.png" width=640 height=480></center>
 
     
     
