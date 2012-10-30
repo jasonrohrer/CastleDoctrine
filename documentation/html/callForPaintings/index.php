@@ -31,7 +31,7 @@ The Castle Doctrine is a massively multiplayer game where each person maintains 
 The intended aesthetic experience is one of violation, with players themselves motivated to fill the role of the violators.  There's nothing like coming home to find that everything has been taken, especially if your prized, irreplaceable possessions are gone.  And that's where you folks come in.
 
 <h3>Unique objects</h3>
-Along with money and other generic in-game objects, your house can also hold one-of-a-kind pieces of artwork.  Everything is vulnerable to theft if a robber successfully negotiates your home security.  Artwork thus passes from robber to robber, or returns the the public auction house if a home owner dies.  And each piece is indeed unique, with only a single person in the world possessing it at any given moment.
+Along with money and other generic in-game objects, your house can also hold one-of-a-kind pieces of artwork.  Everything is vulnerable to theft if a robber successfully negotiates your home security.  Artwork thus passes from robber to robber, or returns to the the public auction house if a home owner dies.  And each piece is indeed unique, with only a single person in the world possessing it at any given moment.
 
 <h3>Your help</h3>
 My aim is to populate the game with paintings from various people that I know.  If you decide to help me out, your artwork will be auctioned, bought, prized, collected, coveted, stolen, re-stolen, reclaimed by the state, and auctioned again.  Over and over, for the effective life of my game.  I hope this sounds like something you'll want to be part of.  Fortunately, you don't have to do much---all I need from you is <b>1024 little pixels</b>.
