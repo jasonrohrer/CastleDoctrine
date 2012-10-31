@@ -3,11 +3,13 @@
 
 
 #include "minorGems/game/Font.h"
+#include "minorGems/ui/event/ActionListenerList.h"
 
 #include "PageComponent.h"
 
 
-class TextField : public PageComponent {
+// fires action performed when ENTER hit inside field
+class TextField : public PageComponent, public ActionListenerList {
         
     public:
         

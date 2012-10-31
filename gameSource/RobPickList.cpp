@@ -11,6 +11,7 @@
 
 
 extern Font *mainFont;
+extern Font *mainFontFixed;
 
 extern char *serverURL;
 
@@ -20,6 +21,12 @@ extern double frameRateFactor;
 
 
 static const int linesPerPage = 8;
+static double lineHeight = 0.75;
+static double lineWidthLeft = 7;
+static double lineWidthRight = 7;
+
+
+static double topOffset = ( linesPerPage * lineHeight ) / 2 - lineHeight / 2;
 
 
 
@@ -33,16 +40,30 @@ RobPickList::RobPickList( double inX, double inY,
           mProgressiveDrawSteps( 0 ),
           mRobberyLog( inRobberyLog ),
           mUpButton( "up.tga", 8, 1, 1/16.0 ),
-          mDownButton( "down.tga", 8, -1, 1/16.0 ) {
+          mDownButton( "down.tga", 8, -1, 1/16.0 ),
+          mSearchField( mainFontFixed, mainFont, 
+                        0, 4,
+                        8,
+                        false,
+                        translate( "nameSearch" ),
+                        "abcdefghijklmnopqrstuvwxyz"
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+          mFilterButton( mainFont, 4, 4,
+                         translate( "filter" ) ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
     
     addComponent( &mUpButton );
     addComponent( &mDownButton );
-
+    addComponent( &mSearchField );
+    addComponent( &mFilterButton );
+    
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
+
+    mSearchField.addActionListener( this );
+    mFilterButton.addActionListener( this );
     }
 
 
@@ -68,6 +89,9 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mDownButton ) {
         mCurrentSkip += linesPerPage;
 
+        refreshList( true );
+        }
+    else if( inTarget == &mFilterButton || inTarget == &mSearchField ) {
         refreshList( true );
         }
     }
@@ -100,17 +124,22 @@ void RobPickList::refreshList( char inPreservePosition ) {
         action = "list_logged_robberies";
         }
     
+    char *searchWord = mSearchField.getText();
+    
     
     char *actionString = autoSprintf( 
-        "action=%s&skip=%d&limit=%d&user_id=%d"
+        "action=%s&skip=%d&limit=%d&name_search=%s&user_id=%d"
         "&%s",
-        action, mCurrentSkip, linesPerPage, userID, ticketHash );
+        action, mCurrentSkip, linesPerPage, searchWord, userID, ticketHash );
     delete [] ticketHash;
+    delete [] searchWord;
             
     
     mWebRequest = startWebRequest( "POST", 
                                    serverURL, 
                                    actionString );
+    
+    printf( "Request = %s\n", actionString );
     
     delete [] actionString;
 
@@ -135,9 +164,6 @@ HouseRecord *RobPickList::getSelectedHouse() {
 
 
 
-static double lineHeight = 0.75;
-static double lineWidthLeft = 7;
-static double lineWidthRight = 7;
 
 
 
@@ -232,8 +258,6 @@ void RobPickList::step() {
                         tokenizeString( result );
 
 
-                    double topOffset = ( linesPerPage * lineHeight ) / 2 
-                        - lineHeight / 2;
 
                     char badParse = false;
 
@@ -477,6 +501,7 @@ void RobPickList::pointerUp( float inX, float inY ) {
 void RobPickList::clearHouseList() {
     for( int i=0; i<mHouseList.size(); i++ ) {
         delete [] mHouseList.getElement(i)->characterName;
+        delete [] mHouseList.getElement(i)->rawCharacterName;
         delete [] mHouseList.getElement(i)->lastRobberName;
         }
     mHouseList.deleteAll();

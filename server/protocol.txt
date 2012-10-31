@@ -245,6 +245,7 @@ and user_id is the robber in the case of a house being robbed.
 server.php?action=list_houses&user_id=[id number]
                              &skip=[number]
                              &limit=[number]
+							 &name_search=[single word]
                              &sequence_number=[number]
                              &ticket_hash=[sha1 hash, hex-encoded]
 Returns:
@@ -353,6 +354,7 @@ backpack_contents is what's left over in backpack after robbery ends
 server.php?action=list_logged_robberies&user_id=[id number]
                                        &skip=[number]
                                        &limit=[number]
+                                       &name_search=[single word]
                                        &sequence_number=[number]
                                        &ticket_hash=[sha1 hash, hex-encoded]
 Returns:

@@ -8,6 +8,9 @@
 
 #include "SpriteButton.h"
 
+#include "TextField.h"
+#include "TextButton.h"
+
 
 
 typedef struct HouseRecord {
@@ -89,6 +92,8 @@ class RobPickList : public PageComponent, public ActionListener,
         SpriteButton mUpButton;
         SpriteButton mDownButton;
 
+        TextField mSearchField;
+        TextButton mFilterButton;
 
     };
 

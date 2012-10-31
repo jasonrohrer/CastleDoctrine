@@ -443,6 +443,10 @@ void TextField::keyDown( unsigned char inASCII ) {
 
         clearArrowRepeat();
         }
+    else if( inASCII == 13 ) {
+        // enter hit in field
+        fireActionPerformed( this );
+        }
     else if( inASCII >= 32 ) {
 
         unsigned char processedChar = inASCII;

@@ -91,6 +91,8 @@ houseCheckInFailed "House check in failed."
 
 
 
+nameSearch "Name Search:"
+filter "Filter"
 startRobHouse "Rob House"
 listRobberyReplays "View Successful Robberies"
 

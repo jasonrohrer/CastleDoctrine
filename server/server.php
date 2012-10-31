@@ -2014,7 +2014,13 @@ function cd_listHouses() {
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
-    
+    $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
+
+    $searchClause = "";
+
+    if( $name_search != "" ) {
+        $searchClause = "AND houses.character_name LIKE '%$name_search%' ";
+        }
     
     
     // automatically ignore blocked users and houses already checked
@@ -2034,7 +2040,8 @@ function cd_listHouses() {
         "ON houses.robbing_user_id = robbers.user_id ".
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
-        "AND houses.edit_count > 0 ".        
+        "AND houses.edit_count > 0 ".
+        "$searchClause ".
         "ORDER BY houses.loot_value DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $limit;";
 
@@ -2544,7 +2551,15 @@ function cd_listLoggedRobberies() {
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
-    
+
+    $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
+
+    $searchClause = "";
+
+    if( $name_search != "" ) {
+        $searchClause = "WHERE robber_name LIKE '%$name_search%' ";
+        }
+
 
     
     $tableName = $tableNamePrefix ."robbery_logs";
@@ -2553,6 +2568,7 @@ function cd_listLoggedRobberies() {
         "log_id, victim_name, robber_name, ".
         "loot_value, rob_attempts, robber_deaths ".
         "FROM $tableName ".
+        "$searchClause ".
         "ORDER BY rob_time DESC ".
         "LIMIT $skip, $limit;";
 
