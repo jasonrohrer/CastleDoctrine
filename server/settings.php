@@ -71,6 +71,7 @@ $defaultPrices = array(
     array( 105, 20, 0, "Voltage-triggered Inverted Switch" ),
     array( 30, 50, 0, "Automatic Door" ),
     array( 110, 20, 0, "Electric Floor" ),
+    array( 112, 150, 0, "Powered Trapdoor" ),
     array( 70, 200, 0, "Pit Bull" ),
     array( 71, 100, 0, "Chihuahua" ),
     array( 72, 20, 0, "Cat" ),
