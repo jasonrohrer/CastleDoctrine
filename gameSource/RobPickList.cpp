@@ -32,8 +32,8 @@ RobPickList::RobPickList( double inX, double inY,
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
           mRobberyLog( inRobberyLog ),
-          mUpButton( "up.tga", 7, 1, 1/16.0 ),
-          mDownButton( "down.tga", 7, -1, 1/16.0 ) {
+          mUpButton( "up.tga", 8, 1, 1/16.0 ),
+          mDownButton( "down.tga", 8, -1, 1/16.0 ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
