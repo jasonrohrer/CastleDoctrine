@@ -860,9 +860,11 @@ void HouseGridDisplay::drawDropShadow( doublePair inPosition ) {
 
 
 void HouseGridDisplay::drawRobber( doublePair inPosition ) {
-    // first drop shadow
-    drawDropShadow( inPosition );
-    
+    if( ! isPropertySet( PLAYER_ID, mRobberState, noDropShadow ) ) {
+        // first drop shadow
+        drawDropShadow( inPosition );
+        }
+        
     setDrawColor( 1, 1, 1, 1 );
     
     doublePair robberPos = inPosition;
@@ -992,9 +994,11 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int mobOrientation = getOrientationIndex( fullI, mobID,
                                                               mobState );
                     
-                    // first drop shadow
-                    drawDropShadow( tilePos );
-
+                    if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
+                        // first drop shadow
+                        drawDropShadow( tilePos );
+                        }
+                        
                     setDrawColor( 1, 1, 1, 1 );
                 
                     SpriteHandle sprite = 
@@ -1022,7 +1026,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 // now draw tile itself, on top of floor
 
-                if( isSubMapPropertySet( i, mobile ) ) {
+                if( isSubMapPropertySet( i, mobile ) &&
+                    ! isSubMapPropertySet( i, noDropShadow ) ) {
                     // drop shadow
                     drawDropShadow( tilePos );
                     }

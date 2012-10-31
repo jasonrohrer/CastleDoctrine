@@ -24,6 +24,23 @@ pit # cat => 2
 pit # player => 2
 
 
+trapdoor:2 # pitbull => 2
+trapdoor:2 # chihuahua => 2
+trapdoor:2 # cat => 2
+trapdoor:2 # player => 2
+
+trapdoor:1 # pitbull:2 => 20
+trapdoor:1 # chihuahua:2 => 20
+trapdoor:1 # cat:2 => 20
+trapdoor:1 # player:2 => 20
+
+trapdoor:0 # pitbull:2 => 20
+trapdoor:0 # chihuahua:2 => 20
+trapdoor:0 # cat:2 => 20
+trapdoor:0 # player:2 => 20
+
+
+
 player # pitbull:1 => 4
 
 pitbull:4 # player => 4
@@ -52,6 +69,13 @@ noPower   #   wall_wood_wired:2   =>  1
 power   #   power_door:1   =>  2
 
 noPower   #   power_door:2   =>  1
+
+
+
+power   #   trapdoor:1   =>  2
+
+noPower   #   trapdoor:2   =>  1
+
 
 
 doorstop # power_door:2 => 4
