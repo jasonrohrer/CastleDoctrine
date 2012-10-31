@@ -6,7 +6,7 @@
 
 #include "houseObjects.h"
 
-#include "minorGems/graphics/filters/BoxBlurFilter.h"
+#include "minorGems/graphics/filters/FastBlurFilter.h"
 
 
 
@@ -143,7 +143,7 @@ void initGalleryObjects() {
                                 shadowChannel[ yFull * w * 2 + xFull ] = 1;
                                 }
                             }
-                        BoxBlurFilter f( 1 );
+                        FastBlurFilter f;
                         
                         shadow->filter( &f );
                         shadow->filter( &f );
