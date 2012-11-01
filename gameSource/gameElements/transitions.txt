@@ -2,8 +2,10 @@
 
 mobile   #   toggle_switch:1   =>  2
 mobile   #   sticking_switch:1   =>  2
+mobile   #   rotary_toggle_switch:1   =>  2
 
 mobile   #   toggle_switch:2   =>  1
+mobile   #   rotary_toggle_switch:2   =>  1
 
 
 mobile   #   power_door:2  => 3

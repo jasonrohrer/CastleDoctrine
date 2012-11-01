@@ -66,6 +66,7 @@ $defaultPrices = array(
     array( 51, 20, 0, "Wired Wooden Wall" ),
     array( 101, 50, 0, "Pressure Toggle Switch" ),
     array( 100, 50, 0, "Sticking Pressure Switch" ),
+    array( 107, 50, 0, "Rotary Toggle Switch" ),
     array( 106, 10, 0, "Wire Bridge" ),
     array( 104, 20, 0, "Voltage-triggered Switch" ),
     array( 105, 20, 0, "Voltage-triggered Inverted Switch" ),
