@@ -1256,13 +1256,13 @@ function cd_startEditHouse() {
         cd_idQuantityUnion( $vault_contents, $carried_vault_contents );
     
     if( $gallery_contents == "#" ) {
-        $gallery_contents = $carried_vault_contents;
+        $gallery_contents = $carried_gallery_contents;
         }
     else {
         if( $carried_vault_contents != "#" ) {
             // append
             $gallery_contents =
-                $gallery_contents . "#" . $carried_vault_contents;
+                $gallery_contents . "#" . $carried_gallery_contents;
             }
         }
     
