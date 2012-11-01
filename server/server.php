@@ -558,6 +558,11 @@ function cd_setupDatabase() {
             // times edited since last successful robbery
             "edit_count INT NOT NULL," .
             "loot_value INT NOT NULL," .
+            // loot carried back from latest robbery, not deposited in vault
+            // yet.  Deposited when house is next checked out for editing. 
+            "carried_loot_value INT NOT NULL," .
+            "carried_vault_contents LONGTEXT NOT NULL," .
+            "carried_gallery_contents LONGTEXT NOT NULL," .
             "edit_checkout TINYINT NOT NULL,".
             "self_test_running TINYINT NOT NULL,".
             "rob_checkout TINYINT NOT NULL,".
@@ -1071,9 +1076,23 @@ function cd_checkUser() {
             
             return;
             }
-
+        
         $user_id = $row[ "user_id" ];
         $sequence_number = $row[ "sequence_number" ];
+
+        
+        $query = "SELECT COUNT(*) ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE user_id = '$user_id';";
+        $result = cd_queryDatabase( $query );
+
+        $houseCount = mysql_result( $result, 0, 0 );
+
+        if( $houseCount < 1 ) {
+            cd_log( "Warning:  user $user_id present, ".
+                    "but had no house. Creating one." );
+            cd_newHouseForUser( $user_id );
+            }
         }
 
     global $cd_minClientVersion;
@@ -1202,7 +1221,10 @@ function cd_startEditHouse() {
     
     $query = "SELECT house_map, vault_contents, backpack_contents, ".
         "gallery_contents, ".
-        "loot_value, edit_count FROM $tableNamePrefix"."houses ".
+        "loot_value, ".
+        "carried_loot_value, carried_vault_contents, ".
+        "carried_gallery_contents, ".
+        "edit_count FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -1223,10 +1245,35 @@ function cd_startEditHouse() {
     $loot_value = $row[ "loot_value" ];
     $edit_count = $row[ "edit_count" ];
 
+    
+    $carried_loot_value = $row[ "carried_loot_value" ];
+    $carried_vault_contents = $row[ "carried_vault_contents" ];
+    $carried_gallery_contents = $row[ "carried_gallery_contents" ];
 
+    // add carried stuff into vault
+    $loot_value += $carried_loot_value;
+    $vault_contents =
+        cd_idQuantityUnion( $vault_contents, $carried_vault_contents );
+    
+    if( $gallery_contents == "#" ) {
+        $gallery_contents = $carried_vault_contents;
+        }
+    else {
+        if( $carried_vault_contents != "#" ) {
+            // append
+            $gallery_contents =
+                $gallery_contents . "#" . $carried_vault_contents;
+            }
+        }
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP ".
+        "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
+        "loot_value = '$loot_value', ".
+        "vault_contents = '$vault_contents', ".
+        "gallery_contents = '$gallery_contents', ".
+        "carried_loot_value = 0, ".
+        "carried_vault_contents = '#', ".
+        "carried_gallery_contents = '#' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -2175,7 +2222,9 @@ function cd_endRobHouse() {
 
 
     
-    $query = "SELECT backpack_contents, vault_contents, gallery_contents ".
+    $query = "SELECT backpack_contents, vault_contents, gallery_contents, ".
+        "carried_loot_value, carried_vault_contents, ".
+        "carried_gallery_contents ". 
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
 
@@ -2191,9 +2240,13 @@ function cd_endRobHouse() {
         }
     
     $old_backpack_contents = mysql_result( $result, 0, "backpack_contents" );
-    $old_robber_vault_contents = mysql_result( $result, 0, "vault_contents" );
-    $old_robber_gallery_contents =
-        mysql_result( $result, 0, "gallery_contents" );
+
+    $old_robber_carried_loot_value =
+        mysql_result( $result, 0, "carried_loot_value" );
+    $old_robber_carried_vault_contents =
+        mysql_result( $result, 0, "carried_vault_contents" );
+    $old_robber_carried_gallery_contents =
+        mysql_result( $result, 0, "carried_gallery_contents" );
 
 
 
@@ -2398,30 +2451,35 @@ function cd_endRobHouse() {
 
         // successful robbery, has not been edited since
         $edit_count = 0;
+
         
-        // also transfer all money and vault stuff from victim to robber
+        // transfer all money and vault stuff from victim to robber
+        $carried_loot_value = $house_money + $old_robber_carried_loot_value;
 
-        $new_robber_vault_contents =
-            cd_idQuantityUnion( $old_robber_vault_contents, $stuffTaken );
-
-        $new_robber_gallery_contents;
-
-        if( $old_robber_gallery_contents == "#" ) {
-            $new_robber_gallery_contents = $galleryStuffTaken;
-            }
-        else if( $galleryStuffTaken == "#" ) {
-            $new_robber_gallery_contents = $old_robber_gallery_contents;
+        $carried_vault_contents =
+            cd_idQuantityUnion( $old_robber_carried_vault_contents,
+                                $stuffTaken );
+        
+        $carried_gallery_contents = $old_robber_carried_gallery_contents;
+        
+        if( $carried_gallery_contents == "#" ) {
+            $carried_gallery_contents = $galleryStuffTaken;
             }
         else {
-            $new_robber_gallery_contents =
-                $galleryStuffTaken . "#" . $old_robber_gallery_contents;
+            if( $galleryStuffTaken != "#" ) {
+                // append
+                $carried_gallery_contents =
+                    $carried_gallery_contents . "#" . $galleryStuffTaken;
+                }
             }
 
-        // add stuff taken to robber's home vault/gallery
+        
+        // add stuff taken to robber's pending-to-deposit list for
+        // vault/gallery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
-            "loot_value = loot_value + $house_money, ".
-            "vault_contents = '$new_robber_vault_contents', ".
-            "gallery_contents = '$new_robber_gallery_contents' ".
+            "carried_loot_value = $carried_loot_value, ".
+            "carried_vault_contents = '$carried_vault_contents', ".
+            "carried_gallery_contents = '$carried_gallery_contents' ".
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
 
@@ -3133,6 +3191,11 @@ function cd_newHouseForUser( $user_id ) {
     $vault_contents = "#";
     $backpack_contents = "#";
     $gallery_contnets = '#';
+
+    $carried_loot_value = 0;
+    $carried_vault_contents = "#";
+    $carried_gallery_contents = "#";
+    
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
@@ -3141,7 +3204,10 @@ function cd_newHouseForUser( $user_id ) {
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', '$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, 1000, 0, 0, 0, 0, 0, 0, ".
+            "0, 1000, ".
+            "'$carried_loot_value', '$carried_vault_contents', ".
+            "'$carried_gallery_contents', ".
+            "0, 0, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
