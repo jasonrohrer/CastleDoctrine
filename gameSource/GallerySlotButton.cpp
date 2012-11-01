@@ -3,8 +3,8 @@
 #include "galleryObjects.h"
 
 
-GallerySlotButton::GallerySlotButton( Font *inDisplayFont,
-                                      SpriteHandle inFrameSprite,
+GallerySlotButton::GallerySlotButton( SpriteHandle inFrameSprite,
+                                      Font *inDisplayFont,
                                       double inX, double inY, 
                                       double inDrawScale ) 
         : InventorySlotButton( inDisplayFont, inX, inY, inDrawScale  ),

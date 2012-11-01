@@ -12,7 +12,8 @@
 GalleryArchive::GalleryArchive( Font *inDisplayFont, double inX, double inY ) 
         : PageComponent( inX, inY ),
           mSelectedIndex( -1 ),
-          mSlot( inDisplayFont, 0, 0, 1/16.0 ),
+          mFrameSprite( loadSprite( "frame.tga", true ) ),
+          mSlot( mFrameSprite, inDisplayFont, 0, 0, 1/32.0 ),
           mUpButton( "up.tga", -1.3125, .75, 1/16.0 ),
           mDownButton( "down.tga", -1.3125, -.75, 1/16.0 ) {
 
@@ -31,6 +32,7 @@ GalleryArchive::GalleryArchive( Font *inDisplayFont, double inX, double inY )
         
 
 GalleryArchive::~GalleryArchive() {
+    freeSprite( mFrameSprite );
     }
 
         

@@ -33,7 +33,7 @@ Gallery::Gallery( Font *inDisplayFont, double inX, double inY )
     
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
         mGallerySlots[i] = 
-            new GallerySlotButton( inDisplayFont, mFrameSprite,
+            new GallerySlotButton( mFrameSprite, inDisplayFont,
                                    slotCenter.x, slotCenter.y,
                                    1 / 32.0 );
         

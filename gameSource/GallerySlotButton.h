@@ -14,8 +14,8 @@ class GallerySlotButton : public InventorySlotButton {
 
     public:
 
-        GallerySlotButton( Font *inDisplayFont,
-                           SpriteHandle inFrameSprite,
+        GallerySlotButton( SpriteHandle inFrameSprite,
+                           Font *inDisplayFont,
                            double inX, double inY, 
                            double inDrawScale = 1.0 );
 

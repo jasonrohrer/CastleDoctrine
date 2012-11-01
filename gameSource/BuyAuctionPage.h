@@ -57,7 +57,9 @@ class BuyAuctionPage : public GamePage, public ActionListener {
         char mDone;
 
         TextButton mHomeButton;
-
+        
+        SpriteHandle mFrameSprite;
+        
         GallerySlotButton mBoughtSlot;
         
         char mReturnToHome;

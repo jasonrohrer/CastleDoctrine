@@ -51,6 +51,7 @@ class  GalleryArchive : public PageComponent, public ActionListener,
         
         int mSelectedIndex;
         
+        SpriteHandle mFrameSprite;
         GallerySlotButton mSlot;
         
         SpriteButton mUpButton;

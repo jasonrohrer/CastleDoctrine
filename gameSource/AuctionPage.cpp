@@ -66,7 +66,7 @@ AuctionPage::AuctionPage()
         for( int i=0; i<NUM_AUCTION_SLOTS_PER_ROW; i++ ) {
             
             mAuctionSlots[slot] = 
-                new GallerySlotButton( mainFont, mFrameSprite,
+                new GallerySlotButton( mFrameSprite, mainFont,
                                        slotCenter.x, slotCenter.y,
                                        1 / 32.0 );
             slotCenter.x += 3;

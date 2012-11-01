@@ -57,7 +57,7 @@ RobCheckinHousePage::RobCheckinHousePage()
             
             mVaultSlots[slot] = 
                 new InventorySlotButton( mainFont, slotCenter.x, slotCenter.y,
-                                         1 / 16.0 );
+                                         1 / 32.0 );
             slotCenter.x += 1.5;
         
             addComponent( mVaultSlots[slot] );
