@@ -402,6 +402,63 @@ function cd_restoreDefaultPrices() {
             "         '$order_number','$note' )";
 
         cd_queryDatabase( $query );
+
+        if( $in_gallery ) {
+
+            // start an auction for any gallery item for which no
+            // auction is running AND for which no owner exists
+            
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."auction ".
+                "WHERE object_id = '$object_id';";
+            
+            $result = cd_queryDatabase( $query );
+            
+            $count = mysql_result( $result, 0, 0 );
+
+            if( $count == 0 ) {
+
+                $query = "SELECT gallery_contents, carried_gallery_contents ".
+                    "FROM $tableNamePrefix"."houses ".
+                    "WHERE gallery_contents != '#' ".
+                    "OR carried_gallery_contents != '#';";
+
+                $result = cd_queryDatabase( $query );
+                
+                $foundOwned = false;
+
+                $numRows = mysql_numrows( $result );
+
+                for( $i=0; $i<$numRows; $i++ ) {
+                    $gallery_contents =
+                        mysql_result( $result, $i, "gallery_contents" );
+
+                    $carried_gallery_contents =
+                        mysql_result( $result, $i,
+                                      "carried_gallery_contents" );
+
+                    if( $gallery_contents != "#" ) {
+                        $array = preg_split( "/#/", $gallery_contents );
+                        if( in_array( $object_id, $array ) ) {
+                            $foundOwned = true;
+                            }
+                        }
+                    if( $carried_gallery_contents != "#" ) {
+                        $array =
+                            preg_split( "/#/", $carried_gallery_contents );
+
+                        if( in_array( $object_id, $array ) ) {
+                            $foundOwned = true;
+                            }
+                        }
+                    
+                    }
+                
+                if( !$foundOwned ) {
+                    cd_startAuction( $object_id, $price );
+                    }
+                }
+            
+            }
         
         $order_number ++;
         }
