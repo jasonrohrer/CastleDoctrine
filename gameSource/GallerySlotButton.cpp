@@ -11,8 +11,8 @@ GallerySlotButton::GallerySlotButton( SpriteHandle inFrameSprite,
           mFrameSprite( inFrameSprite ) {
     
     // room for border around gallery object sprite (they're all 32x32)
-    mWide = inDrawScale * 34;
-    mHigh = inDrawScale * 34;
+    mWide = inDrawScale * 64;
+    mHigh = inDrawScale * 64;
     }
 
 
