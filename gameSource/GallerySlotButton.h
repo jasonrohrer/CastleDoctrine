@@ -14,10 +14,12 @@ class GallerySlotButton : public InventorySlotButton {
 
     public:
 
-        GallerySlotButton( SpriteHandle inFrameSprite,
-                           Font *inDisplayFont,
+        GallerySlotButton( Font *inDisplayFont,
                            double inX, double inY, 
                            double inDrawScale = 1.0 );
+        
+        virtual ~GallerySlotButton();
+
 
         // override from InventorySlotButton to handle galleryObjects
         // instead of tools
@@ -27,8 +29,14 @@ class GallerySlotButton : public InventorySlotButton {
         
         // override to draw a frame
         virtual void drawBorder();
+        
+        // draw bid marker instead of ring
+        virtual void draw();
+        
 
-        SpriteHandle mFrameSprite;
+        static int sInstanceCount;
+        static SpriteHandle sFrameSprite;
+        static SpriteHandle sTagSprite;
     };
 
 

@@ -26,8 +26,7 @@ BuyAuctionPage::BuyAuctionPage()
           mGalleryContents( NULL ),
           mLootValue( -1 ),
           mHomeButton( mainFont, 4, -4, translate( "returnHome" ) ),
-          mFrameSprite( loadSprite( "frame.tga", true ) ),
-          mBoughtSlot( mFrameSprite, mainFont, 0, 0, 1/32.0 ),
+          mBoughtSlot( mainFont, 0, 0, 1/32.0 ),
           mReturnToHome( false ) {
 
     addComponent( &mHomeButton );
@@ -49,7 +48,6 @@ BuyAuctionPage::~BuyAuctionPage() {
     if( mGalleryContents != NULL ) {
         delete [] mGalleryContents;
         }
-    freeSprite( mFrameSprite );
     }
 
 

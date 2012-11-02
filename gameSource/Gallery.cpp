@@ -27,13 +27,12 @@ Gallery::Gallery( Font *inDisplayFont, double inX, double inY )
           mFade( 1 ),
           mShouldFade( false ) {
 
-    mFrameSprite = loadSprite( "frame.tga", true );
 
     doublePair slotCenter = { 0, 5 };
     
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
         mGallerySlots[i] = 
-            new GallerySlotButton( mFrameSprite, inDisplayFont,
+            new GallerySlotButton( inDisplayFont,
                                    slotCenter.x, slotCenter.y,
                                    1 / 32.0 );
         
@@ -54,7 +53,6 @@ Gallery::~Gallery() {
     for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
         delete mGallerySlots[i];
         }
-    freeSprite( mFrameSprite );
     }
 
 

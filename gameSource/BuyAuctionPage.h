@@ -58,7 +58,6 @@ class BuyAuctionPage : public GamePage, public ActionListener {
 
         TextButton mHomeButton;
         
-        SpriteHandle mFrameSprite;
         
         GallerySlotButton mBoughtSlot;
         
