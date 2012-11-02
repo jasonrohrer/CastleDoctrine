@@ -94,7 +94,7 @@ houseCheckInFailed "House check in failed."
 nameSearch "Name Search:"
 filter "Filter"
 startRobHouse "Rob House"
-listRobberyReplays "View Successful Robberies"
+listRobberyReplays "View Security Tapes"
 
 
 startTileDescription "Welcome Mat"
@@ -154,10 +154,10 @@ robberyLogNotFound "Failed to find the requested robbery log."
 
 nameYou "You"
 
-startReplay "Start Robbery Replay"
+startReplay "Play Tape"
 
 
-replayDescription "Replay:  %s robbed##%s for $%d"
+replayDescription "Security Tape:  %s robbed##%s for $%d"
 
 step "Step"
 play "Play"
