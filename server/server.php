@@ -2666,7 +2666,7 @@ function cd_listLoggedRobberies() {
         }
 
     $user_id = cd_getUserID();
-
+    $admin = cd_isAdmin( $user_id );
 
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
@@ -2674,11 +2674,24 @@ function cd_listLoggedRobberies() {
 
     $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
 
+    $whereClause = "";
+    $specificUserClause = "";
     $searchClause = "";
 
     if( $name_search != "" ) {
-        $searchClause = "WHERE robber_name LIKE '%$name_search%' ";
+        $searchClause = " robber_name LIKE '%$name_search%' ";
         }
+    if( ! $admin ) {
+        $specificUserClause = " house_user_id = '$user_id' ";
+        }
+    if( $searchClause != "" || $specificUserClause != "" ) {
+        $whereClause = " WHERE $searchClause ";
+        if( $searchClause != "" && $specificUserClause != "" ) {
+            $whereClause = $whereClause . "AND ";
+            }
+        $whereClause = $whereClause . " $specificUserClause ";
+        }
+    
 
 
     
@@ -2688,7 +2701,7 @@ function cd_listLoggedRobberies() {
         "log_id, victim_name, robber_name, ".
         "loot_value, rob_attempts, robber_deaths ".
         "FROM $tableName ".
-        "$searchClause ".
+        "$whereClause ".
         "ORDER BY rob_time DESC ".
         "LIMIT $skip, $limit;";
 
@@ -3121,6 +3134,27 @@ function cd_returnGalleryContents( $gallery_contents ) {
         }
     }
 
+
+
+
+function cd_isAdmin( $user_id ) {
+    
+    global $tableNamePrefix;
+    
+    $query = "SELECT admin FROM ".
+        "$tableNamePrefix"."users WHERE ".
+        "user_id = '$user_id';";
+    
+    $result = cd_queryDatabase( $query );
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows > 0 ) {
+        return ( mysql_result( $result, 0, "admin" ) == 1 );
+        }
+    else {
+        return false;
+        }
+    }
 
 
 
