@@ -180,6 +180,9 @@ else if( $action == "show_detail" ) {
 else if( $action == "block_user_id" ) {
     cd_blockUserID();
     }
+else if( $action == "update_user" ) {
+    cd_updateUser();
+    }
 else if( $action == "update_prices" ) {
     cd_updatePrices();
     }
@@ -580,6 +583,7 @@ function cd_setupDatabase() {
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
+            "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
             "last_price_list_number INT NOT NULL," .
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
@@ -1099,9 +1103,10 @@ function cd_checkUser() {
 
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
-            "(ticket_id, sequence_number, last_price_list_number, blocked) ".
+            "(ticket_id, admin, sequence_number, ".
+            " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', 0, 0, 0 );";
+            " '$ticket_id', 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -3741,7 +3746,7 @@ function cd_showDetail() {
      
     global $tableNamePrefix, $ticketServerNamePrefix;
 
-    $query = "SELECT ticket_id, blocked FROM $tableNamePrefix"."users ".
+    $query = "SELECT ticket_id, admin, blocked FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
@@ -3754,6 +3759,7 @@ function cd_showDetail() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $ticket_id = $row[ "ticket_id" ];
+    $admin = $row[ "admin" ];
     $blocked = $row[ "blocked" ];
 
 
@@ -3775,6 +3781,27 @@ function cd_showDetail() {
     echo "User ID: $user_id<br>\n";
     echo "Ticket: $ticket_id<br>\n";
     echo "Email: $email<br>\n";
+
+    $blockedChecked = "";
+    if( $blocked ) {
+        $blockedChecked = "checked";
+        }
+    $adminChecked = "";
+    if( $admin ) {
+        $adminChecked = "checked";
+        }
+?>
+            <FORM ACTION="server.php" METHOD="post">
+    <INPUT TYPE="hidden" NAME="action" VALUE="update_user">
+    <INPUT TYPE="hidden" NAME="user_id" VALUE="<?php echo $user_id;?>">
+    Blocked <INPUT TYPE="checkbox" NAME="blocked" VALUE=1
+                 <?php echo $blockedChecked;?> ><br>
+    Admin <INPUT TYPE="checkbox" NAME="admin" VALUE=1
+                 <?php echo $adminChecked;?> ><br>
+    <INPUT TYPE="Submit" VALUE="Update">
+<?php
+    
+    
     }
 
 
@@ -3790,23 +3817,61 @@ function cd_blockUserID() {
 
     $blocked = cd_requestFilter( "blocked", "/[01]/" );
 
+    // don't touch admin
+    if( cd_updateUser_internal( $user_id, $blocked, -1 ) ) {
+        cd_showData();
+        }
+    }
+
+
+
+
+function cd_updateUser() {
+    cd_checkPassword( "update_user" );
+
+
+    $user_id = cd_getUserID();
+
+    $blocked = cd_requestFilter( "blocked", "/[1]/", "0" );
+    $admin = cd_requestFilter( "admin", "/[1]/", "0" );
+
+    if( cd_updateUser_internal( $user_id, $blocked, $admin ) ) {
+        cd_showDetail();
+        }
+    }
+
+
+// set either to -1 to leave unchanged
+// returns 1 on success
+function cd_updateUser_internal( $user_id, $blocked, $admin ) {
+    
+    global $tableNamePrefix;
+        
     
     global $remoteIP;
-
     
 
     
-    $query = "SELECT user_id FROM $tableNamePrefix"."users ".
+    $query = "SELECT user_id, blocked, admin FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
     $numRows = mysql_numrows( $result );
 
     if( $numRows == 1 ) {
+        $old_blocked = mysql_result( $result, 0, "blocked" );
+        $old_admin = mysql_result( $result, 0, "admin" );
 
+        if( $admin == -1 ) {
+            $admin = $old_admin;
+            }
+        if( $blocked == -1 ) {
+            $blocked = $old_blocked;
+            }
+        
         
         $query = "UPDATE $tableNamePrefix"."users SET " .
-            "blocked = '$blocked' " .
+            "blocked = '$blocked', admin = '$admin' " .
             "WHERE user_id = '$user_id';";
         
         $result = cd_queryDatabase( $query );
@@ -3818,16 +3883,22 @@ function cd_blockUserID() {
         
         $result = cd_queryDatabase( $query );
 
-        
-        cd_log( "$user_id block changed to $blocked by $remoteIP" );
 
-        cd_showData();
+        if( $old_admin != $admin ) {
+            cd_log( "$user_id admin changed to $admin by $remoteIP" );
+            }
+        if( $old_blocked != $blocked ) {
+            cd_log( "$user_id blocked changed to $blocked by $remoteIP" );
+            }
+        
+        return 1;
         }
     else {
         cd_log( "$user_id not found for $remoteIP" );
 
         echo "$user_id not found";
-        }    
+        }
+    return 0;
     }
 
 
