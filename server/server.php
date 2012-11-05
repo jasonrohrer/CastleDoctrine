@@ -583,6 +583,7 @@ function cd_setupDatabase() {
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
+            "character_name_history LONGTEXT NOT NULL,".
             "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
             "last_price_list_number INT NOT NULL," .
@@ -1105,10 +1106,10 @@ function cd_checkUser() {
 
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
-            "(ticket_id, admin, sequence_number, ".
+            "(ticket_id, character_name_history, admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', 0, 0, 0, 0 );";
+            " '$ticket_id', '', 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -3168,10 +3169,10 @@ function cd_newHouseForUser( $user_id ) {
     // create default house for user
 
     $ticket_id = "";
-    $email = "";;
-
+    $email = "";
+    $character_name_history = "";
     
-    $query = "select ticket_id ".
+    $query = "select ticket_id, character_name_history ".
         "FROM $tableNamePrefix"."users ".
         "WHERE user_id = $user_id;";
     $result = cd_queryDatabase( $query );
@@ -3180,6 +3181,8 @@ function cd_newHouseForUser( $user_id ) {
 
     if( $numRows > 0 ) {
         $ticket_id = mysql_result( $result, 0, "ticket_id" );
+        $character_name_history =
+            mysql_result( $result, 0, "character_name_history" );
         }
 
     
@@ -3344,6 +3347,14 @@ function cd_newHouseForUser( $user_id ) {
 
         if( $result ) {
             $foundName = true;
+
+            // prepend this name to name history
+            $character_name_history =
+                $character_name . " " .$character_name_history;
+            $query = "UPDATE $tableNamePrefix"."users SET ".
+                "character_name_history = '$character_name_history' ".
+                "WHERE user_id = '$user_id';";
+            mysql_query( $query );
             }
         else {
             $errorNumber = mysql_errno();
@@ -3813,7 +3824,8 @@ function cd_showDetail() {
      
     global $tableNamePrefix, $ticketServerNamePrefix;
 
-    $query = "SELECT ticket_id, admin, blocked FROM $tableNamePrefix"."users ".
+    $query = "SELECT ticket_id, character_name_history, admin, blocked ".
+        "FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
@@ -3826,6 +3838,7 @@ function cd_showDetail() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $ticket_id = $row[ "ticket_id" ];
+    $character_name_history = $row[ "character_name_history" ];
     $admin = $row[ "admin" ];
     $blocked = $row[ "blocked" ];
 
@@ -3867,7 +3880,14 @@ function cd_showDetail() {
                  <?php echo $adminChecked;?> ><br>
     <INPUT TYPE="Submit" VALUE="Update">
 <?php
+
+    echo "<br><br>Name history:<br>";
+
+    $names = preg_split( "/\s+/", $character_name_history );
     
+    foreach( $names as $name ) {
+        echo "$name<br>";
+        }
     
     }
 
