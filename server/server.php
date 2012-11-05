@@ -612,6 +612,8 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL PRIMARY KEY," .
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
+            "ticket_id CHAR(10) NOT NULL," .
+            "email VARCHAR(255) NOT NULL," .
             "house_map LONGTEXT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
@@ -3160,11 +3162,40 @@ function cd_isAdmin( $user_id ) {
 
 
 function cd_newHouseForUser( $user_id ) {
-    global $tableNamePrefix;
+    global $tableNamePrefix, $ticketServerNamePrefix;
     
     
     // create default house for user
 
+    $ticket_id = "";
+    $email = "";;
+
+    
+    $query = "select ticket_id ".
+        "FROM $tableNamePrefix"."users ".
+        "WHERE user_id = $user_id;";
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows > 0 ) {
+        $ticket_id = mysql_result( $result, 0, "ticket_id" );
+        }
+
+    
+
+    $query = "SELECT email ".
+        "FROM $ticketServerNamePrefix"."tickets ".
+        "WHERE ticket_id = '$ticket_id';";
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows > 0 ) {
+        $email = mysql_result( $result, 0, "email" );
+        }
+    
+    
 
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
@@ -3298,7 +3329,8 @@ function cd_newHouseForUser( $user_id ) {
         
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '$house_map', ".
+            " $user_id, '$character_name', '$ticket_id', '$email', ".
+            "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "0, 1000, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
@@ -3382,7 +3414,8 @@ function cd_showDataHouseList( $inTableName ) {
 
         $keywordClause = "WHERE ( user_id LIKE '%$search%' " .
             "OR character_name LIKE '%$search%' ".
-            "OR loot_value LIKE '%$search%' ) ";
+            "OR loot_value LIKE '%$search%' ".
+            "OR email LIKE '%$search%' OR ticket_id LIKE '%$search%' ) ";
 
         $searchDisplay = " matching <b>$search</b>";
         }
