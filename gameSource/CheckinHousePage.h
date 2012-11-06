@@ -26,6 +26,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
         virtual void setEditList( char *inEditList );
         virtual void setPurchaseList( char *inPurchaseList );
         virtual void setPriceList( char *inPriceList );
+        virtual void setMoveList( char *inMoveList );
         
         // 0 or 1
         virtual void setDied( int inDied );
@@ -52,6 +53,7 @@ class CheckinHousePage : public GamePage, public ActionListener {
         char *mEditList;
         char *mPurchaseList;
         char *mPriceList;
+        char *mMoveList;
         
         int mDied;
         

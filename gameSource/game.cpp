@@ -1134,10 +1134,10 @@ void drawFrame( char inUpdate ) {
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *priceList = editHousePage->getPriceList();
                 
+                char *moveList = selfHouseTestPage->getMoveList();
                 int testResult = selfHouseTestPage->getSuccess();
 
-                if( testResult == 1 ) {
-                    
+                if( testResult == 1 ) {                                        
                     // house passed by owner (reached vault), okay to check in
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setVaultContents( vaultContents );
@@ -1146,6 +1146,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setPriceList( priceList );
+                    checkinHousePage->setMoveList( moveList );
                     checkinHousePage->setDied( 0 );
                     
                     currentGamePage = checkinHousePage;
@@ -1161,6 +1162,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setPriceList( priceList );
+                    checkinHousePage->setMoveList( moveList );
                     checkinHousePage->setDied( 1 );
                     
                     currentGamePage = checkinHousePage;
@@ -1185,6 +1187,7 @@ void drawFrame( char inUpdate ) {
                 delete [] editList;
                 delete [] purchaseList;
                 delete [] priceList;
+                delete [] moveList;
                 }
             }
         else if( currentGamePage == checkinHousePage ) {

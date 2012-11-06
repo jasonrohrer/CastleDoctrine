@@ -189,6 +189,7 @@ server.php?action=end_edit_house&user_id=[id number]
                                 &price_list=[price list ASCII string]
                                 &edit_list=[edit list ASCII string]
                                 &purchase_list=[purchase list ASCII string]
+								&self_test_move_list=[move list ASCII string]
 Returns:
 OK
 
@@ -216,6 +217,11 @@ purchase_list is encoded as a series of ID:quantity pairs, like:
 101:3#3:10#5:1#102:1
 
 (If empty, string is a single "#")
+
+
+For self_test_move_list format, see move_list in end_rob_house, except that
+tool use is forbidden during self test.
+
 
 
 

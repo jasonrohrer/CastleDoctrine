@@ -621,6 +621,7 @@ function cd_setupDatabase() {
             "gallery_contents LONGTEXT NOT NULL," .
             // times edited since last successful robbery
             "edit_count INT NOT NULL," .
+            "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
             // loot carried back from latest robbery, not deposited in vault
             // yet.  Deposited when house is next checked out for editing. 
@@ -1571,6 +1572,11 @@ function cd_endEditHouse() {
 
     $purchase_list = cd_requestFilter( "purchase_list", "/[#0-9:]+/" );
 
+    // different from move_list in endRobHouse, because tW@X moves (tool use)
+    // aren't allowed
+    $self_test_move_list =
+        cd_requestFilter( "self_test_move_list", "/[m0-9#]+/" );
+
     
     $died = cd_requestFilter( "died", "/[01]/" );
 
@@ -1790,6 +1796,14 @@ function cd_endEditHouse() {
         // up loop below
         $numEdits = 0;
         }
+
+    if( $numEdits > 0 && $self_test_move_list == "" ) {
+
+        cd_log( "House check-in failed because edit list not accompanied by ".
+                "a self-test move list." );
+        cd_transactionDeny();
+        return;    
+        }
     
 
     for( $i=0; $i<$numEdits; $i++ ) {
@@ -2005,7 +2019,9 @@ function cd_endEditHouse() {
         "vault_contents='$vault_contents', ".
         "backpack_contents='$backpack_contents', ".
         "gallery_contents='$gallery_contents', ".
-        "edit_count='$edit_count', loot_value='$loot_value' ".
+        "edit_count='$edit_count', ".
+        "self_test_move_list='$self_test_move_list', ".
+        "loot_value='$loot_value' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -3335,7 +3351,7 @@ function cd_newHouseForUser( $user_id ) {
             " $user_id, '$character_name', '$ticket_id', '$email', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, 1000, ".
+            "0, '', 1000, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".

@@ -27,6 +27,7 @@ CheckinHousePage::CheckinHousePage()
           mEditList( NULL ),
           mPurchaseList( NULL ),
           mPriceList( NULL ),
+          mMoveList( NULL ),
           mDied( 0 ),
           mMenuButton( mainFont, 4, -4, translate( "returnMenu" ) ),
           mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
@@ -66,6 +67,9 @@ CheckinHousePage::~CheckinHousePage() {
         }
     if( mPriceList != NULL ) {
         delete [] mPriceList;
+        }
+    if( mMoveList != NULL ) {
+        delete [] mMoveList;
         }
     }
 
@@ -141,6 +145,14 @@ void CheckinHousePage::setPriceList( char *inPriceList ) {
         delete [] mPriceList;
         }
     mPriceList = stringDuplicate( inPriceList );
+    }
+
+
+void CheckinHousePage::setMoveList( char *inMoveList ) {
+    if( mMoveList != NULL ) {
+        delete [] mMoveList;
+        }
+    mMoveList = stringDuplicate( inMoveList );
     }
 
 
@@ -229,10 +241,11 @@ void CheckinHousePage::makeActive( char inFresh ) {
         "action=end_edit_house&user_id=%d"
         "&%s&died=%d&house_map=%s&vault_contents=%s"
         "&backpack_contents=%s&gallery_contents=%s"
-        "&price_list=%s&edit_list=%s&purchase_list=%s",
+        "&price_list=%s&edit_list=%s&purchase_list=%s"
+        "&self_test_move_list=%s",
         userID, ticketHash, mDied, mHouseMap, mVaultContents, 
         mBackpackContents, mGalleryContents, 
-        mPriceList, mEditList, mPurchaseList );
+        mPriceList, mEditList, mPurchaseList, mMoveList );
     delete [] ticketHash;
             
     
