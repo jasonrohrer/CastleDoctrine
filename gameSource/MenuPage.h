@@ -24,6 +24,7 @@ class MenuPage : public GamePage, public ActionListener {
         virtual char getStartEditHouse();
         virtual char getStartRobHouse();
         virtual char getShowReplayList();
+        virtual char getStartSelfTestReplay();
         
         // destroyed internally
         // can be NULL
@@ -55,7 +56,7 @@ class MenuPage : public GamePage, public ActionListener {
         char mStartEditHouse;
         char mStartRobHouse;
         char mShowReplayList;
-        
+        char mStartSelfTestReplay;
         
     };
 

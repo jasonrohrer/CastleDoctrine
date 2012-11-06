@@ -64,12 +64,16 @@ ReplayRobHouseGridDisplay::~ReplayRobHouseGridDisplay() {
 void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     clearMoveList();
     
-    int numMoves;
-    char **moves = split( inMoveList, "#", &numMoves );
+    if( strcmp( inMoveList, "#" ) != 0 ) {
+        // a non-empty move list, split it
+        int numMoves;
+        char **moves = split( inMoveList, "#", &numMoves );
 
-    mMoveList.appendArray( moves, numMoves );
+        mMoveList.appendArray( moves, numMoves );
     
-    delete [] moves;
+        delete [] moves;
+        }
+    
 
     // prepare for new playback
     mPlaying =  false;

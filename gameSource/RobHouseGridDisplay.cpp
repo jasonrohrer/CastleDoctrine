@@ -86,7 +86,7 @@ int RobHouseGridDisplay::getDeathSourceState() {
 
 char *RobHouseGridDisplay::getMoveList() {
     if( mMoveList.size() == 0 ) {
-        return stringDuplicate( "" );
+        return stringDuplicate( "#" );
         }
     
     char **moveArray = mMoveList.getElementArray();

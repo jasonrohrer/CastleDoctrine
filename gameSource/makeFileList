@@ -37,6 +37,7 @@ RobCheckinHousePage.cpp \
 RobHouseGridDisplay.cpp \
 RobberyReplayMenuPage.cpp \
 FetchRobberyReplayPage.cpp \
+FetchSelfTestReplayPage.cpp \
 ReplayRobHouseGridDisplay.cpp \
 ReplayRobHousePage.cpp \
 nameProcessing.cpp \

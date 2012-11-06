@@ -20,7 +20,8 @@ MenuPage::MenuPage()
                               translate( "startProofReplay" ) ),
           mStartEditHouse( false ),
           mStartRobHouse( false ),
-          mShowReplayList( false ) {
+          mShowReplayList( false ),
+          mStartSelfTestReplay( false ) {
 
     addComponent( &mEditHouseButton );
     addComponent( &mRobHouseButton );
@@ -62,6 +63,10 @@ char MenuPage::getShowReplayList() {
     }
 
 
+char MenuPage::getStartSelfTestReplay() {
+    return mStartSelfTestReplay;
+    }
+
 
 HouseRecord *MenuPage::getSelectedHouse() {
     return mPickList.getSelectedHouse();
@@ -88,6 +93,9 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mShowReplayListButton ) {
         mShowReplayList = true;
+        }
+    else if( inTarget == &mProofReplayButton ) {
+        mStartSelfTestReplay = true;
         }
     }
 

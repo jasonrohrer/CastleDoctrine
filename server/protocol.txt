@@ -411,6 +411,30 @@ If robber or victim is user_id, corresponding "_name" field is set to "You".
 
 
 
+
+=== Call:
+server.php?action=get_self_test_log&user_id=[id number]
+                                   &sequence_number=[number]
+                                   &ticket_hash=[sha1 hash, hex-encoded]
+                                   &house_owner_id=[id number]
+Returns:
+owner_name
+houseMap
+moveList
+OK
+
+Where:
+owner_name has spaces repaced by "_"
+houseMap = ASCII string representing the house layout
+moveList = ASCII string representing moves made
+
+
+Note:
+This call is DENIED if user_id does not have admin status.
+
+
+
+
 === Call:
 server.php?action=list_auctions&user_id=[id number]
                                &sequence_number=[number]

@@ -165,6 +165,9 @@ else if( $action == "list_logged_robberies" ) {
 else if( $action == "get_robbery_log" ) {
     cd_getRobberyLog();
     }
+else if( $action == "get_self_test_log" ) {
+    cd_getSelfTestLog();
+    }
 else if( $action == "list_auctions" ) {
     cd_listAuctions();
     }
@@ -2815,6 +2818,55 @@ function cd_getRobberyLog() {
 
 
 
+function cd_getSelfTestLog() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+
+    $user_id = cd_getUserID();
+    if( !cd_isAdmin( $user_id ) ) {
+        cd_log( "Non-admin user $user_id tried to view a self-test log." );
+        cd_transactionDeny();
+        }
+    
+
+    $house_owner_id = cd_requestFilter( "house_owner_id", "/\d+/" );
+    
+    
+    
+    $query = "SELECT character_name, ".
+        "house_map, self_test_move_list ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$house_owner_id';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_transactionDeny();
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+
+    $owner_name = $row[ "character_name" ];
+    $house_map = $row[ "house_map" ];
+    $self_test_move_list = $row[ "self_test_move_list" ];
+    
+    
+    echo $owner_name . "\n";    
+    echo $house_map . "\n";
+    echo $self_test_move_list . "\n";    
+    echo "OK";
+    }
+
+
+
+
 function cd_computeAuctionPrice( $start_price, $elapsed_seconds ) {
     global $auctionPriceDropInterval, $auctionPriceHalfLife;
 
@@ -3353,7 +3405,7 @@ function cd_newHouseForUser( $user_id ) {
             " $user_id, '$character_name', '$ticket_id', '$email', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, '', 1000, ".
+            "0, '#', 1000, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".

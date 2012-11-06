@@ -56,6 +56,7 @@ CustomRandomSource randSource;
 #include "RobCheckinHousePage.h"
 #include "RobberyReplayMenuPage.h"
 #include "FetchRobberyReplayPage.h"
+#include "FetchSelfTestReplayPage.h"
 #include "ReplayRobHousePage.h"
 #include "StaleHousePage.h"
 
@@ -83,6 +84,7 @@ RobHousePage *robHousePage;
 RobCheckinHousePage *robCheckinHousePage;
 RobberyReplayMenuPage *robberyReplayMenuPage;
 FetchRobberyReplayPage *fetchRobberyReplayPage;
+FetchSelfTestReplayPage *fetchSelfTestReplayPage;
 ReplayRobHousePage *replayRobHousePage;
 StaleHousePage *staleHousePage;
 StaleHousePage *staleHouseDeadPage;
@@ -410,6 +412,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     robCheckinHousePage = new RobCheckinHousePage();
     robberyReplayMenuPage = new RobberyReplayMenuPage();
     fetchRobberyReplayPage = new FetchRobberyReplayPage();
+    fetchSelfTestReplayPage = new FetchSelfTestReplayPage();
     replayRobHousePage = new ReplayRobHousePage();
     staleHousePage = new StaleHousePage( false );
     staleHouseDeadPage = new StaleHousePage( true );
@@ -446,6 +449,7 @@ void freeFrameDrawer() {
     delete robCheckinHousePage;
     delete robberyReplayMenuPage;
     delete fetchRobberyReplayPage;
+    delete fetchSelfTestReplayPage;
     delete replayRobHousePage;
     delete staleHousePage;
     delete staleHouseDeadPage;
@@ -1212,6 +1216,17 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = robberyReplayMenuPage;
                 currentGamePage->base_makeActive( true );
                 }
+            else if( menuPage->getStartSelfTestReplay() ) {
+                HouseRecord *r = menuPage->getSelectedHouse();
+                
+                if( r != NULL ) {
+                    currentGamePage = fetchSelfTestReplayPage;
+                    
+                    fetchSelfTestReplayPage->setOwnerID( r->uniqueID );
+                    
+                    currentGamePage->base_makeActive( true );
+                    }
+                }
             else if( menuPage->getStartRobHouse() ) {
                 HouseRecord *r = menuPage->getSelectedHouse();
                 
@@ -1341,6 +1356,20 @@ void drawFrame( char inUpdate ) {
                 }
             else if( fetchRobberyReplayPage->getRecordReady() ) {
                 RobberyLog log = fetchRobberyReplayPage->getLogRecord();
+                
+                replayRobHousePage->setLog( log );
+                
+                currentGamePage = replayRobHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == fetchSelfTestReplayPage ) {
+            if( fetchSelfTestReplayPage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( fetchSelfTestReplayPage->getRecordReady() ) {
+                RobberyLog log = fetchSelfTestReplayPage->getLogRecord();
                 
                 replayRobHousePage->setLog( log );
                 

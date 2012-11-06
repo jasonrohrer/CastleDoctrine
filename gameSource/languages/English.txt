@@ -154,6 +154,7 @@ robberyLogNotFound "Failed to find the requested robbery log."
 
 
 nameYou "You"
+nameSelf "Self"
 
 startReplay "Play Tape"
 
