@@ -49,6 +49,7 @@ class MenuPage : public GamePage, public ActionListener {
         TextButton mRobHouseButton;
         
         TextButton mShowReplayListButton;
+        TextButton mProofReplayButton;
         
 
         char mStartEditHouse;

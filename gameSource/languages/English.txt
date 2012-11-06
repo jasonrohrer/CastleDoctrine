@@ -95,6 +95,7 @@ nameSearch "Name Search:"
 filter "Filter"
 startRobHouse "Rob House"
 listRobberyReplays "View Security Tapes"
+startProofReplay "View House Self-Test"
 
 
 startTileDescription "Welcome Mat"

@@ -14,6 +14,7 @@ Returns:
 minVersionNumber
 userID
 sequenceNumber
+adminStatus
 OK
 
 Where:
@@ -22,7 +23,7 @@ userID = unique user ID number
 sequenceNumber = sequence number for sha1 secure hashing of download keys
                  to sign future transactions.  Any transactions using
                  lower sequence numbers will be denied as stale replays. 
-
+adminStatus = 0 or 1
 
 
 

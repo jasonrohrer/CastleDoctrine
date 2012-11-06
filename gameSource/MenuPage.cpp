@@ -5,16 +5,19 @@
 
 extern Font *mainFont;
 
+extern int playerIsAdmin;
 
 
 
 
 MenuPage::MenuPage() 
         : mPickList( 0, 0, false, this ),
-          mEditHouseButton( mainFont, 4, -4, translate( "returnHome" ) ),
+          mEditHouseButton( mainFont, 4, -6, translate( "returnHome" ) ),
           mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
           mShowReplayListButton( mainFont, -4, -6, 
                                  translate( "listRobberyReplays" ) ),
+          mProofReplayButton( mainFont, 4, -4, 
+                              translate( "startProofReplay" ) ),
           mStartEditHouse( false ),
           mStartRobHouse( false ),
           mShowReplayList( false ) {
@@ -22,15 +25,18 @@ MenuPage::MenuPage()
     addComponent( &mEditHouseButton );
     addComponent( &mRobHouseButton );
     addComponent( &mShowReplayListButton );
+    addComponent( &mProofReplayButton );
     addComponent( &mPickList );
 
     mEditHouseButton.addActionListener( this );
     mRobHouseButton.addActionListener( this );
     mShowReplayListButton.addActionListener( this );
+    mProofReplayButton.addActionListener( this );
 
     mPickList.addActionListener( this );
 
     mRobHouseButton.setVisible( false );
+    mProofReplayButton.setVisible( false );
     }
 
 
@@ -70,9 +76,11 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mPickList ) {
         if( mPickList.getSelectedHouse() == NULL ) {
             mRobHouseButton.setVisible( false );
+            mProofReplayButton.setVisible( false );
             }
         else {
             mRobHouseButton.setVisible( true );
+            mProofReplayButton.setVisible( playerIsAdmin );
             }
         }
     else if( inTarget == &mRobHouseButton ) {

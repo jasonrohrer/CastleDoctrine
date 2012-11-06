@@ -158,6 +158,8 @@ char *downloadCode = NULL;
 // each new request to server must use next sequence number
 int serverSequenceNumber = -1;
 
+int playerIsAdmin = 0;
+
 
 
 static char wasPaused = false;

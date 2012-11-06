@@ -21,6 +21,7 @@ extern int userID;
 extern char *userEmail;
 extern char *downloadCode;
 extern int serverSequenceNumber;
+extern int playerIsAdmin;
 
 extern char gamePlayingBack;
 
@@ -118,12 +119,13 @@ void LoginPage::step() {
                             
                             char endString[10];
                             
-                            int numRead = sscanf( result, "%d %d %d %9s",
+                            int numRead = sscanf( result, "%d %d %d %d %9s",
                                                   &minClientVersion,
                                                   &userID,
                                                   &serverSequenceNumber,
+                                                  &playerIsAdmin,
                                                   endString );
-                            if( numRead != 4 ) {
+                            if( numRead != 5 ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "err_badServerResponse";
                                 printf( "Server response: %s\n", result );

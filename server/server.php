@@ -1090,7 +1090,7 @@ function cd_checkUser() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
     
     
-    $query = "SELECT user_id, blocked, sequence_number ".
+    $query = "SELECT user_id, blocked, sequence_number, admin ".
         "FROM $tableNamePrefix"."users ".
         "WHERE ticket_id = '$ticket_id' FOR UPDATE;";
     $result = cd_queryDatabase( $query );
@@ -1099,6 +1099,7 @@ function cd_checkUser() {
 
     $user_id;
     $sequence_number;
+    $admin;
     
     if( $numRows < 1 ) {
         // new user, in ticket server but not here yet
@@ -1115,7 +1116,7 @@ function cd_checkUser() {
 
         $user_id = mysql_insert_id();
         $sequence_number = 0;
-        
+        $admin = 0;
         
         cd_queryDatabase( "COMMIT;" );
         cd_queryDatabase( "SET AUTOCOMMIT=1" );
@@ -1145,6 +1146,7 @@ function cd_checkUser() {
         
         $user_id = $row[ "user_id" ];
         $sequence_number = $row[ "sequence_number" ];
+        $admin = $row[ "admin" ];
 
         
         $query = "SELECT COUNT(*) ".
@@ -1163,7 +1165,7 @@ function cd_checkUser() {
 
     global $cd_minClientVersion;
     
-    echo "$cd_minClientVersion $user_id $sequence_number OK";
+    echo "$cd_minClientVersion $user_id $sequence_number $admin OK";
     }
 
 
