@@ -727,6 +727,11 @@ function cd_setupDatabase() {
             "robber_deaths INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
+            // flag logs for which the owner is now dead (moved onto a new
+            // character/life) and can no longer see the log
+            // These area candidates for deletion after enough time has passed
+            // (admin should still have access to them for a while).
+            "owner_now_dead TINYINT NOT NULL," .
             "rob_time DATETIME NOT NULL,".
             "scouting_count INT NOT NULL,".
             "last_scout_time DATETIME NOT NULL,".
@@ -910,6 +915,7 @@ function cd_checkForFlush() {
 
     $flushInterval = "0 0:02:0.000";
     $staleTimeout = "0 0:05:0.000";
+    $staleLogTimeout = "5 0:00:0.000";
     // for testing:
     //$flushInterval = "0 0:00:30.000";
     //$staleTimeout = "0 0:01:0.000";
@@ -1028,6 +1034,32 @@ function cd_checkForFlush() {
 
             cd_log( "After flush, $count houses still checked out." );
             }
+
+
+        // check for stale robbery logs
+        $query = "DELETE ".
+            "FROM $tableNamePrefix"."robbery_logs ".
+            "WHERE owner_now_dead = 1 ".
+            "AND rob_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleLogTimeout' );";
+
+        $result = cd_queryDatabase( $query );
+
+        $staleLogsRemoved = mysql_affected_rows();
+
+        cd_log( "Flush removed $staleLogsRemoved stale robbery logs." );
+
+        if( $enableLog ) {
+            // count remaining games for log
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."robbery_logs;";
+
+            $result = cd_queryDatabase( $query );
+
+            $count = mysql_result( $result, 0, 0 );
+
+            cd_log( "After flush, $count robbery logs remain." );
+            }
+
 
         
         // set new flush time
@@ -2401,7 +2433,7 @@ function cd_endRobHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $ownerDied = false;
+    $ownerDied = 0;
     
     $query = "SELECT loot_value, house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
@@ -2441,7 +2473,7 @@ function cd_endRobHouse() {
             return;
             }
         else {
-            $ownerDied = true;
+            $ownerDied = 1;
             }
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
@@ -2585,13 +2617,13 @@ function cd_endRobHouse() {
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
             "(user_id, house_user_id, loot_value, ".
             " rob_attempts, robber_deaths,".
-            " robber_name, victim_name, rob_time, ".
+            " robber_name, victim_name, owner_now_dead, rob_time, ".
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
             " $user_id, $victim_id, '$loot_value', ".
             " '$rob_attempts', '$robber_deaths', ".
-            " '$robber_name', '$victim_name', ".
+            " '$robber_name', '$victim_name', '$ownerDied',".
             " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
             " '$old_house_map', '$loadout', '$move_list', ".
             " '$house_map' );";
@@ -2700,20 +2732,7 @@ function cd_listLoggedRobberies() {
 
 
     // get user's current character name
-    $tableName = $tableNamePrefix ."houses";
-    
-    $query = "SELECT character_name ".
-        "FROM $tableName ".
-        "WHERE user_id = '$user_id';";
-    $result = cd_queryDatabase( $query );
-
-    $numRows = mysql_numrows( $result );
-
-    $character_name = "";
-
-    if( $numRows > 0 ) {
-        $character_name = mysql_result( $result, 0, "character_name" );
-        }
+    $character_name = cd_getCharacterName( $user_id );
     
     
     
@@ -2791,7 +2810,8 @@ function cd_getRobberyLog() {
 
 
     $user_id = cd_getUserID();
-
+    $admin = cd_isAdmin( $user_id );
+    
 
     $log_id = cd_requestFilter( "log_id", "/\d+/" );
     
@@ -2817,6 +2837,18 @@ function cd_getRobberyLog() {
     $robber_name = $row[ "robber_name" ];
     $victim_name = $row[ "victim_name" ];
 
+    if( !$admin ) {
+        // if NOT admin
+        // don't allow user to obtain someone else's log
+        // OR a log for their past life
+        if( $user_id != $row[ "house_user_id" ] ||
+            $victim_name != cd_getCharacterName( $user_id ) ) {
+            cd_transactionDeny();
+            return;
+            }
+        }
+    
+    
     if( $user_id == $row[ "user_id" ] ) {
         $robber_name = "You";
         }
@@ -2851,6 +2883,7 @@ function cd_getSelfTestLog() {
     if( !cd_isAdmin( $user_id ) ) {
         cd_log( "Non-admin user $user_id tried to view a self-test log." );
         cd_transactionDeny();
+        return;
         }
     
 
@@ -3445,7 +3478,15 @@ function cd_newHouseForUser( $user_id ) {
             $query = "UPDATE $tableNamePrefix"."users SET ".
                 "character_name_history = '$character_name_history' ".
                 "WHERE user_id = '$user_id';";
-            mysql_query( $query );
+            cd_queryDatabase( $query );
+
+            // flag any robbery logs from past lives
+            $query = "UPDATE $tableNamePrefix"."robbery_logs SET ".
+                "owner_now_dead = 1 ".
+                "WHERE house_user_id = '$user_id' ".
+                "AND victim_name != '$character_name' ".
+                "AND owner_now_dead = 0;";
+            cd_queryDatabase( $query );
             }
         else {
             $errorNumber = mysql_errno();
