@@ -60,6 +60,7 @@ void PickerGridPage::pullFromPicker( HouseObjectPicker *inPicker ) {
             mPickerPageSlots[i]->setVisible( true );
             }
         }
+    delete [] records;
     }
 
                 
