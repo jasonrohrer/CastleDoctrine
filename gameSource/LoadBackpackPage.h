@@ -52,7 +52,16 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         char getDone() {
             return mDone;
             }
-            
+        
+
+        char showGridToolPicker() {
+            return mShowGridToolPicker;
+            }
+        
+        HouseObjectPicker *getToolPicker() {
+            return &mToolPicker;
+            }
+
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -76,6 +85,7 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         SpriteButton mBuyButton;
 
         char mDone;
+        char mShowGridToolPicker;
         
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];

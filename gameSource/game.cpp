@@ -76,6 +76,7 @@ CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 LoadBackpackPage *loadBackpackPage;
 PickerGridPage *objectPickerGridPage;
+PickerGridPage *toolPickerGridPage;
 AuctionPage *auctionPage;
 BuyAuctionPage *buyAuctionPage;
 RobHousePage *selfHouseTestPage;
@@ -401,7 +402,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
-    objectPickerGridPage = new PickerGridPage();
+    objectPickerGridPage = new PickerGridPage( false );
+    toolPickerGridPage = new PickerGridPage( true );
     auctionPage = new AuctionPage();
     buyAuctionPage = new BuyAuctionPage();
     
@@ -443,6 +445,7 @@ void freeFrameDrawer() {
     delete editHousePage;
     delete loadBackpackPage;
     delete objectPickerGridPage;
+    delete toolPickerGridPage;
     delete auctionPage;
     delete buyAuctionPage;
     delete selfHouseTestPage;
@@ -1051,6 +1054,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setPriceList( priceList );
+                    checkinHousePage->setMoveList( "" );
                     
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
@@ -1084,7 +1088,16 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == loadBackpackPage ) {
-            if( loadBackpackPage->getDone() ) {
+            if( loadBackpackPage->showGridToolPicker() ) {
+                toolPickerGridPage->setLootValue( 
+                    loadBackpackPage->getLootValue() );
+                toolPickerGridPage->pullFromPicker( 
+                    loadBackpackPage->getToolPicker() );
+                
+                currentGamePage = toolPickerGridPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( loadBackpackPage->getDone() ) {
                 // done changing backpack, back to editor
                 
                 char *vaultContents = loadBackpackPage->getVaultContents();
@@ -1120,6 +1133,20 @@ void drawFrame( char inUpdate ) {
                 
                 // back to editing
                 currentGamePage = editHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == toolPickerGridPage ) {
+            if( toolPickerGridPage->getDone() ) {
+                // tool picked
+                
+                int newTool = toolPickerGridPage->getSelectedObject();
+                
+                loadBackpackPage->getToolPicker()->
+                    setSelectedObject( newTool );
+                
+                // back to loading backpack
+                currentGamePage = loadBackpackPage;
                 currentGamePage->base_makeActive( true );
                 }
             }

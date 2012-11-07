@@ -86,7 +86,7 @@ char CheckinHousePage::getStartOver() {
 
 
 
-void CheckinHousePage::setHouseMap( char *inHouseMap ) {
+void CheckinHousePage::setHouseMap( const char *inHouseMap ) {
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
@@ -95,7 +95,7 @@ void CheckinHousePage::setHouseMap( char *inHouseMap ) {
 
 
 
-void CheckinHousePage::setVaultContents( char *inVaultContents ) {
+void CheckinHousePage::setVaultContents( const char *inVaultContents ) {
     if( mVaultContents != NULL ) {
         delete [] mVaultContents;
         }
@@ -104,7 +104,7 @@ void CheckinHousePage::setVaultContents( char *inVaultContents ) {
 
 
 
-void CheckinHousePage::setBackpackContents( char *inBackpackContents ) {
+void CheckinHousePage::setBackpackContents( const char *inBackpackContents ) {
     if( mBackpackContents != NULL ) {
         delete [] mBackpackContents;
         }
@@ -113,7 +113,7 @@ void CheckinHousePage::setBackpackContents( char *inBackpackContents ) {
 
 
 
-void CheckinHousePage::setGalleryContents( char *inGalleryContents ) {
+void CheckinHousePage::setGalleryContents( const char *inGalleryContents ) {
     if( mGalleryContents != NULL ) {
         delete [] mGalleryContents;
         }
@@ -122,7 +122,7 @@ void CheckinHousePage::setGalleryContents( char *inGalleryContents ) {
 
 
 
-void CheckinHousePage::setEditList( char *inEditList ) {
+void CheckinHousePage::setEditList( const char *inEditList ) {
     if( mEditList != NULL ) {
         delete [] mEditList;
         }
@@ -131,7 +131,7 @@ void CheckinHousePage::setEditList( char *inEditList ) {
 
 
 
-void CheckinHousePage::setPurchaseList( char *inPurchaseList ) {
+void CheckinHousePage::setPurchaseList( const char *inPurchaseList ) {
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
         }
@@ -140,7 +140,7 @@ void CheckinHousePage::setPurchaseList( char *inPurchaseList ) {
 
 
 
-void CheckinHousePage::setPriceList( char *inPriceList ) {
+void CheckinHousePage::setPriceList( const char *inPriceList ) {
     if( mPriceList != NULL ) {
         delete [] mPriceList;
         }
@@ -148,7 +148,7 @@ void CheckinHousePage::setPriceList( char *inPriceList ) {
     }
 
 
-void CheckinHousePage::setMoveList( char *inMoveList ) {
+void CheckinHousePage::setMoveList( const char *inMoveList ) {
     if( mMoveList != NULL ) {
         delete [] mMoveList;
         }

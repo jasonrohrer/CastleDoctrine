@@ -234,7 +234,12 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mToolPicker ) {
-        checkBuyButtonStatus();
+        if( mToolPicker.shouldShowGridView() ) {
+            mShowGridToolPicker = true;
+            }
+        else {
+            checkBuyButtonStatus();
+            }
         }
     else if( inTarget == &mUndoButton ) {
         if( mPurchaseHistory.size() > 0 ) {
@@ -400,6 +405,7 @@ void LoadBackpackPage::makeActive( char inFresh ) {
         }
     
     mDone = false;
+    mShowGridToolPicker = false;
     }
         
 

@@ -19,14 +19,14 @@ class CheckinHousePage : public GamePage, public ActionListener {
         virtual char getStartOver();
         
         // destroyed by caller
-        virtual void setHouseMap( char *inHouseMap );        
-        virtual void setVaultContents( char *inVaultContents );
-        virtual void setBackpackContents( char *inBackpackContents );
-        virtual void setGalleryContents( char *inGalleryContents );
-        virtual void setEditList( char *inEditList );
-        virtual void setPurchaseList( char *inPurchaseList );
-        virtual void setPriceList( char *inPriceList );
-        virtual void setMoveList( char *inMoveList );
+        virtual void setHouseMap( const char *inHouseMap );        
+        virtual void setVaultContents( const char *inVaultContents );
+        virtual void setBackpackContents( const char *inBackpackContents );
+        virtual void setGalleryContents( const char *inGalleryContents );
+        virtual void setEditList( const char *inEditList );
+        virtual void setPurchaseList( const char *inPurchaseList );
+        virtual void setPriceList( const char *inPriceList );
+        virtual void setMoveList( const char *inMoveList );
         
         // 0 or 1
         virtual void setDied( int inDied );

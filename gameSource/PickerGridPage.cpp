@@ -6,7 +6,7 @@
 
 
 
-PickerGridPage::PickerGridPage() {
+PickerGridPage::PickerGridPage( char inTools ) {
     doublePair pos = {-8, 5};
     
     
@@ -17,7 +17,8 @@ PickerGridPage::PickerGridPage() {
         
         for( int x = 0; x<PICKER_GRID_ROW; x++ ) {
         
-            mPickerPageSlots[slot] = new HouseObjectPicker( pos.x, pos.y );
+            mPickerPageSlots[slot] = new HouseObjectPicker( pos.x, pos.y,
+                                                            inTools );
             
             addComponent( mPickerPageSlots[slot] );
             mPickerPageSlots[slot]->addActionListener( this );

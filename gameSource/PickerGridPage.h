@@ -25,7 +25,7 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
         
     public:
         
-        PickerGridPage();
+        PickerGridPage( char inTools = false );
         
         virtual ~PickerGridPage();
         
