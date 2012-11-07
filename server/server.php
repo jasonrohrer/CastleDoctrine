@@ -2698,6 +2698,25 @@ function cd_listLoggedRobberies() {
 
     $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
 
+
+    // get user's current character name
+    $tableName = $tableNamePrefix ."houses";
+    
+    $query = "SELECT character_name ".
+        "FROM $tableName ".
+        "WHERE user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $character_name = "";
+
+    if( $numRows > 0 ) {
+        $character_name = mysql_result( $result, 0, "character_name" );
+        }
+    
+    
+    
     $whereClause = "";
     $specificUserClause = "";
     $searchClause = "";
@@ -2706,7 +2725,9 @@ function cd_listLoggedRobberies() {
         $searchClause = " robber_name LIKE '%$name_search%' ";
         }
     if( ! $admin ) {
-        $specificUserClause = " house_user_id = '$user_id' ";
+        $specificUserClause =
+            " house_user_id = '$user_id' AND ".
+            " victim_name = '$character_name' ";
         }
     if( $searchClause != "" || $specificUserClause != "" ) {
         $whereClause = " WHERE $searchClause ";
