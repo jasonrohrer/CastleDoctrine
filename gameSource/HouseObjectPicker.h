@@ -37,24 +37,14 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         // moves selected object to the top of the stack
         virtual void useSelectedObject();
-        
-
-        // gets list of object IDs that are actually shown on picker
-        // (doesn't included unplaceable objects)
-        // destroyed by caller
-        virtual int *getIDList( int *outNumIDs );
 
 
+        // the prices in this list determine what is shown on picker
+        // Thus, price list from server can override what objects are
+        // shown in picker (by pairing down list only, not adding to it).
         virtual void setPriceList( const char *inPriceList );
         
         
-        // inRecords destroyed by caller
-        // the records in this list determine what is shown on picker
-        // (Can be a subset of what is returned by getIDList)
-        // Thus, price list from server can override what objects are
-        // shown in picker (by pairing down list only, not adding to it).
-        virtual void setPrices( ObjectPriceRecord *inRecords, 
-                                int inNumRecords );
 
 
         // returns -1 if no price set
@@ -92,6 +82,10 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         void triggerToolTip();
         
         char isInside( float inX, float inY );
+        
+        // inRecords destroyed by caller
+        virtual void setPrices( ObjectPriceRecord *inRecords, 
+                                int inNumRecords );
 
     };
 

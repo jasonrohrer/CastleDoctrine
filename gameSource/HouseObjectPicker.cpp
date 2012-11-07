@@ -268,25 +268,6 @@ void HouseObjectPicker::draw() {
 
 
 
-int *HouseObjectPicker::getIDList( int *outNumIDs ) {
-    int numIDs = mObjectList.size();
-    
-    int *resultList = new int[ numIDs ];
-    
-
-    for( int i=0; i<numIDs; i++ ) {
-        ObjectPriceRecord *r = mObjectList.getElement( i );
-        
-        resultList[i] = r->id;
-        }
-    
-    *outNumIDs = numIDs;
-    return resultList;
-    }
-
-
-
-
 void HouseObjectPicker::setPriceList( const char *inPriceList ) {
     // parse it
     int numBigParts;
