@@ -27,10 +27,9 @@ class Button : public PageComponent, public ActionListenerList {
         // copied internally
         virtual void setMouseOverTip( const char *inTipMessage );
         
-
-        virtual void setVisible( char inIsVible );
         
-        virtual char isVisible();
+        // overrides to clear state when made invisible
+        virtual void setVisible( char inIsVible );
 
         
 

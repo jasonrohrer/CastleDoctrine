@@ -28,10 +28,14 @@ class PageComponent : public GUIComponent {
         // inTipMessage destroyed by caller
         virtual void setToolTipDirect( const char *inTipMessage );
 
-
+        
+        virtual void setVisible( char inIsVible ) {
+            mVisible = inIsVible;
+            }
+        
         
         virtual char isVisible() {
-            return true;
+            return mVisible;
             }
         
         
@@ -128,6 +132,7 @@ class PageComponent : public GUIComponent {
 
         PageComponent *mParent;
         
+        char mVisible;
 
     };
 

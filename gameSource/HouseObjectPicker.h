@@ -32,11 +32,15 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         virtual void actionPerformed( GUIComponent *inTarget );
         
+        virtual char shouldShowGridView();
+        
         
         virtual int getSelectedObject();
         
         // moves selected object to the top of the stack
         virtual void useSelectedObject();
+
+        virtual void setSelectedObject( int inObjectID );
 
 
         // the prices in this list determine what is shown on picker
@@ -44,6 +48,14 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         // shown in picker (by pairing down list only, not adding to it).
         virtual void setPriceList( const char *inPriceList );
         
+        
+        // inRecords destroyed by caller
+        virtual void setPrices( ObjectPriceRecord *inRecords, 
+                                int inNumRecords );
+
+        
+        // gets the price list in the original, server-provided order
+        virtual ObjectPriceRecord *getPrices( int *outNumPrices );
         
 
 
@@ -62,12 +74,16 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
         virtual void pointerMove( float inX, float inY );
         virtual void pointerDrag( float inX, float inY );
+        virtual void pointerUp( float inX, float inY );
+
 
         char mShowTools;
         double mSpriteScale;
+        char mShouldShowGridView;
         
-
         SimpleVector<ObjectPriceRecord> mObjectList;
+        // original order
+        SimpleVector<ObjectPriceRecord> mOriginalObjectList;
         // to block server-listed objects that we don't have locally
         SimpleVector<int> mLocalPresentIDs;
         
@@ -77,15 +93,13 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
 
         SpriteButton mUpButton;
         SpriteButton mDownButton;
+        SpriteButton mGridViewButton;
         
 
         void triggerToolTip();
         
         char isInside( float inX, float inY );
         
-        // inRecords destroyed by caller
-        virtual void setPrices( ObjectPriceRecord *inRecords, 
-                                int inNumRecords );
 
     };
 

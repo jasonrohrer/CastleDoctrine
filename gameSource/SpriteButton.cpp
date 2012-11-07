@@ -61,6 +61,15 @@ SpriteButton::~SpriteButton() {
 
 
 
+void SpriteButton::setSprite( SpriteHandle inSprite ) {
+    if( mShouldDestroySprite && mSprite != NULL ) {
+        freeSprite( mSprite );
+        }
+    mSprite = inSprite;
+    }
+
+
+
 void SpriteButton::drawContents() {
     if( mSprite != NULL ) {
         

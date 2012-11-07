@@ -52,6 +52,9 @@ openAuctionList "Auctions"
 openAuctionListTip "View currently running gallery auctions"
 
 
+gridView "View full grid of items"
+
+
 
 doneEdit "Done"
 

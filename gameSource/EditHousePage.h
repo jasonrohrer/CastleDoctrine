@@ -81,6 +81,14 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char showAuctions() {
             return mShowAuctions;
             }
+
+        char showGridObjectPicker() {
+            return mShowGridObjectPicker;
+            }
+        
+        HouseObjectPicker *getObjectPicker() {
+            return &mObjectPicker;
+            }
             
 
         virtual void actionPerformed( GUIComponent *inTarget );
@@ -121,7 +129,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char mDone;
         char mShowLoadBackpack;
         char mShowAuctions;
-
+        char mShowGridObjectPicker;
+        
         void checkIfPlacementAllowed();
 
     };

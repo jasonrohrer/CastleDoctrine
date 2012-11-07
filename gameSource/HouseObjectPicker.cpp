@@ -40,19 +40,26 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
         : PageComponent( inX, inY ),
           mShowTools( inTools ), 
           mSpriteScale( 1 / 32.0 ),
+          mShouldShowGridView( false ),
           mSelectedIndex( -1 ),
           mPixWidth( 1/16.0 ),
-          mUpButton( "up.tga", -1.25, 1, mPixWidth ),
-          mDownButton( "down.tga", -1.25, -1, mPixWidth ) {
+          mUpButton( "up.tga", -1.25, 1, mPixWidth ), 
+          mDownButton( "down.tga", -1.25, -1, mPixWidth ),
+          mGridViewButton( "gridView.tga", 1.25, 1, mPixWidth ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
+    mGridViewButton.setVisible( false );
     
     addComponent( &mUpButton );
     addComponent( &mDownButton );
+    addComponent( &mGridViewButton );
 
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
+    mGridViewButton.addActionListener( this );
+
+    mGridViewButton.setMouseOverTip( translate( "gridView" ) );
 
     
     int numObjects;
@@ -135,7 +142,11 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
             }
         change = true;    
         }
-
+    else if( inTarget == &mGridViewButton ) {
+        mShouldShowGridView = true;
+        fireActionPerformed( this );
+        }
+    
     
     if( change ) {
         triggerToolTip();
@@ -145,6 +156,33 @@ void HouseObjectPicker::actionPerformed( GUIComponent *inTarget ) {
     
     }
 
+
+void HouseObjectPicker::setSelectedObject( int inObjectID ) {
+    int numIDs = mObjectList.size();
+    
+    for( int i=0; i<numIDs; i++ ) {
+        ObjectPriceRecord *r = mObjectList.getElement( i );
+        
+        if( r->id == inObjectID ) {
+            mSelectedIndex = i;
+            // auto-move it to top of stack
+            useSelectedObject();
+
+            triggerToolTip();
+            fireActionPerformed( this );
+            }
+        }
+    }
+
+
+
+
+
+char HouseObjectPicker::shouldShowGridView() {
+    char show = mShouldShowGridView;
+    mShouldShowGridView = false;
+    return show;
+    }
 
 
 
@@ -316,6 +354,15 @@ void HouseObjectPicker::setPriceList( const char *inPriceList ) {
     delete [] bigParts;
     }
 
+
+
+
+ObjectPriceRecord *HouseObjectPicker::getPrices( int *outNumPrices ) {
+    *outNumPrices = mOriginalObjectList.size();
+    return mOriginalObjectList.getElementArray();
+    }
+
+
         
         
 void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords, 
@@ -337,20 +384,29 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
         for( int j=0; j<mLocalPresentIDs.size(); j++ ) {
             if( r.id == *( mLocalPresentIDs.getElement( j ) ) ) {
                 mObjectList.push_back( r );
+                mOriginalObjectList.push_back( r );
                 break;
                 }
             }
         }
 
-    if( mObjectList.size() > 0 ) {
-        mSelectedIndex = 0;
-        mUpButton.setVisible( false );
+    mUpButton.setVisible( false );
+
+    if( mObjectList.size() > 1 ) {
+        mGridViewButton.setVisible( true );
         mDownButton.setVisible( true );
         }
     else {
-        mSelectedIndex = -1;
-        mUpButton.setVisible( false );
+        mGridViewButton.setVisible( false );
         mDownButton.setVisible( false );
+        }
+    
+
+    if( mObjectList.size() > 0 ) {
+        mSelectedIndex = 0;
+        }
+    else {
+        mSelectedIndex = -1;
         }
     }
 
@@ -389,6 +445,17 @@ void HouseObjectPicker::pointerMove( float inX, float inY ) {
 
 void HouseObjectPicker::pointerDrag( float inX, float inY ) {
     pointerMove( inX, inY );
+    }
+
+
+void HouseObjectPicker::pointerUp( float inX, float inY ) {
+    if( mObjectList.size() == 1 ) {
+        // a single-object picker
+        // have it behave like a button
+        if( isInside( inX, inY ) ) {
+            fireActionPerformed( this );
+            }
+        }
     }
 
 

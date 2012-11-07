@@ -47,6 +47,7 @@ CustomRandomSource randSource;
 #include "CheckoutHousePage.h"
 #include "EditHousePage.h"
 #include "LoadBackpackPage.h"
+#include "PickerGridPage.h"
 #include "AuctionPage.h"
 #include "BuyAuctionPage.h"
 #include "CheckinHousePage.h"
@@ -74,6 +75,7 @@ LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
 EditHousePage *editHousePage;
 LoadBackpackPage *loadBackpackPage;
+PickerGridPage *objectPickerGridPage;
 AuctionPage *auctionPage;
 BuyAuctionPage *buyAuctionPage;
 RobHousePage *selfHouseTestPage;
@@ -399,6 +401,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkoutHousePage = new CheckoutHousePage();
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
+    objectPickerGridPage = new PickerGridPage();
     auctionPage = new AuctionPage();
     buyAuctionPage = new BuyAuctionPage();
     
@@ -439,6 +442,7 @@ void freeFrameDrawer() {
     delete checkoutHousePage;
     delete editHousePage;
     delete loadBackpackPage;
+    delete objectPickerGridPage;
     delete auctionPage;
     delete buyAuctionPage;
     delete selfHouseTestPage;
@@ -993,6 +997,15 @@ void drawFrame( char inUpdate ) {
                 delete [] purchaseList;
                 delete [] priceList;
                 }
+            else if( editHousePage->showGridObjectPicker() ) {
+                objectPickerGridPage->setLootValue( 
+                    editHousePage->getLootValue() );
+                objectPickerGridPage->pullFromPicker( 
+                    editHousePage->getObjectPicker() );
+                
+                currentGamePage = objectPickerGridPage;
+                currentGamePage->base_makeActive( true );
+                }
             else if( editHousePage->showAuctions() ) {
                 // FIXME
                 // char *galleryContents = editHousePage->getGalleryContents();
@@ -1090,6 +1103,20 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] purchaseList;
+                
+                // back to editing
+                currentGamePage = editHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == objectPickerGridPage ) {
+            if( objectPickerGridPage->getDone() ) {
+                // object picked
+                
+                int newObject = objectPickerGridPage->getSelectedObject();
+                
+                editHousePage->getObjectPicker()->
+                    setSelectedObject( newObject );
                 
                 // back to editing
                 currentGamePage = editHousePage;

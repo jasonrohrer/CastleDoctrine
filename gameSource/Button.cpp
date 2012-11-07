@@ -42,17 +42,11 @@ void Button::setMouseOverTip( const char *inTipMessage ) {
 
 
 void Button::setVisible( char inIsVible ) {
-    mVisible = inIsVible;
-    
+    PageComponent::setVisible( inIsVible );
+        
     if( ! mVisible ) {
         clearState();
         }
-    }
-
-
-
-char Button::isVisible() {
-    return mVisible;
     }
 
 

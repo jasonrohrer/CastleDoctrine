@@ -285,8 +285,13 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mObjectPicker ) {
-        // change in picked object
-        checkIfPlacementAllowed();
+        if( mObjectPicker.shouldShowGridView() ) {
+            mShowGridObjectPicker = true;
+            }
+        else {
+            // change in picked object
+            checkIfPlacementAllowed();
+            }
         }
     else if( inTarget == &mUndoButton ) {
         
@@ -321,6 +326,7 @@ void EditHousePage::makeActive( char inFresh ) {
     mDone = false;
     mShowLoadBackpack = false;
     mShowAuctions = false;
+    mShowGridObjectPicker = false;
     }
         
 

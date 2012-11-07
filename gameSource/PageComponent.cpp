@@ -4,7 +4,7 @@
 
 
 PageComponent::PageComponent( double inX, double inY )
-        : mX( inX ), mY( inY ), mParent( NULL ) {
+        : mX( inX ), mY( inY ), mParent( NULL ), mVisible( true ) {
     
     }
         
