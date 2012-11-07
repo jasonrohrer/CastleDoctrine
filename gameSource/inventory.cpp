@@ -98,6 +98,10 @@ void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
         
         if( r->objectID == inSubtractObjectID ) {
             r->quantity -= inSubtraction;
+
+            if( r->quantity == 0 ) {
+                inOldQuanties->deleteElement( j );
+                }
             break;
             }
         }
