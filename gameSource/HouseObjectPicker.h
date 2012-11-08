@@ -68,14 +68,23 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         virtual void draw();
         
+        virtual void setVisible( char inIsVible );
 
 
     protected:
-
+        virtual void clearState() {
+            mHover = false;
+            mDragOver = false;
+            }
+        
         virtual void pointerMove( float inX, float inY );
         virtual void pointerDrag( float inX, float inY );
         virtual void pointerUp( float inX, float inY );
-
+        virtual void pointerDown( float inX, float inY );
+        
+        char mHover;
+        char mDragOver;
+        
 
         char mShowTools;
         double mSpriteScale;

@@ -38,6 +38,8 @@ static const char *blockList[BLOCK_LIST_SIZE] =
 HouseObjectPicker::HouseObjectPicker( double inX, double inY,
                                       char inTools )
         : PageComponent( inX, inY ),
+          mHover( false ),
+          mDragOver( false ),
           mShowTools( inTools ), 
           mSpriteScale( 1 / 32.0 ),
           mShouldShowGridView( false ),
@@ -263,17 +265,35 @@ void HouseObjectPicker::draw() {
             }
         
         doublePair center = { 0, 0 };
+
+
+        // color like a reactive button if we have only 1 item
+        char oneItem = ( mObjectList.size() == 1 );
+        if( oneItem && mHover && ! mDragOver ) {    
+            setDrawColor( 0.75, 0.75, 0.75, 1 );
+            }
+        else if( oneItem && mDragOver ) {
+            setDrawColor( 0.25, 0.25, 0.25, 1 );
+            }
+        else {
+            setDrawColor( 0.5, 0.5, 0.5, 1 );
+            }
         
-
-        setDrawColor( 0.5, 0.5, 0.5, 1 );
-
         drawSquare( center, 1 );
         
         if( mShowTools ) {
             // gray background to match backpack slot backgrounds
-            setDrawColor( 0.25, 0.25, 0.25, 1 );
+            
+            if( oneItem && mDragOver ) {
+                setDrawColor( 0.1, 0.1, 0.1, 1 );
+                }
+            else {
+                setDrawColor( 0.25, 0.25, 0.25, 1 );
+                }
             }
         else {
+            // no drag-over darkening behavior
+            // (already black)
             setDrawColor( 0, 0, 0, 1 );
             }
         
@@ -448,26 +468,56 @@ char HouseObjectPicker::isInside( float inX, float inY ) {
 void HouseObjectPicker::pointerMove( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         triggerToolTip();
+        mHover = true;
+        }
+    else {
+        mHover = false;
         }
     }
 
 
 
 void HouseObjectPicker::pointerDrag( float inX, float inY ) {
-    pointerMove( inX, inY );
+    if( isInside( inX, inY ) ) {
+        mDragOver = true;
+        triggerToolTip();
+        }
+    else {
+        mDragOver = false;
+        }
+    mHover = false;
     }
 
 
 void HouseObjectPicker::pointerUp( float inX, float inY ) {
+    mDragOver = false;
     if( mObjectList.size() == 1 ) {
         // a single-object picker
         // have it behave like a button
         if( isInside( inX, inY ) ) {
             fireActionPerformed( this );
+            mHover = true;
+            }
+        else {
+            mHover = false;
             }
         }
     }
 
 
+
+void HouseObjectPicker::pointerDown( float inX, float inY ) {
+    pointerDrag( inX, inY );
+    }
+
+
+
+void HouseObjectPicker::setVisible( char inIsVible ) {
+    PageComponent::setVisible( inIsVible );
+        
+    if( ! mVisible ) {
+        clearState();
+        }
+    }
 
 
