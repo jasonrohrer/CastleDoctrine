@@ -13,11 +13,12 @@
 
 
 
-#define PICKER_GRID_ROW  5
+#define NUM_SLOTS_PER_PICKER_GRID_ROW  4
 
-#define PICKER_GRID_NUM_ROWS  5
+#define NUM_PICKER_GRID_ROWS  3
 
-#define PICKER_GRID_PAGE ( PICKER_GRID_NUM_ROWS * PICKER_GRID_ROW )
+#define NUM_SLOTS_PER_PICKER_GRID_PAGE ( NUM_PICKER_GRID_ROWS * \
+                                         NUM_SLOTS_PER_PICKER_GRID_ROW )
 
 
 
@@ -65,7 +66,16 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
         SimpleVector<ObjectPriceRecord> mObjectList;
         
         
-        HouseObjectPicker *mPickerPageSlots[ PICKER_GRID_PAGE ];
+        HouseObjectPicker *mPickerPageSlots[ NUM_SLOTS_PER_PICKER_GRID_PAGE ];
+        
+        SpriteButton mUpButton;
+        SpriteButton mDownButton;
+
+
+        int mDisplayOffset;
+        
+        void setUpDownVisibility();
+        void populateSlots();
         
 
     };

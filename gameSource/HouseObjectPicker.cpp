@@ -297,7 +297,16 @@ void HouseObjectPicker::draw() {
         
         doublePair pricePos ={ -0.25, -1.5 };
         
-        mainFont->drawString( priceString, pricePos, alignLeft );
+        TextAlignment align = alignLeft;
+        
+        // no up-down buttons to get in the way
+        // center price
+        if( mObjectList.size() == 1 ) {
+            pricePos.x = center.x;
+            align = alignCenter;
+            }
+        
+        mainFont->drawString( priceString, pricePos, align );
 
         delete [] priceString;        
         }
