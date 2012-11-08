@@ -378,7 +378,8 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
                                    int inNumRecords ) {
 
     mObjectList.deleteAll();
-
+    mOriginalObjectList.deleteAll();
+    
     for( int i=0; i<inNumRecords; i++ ) {
         ObjectPriceRecord r = inRecords[i];
         
