@@ -23,11 +23,10 @@ extern double frameRateFactor;
 
 
 // these cannot be manually placed by user
-#define BLOCK_LIST_SIZE 4
+#define BLOCK_LIST_SIZE 3
 
 static const char *blockList[BLOCK_LIST_SIZE] = 
-{ "floor",
-  "start",
+{ "start",
   "vault_goal",
   "wall_exterior" 
     };

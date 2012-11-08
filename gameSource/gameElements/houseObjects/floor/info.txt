@@ -1,2 +1,2 @@
 0
-"Floor"
+"Empty Floor"

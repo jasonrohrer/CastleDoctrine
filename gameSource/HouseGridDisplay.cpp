@@ -1110,7 +1110,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             
             // no highlight over start, robber, or permanents
-            int highlightPick = 0;
+            int highlightPick = -1;
             
             if( mHighlightIndex == i &&
                 fullI != mStartIndex &&
@@ -1120,24 +1120,28 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( mPicker != NULL ) {
                     highlightPick = mPicker->getSelectedObject();
                     }
-                
-                char highlightAboveShadows = 
-                    isPropertySet( highlightPick, 0, structural ) ||
-                    isPropertySet( highlightPick, 0, shadowMaking );
+                else {
+                    
+                    char highlightAboveShadows = 
+                        isPropertySet( highlightPick, 0, structural ) ||
+                        isPropertySet( highlightPick, 0, shadowMaking );
 
-                if( ( highlightAboveShadows && inBeneathShadowsOnly ) 
-                    ||
-                    ( ! highlightAboveShadows && ! inBeneathShadowsOnly ) ) {
+                    if( ( highlightAboveShadows && inBeneathShadowsOnly ) 
+                        ||
+                        ( ! highlightAboveShadows && 
+                          ! inBeneathShadowsOnly ) ) {
                     
-                    // only draw each highlight once (along with other objects
-                    // that share its shadow-casting status)
+                        // only draw each highlight once 
+                        // (along with other objects
+                        //  that share its shadow-casting status)
                     
-                    highlightPick = 0;
+                        highlightPick = -1;
+                        }
                     }
                 }
 
 
-            if( highlightPick != 0 ) {
+            if( highlightPick != -1 ) {
                     
                 if( !mGoalSet ) {
                     // ghost of goal for placement
@@ -1152,7 +1156,11 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
-                else if( houseTile == highlightPick || houseTile == GOAL_ID ) {
+                else if( ( highlightPick == 0 && houseTile != 0 ) || 
+                         ( highlightPick != 0 && 
+                           houseTile == highlightPick ) || 
+                         houseTile == GOAL_ID ) {
+                    
                     // darken existing tile to imply removal on click
                     setDrawColor( 0, 0, 0, 0.35 );
                     
@@ -1512,16 +1520,23 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
             int old = mHouseSubMapIDs[ index ];
             int oldMobile = mHouseMapMobileIDs[ fullIndex ];
 
-            if( mPlaceOnDrag && 
-                old != mPointerDownObjectID &&
-                oldMobile != mPointerDownObjectID ) {
+            // placement of floor is always drag-place
+            if( mPlaceOnDrag &&
+                ( mPointerDownObjectID == 0 ||
+                  old != mPointerDownObjectID &&
+                  oldMobile != mPointerDownObjectID ) ) {
                 
                 // drag-place
                 if( mAllowPlacement ) {
                     mHouseSubMapIDs[ index ] = mPointerDownObjectID;
                     mLastPlacedObject = mPointerDownObjectID;
 
-                    logEdit( fullIndex, mPointerDownObjectID );
+                    // avoid logging floor-on-floor placement as edits
+                    if( old != mPointerDownObjectID || 
+                        oldMobile != mPointerDownObjectID ) {
+
+                        logEdit( fullIndex, mPointerDownObjectID );
+                        }
                     
                     // changes reset state
                     mHouseSubMapCellStates[ index ] = 0;
@@ -1621,8 +1636,9 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
             
             int picked = mPicker->getSelectedObject();
             
-        
-            if( old != picked && oldMobile != picked ) {
+            // floor placement always counts as place mode
+            if( picked == 0 ||
+                old != picked && oldMobile != picked ) {
                 // place mode (or replace mode)
                 if( mAllowPlacement ) {
                     mHouseSubMapIDs[ index ] = picked;
@@ -1630,7 +1646,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                     mPointerDownObjectID = picked;
                     mPlaceOnDrag = true;
 
-                    logEdit( fullIndex, picked );
+                    // avoid logging floor-on-floor placement as edits
+                    if( old != picked || oldMobile != picked ) {    
+                        logEdit( fullIndex, picked );
+                        }
                     
                     // changes reset state
                     mHouseSubMapCellStates[ index ] = 0;
