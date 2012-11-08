@@ -52,7 +52,8 @@ openAuctionList "Auctions"
 openAuctionListTip "View currently running gallery auctions"
 
 
-gridView "View full grid of items"
+gridViewObjects "View full grid of objects"
+gridViewTools "View full grid of tools"
 
 
 

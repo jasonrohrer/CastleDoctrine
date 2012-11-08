@@ -60,7 +60,11 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
     mDownButton.addActionListener( this );
     mGridViewButton.addActionListener( this );
 
-    mGridViewButton.setMouseOverTip( translate( "gridView" ) );
+    const char *gridKey = "gridViewObjects";
+    if( mShowTools ) {
+        gridKey = "gridViewTools";
+        }
+    mGridViewButton.setMouseOverTip( gridKey );
 
     
     int numObjects;
