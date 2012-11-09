@@ -10,7 +10,6 @@ Button::Button( double inX, double inY,
                 double inWide, double inHigh,
                 double inPixelSize )
         : PageComponent( inX, inY ),
-          mVisible( true ), 
           mHover( false ), mDragOver( false ),
           mWide( inWide ), mHigh( inHigh ), mPixWidth( inPixelSize ),
           mMouseOverTip( NULL ) {

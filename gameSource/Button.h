@@ -50,7 +50,6 @@ class Button : public PageComponent, public ActionListenerList {
         virtual void pointerUp( float inX, float inY );        
 
 
-        char mVisible;
         char mHover;
         char mDragOver;
 
