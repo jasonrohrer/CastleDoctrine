@@ -163,6 +163,7 @@ void Button::pointerUp( float inX, float inY ) {
     mDragOver = false;
     if( isInside( inX, inY ) ) {
         mHover = true;
+        setToolTipDirect( "" );
         fireActionPerformed( this );
         }
     }        
