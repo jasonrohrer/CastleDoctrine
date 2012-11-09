@@ -37,6 +37,10 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         void setPurchaseList( char *inPurchaseList );
         char *getPurchaseList();
         
+        // list of sold items removed from vault/backpack
+        void setSellList( char *inSellList );
+        char *getSellList();
+
         
         // destroyed by caller
         void setPriceList( char *inPriceList );
@@ -77,9 +81,13 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
     protected:
         
         int mLootValue;
+        
+        char mSellMode;
 
         HouseObjectPicker mToolPicker;
         TextButton mDoneButton;
+        TextButton mSellModeButton;
+        TextButton mBuyModeButton;
         KeyEquivalentTextButton mUndoButton;
         
         SpriteButton mBuyButton;
@@ -93,14 +101,18 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         InventorySlotButton *mVaultSlots[ NUM_VAULT_SLOTS ];
 
         SimpleVector<QuantityRecord> mPurchaseRecords;
+        SimpleVector<QuantityRecord> mSellRecords;
         
         // for undo
+        // positive IDs here represent purchases
+        // negative IDs represent sales
         SimpleVector<int> mPurchaseHistory;
         
 
         void checkBuyButtonStatus();
         void checkUndoStatus();
         
+        void checkSellModeStatus();
 
 
     };

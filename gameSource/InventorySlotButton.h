@@ -18,6 +18,16 @@ class InventorySlotButton : public SpriteButton {
                              double inX, double inY, 
                              double inDrawScale = 1.0 );
 
+        // Controls tool tip
+        // 0 for no transfer on click
+        // 1 for transfer to vault
+        // 2 for transfer to backpack
+        // 3 for selling item
+        //
+        // defaults to 0
+        virtual void setTransferStatus( int inStatus );
+        
+
         // if ID is -1, slot is cleared
         virtual void setObject( int inID );
 
@@ -25,6 +35,11 @@ class InventorySlotButton : public SpriteButton {
         void setQuantity( int inQuantity );
         
         int getQuantity();
+
+
+        // used for tool tip when transfer status is 3 (sell mode)
+        void setSellPrice( int inSellPrice );
+        
 
         // -1 if empty
         int getObject();
@@ -43,6 +58,11 @@ class InventorySlotButton : public SpriteButton {
         int mObjectID;
         
         int mQuantity;
+        
+        
+        int mTransferStatus;
+        
+        int mSellPrice;
         
 
         // override from SpriteButton to display quantity

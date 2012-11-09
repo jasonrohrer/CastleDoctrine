@@ -37,6 +37,7 @@ returnHome "Return to Your House"
 editDescription "Work on your house:"
 
 loadBackpackDescription "Load your backpack:"
+loadBackpackSellModeDescription "Sell tools:"
 
 backpackLabel "Backpack:"
 vaultLabel "Vault:"
@@ -46,6 +47,7 @@ loadBackpack "Backpack"
 loadBackpackTip "Load your backpack before leaving"
 
 backpackUndoTip "Undo purchase of %s"
+backpackSellUndoTip "Undo sale of %s"
 
 openAuctionList "Auctions"
 
@@ -67,6 +69,17 @@ galleryArchiveLabel "Archive:"
 editBalance "Balance:"
 
 buyTip "Buy %s for backpack"
+backpackSlotTip "Move %s to vault"
+vaultSlotTip "Move %s to backpack"
+sellSlotTip "Sell %s for $%d" 
+
+
+sellMode "Sell Mode"
+buyMode "Buy Mode"
+
+sellModeTip "Switch to selling tools"
+buyModeTip "Switch to buying tools"
+
 
 
 selfTestDescription "Prove that your house is fair:"

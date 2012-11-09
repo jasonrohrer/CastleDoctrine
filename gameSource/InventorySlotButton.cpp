@@ -8,6 +8,7 @@
 
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/game/game.h"
 
 
 
@@ -20,11 +21,35 @@ InventorySlotButton::InventorySlotButton( Font *inDisplayFont,
         mFont( inDisplayFont ),
         mObjectID( -1 ),
         mQuantity( 0 ),
+        mTransferStatus( 0 ),
+        mSellPrice( 0 ),
         mRingOn( false ) {
     
     mPixWidth *= 2;
     
     mOverrideHighlightColor = true;
+    }
+
+
+
+void InventorySlotButton::setTransferStatus( int inStatus ) {
+    mTransferStatus = inStatus;
+    
+    // reset object (potentially change to tool tip)
+    int oldQuantity = mQuantity;
+    setObject( mObjectID );
+    setQuantity( oldQuantity );
+    }
+
+
+
+void InventorySlotButton::setSellPrice( int inSellPrice ) {
+    mSellPrice = inSellPrice;
+
+    // reset object (potentially change to tool tip)
+    int oldQuantity = mQuantity;
+    setObject( mObjectID );
+    setQuantity( oldQuantity );
     }
 
 
@@ -38,7 +63,35 @@ void InventorySlotButton::setObject( int inID ) {
         mQuantity = 0;
         }
     else {
-        setMouseOverTip( getToolDescription( mObjectID ) );
+        const char *toolDescription = getToolDescription( mObjectID );
+        
+        switch( mTransferStatus ) {
+            case 1: {
+                char *tip = autoSprintf( translate( "backpackSlotTip" ),
+                                         toolDescription );
+                setMouseOverTip( tip );
+                delete [] tip;
+                }
+                break;
+            case 2: {
+                char *tip = autoSprintf( translate( "vaultSlotTip" ),
+                                         toolDescription );
+                setMouseOverTip( tip );
+                delete [] tip;
+                }
+                break;
+            case 3: {
+                char *tip = autoSprintf( translate( "sellSlotTip" ),
+                                         toolDescription, mSellPrice );
+                setMouseOverTip( tip );
+                delete [] tip;
+                }
+                break;
+            default:
+                setMouseOverTip( toolDescription );
+                break;
+            }
+                
         mSprite = getToolSprite( mObjectID );
         mQuantity = 1;
         }

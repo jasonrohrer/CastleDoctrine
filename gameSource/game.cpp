@@ -942,8 +942,9 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setMustSelfTest( mustSelfTest );
                     
                     // empty, because house just checked out an nothing
-                    // bought yet
+                    // bought/sold yet
                     editHousePage->setPurchaseList( "#" );
+                    editHousePage->setSellList( "#" );
                     
 
                     delete [] houseMap;
@@ -983,6 +984,7 @@ void drawFrame( char inUpdate ) {
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
                 char *purchaseList = editHousePage->getPurchaseList();
+                char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
                 
                 loadBackpackPage->setLootValue( 
@@ -990,6 +992,7 @@ void drawFrame( char inUpdate ) {
                 loadBackpackPage->setVaultContents( vaultContents );
                 loadBackpackPage->setBackpackContents( backpackContents );
                 loadBackpackPage->setPurchaseList( purchaseList );
+                loadBackpackPage->setSellList( sellList );
                 loadBackpackPage->setPriceList( priceList );
                 
                 currentGamePage = loadBackpackPage;
@@ -998,6 +1001,7 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] purchaseList;
+                delete [] sellList;
                 delete [] priceList;
                 }
             else if( editHousePage->showGridObjectPicker() ) {
@@ -1029,6 +1033,7 @@ void drawFrame( char inUpdate ) {
                 char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
                 char *purchaseList = editHousePage->getPurchaseList();
+                char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
                 
                 if( editHousePage->houseMapChanged() ) {
@@ -1053,6 +1058,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
+                    checkinHousePage->setSellList( sellList );
                     checkinHousePage->setPriceList( priceList );
                     checkinHousePage->setMoveList( "#" );
                     
@@ -1066,6 +1072,7 @@ void drawFrame( char inUpdate ) {
                 delete [] galleryContents;
                 delete [] editList;
                 delete [] purchaseList;
+                delete [] sellList;
                 delete [] priceList;
                 }
             }
@@ -1104,10 +1111,12 @@ void drawFrame( char inUpdate ) {
                 char *backpackContents = 
                     loadBackpackPage->getBackpackContents();
                 char *purchaseList = loadBackpackPage->getPurchaseList();
+                char *sellList = loadBackpackPage->getSellList();
                 
                 editHousePage->setVaultContents( vaultContents );
                 editHousePage->setBackpackContents( backpackContents );
                 editHousePage->setPurchaseList( purchaseList );
+                editHousePage->setSellList( sellList );
                 
                 editHousePage->setLootValue( 
                     loadBackpackPage->getLootValue() );
@@ -1116,6 +1125,7 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] purchaseList;
+                delete [] sellList;
                 
                 // back to editing
                 currentGamePage = editHousePage;
@@ -1192,6 +1202,7 @@ void drawFrame( char inUpdate ) {
                 char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
                 char *purchaseList = editHousePage->getPurchaseList();
+                char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
                 
                 char *moveList = selfHouseTestPage->getMoveList();
@@ -1205,6 +1216,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
+                    checkinHousePage->setSellList( sellList );
                     checkinHousePage->setPriceList( priceList );
                     checkinHousePage->setMoveList( moveList );
                     checkinHousePage->setDied( 0 );
@@ -1221,6 +1233,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
+                    checkinHousePage->setSellList( sellList );
                     checkinHousePage->setPriceList( priceList );
                     checkinHousePage->setMoveList( moveList );
                     checkinHousePage->setDied( 1 );
@@ -1246,6 +1259,7 @@ void drawFrame( char inUpdate ) {
                 delete [] galleryContents;
                 delete [] editList;
                 delete [] purchaseList;
+                delete [] sellList;
                 delete [] priceList;
                 delete [] moveList;
                 }

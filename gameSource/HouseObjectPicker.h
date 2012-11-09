@@ -62,6 +62,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         // returns -1 if no price set
         virtual int getPrice( int inObjectID );
 
+        // returns -1 if no sell-back price set
+        virtual int getSellBackPrice( int inObjectID );
 
 
         virtual void step();

@@ -461,6 +461,18 @@ int HouseObjectPicker::getPrice( int inObjectID ) {
 
 
 
+int HouseObjectPicker::getSellBackPrice( int inObjectID ) {
+    int price = getPrice( inObjectID );
+    
+    if( price == -1 ) {
+        return -1;
+        }
+    
+    return price / 2;
+    }
+
+
+
 char HouseObjectPicker::isInside( float inX, float inY ) {
     return fabs( inX ) < 1 &&
         fabs( inY ) < 1;

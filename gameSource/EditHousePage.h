@@ -48,6 +48,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         // list of purchases added to vault/backpack
         void setPurchaseList( const char *inPurchaseList );
         char *getPurchaseList();
+
+        void setSellList( const char *inSellList );
+        char *getSellList();
         
         
         // destroyed by caller
@@ -111,6 +114,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *mPriceList;
         
         char *mPurchaseList;
+        char *mSellList;
 
         int mLootValue;
 

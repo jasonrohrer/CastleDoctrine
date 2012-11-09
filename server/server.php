@@ -1553,6 +1553,43 @@ function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
 
 
 
+// takes strings that are ID:quantity pairs, like:
+// 101:3#3:10#5:1#102:1
+//
+// And computes a subtraction operation, returning a new string,
+// subtracting the quantities in B from A.
+// This may result in negative quanties in the result.
+function cd_idQuantitySubtract( $inIDQuantityStringA, $inIDQuantityStringB ) {
+
+    $arrayA = cd_idQuanityStringToArray( $inIDQuantityStringA );
+    $arrayB = cd_idQuanityStringToArray( $inIDQuantityStringB );
+    
+    // start with A as base, subract out (or append negative)
+    // ID/quantities from B
+    $result = $arrayA;
+
+    foreach( $arrayB as $id => $quantity ) {    
+        if( array_key_exists( $id, $result ) ) {
+            // exists in A, subtract B's quantity
+            $result[ $id ] -= $quantity;
+            
+            if( $result[ $id ] == 0 ) {
+                // remove from array completely if quantity 0
+                unset( $result[ $id ] );
+                }
+            }
+        else {
+            // doesn't exist in A, insert B's negative quantity
+            $result[ $id ] = -$quantity;
+            }
+        }
+
+    return cd_idQuanityArrayToString( $result );
+    }
+
+
+
+
 
 function cd_endEditHouse() {
     global $tableNamePrefix;
@@ -1608,6 +1645,7 @@ function cd_endEditHouse() {
     $edit_list = cd_requestFilter( "edit_list", "/[0-9@#]+/" );
 
     $purchase_list = cd_requestFilter( "purchase_list", "/[#0-9:]+/" );
+    $sell_list = cd_requestFilter( "sell_list", "/[#0-9:]+/" );
 
     // different from move_list in endRobHouse, because tW@X moves (tool use)
     // aren't allowed
@@ -1943,12 +1981,47 @@ function cd_endEditHouse() {
 
 
 
-    // Compose UNION of current vault and backpack
 
+    // Add revenue from sold items into loot_value
+    
+    $sellArray = preg_split( "/#/", $sell_list );
+
+    $numSold = count( $sellArray );
+        
+    
+    if( $sell_list == "#" ) {
+        $numSold = 0;
+        }
+    
+    for( $i=0; $i<$numSold; $i++ ) {
+        $sellParts = preg_split( "/:/", $sellArray[$i] );
+
+        if( count( $sellParts ) != 2 ) {
+            cd_log(
+                "House check-in with badly-formatted sell list denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        $id = $sellParts[0];
+        $quantity = $sellParts[1];
+        
+
+        if( ! array_key_exists( "$id", $priceArray ) ) {
+            // id's not on the price list can't be bought!
+            cd_log(
+                "House check-in with unbuyable object in sell denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        // items sold back for half their value, rounded down
+        $loot_value += $quantity * floor( $priceArray[ "$id" ] / 2 );
+        }
+    
     
     // NEXT:
     // Check that purchases don't exceed loot value,
-    // PLUS subtract them from vault/backpack union
 
     $purchaseArray = preg_split( "/#/", $purchase_list );
 
@@ -1995,7 +2068,7 @@ function cd_endEditHouse() {
     
 
     // Finally, make sure
-    // (Vault U Backpack) =  ( (old_Vault U old_Backpack)  + Purchaes )
+    // (Vault U Backpack) =  ( (old_Vault U old_Backpack)  + Purchases  - Sold)
     
     $ownedUnion = cd_idQuantityUnion( $vault_contents, $backpack_contents );
 
@@ -2003,11 +2076,14 @@ function cd_endEditHouse() {
                                          $old_backpack_contents );
     $newOwnedUnion = cd_idQuantityUnion( $oldOwnedUnion, $purchase_list );
 
-
+    $newOwnedUnion = cd_idQuantitySubtract( $newOwnedUnion, $sell_list );   
+    
+    
     if( $ownedUnion != $newOwnedUnion ) {
         cd_log( "House check-in with ".
-                " purchases that don't match contents of vault and ".
-                " backpack denied" );
+                " purchases/sales that don't match contents of vault and ".
+                " backpack denied (actually owned $ownedUnion)".
+                " (purchases show we own $newOwnedUnion )" );
         cd_transactionDeny();
         return;
         }

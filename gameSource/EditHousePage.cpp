@@ -24,12 +24,13 @@ EditHousePage::EditHousePage()
           mPriceList( NULL ),
           // starts empty
           mPurchaseList( stringDuplicate( "#" ) ),
+          mSellList( stringDuplicate( "#" ) ),
           mObjectPicker( 8, 5 ),
           mGridDisplay( 0, 0, &mObjectPicker ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
-          mUndoButton( mainFont, 8, -1, translate( "undo" ), 'z', 'Z' ),
+          mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
           mGallery( mainFont, -8, 0 ),
           mDone( false ) {
 
@@ -80,6 +81,9 @@ EditHousePage::~EditHousePage() {
 
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
+        }
+    if( mSellList != NULL ) {
+        delete [] mSellList;
         }
     }
 
@@ -164,6 +168,21 @@ void EditHousePage::setPurchaseList( const char *inPurchaseList ) {
         delete [] mPurchaseList;
         }
     mPurchaseList = stringDuplicate( inPurchaseList );
+    }
+
+
+
+
+char *EditHousePage::getSellList() {
+    return stringDuplicate( mSellList );
+    }
+
+
+void EditHousePage::setSellList( const char *inSellList ) {
+    if( mSellList != NULL ) {
+        delete [] mSellList;
+        }
+    mSellList = stringDuplicate( inSellList );
     }
 
 
