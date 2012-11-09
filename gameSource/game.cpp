@@ -1054,7 +1054,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setEditList( editList );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setPriceList( priceList );
-                    checkinHousePage->setMoveList( "" );
+                    checkinHousePage->setMoveList( "#" );
                     
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );

@@ -1834,7 +1834,7 @@ function cd_endEditHouse() {
         $numEdits = 0;
         }
 
-    if( $numEdits > 0 && $self_test_move_list == "" ) {
+    if( $numEdits > 0 && $self_test_move_list == "#" ) {
 
         cd_log( "House check-in failed because edit list not accompanied by ".
                 "a self-test move list." );
