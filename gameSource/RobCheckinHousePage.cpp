@@ -370,7 +370,7 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
 void RobCheckinHousePage::draw( doublePair inViewCenter, 
                                 double inViewSize ) {
     
-    if( ! mHomeButton.isVisible() ) {
+    if( ! mHomeButton.isVisible() || mStatusError ) {
         return;
         }
     
