@@ -49,7 +49,8 @@ RobPickList::RobPickList( double inX, double inY,
                         "abcdefghijklmnopqrstuvwxyz"
                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
           mFilterButton( mainFont, 4, 4,
-                         translate( "filter" ) ) {
+                         translate( "filter" ) ),
+          mAppliedSearchWord( stringDuplicate( "" ) ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
@@ -73,6 +74,8 @@ RobPickList::~RobPickList() {
         clearWebRequest( mWebRequest );
         }
     clearHouseList();
+
+    delete [] mAppliedSearchWord;
     }
 
 
@@ -84,23 +87,27 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
             mCurrentSkip = 0;
             }
 
-        refreshList( true );
+        refreshList( true, true );
         }
     else if( inTarget == &mDownButton ) {
         mCurrentSkip += linesPerPage;
 
-        refreshList( true );
+        refreshList( true, true );
         }
     else if( inTarget == &mFilterButton || inTarget == &mSearchField ) {
-        mCurrentSkip = 0;
-        refreshList( true );
+        delete [] mAppliedSearchWord;
+
+        mAppliedSearchWord = mSearchField.getText();
+
+        refreshList( true, false );
         }
     }
 
 
 
 // fetch new results from server
-void RobPickList::refreshList( char inPreservePosition ) {
+void RobPickList::refreshList( char inPreserveSearch,
+                               char inPreservePosition ) {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
         }
@@ -109,7 +116,13 @@ void RobPickList::refreshList( char inPreservePosition ) {
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
 
+    mSearchField.focus();
 
+    if( ! inPreserveSearch ) {
+        delete [] mAppliedSearchWord;
+        mAppliedSearchWord = stringDuplicate( "" );
+        mSearchField.setText( mAppliedSearchWord );
+        }
     
     if( ! inPreservePosition ) {
         mCurrentSkip = 0;
@@ -124,16 +137,13 @@ void RobPickList::refreshList( char inPreservePosition ) {
     if( mRobberyLog ) {
         action = "list_logged_robberies";
         }
-    
-    char *searchWord = mSearchField.getText();
-    
-    
+        
     char *actionString = autoSprintf( 
         "action=%s&skip=%d&limit=%d&name_search=%s&user_id=%d"
         "&%s",
-        action, mCurrentSkip, linesPerPage, searchWord, userID, ticketHash );
+        action, mCurrentSkip, linesPerPage, mAppliedSearchWord, 
+        userID, ticketHash );
     delete [] ticketHash;
-    delete [] searchWord;
             
     
     mWebRequest = startWebRequest( "POST", 

@@ -54,7 +54,8 @@ class RobPickList : public PageComponent, public ActionListener,
 
         
         // fetch new results from server
-        virtual void refreshList( char inPreservePosition = false );
+        virtual void refreshList( char inPreserveSearch = false,
+                                  char inPreservePosition = false );
         
         
         // NULL if nothing selected
@@ -103,7 +104,8 @@ class RobPickList : public PageComponent, public ActionListener,
 
         TextField mSearchField;
         TextButton mFilterButton;
-
+        
+        char *mAppliedSearchWord;
     };
 
 
