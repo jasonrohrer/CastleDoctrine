@@ -313,7 +313,12 @@ void RobHouseGridDisplay::draw() {
     
     // decay each frame
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
-        if( mTargetVisibleMap[i] ) {
+        if( mRobberIndex == mGoalIndex ) {
+            // robber hit vault
+            // instantly black out, because robber on vault looks weird
+            mVisibleMap[i] = 255;
+            }
+        else if( mTargetVisibleMap[i] ) {
             // wants to move toward visible
             if( mVisibleMap[i] != 0 ) {
                 unsigned char oldValue = mVisibleMap[i];
@@ -522,7 +527,10 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
 void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
     
     // don't show tool tips for invisible tiles (shrouded)
-    if( mTileVisbleMap[ getTileIndex( inX, inY ) ] ) {
+    // or during blackout after robber hits goal
+    if( mTileVisbleMap[ getTileIndex( inX, inY ) ] 
+        &&
+        mRobberIndex != mGoalIndex ) {
 
         // base behavior (display tool tip)
         HouseGridDisplay::pointerOver( inX, inY );
