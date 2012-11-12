@@ -112,6 +112,10 @@ $defaultPrices = array(
     array( 3018, 500, 1, "Dummy 18 --- by No One" ),
     array( 3019, 500, 1, "Dummy 19 --- by No One" )
     );
+
+    
+// price change factor when reselling items
+$resaleRate = 0.5;
     
 
 

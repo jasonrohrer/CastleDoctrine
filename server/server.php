@@ -626,6 +626,8 @@ function cd_setupDatabase() {
             "edit_count INT NOT NULL," .
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
+            // loot plus resale value of vault items, rounded
+            "value_estimate INT NOT NULL," .
             // loot carried back from latest robbery, not deposited in vault
             // yet.  Deposited when house is next checked out for editing. 
             "carried_loot_value INT NOT NULL," .
@@ -723,6 +725,9 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "loot_value INT NOT NULL," .
+            "value_estimate INT NOT NULL," .
+            "vault_contents LONGTEXT NOT NULL," .
+            "gallery_contents LONGTEXT NOT NULL," .
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
@@ -1368,10 +1373,12 @@ function cd_startEditHouse() {
                 $gallery_contents . "#" . $carried_gallery_contents;
             }
         }
+
+    $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
-        "loot_value = '$loot_value', ".
+        "loot_value = '$loot_value', value_estimate = '$value_estimate', ".
         "vault_contents = '$vault_contents', ".
         "gallery_contents = '$gallery_contents', ".
         "carried_loot_value = 0, ".
@@ -1587,6 +1594,73 @@ function cd_idQuantitySubtract( $inIDQuantityStringA, $inIDQuantityStringB ) {
     return cd_idQuanityArrayToString( $result );
     }
 
+
+
+// computes resale value of items in an ID:quantity list string
+function cd_idQuantityToResaleValue( $inIDQuantityString, $inPriceArray ) {
+    global $resaleRate;
+    
+    $quantityArray = cd_idQuanityStringToArray( $inIDQuantityString );
+
+    $totalValue = 0;
+
+
+    foreach( $quantityArray as $id => $quantity ) {
+
+        $totalValue += floor( $quantity * $inPriceArray[$id] * $resaleRate );
+        }
+    
+    return $totalValue;
+    }
+
+
+
+// returns an array mapping objectIDs to prices
+function cd_getPriceArray() {
+    global $tableNamePrefix;
+    
+    $query = "SELECT object_id, price ".
+        "FROM $tableNamePrefix"."prices;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $array = array();
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        
+        $object_id = mysql_result( $result, $i, "object_id" );
+
+        $price = mysql_result( $result, $i, "price" );
+
+        $array[ $object_id ] = $price;
+        }
+    return $array;
+    }
+
+
+
+
+function cd_computeValueEstimate( $inLootValue, $inVaultContents ) {
+    $value_estimate =
+        $inLootValue +
+        cd_idQuantityToResaleValue( $inVaultContents, cd_getPriceArray() );
+
+    // avoid nonsense results below
+    if( $value_estimate < 10 ) {
+        return $value_estimate;
+        }
+        
+    // isolate the highest two digits
+    // 538 => 530
+    // 25,343 => 25,000
+    $tenPower = pow( 10, floor( log( $value_estimate, 10 ) ) - 1 );
+
+    $value_estimate = $tenPower * floor( $value_estimate / $tenPower );
+
+    return $value_estimate;
+    }
 
 
 
@@ -1983,6 +2057,7 @@ function cd_endEditHouse() {
 
 
     // Add revenue from sold items into loot_value
+    global $resaleRate;
     
     $sellArray = preg_split( "/#/", $sell_list );
 
@@ -2016,7 +2091,7 @@ function cd_endEditHouse() {
             }
 
         // items sold back for half their value, rounded down
-        $loot_value += $quantity * floor( $priceArray[ "$id" ] / 2 );
+        $loot_value += $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
         }
     
     
@@ -2119,9 +2194,10 @@ function cd_endEditHouse() {
         return;
         }
     
-        
-    
 
+    $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
+        
+        
     // map and edits okay
     // purchases okay
     // accept it and check house back in with these changes
@@ -2134,7 +2210,7 @@ function cd_endEditHouse() {
         "gallery_contents='$gallery_contents', ".
         "edit_count='$edit_count', ".
         "self_test_move_list='$self_test_move_list', ".
-        "loot_value='$loot_value' ".
+        "loot_value='$loot_value', value_estimate='$value_estimate' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -2273,7 +2349,7 @@ function cd_listHouses() {
     $tableName = $tableNamePrefix ."houses";
     
     $query = "SELECT houses.user_id, houses.character_name, ".
-        "houses.loot_value, houses.rob_attempts, houses.robber_deaths, ".
+        "houses.value_estimate, houses.rob_attempts, houses.robber_deaths, ".
         "robbers.character_name as robber_name, ".
         "robbers.user_id as robber_id ".
         "FROM $tableName as houses ".
@@ -2283,7 +2359,7 @@ function cd_listHouses() {
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count > 0 ".
         "$searchClause ".
-        "ORDER BY houses.loot_value DESC, houses.rob_attempts DESC ".
+        "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $limit;";
 
     $result = cd_queryDatabase( $query );
@@ -2296,7 +2372,7 @@ function cd_listHouses() {
         $character_name = mysql_result( $result, $i, "character_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $robber_id = mysql_result( $result, $i, "robber_id" );
-        $loot_value = mysql_result( $result, $i, "loot_value" );
+        $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
 
@@ -2310,7 +2386,7 @@ function cd_listHouses() {
             }
         
         echo "$house_user_id#$character_name#$robber_name".
-            "#$loot_value#$rob_attempts#$robber_deaths\n";
+            "#$value_estimate#$rob_attempts#$robber_deaths\n";
         }
     echo "OK";
     }
@@ -2451,7 +2527,7 @@ function cd_endRobHouse() {
     // contents
     $toolsUsedString = "#";
 
-    if( $move_list != "" ) {
+    if( $move_list != "" && $move_list != "#" ) {
         
 
     
@@ -2511,7 +2587,8 @@ function cd_endRobHouse() {
     
     $ownerDied = 0;
     
-    $query = "SELECT loot_value, house_map, user_id, character_name, ".
+    $query = "SELECT loot_value, value_estimate, ".
+        "house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, edit_count ".
         "FROM $tableNamePrefix"."houses ".
@@ -2573,6 +2650,7 @@ function cd_endRobHouse() {
     $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
 
     $house_money = $row[ "loot_value" ];
+    $house_value_estimate = $row[ "value_estimate" ];
     $house_vault_contents = $row[ "vault_contents" ];
     $house_gallery_contents = $row[ "gallery_contents" ];
     
@@ -2584,7 +2662,6 @@ function cd_endRobHouse() {
     $old_house_map = $row[ "house_map" ];
     $victim_id = $row[ "user_id" ];
     $victim_name = $row[ "character_name" ];
-    $loot_value = $row[ "loot_value" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $robber_deaths = $row[ "robber_deaths" ];
     $edit_count = $row[ "edit_count" ];
@@ -2677,10 +2754,6 @@ function cd_endRobHouse() {
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
 
-        // all loot taken
-        $house_money = 0;
-        $house_vault_contents = "#";
-        $house_gallery_contents = "#";
 
         // log robbery
         $robber_name = cd_getCharacterName( $user_id );
@@ -2691,13 +2764,15 @@ function cd_endRobHouse() {
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
-            "(user_id, house_user_id, loot_value, ".
+            "(user_id, house_user_id, loot_value, value_estimate, ".
+            " vault_contents, gallery_contents,".
             " rob_attempts, robber_deaths,".
             " robber_name, victim_name, owner_now_dead, rob_time, ".
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$loot_value', ".
+            " $user_id, $victim_id, '$house_money', '$house_value_estimate', ".
+            " '$house_vault_contents', '$house_gallery_contents', ".
             " '$rob_attempts', '$robber_deaths', ".
             " '$robber_name', '$victim_name', '$ownerDied',".
             " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
@@ -2705,6 +2780,12 @@ function cd_endRobHouse() {
             " '$house_map' );";
         cd_queryDatabase( $query );
 
+        // all loot taken
+        $house_money = 0;
+        $house_vault_contents = "#";
+        $house_gallery_contents = "#";
+
+        
 
         // clear rob stats now, because house loot is gone
         // rob stats will build up again if loot ever replentished
@@ -2839,7 +2920,7 @@ function cd_listLoggedRobberies() {
     
     $query = "SELECT user_id, house_user_id, ".
         "log_id, victim_name, robber_name, ".
-        "loot_value, rob_attempts, robber_deaths ".
+        "value_estimate, rob_attempts, robber_deaths ".
         "FROM $tableName ".
         "$whereClause ".
         "ORDER BY rob_time DESC ".
@@ -2857,7 +2938,7 @@ function cd_listLoggedRobberies() {
         $log_id = mysql_result( $result, $i, "log_id" );
         $victim_name = mysql_result( $result, $i, "victim_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
-        $loot_value = mysql_result( $result, $i, "loot_value" );
+        $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
 
@@ -2870,7 +2951,7 @@ function cd_listLoggedRobberies() {
         
         
         echo "$log_id#$victim_name#$robber_name".
-            "#$loot_value#$rob_attempts#$robber_deaths\n";
+            "#$value_estimate#$rob_attempts#$robber_deaths\n";
         }
     echo "OK";
     }
@@ -3535,7 +3616,7 @@ function cd_newHouseForUser( $user_id ) {
             " $user_id, '$character_name', '$ticket_id', '$email', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, '#', 1000, ".
+            "0, '#', 1000, 1000, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
