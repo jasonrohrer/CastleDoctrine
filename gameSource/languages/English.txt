@@ -187,6 +187,7 @@ replayDescription "Security Tape:  %s robbed##%s for $%d"
 step "Step"
 play "Play"
 stop "Stop"
+restart "Restart"
 
 toggleVisibility "Visibility"
 

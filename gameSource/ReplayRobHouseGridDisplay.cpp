@@ -26,29 +26,31 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
                        translate( "play" ) ),
           mStopButton( mainFont, BUTTON_X, -2, 
                        translate( "stop" ) ),
+          mRestartButton( mainFont, BUTTON_X, -0.5, 
+                          translate( "restart" ) ),
           mVisibilityButton( mainFont, BUTTON_X, 5, 
                              translate( "toggleVisibility" ) ),
           mPlaying( false ),
           mStepsUntilNextPlayStep( 0 ),
           mVisibilityToggle( false ),
-          mToolIDJustPicked( -1 ) {
+          mToolIDJustPicked( -1 ),
+          mOriginalMoveList( NULL ) {
 
     mStopButton.setVisible( false );
     
     addComponent( &mStepButton );
     addComponent( &mPlayButton );
     addComponent( &mStopButton );
+    addComponent( &mRestartButton );
     addComponent( &mVisibilityButton );
     
     mStepButton.addActionListener( this );
     mPlayButton.addActionListener( this );
     mStopButton.addActionListener( this );
+    mRestartButton.addActionListener( this );
     mVisibilityButton.addActionListener( this );
     
 
-    mStepButton.setMouseOverTip( "" );
-    mPlayButton.setMouseOverTip( "" );
-    mStopButton.setMouseOverTip( "" );
     
     mVisibilityButton.setMouseOverTip( translate( "toggleVisibilityTip" ) );
     }
@@ -56,14 +58,24 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
 
         
 ReplayRobHouseGridDisplay::~ReplayRobHouseGridDisplay() {
-
+    if( mOriginalMoveList != NULL ) {
+        delete [] mOriginalMoveList;
+        }
     }
 
 
 
 void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     clearMoveList();
-    
+
+    char *oldList = mOriginalMoveList;
+    mOriginalMoveList = stringDuplicate( inMoveList );
+
+    if( oldList != NULL ) {
+        delete [] oldList;
+        }
+
+
     if( strcmp( inMoveList, "#" ) != 0 ) {
         // a non-empty move list, split it
         int numMoves;
@@ -81,6 +93,7 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     mStepButton.setVisible( true );
     mPlayButton.setVisible( true );
     mStopButton.setVisible( false );
+    mRestartButton.setVisible( false );
     }
 
 
@@ -112,6 +125,7 @@ void ReplayRobHouseGridDisplay::step() {
 
 
 void ReplayRobHouseGridDisplay::takeStep() {
+    mRestartButton.setVisible( true );
     if( mMoveList.size() > 0 ) {
         
         char *move = *( mMoveList.getElement( 0 ) );
@@ -214,6 +228,7 @@ void ReplayRobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
         
 void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mPlayButton ) {
+        takeStep();
         mPlaying = true;
         mStepsUntilNextPlayStep = STEP_DELAY;     
 
@@ -229,6 +244,21 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mStepButton ) {
         takeStep();
+        }
+    else if( inTarget == &mRestartButton ) {
+        char *newHouseMap = stringDuplicate( mHouseMap );
+        setHouseMap( newHouseMap );
+        delete [] newHouseMap;
+        
+        char *newMoveList = stringDuplicate( mOriginalMoveList );
+        setMoveList( newMoveList );
+        delete [] newMoveList;
+        
+        mRestartButton.setVisible( false );
+        mStopButton.setVisible( false );
+        mPlayButton.setVisible( true );
+        mStepButton.setVisible( true );
+        mPlaying = false;
         }
     else if( inTarget == &mVisibilityButton ) {
         mVisibilityToggle = ! mVisibilityToggle;
