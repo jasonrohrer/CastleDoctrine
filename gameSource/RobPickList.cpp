@@ -92,6 +92,7 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         refreshList( true );
         }
     else if( inTarget == &mFilterButton || inTarget == &mSearchField ) {
+        mCurrentSkip = 0;
         refreshList( true );
         }
     }
