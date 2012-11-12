@@ -68,11 +68,20 @@ class RobPickList : public PageComponent, public ActionListener,
 
 
         virtual void pointerUp( float inX, float inY );
+        virtual void pointerMove( float inX, float inY );
+        virtual void pointerDrag( float inX, float inY );
+        virtual void pointerDown( float inX, float inY );
         
 
 
     protected:
         
+        // which item hit by mouse?
+        // NULL on miss
+        HouseRecord *getHitRecord( float inX, float inY );
+        void setTip( HouseRecord *inRecord );
+
+
         GamePage *mParentPage;
 
 

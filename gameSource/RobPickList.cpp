@@ -475,27 +475,137 @@ void RobPickList::draw() {
 
 
 
-void RobPickList::pointerUp( float inX, float inY ) {
+
+HouseRecord *RobPickList::getHitRecord( float inX, float inY ) {
     for( int i=0; i<mHouseList.size(); i++ ) {
         HouseRecord *r = mHouseList.getElement( i );
     
         if( inX > - lineWidthLeft && inX < lineWidthRight &&
             fabs( inY - r->position.y ) < lineHeight / 2 ) {
             // hit
-            
-            // unselect all
-            for( int j=0; j<mHouseList.size(); j++ ) {
-                HouseRecord *rB = mHouseList.getElement( j );
-                rB->selected = false;
-                }
-            
-            r->selected = true;
-            
-            fireActionPerformed( this );
-            return;
+
+            return r;
             }
         }
+    
+    return NULL;
     }
+
+
+
+// inName NOT destroyed
+// result destroyed by caller
+static char *convertToLastName( const char *inName ) {
+    
+    char *convertedName;
+            
+    int partCount;
+    char **parts = split( inName, " ",
+                          &partCount );
+            
+    if( partCount != 3 ) {
+        // default to using full name
+        convertedName = stringDuplicate( inName );
+        }
+    else {
+        convertedName = stringDuplicate( parts[2] );
+        }
+    for( int i=0; i<partCount; i++ ) {
+        delete [] parts[i];
+        }
+    delete [] parts;
+    
+    return convertedName;
+    }
+
+
+
+void RobPickList::setTip( HouseRecord *inRecord ) {
+    char *tip;
+        
+    if( mRobberyLog ) {
+        char *lastName = convertToLastName( inRecord->lastRobberName );
+
+        tip = autoSprintf( translate( "replayPickListTip" ), 
+                           lastName, inRecord->lootValue, 
+                           inRecord->robAttempts, inRecord->robberDeaths );
+        delete [] lastName;
+        }
+    else {
+        // transform into possessive form of last name only
+            
+        char *lastName = convertToLastName( inRecord->characterName );
+            
+        char *possessiveName;
+            
+        // add possessive to end
+        if( lastName[ strlen( lastName ) - 1 ] == 's' ) {
+            possessiveName = autoSprintf( "%s'", lastName );
+            }
+        else {
+            possessiveName = autoSprintf( "%s's", lastName );
+            }
+            
+        delete [] lastName;
+            
+            
+
+        tip = autoSprintf( translate( "robPickListTip" ), 
+                           inRecord->robAttempts, 
+                           possessiveName, 
+                           inRecord->robberDeaths );
+        delete [] possessiveName;
+        }
+        
+    setToolTipDirect( tip );
+
+    delete [] tip;
+    }
+
+
+
+
+void RobPickList::pointerUp( float inX, float inY ) {
+    HouseRecord *r = getHitRecord( inX, inY );
+    
+    if( r != NULL ) {
+        
+        // unselect all
+        for( int j=0; j<mHouseList.size(); j++ ) {
+            HouseRecord *rB = mHouseList.getElement( j );
+            rB->selected = false;
+            }
+            
+        r->selected = true;
+        setTip( r );
+
+        fireActionPerformed( this );
+        return;
+        }
+    }
+
+
+
+
+
+void RobPickList::pointerMove( float inX, float inY ) {
+    HouseRecord *r = getHitRecord( inX, inY );
+    
+    if( r != NULL ) {
+        setTip( r );
+        }
+    }
+
+
+void RobPickList::pointerDrag( float inX, float inY ) {
+    pointerUp( inX, inY );
+    }
+
+
+void RobPickList::pointerDown( float inX, float inY ) {
+    pointerUp( inX, inY );
+    }
+
 
 
 
