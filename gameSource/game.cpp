@@ -68,6 +68,10 @@ CustomRandomSource randSource;
 #include "galleryObjects.h"
 
 
+#include "musicPlayer.h"
+
+
+
 GamePage *currentGamePage = NULL;
 
 
@@ -425,6 +429,30 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );
+
+
+    initMusicPlayer();
+
+
+    // test notes
+    lockAudio();
+    extern char noteToggles[PARTS][N][N];
+    extern int partLengths[PARTS];
+    for( int p=0; p<PARTS; p++ ) {
+        partLoudness[p] = 1;
+    
+        partLengths[p] = N;
+        for( int x=0; x<N; x++ ) {
+            int y = randSource.getRandomBoundedInt(0, N-1);
+            noteToggles[p][y][x] = true;
+            }
+        }
+    
+
+
+    unlockAudio();
+
+    setSoundPlaying( true );
     }
 
 
@@ -483,7 +511,7 @@ void freeFrameDrawer() {
         userEmail = NULL;
         }
     
-
+    freeMusicPlayer();
     }
 
 
@@ -1652,13 +1680,11 @@ void specialKeyUp( int inKey ) {
 
 
 char getUsesSound() {
-    return false;
+    printf( "Check called\n" );
+    return true;
     }
 
 
-void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
-    // do nothing, no sound
-    }
 
 
 

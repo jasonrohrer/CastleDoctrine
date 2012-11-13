@@ -57,6 +57,9 @@ BuyAuctionPage.cpp \
 GalleryArchive.cpp \
 Gallery.cpp \
 PickerGridPage.cpp \
+musicPlayer.cpp \
+Timbre.cpp \
+Envelope.cpp \
 
 
 GAME_GRAPHICS = \

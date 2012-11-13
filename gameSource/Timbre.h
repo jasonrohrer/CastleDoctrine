@@ -1,5 +1,5 @@
 
-#include <SDL/SDL.h>
+#include "minorGems/game/game.h"
 
 
 // one of these must be called before constructing first timbre

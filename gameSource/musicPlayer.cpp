@@ -4,7 +4,7 @@
 #include "Timbre.h"
 #include "Envelope.h"
 
-#include "beatTracker.h"
+//#include "beatTracker.h"
 
 
 #include "minorGems/game/game.h"
@@ -371,7 +371,7 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
                     
                     if( si == beatPart ) {
                         // report beat hit
-                        beatHit();
+                        //beatHit();
                         }
                     
 
