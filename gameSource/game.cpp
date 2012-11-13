@@ -436,18 +436,41 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     // test notes
     lockAudio();
-    extern char noteToggles[PARTS][N][N];
-    extern int partLengths[PARTS];
+    
+    /*
+    int step = 0;
     for( int p=0; p<PARTS; p++ ) {
         partLoudness[p] = 1;
     
-        partLengths[p] = N;
-        for( int x=0; x<N; x++ ) {
-            int y = randSource.getRandomBoundedInt(0, N-1);
-            noteToggles[p][y][x] = true;
+        partLengths[p] = NW;
+        noteToggles[p][0][step] = true;
+        step+=3;
+        if( step >= NW ) {
+            step = 0;
             }
+        
+        noteToggles[p][N-1][step] = true;
+        step+=3;
+        if( step >= NW ) {
+            step = 0;
+            }
+        
+          }
+    */
+    int step = 0;
+    for( int p=0; p<PARTS; p++ ) {
+        partLoudness[p] = 1;
+    
+        partLengths[p] = NW;
         }
     
+    // test last part only
+    step = 0;
+    for( int x=0; x<N; x++ ) {
+        noteToggles[PARTS-1][x][step] = true;
+        step += 3;
+        }
+        
 
 
     unlockAudio();
@@ -1680,7 +1703,6 @@ void specialKeyUp( int inKey ) {
 
 
 char getUsesSound() {
-    printf( "Check called\n" );
     return true;
     }
 

@@ -25,7 +25,7 @@ static int beatPart = 22;
 // whether note is currently on and playing or not
 // toggle these to control music as it plays
 
-char noteToggles[PARTS][N][N];
+char noteToggles[PARTS][N][NW];
 
 // some parts loop sooner or have silence at end (longer than N), 
 // allowing phase cycles between parts
@@ -50,7 +50,7 @@ int sampleRate;
 
 
 // 16x16 tone matrix used in each phrase of each part
-int w = N;
+int w = NW;
 int h = N;
 
 // total number of samples played so far
@@ -212,7 +212,7 @@ class Note {
 // all possible notes in a 16x16 phrase grid
 
 // indexed as noteGrid[part][y][x]
-Note *noteGrid[PARTS][N][N];
+Note *noteGrid[PARTS][N][NW];
 
 
 
@@ -269,8 +269,7 @@ void setTestTones() {
         streamSamples / ( partStepDurationsInSamples[startTestPart] * (w/2) );
     
     // wrap
-    // last part is a copy slot, skip it
-    currentTestPart = currentTestPart % (PARTS-1);
+    currentTestPart = currentTestPart % (PARTS);
     
 
     for( int p=0; p<PARTS; p++ ) {
@@ -897,330 +896,38 @@ void setDefaultMusicSounds() {
 
 
 
-    // first, power-up parts, slower and more organic
-    
-    
-    musicTimbres[10] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency / 2,
-                                  heightPerTimbre, sin );   
-
-    musicEnvelopes[10] = new Envelope( 0.5, 0.5, 0, 0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[10] );
- 
+    // first, power-up parts, slower and more organic 
 
 
-    musicTimbres[11] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
+    musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, harmonicSine );
     
-    musicEnvelopes[11] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+    musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      partStepDurationsInSamples[11] );
-
-
-
-    musicTimbres[12] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency / 2,
-                                  heightPerTimbre, harmonicSine );
-
-    musicEnvelopes[12] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[12] );
-
-
-    musicTimbres[13] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
-
-    musicEnvelopes[13] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[13] );
-
-
-    musicTimbres[14] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                  keyFrequency / 4,
-                                  heightPerTimbre, sawWave );
-
-    musicEnvelopes[14] = new Envelope( 0.5, 0.5, 0, 0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[14] );
-
-
-    musicTimbres[15] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency / 4,
-                                  heightPerTimbre, harmonicSmoothedSquare );
-
-    musicEnvelopes[15] = new Envelope( 0.5, 0.5, 0, 0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[15] );
-
-
-
-    musicTimbres[16] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, harmonicSaw );
+                                      partStepDurationsInSamples[0] );
     
-    musicEnvelopes[16] = new Envelope( 0.5, 0.5, 0, 0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[16] );
-
-
-
-    musicTimbres[17] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency / 4,
-                                  heightPerTimbre, harmonicSine );
-
-    musicEnvelopes[17] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[17] );
-
-
-    musicTimbres[18] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sawWave );
-    
-    musicEnvelopes[18] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[18] );
-
-
-    musicTimbres[19] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                  0.5 * keyFrequency,
-                                  heightPerTimbre, smoothedSquareWave );
-    
-    musicEnvelopes[19] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[19] );
-
-
-
-
-    // enemy parts
-    // faster and staccato
-    
-    musicTimbres[0] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency / 2,
-                                   heightPerTimbre, sin );   
-
-    musicEnvelopes[0] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[0] );
- 
-
-
-    musicTimbres[1] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSine );
-    
-    musicEnvelopes[1] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[1] );
-
-
-
-    musicTimbres[2] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency * 2,
-                                   heightPerTimbre, sin );
-
-    musicEnvelopes[2] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[2] );
-
-
-    musicTimbres[3] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency / 4,
-                                   heightPerTimbre, harmonicSine );
-
-    musicEnvelopes[3] = new Envelope( 0.02, 0.25, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[3] );
-
-
-    musicTimbres[4] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSmoothedSquare );
-
-    musicEnvelopes[4] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[4] );
-
-
-    musicTimbres[5] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency / 4,
-                                   heightPerTimbre, harmonicSaw );
-    
-    musicEnvelopes[5] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[5] );
-
-
-
-    musicTimbres[6] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSaw );
-    
-    musicEnvelopes[6] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[6] );
-
-
-
-    musicTimbres[7] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   2 * keyFrequency,
-                                   heightPerTimbre, harmonicSquare );
-
-    musicEnvelopes[7] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[7] );
-    
-
-    musicTimbres[8] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, sawWave );
-    
-    musicEnvelopes[8] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[8] );
-    
-
-    musicTimbres[9] = new Timbre( sampleRate, 0.8 * loudnessPerTimbre,
-                                   0.5 * keyFrequency,
-                                   heightPerTimbre, smoothedSquareWave );
-    
-    musicEnvelopes[9] = new Envelope( 0.02, 0.25, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[9] );
-    
-
-
-    // try swapping enemy and power parts
-    if(false)
-    for( int i=0; i<10; i++ ) {
-        Timbre *tempTimbre = musicTimbres[i];
-        Envelope *tempEnv = musicEnvelopes[i];
-    
-
-        musicTimbres[i] = musicTimbres[i+10];
-        musicEnvelopes[i] = musicEnvelopes[i+10];
-        
-        musicTimbres[i+10] = tempTimbre;
-        musicEnvelopes[i+10] = tempEnv;
-        }
-
-
-
-    // flag parts
-    musicTimbres[20] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                   keyFrequency/2,
-                                   heightPerTimbre, harmonicSaw );
-    // AHR model
-    musicEnvelopes[20] = new Envelope( 0.05, 0.1, 0.3,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[20] );
-
-
-    musicTimbres[21] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, smoothedSquareWave );
-    // AHR model
-    musicEnvelopes[21] = new Envelope( 0.05, 0.1, 0.3,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[21] );
-
-
-    
-
-    
-    // rise marker parts
-    
-    // snare type sound
-    musicTimbres[22] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency/2,
-                                   heightPerTimbre, smoothedWhiteNoise,
-                                   // extra periods per table so that
-                                   // noise doesn't become tonal through
-                                   // short looping
-                                   10 ); 
-
-    musicEnvelopes[22] = new Envelope(
-        0.0, 0.125, 0.0, 0.0,
-        maxNoteLength,
-        maxNoteLength,
-        partStepDurationsInSamples[22] );
-
-
-    // kick drum type sound
-    musicTimbres[23] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, kickWave,
-                                   // extra periods in table to make room
-                                   // for entire kick sweep
-                                   200 ); 
-
-    musicEnvelopes[23] = new Envelope(
-        // AHR model
-        0.0, 0.25, 0.05,
-        maxNoteLength,
-        maxNoteLength,
-        partStepDurationsInSamples[23] );
     
     
     
 
 
-
-    // player part
-    musicTimbres[PARTS-2] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                        keyFrequency/2,
-                                        heightPerTimbre, harmonicSine ); 
-    
-    musicEnvelopes[PARTS-2] = new Envelope(
-        0.01, 0.99, 0.0, 0.0,
-        maxNoteLength,
-        maxNoteLength,
-        partStepDurationsInSamples[PARTS-2] );
-    
-
-    // harmony part, copied
-
-    musicTimbres[PARTS-1] = musicTimbres[PARTS-2];
-    musicEnvelopes[PARTS-1] = musicEnvelopes[PARTS-2];
 
 
     for( int i=0; i<PARTS; i++ ) {
         partLoudness[i] = 0;
-        partStereo[i] = 0.5;
+        
+        double divisor = (double)( PARTS - 1 );
+        
+        if( divisor > 0 ) {
+            partStereo[i] = i / divisor;
+            }
+        else {
+            partStereo[i] = 0.5;
+            }
         }
     
-    // player part and super-part
-    // constant loudness, and centered
-    partLoudness[PARTS - 1] = 1;
-    partLoudness[PARTS - 2] = 1;
-    partStereo[PARTS - 1] = 0.5;
-    partStereo[PARTS - 2] = 0.5;
     
 
     
@@ -1260,7 +967,7 @@ void initMusicPlayer() {
     sampleRate = getSampleRate();
 
     
-    gridStepDuration = 0.25;
+    gridStepDuration = 1.0;
     gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
 
     // set special durations for parts
@@ -1268,23 +975,6 @@ void initMusicPlayer() {
         partStepDurations[i] = gridStepDuration;
         partStepDurationsInSamples[i] = gridStepDurationInSamples;
         }
-
-    
-    // power-ups are special
-    for( int i=10; i<20; i++ ) {
-        partStepDurations[i] *= 2;
-        partStepDurationsInSamples[i] *= 2;
-        }
-    // enemies are special
-    for( int i=0; i<10; i++ ) {
-        partStepDurations[i] *= 0.5;
-        partStepDurationsInSamples[i] /= 2;
-        }
-    
-    // last part is special
-    //partStepDurations[PARTS - 1] *= 2;
-    //partStepDurationsInSamples[PARTS - 1] *= 2;
-    
 
 
 
@@ -1400,17 +1090,7 @@ void initMusicPlayer() {
         partLengths[i] = w;
         }
     
-
-    // fixed rhythm part for rise marker
-    for( int n=0; n<N; n++ ) {
-        if( n%4 == 0 ) {
-            noteToggles[22][N/2][n] = true;
-            }
-        if( n%2 == 0 ) {
-            noteToggles[23][N/2][n] = true;
-            }
-        }
-    
+        
     
     
 
@@ -1471,17 +1151,4 @@ void freeMusicPlayer() {
 
 
 
-void setCopiedPart( int inPartIndex ) {
-    
-    musicTimbres[PARTS-1] = musicTimbres[inPartIndex];
-    musicEnvelopes[PARTS-1] = musicEnvelopes[inPartIndex];  
-
-    
-    partStepDurations[PARTS-1] = partStepDurations[inPartIndex];
-    partStepDurationsInSamples[PARTS-1] = 
-        partStepDurationsInSamples[inPartIndex];
-    
-    partLengths[PARTS-1] = partLengths[inPartIndex];
-    
-    }
 
