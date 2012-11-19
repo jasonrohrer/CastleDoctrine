@@ -13,6 +13,16 @@ $databaseName = "test";
 // The URL of to the server.php script.
 $fullServerURL = "http://localhost/jcr13/castleServer/server.php";
 
+// The URL of the ticket server's server.php script.
+// This is used to fetch assigned ticket IDs for users.
+$ticketServerURL = "http://localhost/jcr13/ticketServer/server.php";
+
+
+// The ticket server encrypts the ticket IDs that it returns to us
+// using this shared secret
+$sharedEncryptionSecret = "secret2";
+
+
 
 // The URL of the main, public-face website
 $mainSiteURL = "http://FIXME";
@@ -37,8 +47,6 @@ $serverSecretKey = "mySecret";
 // the same database).
 $tableNamePrefix = "castleServer_";
 
-// this must be same as what is set for the ticket server
-$ticketServerNamePrefix = "ticketServer_";
 
 
 

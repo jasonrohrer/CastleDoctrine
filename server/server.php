@@ -1089,43 +1089,90 @@ function cd_checkForFlush() {
 
 
 function cd_checkUser() {
-    global $tableNamePrefix, $ticketServerNamePrefix;
+    global $tableNamePrefix, $ticketServerURL, $sharedEncryptionSecret;
 
     $email = cd_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
-    
+
+    // first, see if user already exists in local users table
+
     $query = "SELECT ticket_id, blocked ".
-        "FROM $ticketServerNamePrefix"."tickets ".
+        "FROM $tableNamePrefix"."users ".
         "WHERE email = '$email';";
+
     $result = cd_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
 
-    // what if same email signs up multiple times?
-    // no way to prevent this through FastSpring payments
-    // and it will be a rare case.  Just assume it's the FIRST result
-    // back.  Users who have trouble with this can email me to complain, and
-    // I can fix it manually by changing their subsequent email addresses
-    // in the ticket server.
-    if( $numRows < 1 ) {
-        echo "DENIED";
+    $ticket_id;
+    $blocked;
+    
+    if( $numRows > 0 ) {
 
-        cd_log( "checkUser for $email DENIED, email not found" );
-        return;
+        $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+    
+        $ticket_id = $row[ "ticket_id" ];
+        $blocked = $row[ "blocked" ];
+
+        if( $blocked ) {
+            echo "DENIED";
+
+            cd_log( "checkUser for $email DENIED, blocked locally" );
+            return;
+            }
         }
-    
-    
-    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
-    
-    $ticket_id = $row[ "ticket_id" ];
-    $blocked = $row[ "blocked" ];
+    else {
+        // check on ticket server
 
-    if( $blocked ) {
-        echo "DENIED";
+        $result = file_get_contents(
+            "$ticketServerURL".
+            "?action=get_ticket_id".
+            "&email=$email" );
 
-        cd_log( "checkUser for $email DENIED, blocked on ticket server" );
-        return;
+        // FIXME:  don't use strlen here
+        // (don't assume tickets are 10 chars long)
+        // Instead, run a regexp filter to remove non-hex characters.
+        
+        if( $result == "DENIED" || strlen( $result ) != 10 ) {
+            echo "DENIED";
+
+            cd_log( "checkUser for $email DENIED, email not found ".
+                    "or blocked on ticket server" );
+            return;
+            }
+        else {
+            $ticket_id = $result;
+
+            // decrypt it
+
+            $ticketLength = strlen( $ticket_id );
+    
+            $hexToMix = strtoupper( substr( md5( $sharedEncryptionSecret ),
+                                            0, $ticketLength  ) );
+
+
+            
+            $ticketArray = str_split( $ticket_id );
+            $mixArray = str_split( $hexToMix );
+            $resultArray = array();
+            for( $i=0; $i<$ticketLength; $i++ ) {
+                $digit = strtoupper( dechex(
+                    hexdec( $ticketArray[$i] ) ^ hexdec( $mixArray[$i] ) ) );
+                $resultArray[] = $digit;
+                }
+            $ticket_id = implode( $resultArray );
+
+            // back to human-readable, all letter form
+            $digitArray =
+                array( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" );
+            $letterArray =
+                array( "W", "H", "J", "K", "X", "M", "N", "P", "T", "Y" );
+            
+            $ticket_id = str_replace( $digitArray, $letterArray, $ticket_id );
+            }
         }
 
+
+    
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
     
     
