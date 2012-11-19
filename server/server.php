@@ -586,6 +586,7 @@ function cd_setupDatabase() {
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id CHAR(10) NOT NULL," .
+            "email VARCHAR(255) NOT NULL," .
             "character_name_history LONGTEXT NOT NULL,".
             "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
@@ -616,8 +617,6 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL PRIMARY KEY," .
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
-            "ticket_id CHAR(10) NOT NULL," .
-            "email VARCHAR(255) NOT NULL," .
             "house_map LONGTEXT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
@@ -3444,7 +3443,7 @@ function cd_isAdmin( $user_id ) {
 
 
 function cd_newHouseForUser( $user_id ) {
-    global $tableNamePrefix, $ticketServerNamePrefix;
+    global $tableNamePrefix;
     
     
     // create default house for user
@@ -3453,7 +3452,7 @@ function cd_newHouseForUser( $user_id ) {
     $email = "";
     $character_name_history = "";
     
-    $query = "select ticket_id, character_name_history ".
+    $query = "select ticket_id, email, character_name_history ".
         "FROM $tableNamePrefix"."users ".
         "WHERE user_id = $user_id;";
     $result = cd_queryDatabase( $query );
@@ -3464,18 +3463,6 @@ function cd_newHouseForUser( $user_id ) {
         $ticket_id = mysql_result( $result, 0, "ticket_id" );
         $character_name_history =
             mysql_result( $result, 0, "character_name_history" );
-        }
-
-    
-
-    $query = "SELECT email ".
-        "FROM $ticketServerNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-    $result = cd_queryDatabase( $query );
-    
-    $numRows = mysql_numrows( $result );
-
-    if( $numRows > 0 ) {
         $email = mysql_result( $result, 0, "email" );
         }
     
@@ -3613,7 +3600,7 @@ function cd_newHouseForUser( $user_id ) {
         
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', '$ticket_id', '$email', ".
+            " $user_id, '$character_name', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "0, '#', 1000, 1000, ".
@@ -3721,22 +3708,28 @@ function cd_showDataHouseList( $inTableName ) {
         }
     
 
+    $houseTable = "$tableNamePrefix"."$inTableName";
+    $usersTable = "$tableNamePrefix"."users";
+    
     
 
     // first, count results
     $query = "SELECT COUNT(*) ".
-        "FROM $tableNamePrefix"."$inTableName $keywordClause;";
+        "FROM $houseTable INNER JOIN $usersTable ".
+        "ON $houseTable.user_id = $usersTable.user_id $keywordClause;";
 
     $result = cd_queryDatabase( $query );
     $totalHouses = mysql_result( $result, 0, 0 );
 
     
              
-    $query = "SELECT user_id, character_name, loot_value, edit_checkout, ".
+    $query = "SELECT $houseTable.user_id, character_name, ".
+        "loot_value, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
         "robber_deaths, last_ping_time, ".
-        "blocked ".
-        "FROM $tableNamePrefix"."$inTableName $keywordClause".
+        "$houseTable.blocked ".
+        "FROM $houseTable INNER JOIN $usersTable ".
+        "ON $houseTable.user_id = $usersTable.user_id $keywordClause ".
         "ORDER BY $order_by DESC ".
         "LIMIT $skip, $housesPerPage;";
     $result = cd_queryDatabase( $query );
@@ -4111,9 +4104,10 @@ function cd_showDetail() {
     echo "[<a href=\"server.php?action=show_data" .
         "\">Main</a>]<br><br><br>";
      
-    global $tableNamePrefix, $ticketServerNamePrefix;
+    global $tableNamePrefix;
 
-    $query = "SELECT ticket_id, character_name_history, admin, blocked ".
+    $query = "SELECT ticket_id, email, ".
+        "character_name_history, admin, blocked ".
         "FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
 
@@ -4130,20 +4124,6 @@ function cd_showDetail() {
     $character_name_history = $row[ "character_name_history" ];
     $admin = $row[ "admin" ];
     $blocked = $row[ "blocked" ];
-
-
-    $query = "SELECT email FROM $ticketServerNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-
-    $result = cd_queryDatabase( $query );
-    
-    $numRows = mysql_numrows( $result );
-
-    if( $numRows < 1 ) {
-        cd_operationError( "Ticket ID $ticket_id not found" );
-        }
-    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
-
     $email = $row[ "email" ];
 
 
