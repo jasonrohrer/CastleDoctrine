@@ -476,3 +476,27 @@ DENIED
 Note:
 House must be actively checked out in edit mode by owner to make auction 
 purchases
+
+
+
+
+
+=== Call:
+server.php?action=check_space_used
+
+Returns:
+byteCount
+
+Where:
+byteCount = total number of bytes used by all database tables
+
+
+
+=== Call:
+server.php?action=count_users
+
+Returns:
+userCount
+
+Where:
+userCount = number of users on server

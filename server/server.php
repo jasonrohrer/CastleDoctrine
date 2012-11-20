@@ -174,6 +174,14 @@ else if( $action == "list_auctions" ) {
 else if( $action == "buy_auction" ) {
     cd_buyAuction();
     }
+else if( $action == "check_space_used" ) {
+    $space = cd_getTotalSpace();
+    echo $space;
+    }
+else if( $action == "count_users" ) {
+    $userCount = cd_countUsers();
+    echo $userCount;
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -3910,6 +3918,21 @@ function cd_showDataHouseList( $inTableName ) {
 
 
 
+function cd_formatBytes( $inNumBytes ) {
+    
+    $sizeString = "";
+
+    if( $inNumBytes <= 1024 ) {
+        $sizeString = "$inNumBytes B";
+        }
+    else if( $inNumBytes > 1024 ) {
+        $sizeString = sprintf( "%.2f KiB", $inNumBytes / 1024 );
+        }
+    else if( $inNumBytes > 1024 * 1024 ) {
+        $sizeString = sprintf( "%.2f MiB", $inNumBytes / ( 1024 * 1024 ) );
+        }
+    return $sizeString;
+    }
 
 
 
@@ -3919,11 +3942,19 @@ function cd_showData() {
 
 
     cd_checkPassword( "show_data" );
-    
 
+    $bytesUsed = cd_getTotalSpace();
+
+    $sizeString = cd_formatBytes( $bytesUsed );
+
+
+    $perUserString = cd_formatBytes( $bytesUsed / cd_countUsers() );
+
+    
     echo "<table width='100%' border=0><tr>".
         "<td>[<a href=\"server.php?action=show_data" .
             "\">Main</a>]</td>".
+        "<td align=center>$sizeString ($perUserString per user)</td>".
         "<td align=right>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
@@ -4852,6 +4883,32 @@ function cd_clearPasswordCookie() {
     $expireTime = time() - 60 * 60 * 24;
 
     setcookie( $cookieName, "", $expireTime, "/" );
+    }
+
+
+
+
+function cd_getTotalSpace() {
+    global $tableNamePrefix;
+
+    $query = "SELECT SUM( DATA_LENGTH ) ".
+        "FROM information_schema.tables ".
+        "WHERE TABLE_NAME like '$tableNamePrefix%';";
+
+    $result = cd_queryDatabase( $query );
+
+    return mysql_result( $result, 0, 0 );
+    }
+
+
+function cd_countUsers() {
+    global $tableNamePrefix;
+
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."houses;";
+    $result = cd_queryDatabase( $query );
+
+    return mysql_result( $result, 0, 0 );
     }
 
 
