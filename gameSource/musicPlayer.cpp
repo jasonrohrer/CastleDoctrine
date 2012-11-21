@@ -719,6 +719,85 @@ double kickWave( double inT ) {
 
 
 
+// filter algorithms found here:
+// http://www.musicdsp.org/archive.php?classid=3#243
+// Posted by Patrice Tarrabia
+
+typedef struct CoeffFilterState {
+        double a1, a2, a3, b1, b2;
+
+        double lastIn[2];
+        double lastOut[2];
+
+    } CoeffFilterState;
+
+
+
+double coeffFilter( double inSample, CoeffFilterState s ) {
+    double nextOut = 
+        s.a1 * inSample + s.a2 * s.lastIn[0] + s.a3 * s.lastIn[1] 
+        - s.b1 * s.lastOut[0] - s.b2 * s.lastOut[1];
+    
+    s.lastIn[1] = s.lastIn[0];
+    s.lastIn[0] = inSample;
+    
+    s.lastOut[1] = s.lastOut[0];
+    s.lastOut[0] = nextOut;
+    
+    return nextOut;
+    }
+
+
+CoeffFilterState initHighPass( double inCutoffFreq, double inRez ) {
+    CoeffFilterState s;
+    
+    double c = tan( M_PI * inCutoffFreq / sampleRate );
+
+    s.a1 = 1.0 / ( 1.0 + inRez * c + c * c);
+    s.a2 = -2 * s.a1;
+    s.a3 = s.a1;
+    s.b1 = 2.0 * ( c * c - 1.0) * s.a1;
+    s.b2 = ( 1.0 - inRez * c + c * c ) * s.a1;
+    
+    for( int i=0; i<2; i++ ) {
+        s.lastIn[i] = 0;
+        s.lastOut[i] = 0;
+        }
+    return s;
+    }
+
+
+
+CoeffFilterState initLowPass( double inCutoffFreq, double inRez ) {
+    CoeffFilterState s;
+    
+
+    double c = 1.0 / tan( M_PI * inCutoffFreq / sampleRate );
+    
+    s.a1 = 1.0 / ( 1.0 + inRez * c + c * c);
+    s.a2 = 2 * s.a1;
+    s.a3 = s.a1;
+    s.b1 = 2.0 * ( 1.0 - c * c ) * s.a1;
+    s.b2 = ( 1.0 - inRez * c + c * c) * s.a1;
+
+    for( int i=0; i<2; i++ ) {
+        s.lastIn[i] = 0;
+        s.lastOut[i] = 0;
+        }
+    return s;
+    }
+
+
+CoeffFilterState sawFilterState;
+
+// must init sawFilterState before calling
+double filteredSawWave( double inT ) {
+    return coeffFilter( sawWave( inT ), sawFilterState );
+    }
+
+
+
+
 void setTimbre( int inTimbreNumber,
                 double *inPartialCoefficients, int numCoefficients,
                 int inOctavesDown ) {    
@@ -899,9 +978,11 @@ void setDefaultMusicSounds() {
     // first, power-up parts, slower and more organic 
 
 
+    sawFilterState = initHighPass( keyFrequency * 1000, 100 );
+
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, harmonicSine );
+                                  heightPerTimbre, filteredSawWave );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
