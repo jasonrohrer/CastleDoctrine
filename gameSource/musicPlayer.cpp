@@ -733,16 +733,16 @@ typedef struct CoeffFilterState {
 
 
 
-double coeffFilter( double inSample, CoeffFilterState s ) {
+double coeffFilter( double inSample, CoeffFilterState *s ) {
     double nextOut = 
-        s.a1 * inSample + s.a2 * s.lastIn[0] + s.a3 * s.lastIn[1] 
-        - s.b1 * s.lastOut[0] - s.b2 * s.lastOut[1];
+        s->a1 * inSample + s->a2 * s->lastIn[0] + s->a3 * s->lastIn[1] 
+        - s->b1 * s->lastOut[0] - s->b2 * s->lastOut[1];
     
-    s.lastIn[1] = s.lastIn[0];
-    s.lastIn[0] = inSample;
+    s->lastIn[1] = s->lastIn[0];
+    s->lastIn[0] = inSample;
     
-    s.lastOut[1] = s.lastOut[0];
-    s.lastOut[0] = nextOut;
+    s->lastOut[1] = s->lastOut[0];
+    s->lastOut[0] = nextOut;
     
     return nextOut;
     }
@@ -790,9 +790,29 @@ CoeffFilterState initLowPass( double inCutoffFreq, double inRez ) {
 
 CoeffFilterState sawFilterState;
 
+// file for input into gnuplot to view filtered vs unfiltered waves
+// plot "saw.txt" using 1:2 with lines, "saw.txt" using 1:3 with lines
+FILE *sawFile = fopen( "saw.txt", "w" );
 // must init sawFilterState before calling
+int tableCount = 0;
 double filteredSawWave( double inT ) {
-    return coeffFilter( sawWave( inT ), sawFilterState );
+    if( inT == 0 ) {
+        tableCount ++;
+        }
+
+    double plainSaw = sawWave( inT );
+    
+    double filteredSaw = coeffFilter( plainSaw, &sawFilterState );
+    
+    if( tableCount < 2 ) {
+        fprintf( sawFile, "%f %f %f\n", inT, plainSaw, filteredSaw );
+        }
+    
+    printf( "This out : %f, last two out = %f, %f\n",
+            filteredSaw, sawFilterState.lastOut[0],
+            sawFilterState.lastOut[0] );
+
+    return filteredSaw;
     }
 
 
@@ -978,11 +998,11 @@ void setDefaultMusicSounds() {
     // first, power-up parts, slower and more organic 
 
 
-    sawFilterState = initHighPass( keyFrequency * 1000, 100 );
+    sawFilterState = initLowPass( keyFrequency * 5, 0.1 );
 
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, filteredSawWave );
+                                  heightPerTimbre, filteredSawWave, 8 );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
