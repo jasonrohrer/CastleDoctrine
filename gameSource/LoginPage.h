@@ -47,6 +47,8 @@ class LoginPage : public GamePage, public ActionListener {
         
         TextButton mLoginButton;
 
+
+        char mHaveServerURL;
         char mLoggedIn;
         
 
@@ -58,7 +60,10 @@ class LoginPage : public GamePage, public ActionListener {
 
         void switchFields();
         
-        void startLogin();
+        // set inFreshLogin to false if continuing a subsequent
+        // step in the same login action (so that we don't insert
+        // a pause again)
+        void startLogin( char inFreshLogin=true );
         
 
         void acceptInput();

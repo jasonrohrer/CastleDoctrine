@@ -16,6 +16,7 @@ extern Font *mainFont;
 extern Font *mainFontFixed;
 
 extern char *serverURL;
+extern char *reflectorURL;
 
 extern int userID;
 extern char *userEmail;
@@ -47,6 +48,7 @@ LoginPage::LoginPage()
                         // allow only ticket code characters
                         "ABCDEFWHJKXMNPTY" ),
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
+          mHaveServerURL( false ),
           mLoggedIn( false ),
           mRequestSteps( 0 ),
           mWebRequest( -1 ) {
@@ -84,8 +86,74 @@ void LoginPage::step() {
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
         }
-    
-    if( userID == -1 ) {
+
+
+
+    if( !mHaveServerURL ) {
+        if( mWebRequest != -1 ) {
+            int stepResult = stepWebRequest( mWebRequest );
+
+            if( mRequestSteps > minRequestSteps ) {
+            
+                switch( stepResult ) {
+                    case 0:
+                        break;
+                    case -1:
+                        mStatusError = true;
+                        mStatusMessageKey = "err_webRequest";
+                        clearWebRequest( mWebRequest );
+                        mWebRequest = -1;
+                        acceptInput();
+                        mLoginButton.setVisible( true );
+                        break;
+                    case 1: {
+                        char *result = getWebResult( mWebRequest );
+                        clearWebRequest( mWebRequest );
+                        mWebRequest = -1;
+                        
+                        if( strstr( result, "DENIED" ) != NULL ) {
+                            mStatusError = true;
+                            mStatusMessageKey = "loginFailed";
+                            acceptInput();
+                            mLoginButton.setVisible( true );
+                            }
+                        else {
+                            char *possibleURL = trimWhitespace( result );
+                            
+                            // make sure it looks like a real URL
+                            if( strstr( possibleURL, "http" ) != NULL &&
+                                strstr( possibleURL, ".php" ) != NULL ) {
+                            
+                                serverURL = possibleURL;
+                                mHaveServerURL = true;
+
+                                // start login process again, now that we
+                                // have the server URL
+                                // NOT a fresh login, but continuing
+                                // the same login action as perceived
+                                // by the user.
+                                startLogin( false );
+                                }
+                            else {
+                                delete [] possibleURL;
+                            
+                                mStatusError = true;
+                                mStatusMessageKey = "reflectorFailed";
+                                clearWebRequest( mWebRequest );
+                                mWebRequest = -1;
+                                acceptInput();
+                                mLoginButton.setVisible( true );
+                                }                        
+                            }
+                        
+                        delete [] result;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    else if( userID == -1 ) {
         if( mWebRequest != -1 ) {
             
             int stepResult = stepWebRequest( mWebRequest );
@@ -309,7 +377,14 @@ void LoginPage::makeNotActive() {
 
 
 
-void LoginPage::startLogin() {
+void LoginPage::startLogin( char inFreshLogin ) {
+
+    if( inFreshLogin ) {
+        // add pause before advancing screen to avoid flicker
+        // on fast response
+        mRequestSteps = 0;
+        }
+
     mLoginButton.setVisible( false );
     for( int i=0; i<2; i++ ) {
         mFields[i]->unfocus();
@@ -318,13 +393,23 @@ void LoginPage::startLogin() {
         
     char *email = mEmailField.getText();
 
-    char *fullRequestURL = autoSprintf( 
-        "%s?action=check_user&email=%s",
-        serverURL, email );
+    char *fullRequestURL;
 
+
+    if( !mHaveServerURL ) {
+        fullRequestURL = autoSprintf( 
+            "%s?action=reflect&email=%s",
+            reflectorURL, email );        
+        }
+    else {
+
+        fullRequestURL = autoSprintf( 
+            "%s?action=check_user&email=%s",
+            serverURL, email );
+        }
+    
     delete [] email;
 
-    mRequestSteps = 0;
     mWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
         
     printf( "Starting web request with URL %s\n", fullRequestURL );

@@ -21,6 +21,7 @@ loginButton "Login"
 
 loginMessage "Logging in..."
 
+reflectorFailed "Invalid response from reflector"
 loginFailed "Login Failed"
 
 outOfDateClient "Please download the latest version."

@@ -158,6 +158,7 @@ Font *mainFontFixed;
 Font *tinyFont;
 
 
+char *reflectorURL = NULL;
 char *serverURL = NULL;
 
 
@@ -386,12 +387,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
 
-    serverURL = SettingsManager::getStringSetting( "serverURL" );
+    reflectorURL = SettingsManager::getStringSetting( "reflectorURL" );
 
-    if( serverURL == NULL ) {
-        serverURL = 
+    if( reflectorURL == NULL ) {
+        reflectorURL = 
             stringDuplicate( 
-                "http://localhost/jcr13/castleServer/server.php" );
+                "http://localhost/jcr13/castleReflector/server.php" );
         }
 
 
@@ -522,6 +523,10 @@ void freeFrameDrawer() {
     if( serverURL != NULL ) {
         delete [] serverURL;
         serverURL = NULL;
+        }
+    if( reflectorURL != NULL ) {
+        delete [] reflectorURL;
+        reflectorURL = NULL;
         }
 
     if( downloadCode != NULL ) {
