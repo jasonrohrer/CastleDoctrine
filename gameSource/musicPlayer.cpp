@@ -748,6 +748,15 @@ double coeffFilter( double inSample, CoeffFilterState *s ) {
     }
 
 
+void resetCoeffFilter( CoeffFilterState *s ) {
+    for( int i=0; i<2; i++ ) {
+        s->lastIn[i] = 0;
+        s->lastOut[i] = 0;
+        }
+    }
+
+
+
 CoeffFilterState initHighPass( double inCutoffFreq, double inRez ) {
     CoeffFilterState s;
     
@@ -759,10 +768,7 @@ CoeffFilterState initHighPass( double inCutoffFreq, double inRez ) {
     s.b1 = 2.0 * ( c * c - 1.0) * s.a1;
     s.b2 = ( 1.0 - inRez * c + c * c ) * s.a1;
     
-    for( int i=0; i<2; i++ ) {
-        s.lastIn[i] = 0;
-        s.lastOut[i] = 0;
-        }
+    resetCoeffFilter( &s );
     return s;
     }
 
@@ -780,10 +786,7 @@ CoeffFilterState initLowPass( double inCutoffFreq, double inRez ) {
     s.b1 = 2.0 * ( 1.0 - c * c ) * s.a1;
     s.b2 = ( 1.0 - inRez * c + c * c) * s.a1;
 
-    for( int i=0; i<2; i++ ) {
-        s.lastIn[i] = 0;
-        s.lastOut[i] = 0;
-        }
+    resetCoeffFilter( &s );
     return s;
     }
 
@@ -797,6 +800,7 @@ FILE *sawFile = fopen( "saw.txt", "w" );
 int tableCount = 0;
 double filteredSawWave( double inT ) {
     if( inT == 0 ) {
+        resetCoeffFilter( &sawFilterState );
         tableCount ++;
         }
 
