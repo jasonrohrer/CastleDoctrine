@@ -170,7 +170,8 @@ Timbre::Timbre( int inSampleRate,
                 double inBaseFrequency,
                 int inNumWaveTableEntries, 
                 double( *inWaveFunction )( double ),
-                int inPeriodsPerTable )
+                int inPeriodsPerTable,
+                int inWarmUpPeriods )
         : mNumWaveTableEntries( inNumWaveTableEntries ),
           mWaveTable( new Sint16*[ inNumWaveTableEntries ] ),
           mWaveTableLengths( new int[ inNumWaveTableEntries ] ),
@@ -190,9 +191,13 @@ Timbre::Timbre( int inSampleRate,
 
         double period = 1.0 / freq;
         
+        int totalPeriods = inWarmUpPeriods + inPeriodsPerTable;
         
         int tableLength = (int)( 
             rint( inPeriodsPerTable * period * inSampleRate ) );
+
+        int warmUpLength = (int)( 
+            rint( inWarmUpPeriods * period * inSampleRate ) );
         
         if( tableLength == 0 ) {
             AppLog::getLog()->logPrintf( Log::CRITICAL_ERROR_LEVEL,
@@ -203,22 +208,24 @@ Timbre::Timbre( int inSampleRate,
         mWaveTableLengths[i] = tableLength;
         mWaveTable[i] = new Sint16[ tableLength ];
 
+        int totalLength = warmUpLength + tableLength;
+
         // store double samples in temp table so we can compute
         // max value for normalization
-        double *tempTable = new double[ tableLength ];
+        double *tempTable = new double[ totalLength ];
         double maxValue = 0;
         
         int s;
         
-        for( s=0; s<tableLength; s++ ) {
+        for( s=0; s<totalLength; s++ ) {
             //double t = (double)s / (double)inSampleRate;
             //double waveValue = inWaveFunction( 2 * M_PI * t * freq );
         
             // base t on table length to ensure a perfect set of periods
             // in our table.  Otherwise, we hear clicks when table is looped
-            double t = (double)s / (double)(tableLength);
+            double t = (double)s / (double)(totalLength);
             double waveValue = 
-                inWaveFunction( 2 * M_PI * t * inPeriodsPerTable );
+                inWaveFunction( 2 * M_PI * t * totalPeriods );
  
             tempTable[s] = waveValue;
             
@@ -234,7 +241,8 @@ Timbre::Timbre( int inSampleRate,
         
         // now normalize and convert to int
         for( s=0; s<tableLength; s++ ) {
-            double waveValue = tempTable[s] * inLoudness / maxValue;
+            double waveValue = 
+                tempTable[ warmUpLength + s ] * inLoudness / maxValue;
             
             // convert to int
             mWaveTable[i][s] = (Sint16)( 32767 * waveValue );

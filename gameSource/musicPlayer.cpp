@@ -1002,11 +1002,11 @@ void setDefaultMusicSounds() {
     // first, power-up parts, slower and more organic 
 
 
-    sawFilterState = initLowPass( keyFrequency * 5, 0.1 );
+    sawFilterState = initLowPass( keyFrequency * 5, 0.3 );
 
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, filteredSawWave, 20 );
+                                  heightPerTimbre, filteredSawWave, 1, 5 );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,

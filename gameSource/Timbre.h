@@ -26,13 +26,18 @@ class Timbre {
          *   wave table is looped.  Defaults to 1 (fine for 2PI functions).
          * @param inWaveFunction a function mapping a double parameter t
          *   to a wave height in [-1,1].  Must have a period of 2pi.
+         * @param inWarmUpPeriods periods to generate and skip before
+         *   generating real table periods.  Some delay-filtered wave functions
+         *   take a few periods to stabilize.  Defaults to 0 (fine for 
+         *   wave functions without delay filteres).
          */
         Timbre( int inSampleRate,
                 double inLoudness,
                 double inBaseFrequency,
                 int inNumWaveTableEntries, 
                 double( *inWaveFunction )( double ),
-                int inPeriodsPerTable = 1 );
+                int inPeriodsPerTable = 1,
+                int inWarmUpPeriods = 0 );
         
         ~Timbre();
         
