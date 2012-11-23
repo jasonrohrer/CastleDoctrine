@@ -791,6 +791,34 @@ CoeffFilterState initLowPass( double inCutoffFreq, double inRez ) {
     }
 
 
+typedef struct BandPassFilterState {
+        CoeffFilterState hpState;
+        CoeffFilterState lpState;
+    } BandPassFilterState;
+
+
+BandPassFilterState initBandPass( double inCutoffFreq, double inRez ) {
+    BandPassFilterState s;
+    s.hpState = initHighPass( inCutoffFreq, inRez );
+    s.lpState = initLowPass( inCutoffFreq, inRez );
+
+    return s;
+    }
+
+
+double bandPassFilter( double inSample, BandPassFilterState *s ) {
+    double hpSample = coeffFilter( inSample, &( s->hpState ) );
+
+    return coeffFilter( hpSample, &( s->lpState ) );
+    }
+
+
+void resetBandPass( BandPassFilterState *s ) {
+    resetCoeffFilter( &( s->hpState ) );
+    resetCoeffFilter( &( s->lpState ) );
+    }
+
+
 CoeffFilterState sawFilterState;
 
 // file for input into gnuplot to view filtered vs unfiltered waves
@@ -817,6 +845,23 @@ double filteredSawWave( double inT ) {
             sawFilterState.lastOut[0] );
 
     return filteredSaw;
+    }
+
+
+BandPassFilterState sawPlusNoiseFilterState;
+
+double filteredSawPlusNoise( double inT ) {
+    if( inT == 0 ) {
+        resetBandPass( &sawPlusNoiseFilterState );
+        }
+
+    double plainSaw = sawWave( inT );
+    double plainNoise = whiteNoise( inT );
+    
+    
+    
+    return bandPassFilter( plainSaw + plainNoise, 
+                           &sawPlusNoiseFilterState );
     }
 
 
@@ -1002,11 +1047,12 @@ void setDefaultMusicSounds() {
     // first, power-up parts, slower and more organic 
 
 
-    sawFilterState = initLowPass( keyFrequency * 5, 0.3 );
+    sawPlusNoiseFilterState = initBandPass( keyFrequency * 10, 0.3 );
 
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, filteredSawWave, 1, 5 );
+                                  heightPerTimbre, 
+                                  filteredSawPlusNoise, 400, 10 );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
