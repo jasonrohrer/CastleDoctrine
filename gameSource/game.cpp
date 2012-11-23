@@ -276,6 +276,58 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                       const char *inCustomRecordedGameData,
                       char inPlayingBack ) {
 
+
+    initMusicPlayer();
+
+
+    // test notes
+    lockAudio();
+    
+    /*
+    int step = 0;
+    for( int p=0; p<PARTS; p++ ) {
+        partLoudness[p] = 1;
+    
+        partLengths[p] = NW;
+        noteToggles[p][0][step] = true;
+        step+=3;
+        if( step >= NW ) {
+            step = 0;
+            }
+        
+        noteToggles[p][N-1][step] = true;
+        step+=3;
+        if( step >= NW ) {
+            step = 0;
+            }
+        
+          }
+    */
+    int step = 0;
+    for( int p=0; p<PARTS; p++ ) {
+        partLoudness[p] = 1;
+    
+        partLengths[p] = NW;
+        }
+    
+    // test last part only
+    step = 0;
+    for( int x=0; x<N; x++ ) {
+        noteToggles[PARTS-1][x][step] = true;
+        step += 3;
+        noteToggles[PARTS-2][x][step] = true;
+        step += 3;
+        }
+        
+
+
+    unlockAudio();
+
+    setSoundPlaying( true );
+
+
+
+
     gamePlayingBack = inPlayingBack;
     
     screenW = inWidth;
@@ -432,51 +484,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     currentGamePage->base_makeActive( true );
 
 
-    initMusicPlayer();
-
-
-    // test notes
-    lockAudio();
-    
-    /*
-    int step = 0;
-    for( int p=0; p<PARTS; p++ ) {
-        partLoudness[p] = 1;
-    
-        partLengths[p] = NW;
-        noteToggles[p][0][step] = true;
-        step+=3;
-        if( step >= NW ) {
-            step = 0;
-            }
-        
-        noteToggles[p][N-1][step] = true;
-        step+=3;
-        if( step >= NW ) {
-            step = 0;
-            }
-        
-          }
-    */
-    int step = 0;
-    for( int p=0; p<PARTS; p++ ) {
-        partLoudness[p] = 1;
-    
-        partLengths[p] = NW;
-        }
-    
-    // test last part only
-    step = 0;
-    for( int x=0; x<N; x++ ) {
-        noteToggles[PARTS-1][x][step] = true;
-        step += 3;
-        }
-        
-
-
-    unlockAudio();
-
-    setSoundPlaying( true );
     }
 
 

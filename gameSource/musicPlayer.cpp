@@ -1002,7 +1002,7 @@ void setDefaultMusicSounds() {
 
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, filteredSawWave, 8 );
+                                  heightPerTimbre, filteredSawWave, 20 );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
@@ -1011,7 +1011,14 @@ void setDefaultMusicSounds() {
     
     
     
+    musicTimbres[1] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sawWave );
     
+    musicEnvelopes[1] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[0] );
 
 
 
@@ -1021,7 +1028,9 @@ void setDefaultMusicSounds() {
         
         double divisor = (double)( PARTS - 1 );
         
-        if( divisor > 0 ) {
+        // fixme:
+        // all in center for now
+        if( false && divisor > 0 ) {
             partStereo[i] = i / divisor;
             }
         else {

@@ -5,12 +5,12 @@
 // two pentatonic octaves
 #define N  10
 // time width
-#define NW 30
+#define NW 60
 
 // instrument parts
 
 
-#define PARTS 1
+#define PARTS 2
 
 // last part (PARTS-1) doesn't have its own timbre/envelope, but instead
 // uses pointers to one of other part's timber/envelope
