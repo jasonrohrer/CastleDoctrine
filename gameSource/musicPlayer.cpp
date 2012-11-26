@@ -818,6 +818,96 @@ void resetBandPass( BandPassFilterState *s ) {
     resetCoeffFilter( &( s->lpState ) );
     }
 
+typedef struct TriBandPassFilterState {
+        BandPassFilterState b1;
+        BandPassFilterState b2;
+        BandPassFilterState b3;
+    } TriBandPassFilterState;
+
+
+TriBandPassFilterState initTriBandPass( double inCutoffFreq1,
+                                        double inCutoffFreq2,
+                                        double inCutoffFreq3,
+                                        double inRez ) {
+    TriBandPassFilterState s;
+    s.b1.hpState = initHighPass( inCutoffFreq1, inRez );
+    s.b1.lpState = initLowPass( inCutoffFreq1, inRez );
+
+    s.b2.hpState = initHighPass( inCutoffFreq2, inRez );
+    s.b2.lpState = initLowPass( inCutoffFreq2, inRez );
+
+    s.b3.hpState = initHighPass( inCutoffFreq3, inRez );
+    s.b3.lpState = initLowPass( inCutoffFreq3, inRez );
+
+    return s;
+    }
+        
+
+double triBandPassFilter( double inSample, TriBandPassFilterState *s ) {
+    return
+        bandPassFilter( inSample, &( s->b1 ) )
+        +
+        bandPassFilter( inSample, &( s->b2 ) )
+        +
+        bandPassFilter( inSample, &( s->b3 ) );
+    }
+
+
+void resetTriBandPass( TriBandPassFilterState *s ) {
+    resetBandPass( &( s->b1 ) );
+    resetBandPass( &( s->b2 ) );
+    resetBandPass( &( s->b3 ) );
+    }
+
+
+
+typedef struct TriVoiceFilterState {
+        TriBandPassFilterState v1;
+        TriBandPassFilterState v2;
+        TriBandPassFilterState v3;
+    } TriVoiceFilterState;
+
+
+TriVoiceFilterState initTriVoice( double inCutoffFreq1,
+                                  double inCutoffFreq2,
+                                  double inCutoffFreq3,
+                                  double inRez ) {
+    TriVoiceFilterState s;
+    s.v1 = initTriBandPass( inCutoffFreq1,
+                            inCutoffFreq2, 
+                            inCutoffFreq3, 
+                            inRez );
+    // two other voices with slightly different filters
+    s.v2 = initTriBandPass( inCutoffFreq1 * 0.9,
+                            inCutoffFreq2 * 1.2, 
+                            inCutoffFreq3 * 1.1, 
+                            inRez );
+    s.v3 = initTriBandPass( inCutoffFreq1 * 1.3,
+                            inCutoffFreq2 * 0.85, 
+                            inCutoffFreq3 * 0.95, 
+                            inRez );
+    return s;
+    }
+        
+
+double triVoiceFilter( double inSample, TriVoiceFilterState *s ) {
+    return
+        triBandPassFilter( inSample, &( s->v1 ) )
+        +
+        triBandPassFilter( inSample, &( s->v2 ) )
+        +
+        triBandPassFilter( inSample, &( s->v3 ) );
+    }
+
+
+void resetTriVoice( TriVoiceFilterState *s ) {
+    resetTriBandPass( &( s->v1 ) );
+    resetTriBandPass( &( s->v2 ) );
+    resetTriBandPass( &( s->v3 ) );
+    }
+
+
+
 
 CoeffFilterState sawFilterState;
 
@@ -863,6 +953,58 @@ double filteredSawPlusNoise( double inT ) {
     return bandPassFilter( plainSaw + plainNoise, 
                            &sawPlusNoiseFilterState );
     }
+
+
+
+
+TriBandPassFilterState vocalFilterState;
+
+double filteredVocal( double inT ) {
+    if( inT == 0 ) {
+        resetTriBandPass( &vocalFilterState );
+        }
+
+    double plainSaw = sawWave( inT );
+    double plainNoise = whiteNoise( inT );
+    
+    
+    
+    return triBandPassFilter( plainSaw + 0 * plainNoise, 
+                              &vocalFilterState );
+    }
+
+
+
+TriVoiceFilterState chorusFilterState;
+
+double filteredChorus( double inT ) {
+    if( inT == 0 ) {
+        resetTriVoice( &chorusFilterState );
+        }
+
+    double plainSaw = sawWave( inT );
+    double plainSaw2 = sawWave( inT * 1.005 ) + sawWave( inT * 1.01 );
+    double plainSaw3 = sawWave( inT * 0.995 ) + sawWave( inT * 0.99 );
+
+    double plainNoise = smoothedWhiteNoise( inT );
+    
+    
+    /*
+    return triVoiceFilter( plainSaw + plainSaw2 + plainSaw3 + 0.3 * plainNoise, 
+                           &chorusFilterState );
+    */
+    return triBandPassFilter( plainSaw + 0.4 * plainNoise,
+                              &( chorusFilterState.v1 ) )
+        +
+        triBandPassFilter( plainSaw2 + 0.4 * plainNoise,
+                           &( chorusFilterState.v2 ) )
+        +
+        triBandPassFilter( plainSaw3 + 0.4 * plainNoise,
+                           &( chorusFilterState.v3 ) );
+    }
+
+
+
 
 
 
@@ -1047,12 +1189,14 @@ void setDefaultMusicSounds() {
     // first, power-up parts, slower and more organic 
 
 
-    sawPlusNoiseFilterState = initBandPass( keyFrequency * 10, 0.3 );
+    //sawPlusNoiseFilterState = initBandPass( keyFrequency * 10, 0.3 );
+    //vocalFilterState = initTriBandPass( 700, 1300, 3250, 0.2 );
+    chorusFilterState = initTriVoice( 700, 1300, 3250, 0.2 );
 
     musicTimbres[0] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, 
-                                  filteredSawPlusNoise, 400, 10 );
+                                  filteredChorus, 400, 10 );
     
     musicEnvelopes[0] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
@@ -1060,10 +1204,10 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[0] );
     
     
-    
+    vocalFilterState = initTriBandPass( 400, 800, 3250, 0.2 );
     musicTimbres[1] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
-                                  heightPerTimbre, sawWave );
+                                  heightPerTimbre, filteredVocal, 400, 10 );
     
     musicEnvelopes[1] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
