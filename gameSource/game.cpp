@@ -303,20 +303,32 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         
           }
     */
-    int step = 0;
     for( int p=0; p<PARTS; p++ ) {
         partLoudness[p] = 1;
     
+        // parts randomly shorter or longer (phase changes)
+        //partLengths[p] = NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
+        // OR all the same length (audible repeat)
         partLengths[p] = NW;
         }
-    
-    step = 0;
-    for( int x=0; x<N; x++ ) {
-        for( int p=0; p<PARTS; p++ ) {    
-            noteToggles[p][x][step] = true;
-            step += 2;
+
+    for( int p=0; p<PARTS; p++ ) {    
+        
+        for( int i=0; i<3; i++ ) {
+            // pick column at random
+            int range = NW;
+            if( partLengths[p] < range ) {
+                range = partLengths[p];
+                }
+            
+            int x = randSource.getRandomBoundedInt( 0, range - 1 );
+        
+            // pick pitch
+            int y = randSource.getRandomBoundedInt( 0, N - 1 );
+            noteToggles[p][y][x] = true;
             }
         }
+    
     
 
 

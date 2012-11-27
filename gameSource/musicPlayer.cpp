@@ -1074,6 +1074,8 @@ void setDefaultMusicSounds() {
                                       maxNoteLength,
                                       partStepDurationsInSamples[3] );
     
+
+    /*
     musicTimbres[4] = new Timbre( sampleRate, loudnessPerTimbre,
                                   keyFrequency * 2,
                                   heightPerTimbre, harmonicSine );
@@ -1091,7 +1093,7 @@ void setDefaultMusicSounds() {
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[5] );
-
+    */
 
 
     for( int i=0; i<PARTS; i++ ) {
