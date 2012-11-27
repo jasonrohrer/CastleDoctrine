@@ -310,15 +310,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         partLengths[p] = NW;
         }
     
-    // test last part only
     step = 0;
     for( int x=0; x<N; x++ ) {
-        noteToggles[PARTS-1][x][step] = true;
-        step += 3;
-        noteToggles[PARTS-2][x][step] = true;
-        step += 3;
+        for( int p=0; p<PARTS; p++ ) {    
+            noteToggles[p][x][step] = true;
+            step += 2;
+            }
         }
-        
+    
 
 
     unlockAudio();
