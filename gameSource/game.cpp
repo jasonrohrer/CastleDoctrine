@@ -17,6 +17,8 @@ int versionNumber = 1;
 
 #include "minorGems/graphics/Color.h"
 
+#include "minorGems/sound/filters/ReverbSoundFilter.h"
+
 
 
 
@@ -283,6 +285,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     // test notes
     lockAudio();
     
+    addMusicFilter( new ReverbSoundFilter( 10000, 0.5 ) );
+
     /*
     int step = 0;
     for( int p=0; p<PARTS; p++ ) {

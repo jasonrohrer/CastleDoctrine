@@ -1,3 +1,6 @@
+#include "minorGems/game/game.h"
+
+#include "minorGems/sound/filters/SoundFilter.h"
 
 
 // dimensions of note grid
@@ -77,3 +80,15 @@ void restartMusic();
 
 void stopMusic();
 
+
+
+
+
+
+// Specify a filter that samples are passed through before being returned
+// to audio device.
+// Subsequent calls add filters that are applied after filters specified
+// by earlier calls.
+//
+// Filters are destroyed when music player is freed.
+void addMusicFilter( SoundFilter *inFilter );

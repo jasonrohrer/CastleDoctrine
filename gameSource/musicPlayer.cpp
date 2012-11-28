@@ -134,7 +134,6 @@ SimpleVector<Envelope *> oldEnvelopes;
 
 
 
-
 class Note {
     public:
         // index into musicTimbres array
@@ -219,6 +218,8 @@ Note *noteGrid[PARTS][N][NW];
 
 
 SimpleVector<Note*> currentlyPlayingNotes;
+
+SimpleVector<SoundFilter *> soundFilters;
 
 
 
@@ -307,13 +308,12 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     int numSamples = inLengthToFillInBytes / 4;
     
 
-    Sint16 *samplesL = new Sint16[ numSamples ];
-    Sint16 *samplesR = new Sint16[ numSamples ];
+    float *samplesL = new float[ numSamples ];
+    float *samplesR = new float[ numSamples ];
     
     // first, zero-out the buffer to prepare it for our sum of note samples
-    // each sample is 2 bytes
-    memset( samplesL, 0, 2 * numSamples );
-    memset( samplesR, 0, 2 * numSamples );
+    memset( samplesL, 0, sizeof( float ) * numSamples );
+    memset( samplesR, 0, sizeof( float ) * numSamples );
     
 
     int i;
@@ -496,8 +496,8 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
                 waveTable[ waveTablePos ];
             
 
-            samplesL[i] += (Sint16)( noteLoudnessL * monoSample );
-            samplesR[i] += (Sint16)( noteLoudnessR * monoSample );
+            samplesL[i] += noteLoudnessL * monoSample;
+            samplesR[i] += noteLoudnessR * monoSample;
             
             currentSampleNumber ++;
             
@@ -566,11 +566,28 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
         }
 
 
+
+    // final step:
+    // apply filters in order
+    SoundSamples *s = new SoundSamples( numSamples, samplesL, samplesR );
+    for( i=0; i<soundFilters.size(); i++ ) {
+        SoundFilter *f = *( soundFilters.getElement( i ) );
+
+        SoundSamples *fs = f->filterSamples( s );
+        
+        delete s;
+        
+        s = fs;
+        }
+    
+    samplesL = s->mLeftChannel;
+    samplesR = s->mRightChannel;
+
     // now copy samples into Uint8 buffer
     int streamPosition = 0;
     for( i=0; i != numSamples; i++ ) {
-        Sint16 intSampleL = samplesL[i];
-        Sint16 intSampleR = samplesR[i];
+        Sint16 intSampleL = (Sint16)( lrint( samplesL[i] ) );
+        Sint16 intSampleR = (Sint16)( lrint( samplesR[i] ) );
         
         inBuffer[ streamPosition ] = (Uint8)( intSampleL & 0xFF );
         inBuffer[ streamPosition + 1 ] = (Uint8)( ( intSampleL >> 8 ) & 0xFF );
@@ -581,9 +598,7 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
         streamPosition += 4;
         }
 
-    delete [] samplesL;
-    delete [] samplesR;
-    
+    delete s;
     }
 
 
@@ -1328,8 +1343,21 @@ void freeMusicPlayer() {
         delete *( currentlyPlayingNotes.getElement( i ) );
         }
     
-    
+    // delete these copies
+    for( i=0; i<soundFilters.size(); i++ ) {
+        delete *( soundFilters.getElement( i ) );
+        }
+
     }
+
+
+
+
+
+void addMusicFilter( SoundFilter *inFilter ) {
+    soundFilters.push_back( inFilter );
+    }
+
 
 
 
