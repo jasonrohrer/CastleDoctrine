@@ -284,14 +284,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     // test notes
     lockAudio();
-    
     int sampleRate = getSampleRate();
-    addMusicFilter( new ReverbSoundFilter( 2343, 0.35, sampleRate ) );
-    addMusicFilter( new ReverbSoundFilter( 5543, 0.35, sampleRate ) );
-    addMusicFilter( new ReverbSoundFilter( 6527, 0.35, sampleRate ) );
-    addMusicFilter( new ReverbSoundFilter( 7531, 0.35, sampleRate ) );
-    addMusicFilter( new ReverbSoundFilter( 8249, 0.35, sampleRate ) );
+    //addMusicFilter( new ReverbSoundFilter( 2343, 0.35, sampleRate ) );
+    //addMusicFilter( new ReverbSoundFilter( 5543, 0.35, sampleRate ) );
+    //addMusicFilter( new ReverbSoundFilter( 6527, 0.35, sampleRate ) );
+    //addMusicFilter( new ReverbSoundFilter( 7531, 0.35, sampleRate ) );
     
+    addMusicFilter( new ReverbSoundFilter( 18249, 0.5, sampleRate ) );
+    //addMusicFilter( new ReverbSoundFilter( 33000, 0.35, sampleRate ) );
 
     /*
     int step = 0;
@@ -324,7 +324,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     for( int p=0; p<PARTS; p++ ) {    
         
-        for( int i=0; i<3; i++ ) {
+        for( int i=0; i<2; i++ ) {
             // pick column at random
             int range = NW;
             if( partLengths[p] < range ) {
