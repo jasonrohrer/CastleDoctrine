@@ -285,7 +285,13 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     // test notes
     lockAudio();
     
-    addMusicFilter( new ReverbSoundFilter( 10000, 0.5 ) );
+    int sampleRate = getSampleRate();
+    addMusicFilter( new ReverbSoundFilter( 2343, 0.35, sampleRate ) );
+    addMusicFilter( new ReverbSoundFilter( 5543, 0.35, sampleRate ) );
+    addMusicFilter( new ReverbSoundFilter( 6527, 0.35, sampleRate ) );
+    addMusicFilter( new ReverbSoundFilter( 7531, 0.35, sampleRate ) );
+    addMusicFilter( new ReverbSoundFilter( 8249, 0.35, sampleRate ) );
+    
 
     /*
     int step = 0;
