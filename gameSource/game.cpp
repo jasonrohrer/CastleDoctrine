@@ -317,9 +317,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         partLoudness[p] = 1;
     
         // parts randomly shorter or longer (phase changes)
-        //partLengths[p] = NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
+        partLengths[p] = NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
         // OR all the same length (audible repeat)
-        partLengths[p] = NW;
+        //partLengths[p] = NW;
         }
 
     for( int p=0; p<PARTS; p++ ) {    
@@ -330,9 +330,25 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
             if( partLengths[p] < range ) {
                 range = partLengths[p];
                 }
-            
-            int x = randSource.getRandomBoundedInt( 0, range - 1 );
+
+            // avoid intra-part chords
+            // keep picking x until we find an empty column
+            char conflict = true;
+            int x;
+            while( conflict ) {
+                
+                x = randSource.getRandomBoundedInt( 0, range - 1 );
         
+                conflict = false;
+                
+                for( int y=0; y<N; y++ ) {
+                    if( noteToggles[p][y][x] ) {
+                        conflict = true;
+                        break;
+                        }
+                    }
+                }
+            
             // pick pitch
             int y = randSource.getRandomBoundedInt( 0, N - 1 );
             noteToggles[p][y][x] = true;
