@@ -1010,7 +1010,7 @@ void setDefaultMusicSounds() {
                                       maxNoteLength,
                                       partStepDurationsInSamples[1] );
 
-    musicTimbres[2] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[2] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, 
                                   harmonicSine, 1  );
@@ -1021,7 +1021,7 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[2] );
 
 
-    musicTimbres[3] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[3] = new Timbre( sampleRate, 0.25 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, 
                                   harmonicSaw, 1  );
