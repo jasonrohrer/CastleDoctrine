@@ -1000,7 +1000,7 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[0] );
     
     
-    musicTimbres[1] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[1] = new Timbre( sampleRate, 0.75 * loudnessPerTimbre,
                                   keyFrequency * 0.125,
                                   heightPerTimbre, 
                                   sawWave, 1, 5  );
