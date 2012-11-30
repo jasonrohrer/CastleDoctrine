@@ -35,6 +35,9 @@ void freeMusicPlayer();
 
 
 // set loudness in range [0.0,1.0]
+// starts at 0 (so must be increased after initMusicPlayer to hear music)
+// music loudness is adjusted toward inLoudness smoothly 
+// Adjustment rate covers a full 0-to-1 volume change in 1 second
 void setMusicLoudness( double inLoudness );
 
 

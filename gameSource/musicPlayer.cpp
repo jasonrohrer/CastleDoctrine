@@ -63,9 +63,12 @@ int gridStartOffset = 0;
 
 
 // overal loudness of music
-double musicLoudness = 1.0;
+double musicLoudness = 0;
+double musicTargetLoudness = 0;
 
-
+// set so that a full 0-to-1 loudness transition happens 
+// in 1 second
+double loudnessChangePerSample;
 
 
 
@@ -228,7 +231,7 @@ SimpleVector<SoundFilter *> soundFilters;
 void setMusicLoudness( double inLoudness ) {
     lockAudio();
     
-    musicLoudness = inLoudness;
+    musicTargetLoudness = inLoudness;
     
     unlockAudio();
     }
@@ -456,10 +459,6 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
         
         double noteLoudnessL = note->mLoudnessLeft;
         double noteLoudnessR = note->mLoudnessRight;
-        
-        // do this outside inner loop
-        noteLoudnessL *= musicLoudness;
-        noteLoudnessR *= musicLoudness;
 
 
         int noteStartInBuffer = 0;
@@ -567,7 +566,7 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
 
 
 
-    // final step:
+    // next step:
     // apply filters in order
     SoundSamples *s = new SoundSamples( numSamples, samplesL, samplesR );
     for( i=0; i<soundFilters.size(); i++ ) {
@@ -583,9 +582,40 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     samplesL = s->mLeftChannel;
     samplesR = s->mRightChannel;
 
+
+
     // now copy samples into Uint8 buffer
+    // while also adjusting loudness of whole mix
+    char loudnessChanging = false;
+    if( musicLoudness != musicTargetLoudness ) {
+        loudnessChanging = true;
+        }
+    
     int streamPosition = 0;
     for( i=0; i != numSamples; i++ ) {
+        samplesL[i] *= musicLoudness;
+        samplesR[i] *= musicLoudness;
+    
+        if( loudnessChanging ) {
+            
+            if( musicLoudness < musicTargetLoudness ) {
+                musicLoudness += loudnessChangePerSample;
+                if( musicLoudness > musicTargetLoudness ) {
+                    musicLoudness = musicTargetLoudness;
+                    loudnessChanging = false;
+                    }
+                }
+            else if( musicLoudness > musicTargetLoudness ) {
+                musicLoudness -= loudnessChangePerSample;
+                if( musicLoudness < musicTargetLoudness ) {
+                    musicLoudness = musicTargetLoudness;
+                    loudnessChanging = false;
+                    }
+                }
+            }
+        
+        
+        
         Sint16 intSampleL = (Sint16)( lrint( samplesL[i] ) );
         Sint16 intSampleR = (Sint16)( lrint( samplesR[i] ) );
         
@@ -1106,6 +1136,8 @@ void initMusicPlayer() {
     
     sampleRate = getSampleRate();
 
+    loudnessChangePerSample = 1.0 / sampleRate;
+    
     
     gridStepDuration = 1.0;
     gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
