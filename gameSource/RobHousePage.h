@@ -12,6 +12,7 @@
 
 
 #include "minorGems/ui/event/ActionListener.h"
+#include "minorGems/util/random/CustomRandomSource.h"
 
 
 
@@ -67,6 +68,9 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
+
+        CustomRandomSource mRandSource;
+        
         char mShowBackpack;
 
         RobHouseGridDisplay mGridDisplay;
@@ -83,6 +87,7 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         char mDone;
 
         char *mDescription;
-
+        
+        void clearNotes();
     };
 

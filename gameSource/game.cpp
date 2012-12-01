@@ -293,113 +293,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     addMusicFilter( new ReverbSoundFilter( 18249, 0.5, sampleRate ) );
     //addMusicFilter( new ReverbSoundFilter( 33000, 0.35, sampleRate ) );
 
-    /*
-    int step = 0;
-    for( int p=0; p<PARTS; p++ ) {
-        partLoudness[p] = 1;
-    
-        partLengths[p] = NW;
-        noteToggles[p][0][step] = true;
-        step+=3;
-        if( step >= NW ) {
-            step = 0;
-            }
-        
-        noteToggles[p][N-1][step] = true;
-        step+=3;
-        if( step >= NW ) {
-            step = 0;
-            }
-        
-          }
-    */
-    for( int p=0; p<PARTS; p++ ) {
-        partLoudness[p] = 1;
-    
-        // parts randomly shorter or longer 
-        // force unique part lengths (phase changes)
-        char hit = true;
-        while( hit ) {
-            partLengths[p] = 
-                NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
-            hit = false;
-            for( int q=0; q<p; q++ ) {
-                if( partLengths[p] == partLengths[q] ) {
-                    // part length already taken
-                    // pick again
-                    hit = true;
-                    break;
-                    }
-                }
-            }
-        
-        // OR all the same length (audible repeat)
-        //partLengths[p] = NW;
-        }
-
-    for( int p=0; p<PARTS; p++ ) {    
-        
-        for( int i=0; i<3; i++ ) {
-            // pick column at random
-            int range = NW;
-            if( partLengths[p] < range ) {
-                range = partLengths[p];
-                }
-
-            // avoid intra-part chords
-            // keep picking x until we find an empty column
-            char conflict = true;
-            int x;
-            while( conflict ) {
-                
-                x = randSource.getRandomBoundedInt( 0, range - 1 );
-        
-                conflict = false;
-                
-                for( int y=0; y<N; y++ ) {
-                    if( noteToggles[p][y][x] ) {
-                        conflict = true;
-                        break;
-                        }
-                    }
-                }
-            
-            // pick pitch
-            // never repeat a pitch
-            conflict = true;
-            int y;
-            while( conflict ) {
-                y = randSource.getRandomBoundedInt( 0, N - 1 );
-                conflict = false;
-                
-                for( int x=0; x<NW; x++ ) {
-                    if( noteToggles[p][y][x] ) {
-                        conflict = true;
-                        break;
-                        }
-                    }
-                }
-            
-            noteToggles[p][y][x] = true;
-            }
-        }
-
-    /*    
-    for( int p=0; p<PARTS; p++ ) {
-        printf( "Part %d:\n", p );
-        
-        for( int y=0; y<N; y++ ) {
-            for( int x=0; x<NW; x++ ) {
-                printf( "%d", noteToggles[p][y][x] );
-                }
-            printf( "\n" );
-            }
-        printf( "\n\n" );
-        }
-    int test;
-    scanf( "%d", &test );
-    */
-
 
     unlockAudio();
 
@@ -1194,6 +1087,11 @@ void drawFrame( char inUpdate ) {
                     selfHouseTestPage->setDescription( 
                         translate( "selfTestDescription" ) );
 
+                    // still present in checkoutHousePage, use it
+                    // (editHousePage doesn't need it)
+                    selfHouseTestPage->setMusicSeed( 
+                        checkoutHousePage->getMusicSeed() );
+
                     currentGamePage = selfHouseTestPage;
                     currentGamePage->base_makeActive( true );
                     selfHouseTestPage->startSelfTest();
@@ -1510,6 +1408,10 @@ void drawFrame( char inUpdate ) {
 
                     robHousePage->setDescription( description );
                     delete [] description;
+
+
+                    robHousePage->setMusicSeed( 
+                        robCheckoutHousePage->getMusicSeed() );
 
                     currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );

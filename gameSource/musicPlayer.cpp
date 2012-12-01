@@ -1084,7 +1084,7 @@ void setDefaultMusicSounds() {
 
 
     for( int i=0; i<PARTS; i++ ) {
-        partLoudness[i] = 0;
+        partLoudness[i] = 1;
         
         double divisor = (double)( PARTS - 1 );
         
