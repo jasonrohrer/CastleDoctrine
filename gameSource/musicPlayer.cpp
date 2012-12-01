@@ -250,8 +250,11 @@ void restartMusic() {
     // return to beginning (and forget samples we've played so far)
     streamSamples = 0;
     
-    // drop all currently-playing notes
-    currentlyPlayingNotes.deleteAll();
+    // DON'T drop all currently-playing notes
+    // because this leads to discontinuities.
+    // need to let these notes finish playing, even though we're
+    // jumping back to the start of the grid.
+    // currentlyPlayingNotes.deleteAll();
         
     unlockAudio();
     }
