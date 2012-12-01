@@ -360,6 +360,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     unlockAudio();
 
+    setMusicLoudness( 1.0 );
     setSoundPlaying( true );
 
 
@@ -887,6 +888,8 @@ void drawFrame( char inUpdate ) {
             if( currentGamePage != NULL ) {
                 currentGamePage->base_makeNotActive();
                 }
+            // fade out music during pause
+            setMusicLoudness( 0 );
             }
         wasPaused = true;
 
@@ -994,14 +997,17 @@ void drawFrame( char inUpdate ) {
         firstDrawFrameCalled = true;
         }
 
+    if( wasPaused ) {
+        if( currentGamePage != NULL ) {
+            currentGamePage->base_makeActive( false );
+            }
+        // fade music in
+        setMusicLoudness( 1.0 );
+        wasPaused = false;
+        }
     
     if( currentGamePage != NULL ) {
         
-        if( wasPaused ) {
-            currentGamePage->base_makeActive( false );
-            wasPaused = false;
-            }
-
         currentGamePage->base_step();
 
         if( currentGamePage == loginPage ) {
