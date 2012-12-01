@@ -1088,10 +1088,9 @@ void setDefaultMusicSounds() {
         
         double divisor = (double)( PARTS - 1 );
         
-        // fixme:
-        // all in center for now
-        if( false && divisor > 0 ) {
-            partStereo[i] = i / divisor;
+        if( divisor > 0 ) {
+            // spread evenly between 0.4 and 0.6
+            partStereo[i] = 0.4 + ( i / divisor ) * 0.2;
             }
         else {
             partStereo[i] = 0.5;
