@@ -1295,11 +1295,10 @@ void freeMusicPlayer() {
     
     int i;
     
-    // last ones are pointers to previous envelopes/timbres, don't delete
-    for( i=0; i<numTimbres-1; i++ ) {
+    for( i=0; i<numTimbres; i++ ) {
         delete musicTimbres[i];
         }
-    for( i=0; i<numEnvelopes-1; i++ ) {
+    for( i=0; i<numEnvelopes; i++ ) {
         delete musicEnvelopes[i];
         }
 
