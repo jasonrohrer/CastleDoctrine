@@ -8,7 +8,7 @@
 // two pentatonic octaves
 #define N  10
 // time width
-#define NW 16
+#define NW 32
 
 // instrument parts
 

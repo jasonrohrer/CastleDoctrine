@@ -339,7 +339,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     for( int p=0; p<PARTS; p++ ) {    
         
-        for( int i=0; i<2; i++ ) {
+        for( int i=0; i<3; i++ ) {
             // pick column at random
             int range = NW;
             if( partLengths[p] < range ) {
@@ -365,12 +365,40 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                 }
             
             // pick pitch
-            int y = randSource.getRandomBoundedInt( 0, N - 1 );
+            // never repeat a pitch
+            conflict = true;
+            int y;
+            while( conflict ) {
+                y = randSource.getRandomBoundedInt( 0, N - 1 );
+                conflict = false;
+                
+                for( int x=0; x<NW; x++ ) {
+                    if( noteToggles[p][y][x] ) {
+                        conflict = true;
+                        break;
+                        }
+                    }
+                }
+            
             noteToggles[p][y][x] = true;
             }
         }
-    
-    
+
+    /*    
+    for( int p=0; p<PARTS; p++ ) {
+        printf( "Part %d:\n", p );
+        
+        for( int y=0; y<N; y++ ) {
+            for( int x=0; x<NW; x++ ) {
+                printf( "%d", noteToggles[p][y][x] );
+                }
+            printf( "\n" );
+            }
+        printf( "\n\n" );
+        }
+    int test;
+    scanf( "%d", &test );
+    */
 
 
     unlockAudio();
