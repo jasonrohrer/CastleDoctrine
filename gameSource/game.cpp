@@ -316,8 +316,23 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     for( int p=0; p<PARTS; p++ ) {
         partLoudness[p] = 1;
     
-        // parts randomly shorter or longer (phase changes)
-        partLengths[p] = NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
+        // parts randomly shorter or longer 
+        // force unique part lengths (phase changes)
+        char hit = true;
+        while( hit ) {
+            partLengths[p] = 
+                NW + randSource.getRandomBoundedInt( -NW/4, NW/4 );
+            hit = false;
+            for( int q=0; q<p; q++ ) {
+                if( partLengths[p] == partLengths[q] ) {
+                    // part length already taken
+                    // pick again
+                    hit = true;
+                    break;
+                    }
+                }
+            }
+        
         // OR all the same length (audible repeat)
         //partLengths[p] = NW;
         }
