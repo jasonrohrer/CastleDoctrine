@@ -36,7 +36,9 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         virtual int getLootValue();
         
         virtual char getMustSelfTest();
-
+        
+        virtual int getMusicSeed();
+        
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
@@ -57,6 +59,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         int mLootValue;
 
         char mMustSelfTest;
+        
+        int mMusicSeed;
 
         TextButton mMenuButton;
 

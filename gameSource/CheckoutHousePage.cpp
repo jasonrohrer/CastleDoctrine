@@ -131,6 +131,11 @@ char CheckoutHousePage::getMustSelfTest() {
     }
 
 
+int CheckoutHousePage::getMusicSeed() {
+    return mMusicSeed;
+    }
+
+
 
 void CheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
@@ -172,9 +177,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 8
+                    if( lines->size() != 9
                         ||
-                        strcmp( *( lines->getElement( 7 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 8 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -204,10 +209,15 @@ void CheckoutHousePage::step() {
                         else {
                             mMustSelfTest = false;
                             }
+                        
+                        mMusicSeed = 0;
+                        sscanf( *( lines->getElement( 7 ) ),
+                                "%d", &mMusicSeed );
 
                         delete [] *( lines->getElement( 5 ) );
                         delete [] *( lines->getElement( 6 ) );
                         delete [] *( lines->getElement( 7 ) );
+                        delete [] *( lines->getElement( 8 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Vault = %s\n", mVaultContents );
@@ -215,6 +225,7 @@ void CheckoutHousePage::step() {
                         printf( "Gallery = %s\n", mGalleryContents );
                         printf( "PriceList = %s\n", mPriceList );
                         printf( "LootValue = %d\n", mLootValue );
+                        printf( "MusicSeed = %d\n", mMusicSeed );
 
                         // reset ping time, because house check-out
                         // counts as a ping

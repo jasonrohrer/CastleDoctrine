@@ -122,6 +122,12 @@ char *RobCheckoutHousePage::getGalleryContents() {
     }
 
 
+int RobCheckoutHousePage::getMusicSeed() {
+    return mMusicSeed;
+    }
+
+
+
 
 void RobCheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
@@ -168,8 +174,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 5 ||
-                        strcmp( *( tokens->getElement( 4 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 6 ||
+                        strcmp( *( tokens->getElement( 5 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -183,13 +189,20 @@ void RobCheckoutHousePage::step() {
                         mHouseMap = *( tokens->getElement( 1 ) );
                         mBackpackContents = *( tokens->getElement( 2 ) );
                         mGalleryContents = *( tokens->getElement( 3 ) );
-                        
+
+                        mMusicSeed = 0;
+                        sscanf( *( tokens->getElement( 4 ) ),
+                                "%d", &mMusicSeed );
+
                         printf( "OwnerName = %s\n", mOwnerName );
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Backpack = %s\n", mBackpackContents );
                         printf( "Gallery = %s\n", mGalleryContents );
+                        printf( "MusicSeed = %d\n", mMusicSeed );
                         
+
                         delete [] *( tokens->getElement( 4 ) );
+                        delete [] *( tokens->getElement( 5 ) );
 
                         // reset ping time, because house check-out
                         // counts as a ping

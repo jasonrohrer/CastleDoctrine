@@ -32,7 +32,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
 
         // destroyed by caller if not NULL
         virtual char *getGalleryContents();
-        
+
+        virtual int getMusicSeed();
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
@@ -49,7 +50,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         char *mHouseMap;
         char *mBackpackContents;
         char *mGalleryContents;
-
+        int mMusicSeed;
+        
         TextButton mMenuButton;
 
 

@@ -629,6 +629,7 @@ function cd_setupDatabase() {
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
             "gallery_contents LONGTEXT NOT NULL," .
+            "music_seed INT NOT NULL," .
             // times edited since last successful robbery
             "edit_count INT NOT NULL," .
             "self_test_move_list LONGTEXT NOT NULL," .
@@ -1386,7 +1387,7 @@ function cd_startEditHouse() {
         "loot_value, ".
         "carried_loot_value, carried_vault_contents, ".
         "carried_gallery_contents, ".
-        "edit_count FROM $tableNamePrefix"."houses ".
+        "edit_count, music_seed FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -1406,6 +1407,7 @@ function cd_startEditHouse() {
     $gallery_contents = $row[ "gallery_contents" ];
     $loot_value = $row[ "loot_value" ];
     $edit_count = $row[ "edit_count" ];
+    $music_seed = $row[ "music_seed" ];
 
     
     $carried_loot_value = $row[ "carried_loot_value" ];
@@ -1531,6 +1533,8 @@ function cd_startEditHouse() {
     echo $loot_value;
     echo "\n";
     echo $must_self_test;
+    echo "\n";
+    echo $music_seed;
     echo "\nOK";
     }
 
@@ -2479,7 +2483,7 @@ function cd_startRobHouse() {
     // out for robbery
     
     $query = "SELECT house_map, gallery_contents, ".
-        "character_name, rob_attempts ".
+        "character_name, rob_attempts, music_seed ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 AND rob_checkout = 0 ".
@@ -2498,6 +2502,7 @@ function cd_startRobHouse() {
     $house_map = $row[ "house_map" ];
     $gallery_contents = $row[ "gallery_contents" ];
     $character_name = $row[ "character_name" ];
+    $music_seed = $row[ "music_seed" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
 
@@ -2522,6 +2527,7 @@ function cd_startRobHouse() {
     echo "$house_map\n";
     echo "$backpack_contents\n";
     echo "$gallery_contents\n";
+    echo "$music_seed\n";
     echo "OK";
     }
 
@@ -3648,7 +3654,8 @@ function cd_newHouseForUser( $user_id ) {
     $carried_loot_value = 0;
     $carried_vault_contents = "#";
     $carried_gallery_contents = "#";
-    
+
+    $music_seed = mt_rand();
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
@@ -3658,6 +3665,7 @@ function cd_newHouseForUser( $user_id ) {
             " $user_id, '$character_name', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
+            "'$music_seed', ".
             "0, '#', 1000, 1000, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".

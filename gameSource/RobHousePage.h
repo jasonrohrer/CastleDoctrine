@@ -38,7 +38,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         char *getBackpackContents();
 
         void setGalleryContents( char *inGalleryContents );
-
+        
+        void setMusicSeed( int inMusicSeed );
 
         char getSuccess() {
             return mGridDisplay.getSuccess();
@@ -72,6 +73,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         TextButton mDoneButton;
         
         Gallery mGallery;
+        
+        int mMusicSeed;
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
 

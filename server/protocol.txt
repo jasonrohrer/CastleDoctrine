@@ -71,6 +71,7 @@ gallery_contents
 price_list
 current_balance
 must_self_test
+music_seed
 OK
 
 Where:
@@ -133,6 +134,8 @@ current_balance = player's current money balance in whole dollars.
 
 must_self_test = 1 if player must test house before submitting it, or 
                  0 otherwise
+
+music_seed = integer used to seed music generator for this house's song
 
 
 
@@ -289,6 +292,7 @@ character_name
 houseMap
 backpack_contents
 gallery_contents
+music_seed
 OK
 
 --OR--
@@ -310,7 +314,7 @@ houseMap = ASCII string representing the house layout
 backpack_contents = ASCII string encoded as described for start_edit_house
                     (contents of robber's backpack)
 gallery_contents = ASCII string encoded as described for start_edit_house
-
+music_seed = integer used to seed music generator for this house's song
 
 
 
