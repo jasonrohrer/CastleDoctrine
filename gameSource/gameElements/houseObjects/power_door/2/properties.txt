@@ -1,2 +1,4 @@
+blocking
+visionBlocking
 conductive
 structural

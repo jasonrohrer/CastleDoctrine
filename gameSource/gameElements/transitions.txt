@@ -8,8 +8,8 @@ mobile   #   toggle_switch:2   =>  1
 mobile   #   rotary_toggle_switch:2   =>  1
 
 
-mobile   #   power_door:2  => 3
-noMobile #   power_door:3  => 2
+mobile   #   power_door:1  => 3
+noMobile #   power_door:3  => 1
 
 
 
@@ -80,7 +80,7 @@ noPower   #   trapdoor:2   =>  1
 
 
 
-doorstop # power_door:2 => 4
+doorstop # power_door:1 => 4
 
 
 power   #   floor_electric:1   =>  2
