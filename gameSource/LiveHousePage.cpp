@@ -21,19 +21,27 @@ extern int userID;
 int LiveHousePage::sLastPingTime = time( NULL );
 
 
+int LiveHousePage::sWebRequest = -1;
+
+char LiveHousePage::sStartSelfTestPending = false;
+char LiveHousePage::sStartSelfTestSent = false;
+
+char LiveHousePage::sEndSelfTestPending = false;
+char LiveHousePage::sEndSelfTestSent = false;
+
+
 
 LiveHousePage::LiveHousePage()
-        : mWebRequest( -1 ),
-          mLastActionTime( time( NULL ) ),
-          mCheckoutStale( false ),
-          mStartSelfTestPending( false ), mEndSelfTestPending( false ) {
+        : mLastActionTime( time( NULL ) ),
+          mCheckoutStale( false ) {
     }
 
 
 
 LiveHousePage::~LiveHousePage() {
-    if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+    if( sWebRequest != -1 ) {
+        clearWebRequest( sWebRequest );
+        sWebRequest = -1;
         }
     }
 
@@ -57,59 +65,63 @@ void LiveHousePage::actionHappened() {
 
 
 void LiveHousePage::startSelfTest() {
-    mStartSelfTestPending = true;
+    sStartSelfTestPending = true;
     }
 
 
 void LiveHousePage::endSelfTest() {
-    mEndSelfTestPending = true;
+    sEndSelfTestPending = true;
     }
 
 
 
 void LiveHousePage::step() {
-    if( mWebRequest != -1 ) {
+    if( sWebRequest != -1 ) {
             
-        int result = stepWebRequest( mWebRequest );
+        int result = stepWebRequest( sWebRequest );
           
         if( result != 0 ) {
+            // send is over, not matter what response we get back
+            sStartSelfTestSent = false;
+            sEndSelfTestSent = false;
             
             switch( result ) {
                 case -1:
                     mCheckoutStale = true;
+                    printf( "Web request FAILED!\n" );
                     break;
                 case 1: {
-                    char *result = getWebResult( mWebRequest );
+                    char *response = getWebResult( sWebRequest );
 
+                    printf( "Server response:  %s\n", response );
+                    
                     // same OK result expected whether we
                     // have sent a ping or a self-test start/end
-                    if( strstr( result, "OK" ) == NULL ) {
+                    if( strstr( response, "OK" ) == NULL ) {
                         mCheckoutStale = true;
                         }
-                    else {
-                        // handled the send of the start or end message
-                        if( mStartSelfTestPending ) {
-                            mStartSelfTestPending = false;
-                            }
-                        else if( mEndSelfTestPending ) {
-                            mEndSelfTestPending = false;
-                            }
-                        }
 
-                    delete [] result;
+                    delete [] response;
                     }
                 }
 
-            clearWebRequest( mWebRequest );
-            mWebRequest = -1;
+            clearWebRequest( sWebRequest );
+            sWebRequest = -1;
             }
         }
-    else if( mStartSelfTestPending || mEndSelfTestPending ) {
+    else if( sStartSelfTestPending || sEndSelfTestPending ) {
 
-        const char *command = "start_self_test";
+        const char *command;
         
-        if( ! mStartSelfTestPending ) {
+        if( sStartSelfTestPending ) {
+            command = "start_self_test";
+            sStartSelfTestSent = true;
+            sStartSelfTestPending = false;
+            }
+        else {
             command = "end_self_test";
+            sEndSelfTestSent = true;
+            sEndSelfTestPending = false;
             }
         
 
@@ -121,7 +133,7 @@ void LiveHousePage::step() {
             serverURL, command, userID, ticketHash );
         delete [] ticketHash;
         
-        mWebRequest = startWebRequest( "GET", 
+        sWebRequest = startWebRequest( "GET", 
                                        fullRequestURL, 
                                        NULL );
         
@@ -151,7 +163,7 @@ void LiveHousePage::step() {
                     serverURL, userID, ticketHash );
                 delete [] ticketHash;
                 
-                mWebRequest = startWebRequest( "GET", 
+                sWebRequest = startWebRequest( "GET", 
                                                fullRequestURL, 
                                                NULL );
                 

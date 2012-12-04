@@ -52,7 +52,6 @@ class LiveHousePage : public GamePage {
 
     private:
         
-        int mWebRequest;
 
 
 
@@ -64,9 +63,15 @@ class LiveHousePage : public GamePage {
         char mCheckoutStale;
         
 
-        char mStartSelfTestPending;
+        // static, because one page might need to finish up a request
+        // started by a previous, now-closed page
+        static int sWebRequest;
+
+        static char sStartSelfTestPending;
+        static char sStartSelfTestSent;
         
-        char mEndSelfTestPending;
+        static char sEndSelfTestPending;
+        static char sEndSelfTestSent;
 
     };
 
