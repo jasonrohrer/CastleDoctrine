@@ -82,6 +82,8 @@ noPower   #   trapdoor:2   =>  1
 
 doorstop # power_door:1 => 4
 
+crowbar # power_door:2 => 5
+
 
 power   #   floor_electric:1   =>  2
 
@@ -132,6 +134,7 @@ player # chihuahua:6 => 1
 
 
 brick # window:1 => 3
+crowbar # window:1 => 3
 
 brick   #   toggle_switch:1   =>  2
 brick   #   sticking_switch:1   =>  2

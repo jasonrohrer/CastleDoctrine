@@ -87,6 +87,7 @@ $defaultPrices = array(
     array( 72, 20, 0, "Cat" ),
     
     array( 500, 20, 0, "Saw" ),
+    array( 509, 20, 0, "Crowbar" ),
     array( 501, 100, 0, "Cutting Torch" ),
     array( 502, 470, 0, "S-W Model 36" ),
     array( 503, 2, 0, "Brick" ),
