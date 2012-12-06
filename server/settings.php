@@ -96,6 +96,7 @@ $defaultPrices = array(
     array( 506, 20, 0, "Wire Cutters" ),
     array( 507, 50, 0, "Ammonium Nitrate Diesel Bomb" ),
     array( 508, 8, 0, "Drugged Meat" ),
+    array( 510, 2, 0, "Water" ),
 
     array( 2000, 10000, 1, "Owl - Rohrer" ),
     array( 2001, 10000, 1, "Sky - Rohrer" ),

@@ -145,3 +145,7 @@ brick   #   toggle_switch:2   =>  1
 
 crowbar # power_relay => 3
 crowbar # power_relay_inverted => 3
+
+
+water # power_source => 2
+water # floor_electric:2 => 3
