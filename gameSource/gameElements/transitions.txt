@@ -141,3 +141,7 @@ brick   #   toggle_switch:1   =>  2
 brick   #   sticking_switch:1   =>  2
 
 brick   #   toggle_switch:2   =>  1
+
+
+crowbar # power_relay => 3
+crowbar # power_relay_inverted => 3
