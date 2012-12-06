@@ -1,2 +1,2 @@
 502
-".38 Special Revolver"
+"Gun"
