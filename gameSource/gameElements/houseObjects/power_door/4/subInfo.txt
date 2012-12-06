@@ -1,1 +1,1 @@
-"Stopped Automatic Door"
+"Stopped Door"
