@@ -1981,7 +1981,48 @@ function cd_endEditHouse() {
             return;
             }
         }
+
+
+    // Add revenue from sold items into loot_value
+    // Do this before totalling cost of house edits, because
+    // player may have used money from loot sold to buy house edits
+    global $resaleRate;
     
+    $sellArray = preg_split( "/#/", $sell_list );
+
+    $numSold = count( $sellArray );
+        
+    
+    if( $sell_list == "#" ) {
+        $numSold = 0;
+        }
+    
+    for( $i=0; $i<$numSold; $i++ ) {
+        $sellParts = preg_split( "/:/", $sellArray[$i] );
+
+        if( count( $sellParts ) != 2 ) {
+            cd_log(
+                "House check-in with badly-formatted sell list denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        $id = $sellParts[0];
+        $quantity = $sellParts[1];
+        
+
+        if( ! array_key_exists( "$id", $priceArray ) ) {
+            // id's not on the price list can't be bought!
+            cd_log(
+                "House check-in with unbuyable object in sell denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        // items sold back for half their value, rounded down
+        $loot_value += $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
+        }
+
     
     
     
@@ -2114,43 +2155,6 @@ function cd_endEditHouse() {
 
 
 
-    // Add revenue from sold items into loot_value
-    global $resaleRate;
-    
-    $sellArray = preg_split( "/#/", $sell_list );
-
-    $numSold = count( $sellArray );
-        
-    
-    if( $sell_list == "#" ) {
-        $numSold = 0;
-        }
-    
-    for( $i=0; $i<$numSold; $i++ ) {
-        $sellParts = preg_split( "/:/", $sellArray[$i] );
-
-        if( count( $sellParts ) != 2 ) {
-            cd_log(
-                "House check-in with badly-formatted sell list denied" );
-            cd_transactionDeny();
-            return;
-            }
-
-        $id = $sellParts[0];
-        $quantity = $sellParts[1];
-        
-
-        if( ! array_key_exists( "$id", $priceArray ) ) {
-            // id's not on the price list can't be bought!
-            cd_log(
-                "House check-in with unbuyable object in sell denied" );
-            cd_transactionDeny();
-            return;
-            }
-
-        // items sold back for half their value, rounded down
-        $loot_value += $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
-        }
     
     
     // NEXT:
