@@ -1,2 +1,2 @@
 101
-"Pressure Toggle Switch"
+"Pressure Toggle Switch (Starts Off)"
