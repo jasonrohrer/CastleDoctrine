@@ -149,3 +149,9 @@ crowbar # power_relay_inverted => 3
 
 water # power_source => 2
 water # floor_electric:2 => 3
+
+
+
+crowbar  # pitbull:1 => 7
+crowbar  # chihuahua:1 => 7
+crowbar  # cat:1 => 7
