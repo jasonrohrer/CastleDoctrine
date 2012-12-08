@@ -47,6 +47,7 @@ int getObjectID( const char *inName );
 #define PROPERTY_NAMES \
     F(permanent), \
     F(mandatory), \
+    F(family), \
     F(blocking), \
     F(visionBlocking), \
     F(shadowMaking), \
