@@ -72,7 +72,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *getHouseMap();
         char *getEditList();
         
-        char isGoalSet();
+        char areMandatoriesPlaced();
         
 
         // disable placement... for example, if out of money
@@ -197,8 +197,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mStartIndex;
         int mGoalIndex;
 
-        char mGoalSet;
+        char mMandatoryNeedsPlacing;
+        int mMandatoryToPlaceID;
 
+        // places mMandatoryToPlaceID and handles logging edit, etc.
+        void placeMandatory( int inFullIndex, int inIndex );
+        
 
         // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)

@@ -51,8 +51,15 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mSubMapOffsetY( 0 ),
           mHouseSubMapIDs( new int[ HOUSE_D * HOUSE_D ] ),
           mHouseSubMapCellStates( new int[ HOUSE_D * HOUSE_D ] ),
-          mHighlightIndex( -1 ), mTileRadius( 0.4375 ),
-          mGoalSet( false ),
+          mHighlightIndex( -1 ),
+          mPointerDownIndex( -1 ),
+          mDraggedAway( false ),
+          mPointerDownObjectID( -1 ),
+          mPlaceOnDrag( false ),
+          mTileRadius( 0.4375 ),
+          mStartIndex( -1 ),
+          mGoalIndex( -1 ),
+          mMandatoryNeedsPlacing( false ),
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
@@ -284,7 +291,6 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         
             if( id == GOAL_ID ) {
                 mGoalIndex = i;
-                mGoalSet = true;
                 }
 
             if( isPropertySet( id, state, mobile ) ) {
@@ -514,8 +520,8 @@ char *HouseGridDisplay::getEditList() {
 
 
 
-char HouseGridDisplay::isGoalSet() {
-    return mGoalSet;
+char HouseGridDisplay::areMandatoriesPlaced() {
+    return !mMandatoryNeedsPlacing;
     }
 
 
@@ -1143,16 +1149,19 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             if( highlightPick != -1 ) {
                     
-                if( !mGoalSet ) {
-                    // ghost of goal for placement
+                if( mMandatoryNeedsPlacing ) {
+                    // ghost of to-place mandatory for placement
                     setDrawColor( 1, 1, 1, 0.35 );
 
-                    int ghostOrientation = getOrientationIndex( fullI, GOAL_ID,
-                                                                0 );
+                    int ghostOrientation = 
+                        getOrientationIndex( fullI, 
+                                             mMandatoryToPlaceID,
+                                             0 );
                     
-                    SpriteHandle sprite = getObjectSprite( GOAL_ID, 
-                                                           ghostOrientation, 
-                                                           0 );
+                    SpriteHandle sprite = getObjectSprite( 
+                        mMandatoryToPlaceID, 
+                        ghostOrientation, 
+                        0 );
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
@@ -1386,16 +1395,6 @@ void HouseGridDisplay::draw() {
         }
             
 
-    /*
-    if( mGoalSet ) {    
-        int goalSubIndex = fullToSub( mGoalIndex );
-        
-        if( goalSubIndex != -1 ) {    
-            setDrawColor( 1, 1, 0, 1 );
-            drawSquare( getTilePos( goalSubIndex ), 0.75 * mTileRadius );
-            }
-        }
-    */
     
 
     
@@ -1449,6 +1448,43 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
 
 
 
+void HouseGridDisplay::placeMandatory( int inFullIndex, int inIndex ) {
+    
+    int oldID = mHouseSubMapIDs[ inIndex ];
+    int oldState = mHouseSubMapCellStates[ inIndex ];
+    
+    mHouseSubMapIDs[ inIndex ] = mMandatoryToPlaceID;
+    
+    logEdit( inFullIndex, mMandatoryToPlaceID );
+
+    
+    if( mMandatoryToPlaceID == GOAL_ID ) {
+        mGoalIndex = inFullIndex;
+        }
+    if( isPropertySet( oldID, oldState, mandatory ) ) {
+        mMandatoryToPlaceID = oldID;
+        }
+    else {
+        mMandatoryNeedsPlacing = false;
+        }
+    
+    mLastPlacedObject = mMandatoryToPlaceID;    
+    
+    
+    // changes reset state
+    mHouseSubMapCellStates[ inIndex ] = 0;
+    
+    // clear mobile objects
+    mHouseMapMobileIDs[ inFullIndex ] = 0;
+    mHouseMapMobileCellStates[ inFullIndex ] = 0;
+    
+    copySubCellBack( inIndex );
+    fireActionPerformed( this );
+    }
+
+
+
+
 void HouseGridDisplay::pointerMove( float inX, float inY ) {
     pointerOver( inX, inY );
     }
@@ -1469,26 +1505,12 @@ void HouseGridDisplay::pointerUp( float inX, float inY ) {
         int fullIndex = subToFull( index );
         
         
-        if( !mGoalSet && 
+        if( mMandatoryNeedsPlacing && 
             fullIndex != mStartIndex &&
             fullIndex != mRobberIndex ) {
-            // goal dragged/dropped here
-            mHouseSubMapIDs[ index ] = GOAL_ID;
-            mGoalIndex = fullIndex;
-            mGoalSet = true;
-            mLastPlacedObject = GOAL_ID;
-            
-            logEdit( fullIndex, GOAL_ID );
+            // mandatory dragged/dropped here
 
-            // changes reset state
-            mHouseSubMapCellStates[ index ] = 0;
-
-            // clear mobile objects
-            mHouseMapMobileIDs[ fullIndex ] = 0;
-            mHouseMapMobileCellStates[ fullIndex ] = 0;
-
-            copySubCellBack( index );
-            fireActionPerformed( this );
+            placeMandatory( fullIndex, index );
             }
 
         }
@@ -1506,16 +1528,16 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
     if( index != -1 && 
         mPointerDownIndex != -1 &&
         index != mPointerDownIndex &&
-        ! isSubMapPropertySet( index, permanent ) ) {
+        mPointerDownObjectID != -1 &&
+        ! isSubMapPropertySet( index, permanent ) &&
+        ! isSubMapPropertySet( index, mandatory ) ) {
 
         mDraggedAway = true;
 
         int fullIndex = subToFull( index );
 
-        if( fullIndex != mStartIndex &&
-            fullIndex != mGoalIndex &&
-            fullIndex != mRobberIndex &&
-            mPointerDownObjectID != -1 ) {
+        if( fullIndex != mRobberIndex &&
+            fullIndex != mStartIndex ) {
             
             int old = mHouseSubMapIDs[ index ];
             int oldMobile = mHouseMapMobileIDs[ fullIndex ];
@@ -1607,14 +1629,21 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
     
     
 
-    if( !mGoalSet && fullIndex != mStartIndex ) {
-        // goal set here
-        mHouseSubMapIDs[ index ] = GOAL_ID;
-        mGoalIndex = fullIndex;
-        mGoalSet = true;
-        mLastPlacedObject = GOAL_ID;
+    if( mMandatoryNeedsPlacing && fullIndex != mStartIndex ) {
+        placeMandatory( fullIndex, index );
+        }
+    else if( !mMandatoryNeedsPlacing && 
+             isPropertySet( mHouseMapIDs[ fullIndex ],
+                            mHouseMapCellStates[ fullIndex ], mandatory ) ) {
+        // mandatory moving!
+        mMandatoryToPlaceID = mHouseSubMapIDs[ index ];
+        mMandatoryNeedsPlacing = true;
         
-        logEdit( fullIndex, GOAL_ID );
+        mHouseSubMapIDs[ index ] = 0;
+ 
+        mLastPlacedObject = 0;
+
+        logEdit( fullIndex, 0 );
 
         // changes reset state
         mHouseSubMapCellStates[ index ] = 0;
@@ -1626,7 +1655,7 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         copySubCellBack( index );
         fireActionPerformed( this );
         }
-    else if( fullIndex != mStartIndex && fullIndex != mGoalIndex ) {
+    else if( fullIndex != mStartIndex ) {
     
         if( mPicker != NULL ) {
             
@@ -1684,24 +1713,6 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                 fireActionPerformed( this );
                 }
             }
-        }
-    else if( mGoalSet && fullIndex == mGoalIndex ) {
-        // goal moving!
-        mHouseSubMapIDs[ index ] = 0;
-        mGoalSet = false;
-        mLastPlacedObject = 0;
-
-        logEdit( fullIndex, 0 );
-
-        // changes reset state
-        mHouseSubMapCellStates[ index ] = 0;
-
-        // clear mobile objects
-        mHouseMapMobileIDs[ fullIndex ] = 0;
-        mHouseMapMobileCellStates[ fullIndex ] = 0;
-
-        copySubCellBack( index );
-        fireActionPerformed( this );
         }
     
     pointerOver( inX, inY );
@@ -2244,15 +2255,19 @@ int HouseGridDisplay::undo() {
 
     mRobberIndex = r->robberIndex;
     
-    if( r->newID == GOAL_ID ) {
-        // this change set the goal
-        // undoing it means goal not set
-        mGoalSet = false;
+    
+    if( isPropertySet( r->newID, 0, mandatory ) ) {
+        // this change placed a mandatory object
+        // undoing it means that mandatory still needs placing
+        mMandatoryNeedsPlacing = true;
+        mMandatoryToPlaceID = r->newID;
         }
-    else if( r->oldID == GOAL_ID ) {
-        // rolling back to a placed goal
-        mGoalSet = true;
-        mGoalIndex = r->fullIndex;
+    else if( isPropertySet( r->oldID, 0, mandatory ) ) {
+        // rolling back to a placed mandatory
+        mMandatoryNeedsPlacing = false;
+        if( r->oldID == GOAL_ID ) {
+            mGoalIndex = r->fullIndex;
+            }
         }
     
     // force copy-back and shadow recompute, plus possible view move

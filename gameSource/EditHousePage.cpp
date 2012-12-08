@@ -267,7 +267,7 @@ char EditHousePage::houseMapChanged() {
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
-        mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+        mDoneButton.setVisible( mGridDisplay.areMandatoriesPlaced() );
 
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
@@ -322,7 +322,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
-        mDoneButton.setVisible( mGridDisplay.isGoalSet() );
+        mDoneButton.setVisible( mGridDisplay.areMandatoriesPlaced() );
         
         // change to house map
         actionHappened();
