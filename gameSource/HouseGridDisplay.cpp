@@ -900,7 +900,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             char aboveShadows = 
                 isSubMapPropertySet( i, structural ) ||
                 isSubMapPropertySet( i, shadowMaking );
-                        
+                     
+            char familyObject = isSubMapPropertySet( i, family );
             
             
             doublePair tilePos = getTilePos( i );
@@ -939,8 +940,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // skip this non-blocking tile
 
                 if( mHighlightIndex != i && fullI != mRobberIndex 
-                    && mHouseMapMobileIDs[ fullI ] == 0 ) {
+                    && mHouseMapMobileIDs[ fullI ] == 0
+                    && ! familyObject ) {
                     // nothing left to draw, if no highlight is here
+                    // no mobile or family object is here
                     i++;
                     continue;
                     }
@@ -1014,6 +1017,21 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
+
+                // family objects draw like mobiles, but they're not
+                // (because they can co-occupy a space with a mobile,
+                //  and they move differently)
+                if( familyObject ) {
+                    drawDropShadow( tilePos );
+                    
+                    setDrawColor( 1, 1, 1, 1 );
+                    
+                    SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                           orientationIndex, 
+                                                           houseTileState );
+                
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
                 }
 
             // same for robber (if not already drawn under a mobile)
@@ -1027,7 +1045,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
 
             if( inBeneathShadowsOnly && 
-                ! aboveShadows && 
+                ! aboveShadows &&
+                ! familyObject &&
                 houseTile != 0 ) {
                 
                 // now draw tile itself, on top of floor
