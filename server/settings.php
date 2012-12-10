@@ -130,7 +130,8 @@ $resaleRate = 0.5;
 
 
 // list of all possible objects to use as wife
-$wifeList = array( 1010 );
+$wifeList = array( 1010,
+                   1011 );
 
 
 
