@@ -403,13 +403,21 @@ char  pathFind( int inMapH, int inMapW,
         
         }
 
-    finalPath.push_back( predRecord->pos );
+
+    SimpleVector<GridPos> finalPathReversed;
+    
+    int numSteps = finalPath.size();
+    
+    for( int i=numSteps-1; i>=0; i-- ) {
+        finalPathReversed.push_back( *( finalPath.getElement( i ) ) );
+        }
+
 
     if( outNumStepsToGoal != NULL ) {
-        *outNumStepsToGoal = finalPath.size() - 1;
+        *outNumStepsToGoal = finalPath.size();
         }
     if( outFullPath != NULL ) {
-        *outFullPath = finalPath.getElementArray();
+        *outFullPath = finalPathReversed.getElementArray();
         }
     
     
