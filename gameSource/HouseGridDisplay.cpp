@@ -60,6 +60,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mStartIndex( -1 ),
           mGoalIndex( -1 ),
           mMandatoryNeedsPlacing( false ),
+          mMandatoryToPlaceID( -1 ),
+          mAllFamilyObjectsHaveExitPath( false ),
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
@@ -340,6 +342,8 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mRobberOrientation = 1;
     
     mEditHistory.deleteAll();
+
+    checkExitPaths();
     }
 
 
@@ -522,6 +526,11 @@ char *HouseGridDisplay::getEditList() {
 
 char HouseGridDisplay::areMandatoriesPlaced() {
     return !mMandatoryNeedsPlacing;
+    }
+
+
+char HouseGridDisplay::doAllFamilyObjectsHaveExitPath() {
+    return mAllFamilyObjectsHaveExitPath;
     }
 
 
@@ -1962,6 +1971,8 @@ void HouseGridDisplay::copySubCellBack( int inSubCellIndex ) {
     mHouseMapCellStates[ bigIndex ] = 
         mHouseSubMapCellStates[ inSubCellIndex ];
     
+    checkExitPaths();
+
     recomputeWallShadows();
     }
 
@@ -2303,6 +2314,9 @@ int HouseGridDisplay::undo() {
 
     mEditHistory.deleteElement( numSteps - 1 );
 
+
+    checkExitPaths();
+    
     return cost;
     }
 
@@ -2330,3 +2344,58 @@ void HouseGridDisplay::setPickedTargetHighlight( int inPickedFullIndex ) {
     mToolTargetPickedFullIndex = inPickedFullIndex;
     }
 
+
+
+
+
+#include "pathFind.h"
+
+void HouseGridDisplay::checkExitPaths() {
+    
+    char *blockedMap = new char[mNumMapSpots];
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        if( isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                           blocking ) ) {
+            blockedMap[i] = true;
+            }
+        else {
+            blockedMap[i] = false;
+            }
+        }
+
+    GridPos goalPos = { mStartIndex % mFullMapD, mStartIndex / mFullMapD };
+    
+
+    mAllFamilyObjectsHaveExitPath = true;
+
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        if( isPropertySet( mHouseMapIDs[i], 
+                           mHouseMapCellStates[i],
+                           family ) ) {
+            
+            GridPos startPos = { i % mFullMapD, i / mFullMapD };
+            
+            int numStepsToGoal;
+            GridPos *fullPath;
+            
+            char found = pathFind( mFullMapD, mFullMapD,
+                                   blockedMap, 
+                                   startPos, goalPos, 
+                                   &numStepsToGoal,
+                                   &fullPath );
+            
+            if( found && numStepsToGoal != 0 ) {
+                delete [] fullPath;
+                }
+            if( !found ) {
+                mAllFamilyObjectsHaveExitPath = false;
+                printf( "Object %d has no exit path\n", mHouseMapIDs[i] );
+                break;
+                }
+            }
+        }
+    
+    delete [] blockedMap;
+    }
+
+    

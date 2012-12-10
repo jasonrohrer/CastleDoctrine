@@ -60,6 +60,8 @@ PickerGridPage.cpp \
 musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
+pathFind.cpp \
+
 
 
 GAME_GRAPHICS = \

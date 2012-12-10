@@ -74,6 +74,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char areMandatoriesPlaced();
         
+        char doAllFamilyObjectsHaveExitPath();
+        
 
         // disable placement... for example, if out of money
         void allowPlacement( char inAllow );
@@ -203,6 +205,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // places mMandatoryToPlaceID and handles logging edit, etc.
         void placeMandatory( int inFullIndex, int inIndex );
         
+        char mAllFamilyObjectsHaveExitPath;
+
+        void checkExitPaths();
+
 
         // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
