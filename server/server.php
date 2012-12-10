@@ -1875,7 +1875,13 @@ function cd_endEditHouse() {
     // (floor placement is erasing---free)
     $priceArray[ 999 ] = 0;
     $priceArray[ 0 ] = 0;
+
     
+    // also for all possible wives
+    global $wifeList;
+    foreach( $wifeList as $wife ) {
+        $priceArray[ $wife ] = 0;
+        }
     
 
     // now we need to check new house map to make sure it is a valid edit
@@ -3603,6 +3609,10 @@ function cd_newHouseForUser( $user_id ) {
     $errorNumber = 1062;    
     $foundName = false;
     
+
+    global $wifeList;
+
+    $pickedWife = $wifeList[ array_rand( $wifeList, 1 ) ];
     
     
     // default house map, 32x32 map
@@ -3633,7 +3643,7 @@ function cd_newHouseForUser( $user_id ) {
         
         "0#0#0#0#0#0#0#0#0#999#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#1010#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#$pickedWife#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
 
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".

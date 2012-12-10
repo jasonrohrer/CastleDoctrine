@@ -127,7 +127,11 @@ $defaultPrices = array(
     
 // price change factor when reselling items
 $resaleRate = 0.5;
-    
+
+
+// list of all possible objects to use as wife
+$wifeList = array( 1010 );
+
 
 
 // header and footers for various pages
