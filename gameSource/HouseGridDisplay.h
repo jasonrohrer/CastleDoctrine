@@ -11,6 +11,7 @@
 
 #include "HouseObjectPicker.h"
 
+#include "pathFind.h"
 
 #include "minorGems/ui/event/ActionListenerList.h"
 
@@ -209,6 +210,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         void checkExitPaths();
 
+        // paths as allocated arrays of GridPos 
+        SimpleVector<GridPos *> mFamilyExitPaths;
+        
+        
 
         // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)

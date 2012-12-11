@@ -195,6 +195,7 @@ server.php?action=end_edit_house&user_id=[id number]
                                 &purchase_list=[purchase list ASCII string]
                                 &sell_list=[sell list ASCII string]
 								&self_test_move_list=[move list ASCII string]
+                                &family_exit_paths=[paths ASCII string]
 Returns:
 OK
 
@@ -229,6 +230,17 @@ For self_test_move_list format, see move_list in end_rob_house, except that
 tool use is forbidden during self test.  
 Empty move list represented by a single "#".
 
+
+family_exit_paths are separated by ##, and each path is a series of map
+indices separated by #, like:
+
+515#514#513#512##483#482#481#513#512
+
+Paths start at family member location and end at house start location.
+To be valid, path must be contigous and completely unobstructed (only mobiles
+and other family members can be present on path)
+
+(If empty, string is just "##").
 
 
 

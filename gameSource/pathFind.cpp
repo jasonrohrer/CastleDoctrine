@@ -403,6 +403,9 @@ char  pathFind( int inMapH, int inMapW,
         
         }
 
+    // finally, add start
+    finalPath.push_back( predRecord->pos );
+    
 
     SimpleVector<GridPos> finalPathReversed;
     

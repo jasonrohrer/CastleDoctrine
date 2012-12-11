@@ -214,6 +214,11 @@ HouseGridDisplay::~HouseGridDisplay() {
 
     freeSprite( mToolTargetSprite );
     freeSprite( mToolTargetBorderSprite );
+
+    for( int i=0; i<mFamilyExitPaths.size(); i++ ) {
+        delete [] *( mFamilyExitPaths.getElement( i ) );
+        }
+    mFamilyExitPaths.deleteAll();
     }
 
 
@@ -2348,8 +2353,6 @@ void HouseGridDisplay::setPickedTargetHighlight( int inPickedFullIndex ) {
 
 
 
-#include "pathFind.h"
-
 void HouseGridDisplay::checkExitPaths() {
     
     char *blockedMap = new char[mNumMapSpots];
@@ -2371,7 +2374,13 @@ void HouseGridDisplay::checkExitPaths() {
     
 
     mAllFamilyObjectsHaveExitPath = true;
-
+    
+    for( int i=0; i<mFamilyExitPaths.size(); i++ ) {
+        delete [] *( mFamilyExitPaths.getElement( i ) );
+        }
+    mFamilyExitPaths.deleteAll();
+    
+    
     for( int i=0; i<mNumMapSpots; i++ ) {
         if( isPropertySet( mHouseMapIDs[i], 
                            mHouseMapCellStates[i],
@@ -2389,7 +2398,7 @@ void HouseGridDisplay::checkExitPaths() {
                                    &fullPath );
             
             if( found && numStepsToGoal != 0 ) {
-                delete [] fullPath;
+                mFamilyExitPaths.push_back( fullPath );
                 }
             if( !found ) {
                 mAllFamilyObjectsHaveExitPath = false;
