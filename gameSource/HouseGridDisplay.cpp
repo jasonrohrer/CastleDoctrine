@@ -2354,8 +2354,12 @@ void HouseGridDisplay::checkExitPaths() {
     
     char *blockedMap = new char[mNumMapSpots];
     for( int i=0; i<mNumMapSpots; i++ ) {
-        if( isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
-                           blocking ) ) {
+        if( !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                            family ) &&
+            !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                            mobile ) &&
+            mHouseMapIDs[i] != 0 ) {
+            // not mobile, not family, not bare floor
             blockedMap[i] = true;
             }
         else {
@@ -2389,7 +2393,6 @@ void HouseGridDisplay::checkExitPaths() {
                 }
             if( !found ) {
                 mAllFamilyObjectsHaveExitPath = false;
-                printf( "Object %d has no exit path\n", mHouseMapIDs[i] );
                 break;
                 }
             }

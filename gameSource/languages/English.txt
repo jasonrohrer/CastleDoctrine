@@ -69,6 +69,10 @@ galleryArchiveLabel "Archive:"
 
 editBalance "Balance:"
 
+familyExitMessage "Family##blocked in."
+
+
+
 buyTip "Buy %s for backpack"
 backpackSlotTip "Move %s to vault"
 vaultSlotTip "Move %s to backpack"

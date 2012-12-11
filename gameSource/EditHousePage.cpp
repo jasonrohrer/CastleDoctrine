@@ -267,7 +267,10 @@ char EditHousePage::houseMapChanged() {
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
-        mDoneButton.setVisible( mGridDisplay.areMandatoriesPlaced() );
+        mDoneButton.setVisible( 
+            mGridDisplay.areMandatoriesPlaced()
+            &&
+            mGridDisplay.doAllFamilyObjectsHaveExitPath() );
 
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
@@ -322,7 +325,10 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
-        mDoneButton.setVisible( mGridDisplay.areMandatoriesPlaced() );
+        mDoneButton.setVisible( 
+            mGridDisplay.areMandatoriesPlaced()
+            &&
+            mGridDisplay.doAllFamilyObjectsHaveExitPath() );
         
         // change to house map
         actionHappened();
@@ -370,4 +376,14 @@ void EditHousePage::draw( doublePair inViewCenter,
     drawMessage( balanceMessage, labelPos, false );
     
     delete [] balanceMessage;
+
+    if( ! mGridDisplay.doAllFamilyObjectsHaveExitPath() ) {
+        
+        // explanation for why Done button hidden
+
+        doublePair buttonPos = mDoneButton.getPosition();
+
+        drawMessage( "familyExitMessage", buttonPos, true );
+        }
+    
     }
