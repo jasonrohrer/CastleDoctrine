@@ -29,7 +29,8 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDoneButtonKey( inDoneButtonKey ),
-          mDescription( NULL ) {
+          mDescription( NULL ),
+          mDeathMessage( NULL ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGallery );
@@ -76,6 +77,9 @@ RobHousePage::~RobHousePage() {
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
+    if( mDeathMessage != NULL ) {
+        delete [] mDeathMessage;
+        }
 
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         delete mPackSlots[i];
@@ -98,6 +102,11 @@ void RobHousePage::setHouseMap( char *inHouseMap ) {
     mGridDisplay.setHouseMap( inHouseMap );
     
     mGallery.instantFadeOut( mGridDisplay.getAboutToLeave() );
+
+    if( mDeathMessage != NULL ) {
+        delete [] mDeathMessage;
+        mDeathMessage = NULL;
+        }
     }
 
 
@@ -182,7 +191,11 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             clearNotes();
             }
         else if( mGridDisplay.getDead() ) {
-            char *deathMessage = 
+            if( mDeathMessage != NULL ) {
+                delete [] mDeathMessage;
+                }
+            
+            mDeathMessage = 
                 autoSprintf( 
                     "%s  %s",
                     translate( "killedBy" ),
@@ -190,9 +203,6 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                         mGridDisplay.getDeathSourceID(),
                         mGridDisplay.getDeathSourceState() ) );
             
-            setToolTipDirect( deathMessage );
-            delete [] deathMessage;
-
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
             }
         }
@@ -373,6 +383,13 @@ void RobHousePage::draw( doublePair inViewCenter,
         
         drawMessage( mDescription, labelPos );
         }
+
+    if( mDeathMessage != NULL ) {
+        doublePair labelPos = { 0, -6.25 };
+        
+        drawMessage( mDeathMessage, labelPos, true );
+        }
+
     
     if( mShowBackpack ) {
         doublePair labelPos = { 8, 5.5 };

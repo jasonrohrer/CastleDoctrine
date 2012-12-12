@@ -88,6 +88,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
 
         char *mDescription;
         
+        char *mDeathMessage;
+        
         void clearNotes();
     };
 
