@@ -2319,11 +2319,98 @@ function cd_endEditHouse() {
             $paths[] = preg_split( "/#/", $string );
             }
         }
+
+
+    
+    global $mobileList;
+
+    // exit paths must make it all the way to map start
+    $exitIndex = 32 * 16;
+
+    // check that paths are valid
+    // empty (except for mobiles or other family members)
+    foreach( $paths as $path ) {
+        $numPathSteps = count( $path );
+        
+        if( $numPathSteps == 0 ) {
+            cd_log( "House check-in with ".
+                    " 0-length exit path denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        if( $path[ $numPathSteps - 1 ] != $exitIndex ) {
+            cd_log( "House check-in with ".
+                    " exit path not reaching exit denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        // make sure paths contiguous
+        $lastX = $path[0] % 32;
+        $lastY = (int)( $path[0] / 32 );
+        
+        foreach( $path as $step ) {
+
+            $thisX = $step % 32;
+            $thisY = (int)( $step / 32 );
+
+            $stepX = abs( $thisX - $lastX );
+            $stepY = abs( $thisY - $lastY );
+            
+            
+            if( // diagonal 
+                ( $stepX != 0 &&
+                  $stepY != 0 )
+                ||
+                // too big
+                $stepX > 1 || $stepY > 1 ) {
+
+                cd_log( "House check-in with ".
+                        " non-contiguous exit path denied" );
+                cd_transactionDeny();
+                return;
+                }
+
+            $lastX = $thisX;
+            $lastY = $thisY;
+            
+                
+            $cell = $houseArray[ $step ];
+                    
+            $cellObjects = preg_split( "/,/", $cell );
+
+            // only consider first object (rest are mobile)
+            $objectParts = preg_split( "/:/", $cellObjects[0] );
+                    
+            if( // clear
+                $objectParts[0] == 0
+                ||
+                // or family
+                array_search( $objectParts[0],
+                              $familyObjects ) !== false
+                ||
+                // or mobile
+                array_search( $objectParts[0],
+                              $mobileList ) !== false ) {
+
+                // okay!
+                }
+            else {
+                // blocked
+                cd_log( "House check-in with ".
+                        " blocked family exit path denied" );
+                cd_transactionDeny();
+                return;
+                }
+            }
+        }
     
 
-    global $mobileList;
     
-    // check exit path for each one
+
+    
+    // check that exit path exits for each one
     foreach( $familyLocations as $location ) {
 
         if( $numPaths == 0 ) {
@@ -2336,48 +2423,9 @@ function cd_endEditHouse() {
         $found = false;
         
         foreach( $paths as $path ) {
-            if( count( $path ) == 0 ) {
-                cd_log( "House check-in with ".
-                        " 0-length exit path denied" );
-                cd_transactionDeny();
-                return;
-                }
             
             if( $path[0] == $location ) {
                 // a path for this family member!
-
-                // make sure each step on path is clear or mobile or family
-                foreach( $path as $step ) {
-                
-                    $cell = $houseArray[ $step ];
-                    
-                    $cellObjects = preg_split( "/,/", $cell );
-
-                    // only consider first object (rest are mobile)
-                    $objectParts = preg_split( "/:/", $cellObjects[0] );
-                    
-                    if( // clear
-                        $objectParts[0] == 0
-                        ||
-                        // or family
-                        array_search( $objectParts[0],
-                                      $familyObjects ) !== false
-                        ||
-                        // or mobile
-                        array_search( $objectParts[0],
-                                      $mobileList ) !== false ) {
-
-                        // okay!
-                        }
-                    else {
-                        // blocked
-                        cd_log( "House check-in with ".
-                                " blocked family exit path denied" );
-                        cd_transactionDeny();
-                        return;
-                        }
-                    }
-
                 $found = true;
                 break;
                 }            
