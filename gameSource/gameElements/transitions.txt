@@ -159,3 +159,8 @@ water # floor_electric:2 => 3
 crowbar  # pitbull:1 => 7
 crowbar  # chihuahua:1 => 7
 crowbar  # cat:1 => 7
+
+
+
+gun # wife:1 => 5
+crowbar # wife:1 => 7

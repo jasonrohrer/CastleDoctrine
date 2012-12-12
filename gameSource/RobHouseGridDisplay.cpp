@@ -279,27 +279,37 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             
                 int oldIndex = posToIndex( path[progress] );
 
-                progress ++;
-
-                int newIndex = posToIndex( path[progress] );
-            
-                // make sure it's clear
-                if( newIndex != mRobberIndex &&
-                    mHouseMapIDs[newIndex] == 0 ) {
-                    // move along
-                
-                    mHouseMapIDs[newIndex] = 
-                        mHouseMapIDs[oldIndex];
+                if( mHouseMapCellStates[ oldIndex ] != 1 ) {
+                    // killed!
+                    // don't move
                     
-                    mHouseMapCellStates[newIndex] = 
-                        mHouseMapCellStates[oldIndex];
-                
-                    // leave empty where we used to be
-                    mHouseMapIDs[oldIndex] = 0;
-                    mHouseMapCellStates[oldIndex] = 1;
+                    }
+                else {
+                    
 
-                    *( mFamilyExitPathProgress.getElement( i ) ) = progress;
-                    }            
+                    progress ++;
+
+                    int newIndex = posToIndex( path[progress] );
+                    
+                    // make sure it's clear
+                    if( newIndex != mRobberIndex &&
+                        mHouseMapIDs[newIndex] == 0 ) {
+                        // move along
+                
+                        mHouseMapIDs[newIndex] = 
+                            mHouseMapIDs[oldIndex];
+                    
+                        mHouseMapCellStates[newIndex] = 
+                            mHouseMapCellStates[oldIndex];
+                
+                        // leave empty where we used to be
+                        mHouseMapIDs[oldIndex] = 0;
+                        mHouseMapCellStates[oldIndex] = 1;
+
+                        *( mFamilyExitPathProgress.getElement( i ) ) = 
+                            progress;
+                        }    
+                    }
                 }
             else {    
                 // else already done...
