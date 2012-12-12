@@ -221,6 +221,16 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
 
+
+    mFamilyExitPathProgress.deleteAll();
+    
+    int numPaths = mFamilyExitPaths.size();
+    
+    for( int i=0; i<numPaths; i++ ) {
+        mFamilyExitPathProgress.push_back( 0 );
+        }
+    
+
     // switch all unstuck
     // to "1" state for presentation to robber
     resetToggledStates( 1 );
@@ -242,6 +252,57 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
 
 void RobHouseGridDisplay::applyTransitionsAndProcess() {
+
+    if( ! areMobilesFrozen() ) {
+        
+        // first, move each family member
+        int numPaths = mFamilyExitPaths.size();
+        for( int i=0; i<numPaths; i++ ) {
+            int progress = *( mFamilyExitPathProgress.getElement( i ) );
+        
+            int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+        
+            GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+
+            if( progress < pathLength - 1 ) {
+            
+                GridPos oldPos = path[progress];
+
+                progress ++;
+
+                GridPos newPos = path[progress];
+                        
+                int oldIndex = oldPos.y * mFullMapD + oldPos.x;
+                int newIndex = newPos.y * mFullMapD + newPos.x;
+            
+                // make sure it's clear
+                if( mHouseMapIDs[newIndex] == 0 ) {
+                    // move along
+                
+                    mHouseMapIDs[newIndex] = 
+                        mHouseMapIDs[oldIndex];
+                    
+                    mHouseMapCellStates[newIndex] = 
+                        mHouseMapCellStates[oldIndex];
+                
+                    // leave empty where we used to be
+                    mHouseMapIDs[oldIndex] = 0;
+                    mHouseMapCellStates[oldIndex] = 0;
+
+                    *( mFamilyExitPathProgress.getElement( i ) ) = progress;
+                    }            
+                }
+            // else already done...
+            
+            // if standing on entrance, remove from map
+            // (escape during this step)
+            GridPos oldPos = path[progress];
+            }
+        }
+    
+ 
+
+
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
                       mHouseMapMobileIDs, mHouseMapMobileCellStates,
                       mFullMapD, mFullMapD,
@@ -510,12 +571,7 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
                          mCurrentTool, inTargetFullIndex );
     
     // tool use triggers a step
-    applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
-                      mHouseMapMobileIDs, mHouseMapMobileCellStates,
-                      mFullMapD, mFullMapD, mRobberIndex );
-
-    copyAllIntoSubCells();
-    recomputeVisibility();
+    applyTransitionsAndProcess();
     
     stopUsingTool( mCurrentTool );
     mToolJustUsed = true;

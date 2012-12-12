@@ -13,6 +13,7 @@ void freeHouseTransitions();
 // and their presence on a tile does not trigger transitions for that tile
 void freezeMobileObjects( char inFreeze );
 
+char areMobilesFrozen();
 
 
 // applies transition rules to transform inMapIDs and inMapStates

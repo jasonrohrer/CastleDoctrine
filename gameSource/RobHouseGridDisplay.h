@@ -110,6 +110,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // override from HouseGridDisplay
         void pointerOver( float inX, float inY );
 
+
+        // step index for each family member
+        SimpleVector<int> mFamilyExitPathProgress;
+
     };
 
 

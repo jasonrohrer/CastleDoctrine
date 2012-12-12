@@ -22,6 +22,10 @@ void freezeMobileObjects( char inFreeze ) {
     mobileObjectsFrozen = inFreeze;
     }
 
+char areMobilesFrozen() {
+    return mobileObjectsFrozen;
+    }
+
 
 
 // describes a transition

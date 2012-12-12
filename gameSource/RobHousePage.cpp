@@ -150,6 +150,32 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mGridDisplay ) {
         mGallery.fadeOut( mGridDisplay.getAboutToLeave() );
+
+        // activity on house map
+            
+        if( mGridDisplay.getToolJustUsed() ) {    
+            // empty active slot in backpack
+            for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                if( mPackSlots[j]->getRingOn() ) {
+                    mPackSlots[j]->setObject( -1 );
+                    mPackSlots[j]->setRingOn( false );
+                    break;
+                    }
+                }
+            }
+        else {
+            // auto turn-off active slot
+            // player moved without using it
+            for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                if( mPackSlots[j]->getRingOn() ) {
+                    mPackSlots[j]->setRingOn( false );
+                    break;
+                    }
+                }
+            }
+
+        actionHappened();
+
         
         if( mGridDisplay.getSuccess() ) {
             mDone = true;
@@ -169,35 +195,6 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
 
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
             }
-        else {
-            
-            // activity on house map
-
-            
-            if( mGridDisplay.getToolJustUsed() ) {    
-                // empty active slot in backpack
-                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
-                    if( mPackSlots[j]->getRingOn() ) {
-                        mPackSlots[j]->setObject( -1 );
-                        mPackSlots[j]->setRingOn( false );
-                        break;
-                        }
-                   }
-                }
-            else {
-                // auto turn-off active slot
-                // player moved without using it
-                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
-                    if( mPackSlots[j]->getRingOn() ) {
-                        mPackSlots[j]->setRingOn( false );
-                        break;
-                        }
-                    }
-                }
-            
-
-            actionHappened();
-            }        
         }
     else {
         // check backpack slots
