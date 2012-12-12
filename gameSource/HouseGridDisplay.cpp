@@ -566,7 +566,7 @@ char *HouseGridDisplay::getFamilyExitPaths() {
 
     char **listStrings = mainListAccum.getElementArray();
     
-    char *pathsList = join( listStrings, numPaths, "#" );
+    char *pathsList = join( listStrings, numPaths, "##" );
 
     for( int i=0; i<numPaths; i++ ) {
         delete [] listStrings[i];
