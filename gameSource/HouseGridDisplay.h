@@ -214,7 +214,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // paths as allocated arrays of GridPos 
         SimpleVector<GridPos *> mFamilyExitPaths;
-        SimpleVector<int> mFamilyExitPathLenths;
+        SimpleVector<int> mFamilyExitPathLengths;
         
 
         // inFullIndex is tile's full-map index

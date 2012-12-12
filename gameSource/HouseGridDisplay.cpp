@@ -219,7 +219,7 @@ HouseGridDisplay::~HouseGridDisplay() {
         delete [] *( mFamilyExitPaths.getElement( i ) );
         }
     mFamilyExitPaths.deleteAll();
-    mFamilyExitPathLenths.deleteAll();
+    mFamilyExitPathLengths.deleteAll();
     }
 
 
@@ -541,7 +541,7 @@ char *HouseGridDisplay::getFamilyExitPaths() {
 
     for( int i=0; i<numPaths; i++ ) {
         GridPos *moveList = *( mFamilyExitPaths.getElement( i ) );
-        int length = *( mFamilyExitPathLenths.getElement( i ) );
+        int length = *( mFamilyExitPathLengths.getElement( i ) );
         
         SimpleVector<char *> subListAccum;
         
@@ -2432,7 +2432,7 @@ void HouseGridDisplay::checkExitPaths() {
         delete [] *( mFamilyExitPaths.getElement( i ) );
         }
     mFamilyExitPaths.deleteAll();
-    mFamilyExitPathLenths.deleteAll();
+    mFamilyExitPathLengths.deleteAll();
     
     
     for( int i=0; i<mNumMapSpots; i++ ) {
@@ -2453,7 +2453,7 @@ void HouseGridDisplay::checkExitPaths() {
             
             if( found && numStepsToGoal != 0 ) {
                 mFamilyExitPaths.push_back( fullPath );
-                mFamilyExitPathLenths.push_back( numStepsToGoal );
+                mFamilyExitPathLengths.push_back( numStepsToGoal );
                 }
             if( !found ) {
                 mAllFamilyObjectsHaveExitPath = false;
