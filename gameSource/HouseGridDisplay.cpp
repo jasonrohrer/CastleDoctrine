@@ -548,7 +548,7 @@ char *HouseGridDisplay::getFamilyExitPaths() {
         for( int m=0; m<length; m++ ) {
             GridPos pos = moveList[m];
             
-            int index = pos.y * mFullMapD + pos.y;
+            int index = pos.y * mFullMapD + pos.x;
             
             char *posString = autoSprintf( "%d", index );
             

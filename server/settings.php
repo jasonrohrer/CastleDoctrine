@@ -129,9 +129,13 @@ $defaultPrices = array(
 $resaleRate = 0.5;
 
 
+// list of all mobile objects (those that don't block family exit)
+$mobileList = array( 70, 71, 72 );
+
 // list of all possible objects to use as wife
 $wifeList = array( 1010,
                    1011 );
+
 
 
 

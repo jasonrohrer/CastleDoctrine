@@ -1776,6 +1776,8 @@ function cd_endEditHouse() {
 
     $edit_list = cd_requestFilter( "edit_list", "/[0-9@#]+/" );
 
+    $family_exit_paths = cd_requestFilter( "family_exit_paths", "/[0-9@#]+/" );
+    
     $purchase_list = cd_requestFilter( "purchase_list", "/[#0-9:]+/" );
     $sell_list = cd_requestFilter( "sell_list", "/[#0-9:]+/" );
 
@@ -2264,10 +2266,138 @@ function cd_endEditHouse() {
     
 
     $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
+
+
+
+
+    // now check family exit paths
+
+    // first, find all living family locations on map
+    $familyObjects = array_merge( $wifeList );
+    $familyLocations = array();
+    
+    $houseArray = preg_split( "/#/", $house_map );
+
+    $index = 0;
+    foreach( $houseArray as $cell ) {
+        $cellObjects = preg_split( "/,/", $cell );
+
+        // only consider first object (rest are mobile)
+        $objectParts = preg_split( "/:/", $cellObjects[0] );
+
+        $numParts = count( $objectParts );
+
+        $objectAlive = true;
+
+        if( $numParts > 1 && $objectParts[1] == 0 ) {
+            $objectAlive = false;
+            }
         
+        if( array_search( $objectParts[0], $familyObjects ) !== false
+            &&
+            $objectAlive ) {
+            
+            $familyLocations[] = $index;
+            }
+        
+        $index ++;
+        }
+
+    
+    $numPaths = 0;
+    // array of arrays
+    $paths = array();
+    
+    if( $family_exit_paths == "" || $family_exit_paths == "##" ) {
+        $numPaths = 0;
+        }
+    else {
+        $pathStrings = preg_split( "/##/", $family_exit_paths );
+        $numPaths = count( $pathStrings );
+
+        foreach( $pathStrings as $string ) {
+            $paths[] = preg_split( "/#/", $string );
+            }
+        }
+    
+
+    global $mobileList;
+    
+    // check exit path for each one
+    foreach( $familyLocations as $location ) {
+
+        if( $numPaths == 0 ) {
+            cd_log( "House check-in with ".
+                    " family members but no exit paths denied" );
+            cd_transactionDeny();
+            return;
+            }
+
+        $found = false;
+        
+        foreach( $paths as $path ) {
+            if( count( $path ) == 0 ) {
+                cd_log( "House check-in with ".
+                        " 0-length exit path denied" );
+                cd_transactionDeny();
+                return;
+                }
+            
+            if( $path[0] == $location ) {
+                // a path for this family member!
+
+                // make sure each step on path is clear or mobile or family
+                foreach( $path as $step ) {
+                
+                    $cell = $houseArray[ $step ];
+                    
+                    $cellObjects = preg_split( "/,/", $cell );
+
+                    // only consider first object (rest are mobile)
+                    $objectParts = preg_split( "/:/", $cellObjects[0] );
+                    
+                    if( // clear
+                        $objectParts[0] == 0
+                        ||
+                        // or family
+                        array_search( $objectParts[0],
+                                      $familyObjects ) !== false
+                        ||
+                        // or mobile
+                        array_search( $objectParts[0],
+                                      $mobileList ) !== false ) {
+
+                        // okay!
+                        }
+                    else {
+                        // blocked
+                        cd_log( "House check-in with ".
+                                " blocked family exit path denied" );
+                        cd_transactionDeny();
+                        return;
+                        }
+                    }
+
+                $found = true;
+                break;
+                }            
+            }
+
+        if( ! $found ) {
+            cd_log( "House check-in with ".
+                    " missing exit path for a family member denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+    
+        
+    
+    
         
     // map and edits okay
     // purchases okay
+    // all living family members have clear exit paths
     // accept it and check house back in with these changes
     
     
