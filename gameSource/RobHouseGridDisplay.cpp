@@ -223,11 +223,19 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
 
     mFamilyExitPathProgress.deleteAll();
+    mFamilyObjects.deleteAll();
     
     int numPaths = mFamilyExitPaths.size();
     
     for( int i=0; i<numPaths; i++ ) {
         mFamilyExitPathProgress.push_back( 0 );
+        GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+        
+        GridPos start = path[0];
+        
+        int startIndex = start.y * mFullMapD + start.x;
+        
+        mFamilyObjects.push_back( mHouseMapIDs[ startIndex ] );
         }
     
 
@@ -264,19 +272,20 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
         
             GridPos *path = *( mFamilyExitPaths.getElement( i ) );
 
+            int objectID = *( mFamilyObjects.getElement( i ) );
+            
+
             if( progress < pathLength - 1 ) {
             
-                GridPos oldPos = path[progress];
+                int oldIndex = posToIndex( path[progress] );
 
                 progress ++;
 
-                GridPos newPos = path[progress];
-                        
-                int oldIndex = oldPos.y * mFullMapD + oldPos.x;
-                int newIndex = newPos.y * mFullMapD + newPos.x;
+                int newIndex = posToIndex( path[progress] );
             
                 // make sure it's clear
-                if( mHouseMapIDs[newIndex] == 0 ) {
+                if( newIndex != mRobberIndex &&
+                    mHouseMapIDs[newIndex] == 0 ) {
                     // move along
                 
                     mHouseMapIDs[newIndex] = 
@@ -287,16 +296,26 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                 
                     // leave empty where we used to be
                     mHouseMapIDs[oldIndex] = 0;
-                    mHouseMapCellStates[oldIndex] = 0;
+                    mHouseMapCellStates[oldIndex] = 1;
 
                     *( mFamilyExitPathProgress.getElement( i ) ) = progress;
                     }            
                 }
-            // else already done...
+            else {    
+                // else already done...
             
-            // if standing on entrance, remove from map
-            // (escape during this step)
-            GridPos oldPos = path[progress];
+                // if standing on entrance, remove from map
+                // (escape during this step)
+                int oldIndex = posToIndex( path[progress] );
+
+                if( mHouseMapIDs[oldIndex] == objectID ) {
+                    
+                    mHouseMapIDs[oldIndex] = 0;
+                    mHouseMapCellStates[oldIndex] = 1;
+                    }
+                }
+            
+            
             }
         }
     

@@ -546,11 +546,7 @@ char *HouseGridDisplay::getFamilyExitPaths() {
         SimpleVector<char *> subListAccum;
         
         for( int m=0; m<length; m++ ) {
-            GridPos pos = moveList[m];
-            
-            int index = pos.y * mFullMapD + pos.x;
-            
-            char *posString = autoSprintf( "%d", index );
+            char *posString = autoSprintf( "%d", posToIndex( moveList[m] ) );
             
             subListAccum.push_back( posString );
             }
@@ -2463,6 +2459,12 @@ void HouseGridDisplay::checkExitPaths() {
         }
     
     delete [] blockedMap;
+    }
+
+
+
+int HouseGridDisplay::posToIndex( GridPos inPos ) {
+    return mFullMapD * inPos.y + inPos.x;
     }
 
     

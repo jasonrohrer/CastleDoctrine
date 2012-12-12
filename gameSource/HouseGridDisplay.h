@@ -216,6 +216,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         SimpleVector<GridPos *> mFamilyExitPaths;
         SimpleVector<int> mFamilyExitPathLengths;
         
+        int posToIndex( GridPos inPos );
+
 
         // inFullIndex is tile's full-map index
         // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)

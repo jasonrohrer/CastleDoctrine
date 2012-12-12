@@ -113,7 +113,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         // step index for each family member
         SimpleVector<int> mFamilyExitPathProgress;
-
+        SimpleVector<int> mFamilyObjects;
+        
     };
 
 
