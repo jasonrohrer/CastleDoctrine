@@ -219,6 +219,7 @@ HouseGridDisplay::~HouseGridDisplay() {
         delete [] *( mFamilyExitPaths.getElement( i ) );
         }
     mFamilyExitPaths.deleteAll();
+    mFamilyExitPathLenths.deleteAll();
     }
 
 
@@ -525,6 +526,58 @@ char *HouseGridDisplay::getEditList() {
     delete [] listStrings;
 
     return editList;
+    }
+
+
+
+char *HouseGridDisplay::getFamilyExitPaths() {
+    int numPaths = mFamilyExitPaths.size();
+    
+    if( numPaths == 0 ) {
+        return stringDuplicate( "##" );
+        }
+    
+    SimpleVector<char*> mainListAccum;
+
+    for( int i=0; i<numPaths; i++ ) {
+        GridPos *moveList = *( mFamilyExitPaths.getElement( i ) );
+        int length = *( mFamilyExitPathLenths.getElement( i ) );
+        
+        SimpleVector<char *> subListAccum;
+        
+        for( int m=0; m<length; m++ ) {
+            GridPos pos = moveList[m];
+            
+            int index = pos.y * mFullMapD + pos.y;
+            
+            char *posString = autoSprintf( "%d", index );
+            
+            subListAccum.push_back( posString );
+            }
+
+        char **subListStrings = subListAccum.getElementArray();
+    
+        char *posList = join( subListStrings, length, "#" );
+
+        for( int i=0; i<length; i++ ) {
+            delete [] subListStrings[i];
+            }
+        delete [] subListStrings;
+
+        mainListAccum.push_back( posList );
+        }
+
+
+    char **listStrings = mainListAccum.getElementArray();
+    
+    char *pathsList = join( listStrings, numPaths, "#" );
+
+    for( int i=0; i<numPaths; i++ ) {
+        delete [] listStrings[i];
+        }
+    delete [] listStrings;
+
+    return pathsList;
     }
 
 
@@ -2379,6 +2432,7 @@ void HouseGridDisplay::checkExitPaths() {
         delete [] *( mFamilyExitPaths.getElement( i ) );
         }
     mFamilyExitPaths.deleteAll();
+    mFamilyExitPathLenths.deleteAll();
     
     
     for( int i=0; i<mNumMapSpots; i++ ) {
@@ -2399,6 +2453,7 @@ void HouseGridDisplay::checkExitPaths() {
             
             if( found && numStepsToGoal != 0 ) {
                 mFamilyExitPaths.push_back( fullPath );
+                mFamilyExitPathLenths.push_back( numStepsToGoal );
                 }
             if( !found ) {
                 mAllFamilyObjectsHaveExitPath = false;

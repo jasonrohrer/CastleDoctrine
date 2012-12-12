@@ -44,7 +44,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         // destroyed by caller
         char *getEditList();
+        char *getFamilyExitPaths();
         
+
         // list of purchases added to vault/backpack
         void setPurchaseList( const char *inPurchaseList );
         char *getPurchaseList();

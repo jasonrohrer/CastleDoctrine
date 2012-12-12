@@ -1074,6 +1074,7 @@ void drawFrame( char inUpdate ) {
                 char *backpackContents = editHousePage->getBackpackContents();
                 char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
+                char *familyExitPaths = editHousePage->getFamilyExitPaths();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
@@ -1104,6 +1105,7 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setBackpackContents( backpackContents );
                     checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
+                    checkinHousePage->setFamilyExitPaths( familyExitPaths );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setSellList( sellList );
                     checkinHousePage->setPriceList( priceList );
@@ -1118,6 +1120,7 @@ void drawFrame( char inUpdate ) {
                 delete [] backpackContents;
                 delete [] galleryContents;
                 delete [] editList;
+                delete [] familyExitPaths;
                 delete [] purchaseList;
                 delete [] sellList;
                 delete [] priceList;
@@ -1248,6 +1251,7 @@ void drawFrame( char inUpdate ) {
                 char *backpackContents = editHousePage->getBackpackContents();
                 char *galleryContents = editHousePage->getGalleryContents();
                 char *editList = editHousePage->getEditList();
+                char *familyExitPaths = editHousePage->getFamilyExitPaths();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
@@ -1255,35 +1259,23 @@ void drawFrame( char inUpdate ) {
                 char *moveList = selfHouseTestPage->getMoveList();
                 int testResult = selfHouseTestPage->getSuccess();
 
-                if( testResult == 1 ) {                                        
+                if( testResult == 1 ||
+                    testResult == 0 ) {                                        
                     // house passed by owner (reached vault), okay to check in
+                    // OR died while testing, check in
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setVaultContents( vaultContents );
                     checkinHousePage->setBackpackContents( backpackContents );
                     checkinHousePage->setGalleryContents( galleryContents );
                     checkinHousePage->setEditList( editList );
+                    checkinHousePage->setFamilyExitPaths( familyExitPaths );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setSellList( sellList );
                     checkinHousePage->setPriceList( priceList );
                     checkinHousePage->setMoveList( moveList );
-                    checkinHousePage->setDied( 0 );
                     
-                    currentGamePage = checkinHousePage;
-                    currentGamePage->base_makeActive( true );
-                    }
-                else if( testResult == 0 ) {
-                    // died while testing
-                    // check in
-                    checkinHousePage->setHouseMap( houseMap );
-                    checkinHousePage->setVaultContents( vaultContents );
-                    checkinHousePage->setBackpackContents( backpackContents );
-                    checkinHousePage->setGalleryContents( galleryContents );
-                    checkinHousePage->setEditList( editList );
-                    checkinHousePage->setPurchaseList( purchaseList );
-                    checkinHousePage->setSellList( sellList );
-                    checkinHousePage->setPriceList( priceList );
-                    checkinHousePage->setMoveList( moveList );
-                    checkinHousePage->setDied( 1 );
+                    // test result = 0 if died, 1 if success
+                    checkinHousePage->setDied( ! testResult );
                     
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
@@ -1305,6 +1297,7 @@ void drawFrame( char inUpdate ) {
                 delete [] backpackContents;
                 delete [] galleryContents;
                 delete [] editList;
+                delete [] familyExitPaths;
                 delete [] purchaseList;
                 delete [] sellList;
                 delete [] priceList;

@@ -157,6 +157,10 @@ char *EditHousePage::getEditList() {
     return mGridDisplay.getEditList();
     }
 
+char *EditHousePage::getFamilyExitPaths() {
+    return mGridDisplay.getFamilyExitPaths();
+    }
+
 
 char *EditHousePage::getPurchaseList() {
     return stringDuplicate( mPurchaseList );

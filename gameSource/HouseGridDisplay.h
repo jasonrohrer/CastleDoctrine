@@ -73,6 +73,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *getHouseMap();
         char *getEditList();
         
+        char *getFamilyExitPaths();
+
         char areMandatoriesPlaced();
         
         char doAllFamilyObjectsHaveExitPath();
@@ -212,7 +214,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // paths as allocated arrays of GridPos 
         SimpleVector<GridPos *> mFamilyExitPaths;
-        
+        SimpleVector<int> mFamilyExitPathLenths;
         
 
         // inFullIndex is tile's full-map index

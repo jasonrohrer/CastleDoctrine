@@ -25,6 +25,7 @@ CheckinHousePage::CheckinHousePage()
           mBackpackContents( NULL ),
           mGalleryContents( NULL ),
           mEditList( NULL ),
+          mFamilyExitPaths( NULL ),
           mPurchaseList( NULL ),
           mSellList( NULL ),
           mPriceList( NULL ),
@@ -62,6 +63,9 @@ CheckinHousePage::~CheckinHousePage() {
         }
     if( mEditList != NULL ) {
         delete [] mEditList;
+        }
+    if( mFamilyExitPaths != NULL ) {
+        delete [] mFamilyExitPaths;
         }
     if( mPurchaseList != NULL ) {
         delete [] mPurchaseList;
@@ -131,6 +135,14 @@ void CheckinHousePage::setEditList( const char *inEditList ) {
         delete [] mEditList;
         }
     mEditList = stringDuplicate( inEditList );
+    }
+
+
+void CheckinHousePage::setFamilyExitPaths( const char *inFamilyExitPaths ) {
+    if( mFamilyExitPaths != NULL ) {
+        delete [] mFamilyExitPaths;
+        }
+    mFamilyExitPaths = stringDuplicate( inFamilyExitPaths );
     }
 
 
@@ -254,10 +266,11 @@ void CheckinHousePage::makeActive( char inFresh ) {
         "&%s&died=%d&house_map=%s&vault_contents=%s"
         "&backpack_contents=%s&gallery_contents=%s"
         "&price_list=%s&edit_list=%s&purchase_list=%s&sell_list=%s"
-        "&self_test_move_list=%s",
+        "&self_test_move_list=%s&family_exit_paths=%s",
         userID, ticketHash, mDied, mHouseMap, mVaultContents, 
         mBackpackContents, mGalleryContents, 
-        mPriceList, mEditList, mPurchaseList, mSellList, mMoveList );
+        mPriceList, mEditList, mPurchaseList, mSellList, mMoveList,
+        mFamilyExitPaths );
     delete [] ticketHash;
             
     
