@@ -29,6 +29,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         int getDeathSourceID();
         int getDeathSourceState();
 
+        char getWifePresent();
+        char getWifeKilled();
+        char getAnyFamilyKilled();
+
         // list as a whitespace-free string
         // destroyed by caller
         char *getMoveList();

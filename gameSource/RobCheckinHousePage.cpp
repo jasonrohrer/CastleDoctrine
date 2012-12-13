@@ -25,6 +25,9 @@ RobCheckinHousePage::RobCheckinHousePage()
           mBackpackContents( NULL ),
           mMoveList( NULL ),
           mHouseMap( NULL ),
+          mWifePresent( false ),
+          mWifeKilled( false ),
+          mAnyFamilyKilled( false ),
           mSuccess( false ),
           mHomeButton( mainFont, 4, -4, translate( "returnHome" ) ),
           mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
@@ -127,6 +130,24 @@ void RobCheckinHousePage::setMoveList( char *inMoveList ) {
         delete [] mMoveList;
         }
     mMoveList = stringDuplicate( inMoveList );
+    }
+
+
+
+void RobCheckinHousePage::setWifePresent( char inPresent ) {
+    mWifePresent = inPresent;
+    }
+
+
+
+void RobCheckinHousePage::setWifeKilled( char inKilled ) {
+    mWifeKilled = inKilled;
+    }
+
+
+
+void RobCheckinHousePage::setAnyFamilyKilled( char inKilled ) {
+    mAnyFamilyKilled = inKilled;
     }
 
 
@@ -298,18 +319,22 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         }
     
     // send back to server            
-    char *ticketHash = getTicketHash();
-        
+    char *ticketHash = getTicketHash();    
             
     
     char *actionString = autoSprintf( 
         "action=end_rob_house&user_id=%d"
         "&%s"
         "&success=%d"
+        "&wife_present=%d"
+        "&wife_killed=%d"
+        "&any_family_kiled=%d"
         "&backpack_contents=%s"
         "&move_list=%s"
         "&house_map=%s",
-        userID, ticketHash, mSuccess, mBackpackContents, 
+        userID, ticketHash, 
+        mSuccess, mWifePresent, mWifeKilled, mAnyFamilyKilled,
+        mBackpackContents, 
         mMoveList, mHouseMap );
     delete [] ticketHash;
             

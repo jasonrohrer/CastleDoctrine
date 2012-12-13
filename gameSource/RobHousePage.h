@@ -50,6 +50,19 @@ class RobHousePage : public LiveHousePage, public ActionListener {
             return mGridDisplay.getMoveList();
             }
         
+        char getWifePresent() {
+            return mGridDisplay.getWifePresent();
+            }
+
+        char getWifeKilled() {
+            return mGridDisplay.getWifeKilled();
+            }
+        
+        char getAnyFamilyKilled() {
+            return mGridDisplay.getAnyFamilyKilled();
+            }
+
+
         char getDone() {
             return mDone;
             }

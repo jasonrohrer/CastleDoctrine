@@ -34,6 +34,9 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         // destoryed by caller
         virtual void setMoveList( char *inMoveList );
         
+        virtual void setWifePresent( char inPresent );
+        virtual void setWifeKilled( char inKilled );
+        virtual void setAnyFamilyKilled( char inKilled );
 
         virtual void actionPerformed( GUIComponent *inTarget );
         
@@ -54,6 +57,10 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         char *mBackpackContents;
         char *mMoveList;
         char *mHouseMap;
+        
+        char mWifePresent;
+        char mWifeKilled;
+        char mAnyFamilyKilled;
         
         char mSuccess;
         

@@ -1424,7 +1424,16 @@ void drawFrame( char inUpdate ) {
                 robCheckinHousePage->setBackpackContents( backpackContents );
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
-                                
+                              
+                robCheckinHousePage->setWifePresent( 
+                    robHousePage->getWifePresent() );
+                robCheckinHousePage->setWifeKilled( 
+                    robHousePage->getWifeKilled() );
+
+                robCheckinHousePage->setAnyFamilyKilled( 
+                    robHousePage->getAnyFamilyKilled() );
+
+                
                 robCheckinHousePage->setMoveList( moveList );
 
                 delete [] backpackContents;

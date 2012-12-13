@@ -2293,7 +2293,7 @@ function cd_endEditHouse() {
 
         $objectAlive = true;
 
-        if( $numParts > 1 && $objectParts[1] == 0 ) {
+        if( $numParts > 1 && $objectParts[1] != 0 ) {
             $objectAlive = false;
             }
         
@@ -2735,6 +2735,9 @@ function cd_endRobHouse() {
     $user_id = cd_getUserID();
 
     $success = cd_requestFilter( "success", "/[012]/" );
+    $wife_present = cd_requestFilter( "wife_present", "/[01]/" );
+    $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
+    $any_family_killed = cd_requestFilter( "any_family_kiled", "/[01]/" );
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
@@ -2945,7 +2948,7 @@ function cd_endRobHouse() {
 
     
     
-    if( $success == 0 || $success == 2 ) {
+    if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
         // keep original house map, untouched
         $house_map = $old_house_map;
 
@@ -2968,16 +2971,38 @@ function cd_endRobHouse() {
             }
         }
     else {
-        // reached vault, successful robbery
+        // reached vault, successful robbery, or killed some family members
         
         // use new house map
 
-        // successful robbery, has not been edited since
+        // permanent robbery result, has not been edited since
         $edit_count = 0;
 
+        // wife carries half money, if she's there
+        $wifeMoney = (int)( $house_money / 2 );
+        if( !$wife_present ) {
+            $wifeMoney = 0;
+            }
+        
+        $vaultMoney = $house_money - $wifeMoney;
+
+        $amountTaken = 0;
+
+        if( $wife_killed ) {
+            $amountTaken += $wifeMoney;
+            }
+        if( $success == 1 ) {
+            $amountTaken += $vaultMoney;
+            }
+        else {
+            $stuffTaken = "#";
+            $galleryStuffTaken = "#";
+            }
+        
+                
         
         // transfer all money and vault stuff from victim to robber
-        $carried_loot_value = $house_money + $old_robber_carried_loot_value;
+        $carried_loot_value = $amountTaken + $old_robber_carried_loot_value;
 
         $carried_vault_contents =
             cd_idQuantityUnion( $old_robber_carried_vault_contents,
@@ -3012,6 +3037,9 @@ function cd_endRobHouse() {
 
         $loadout = $old_backpack_contents;
 
+        // in log, value_estimate holds true value of stuff taken
+        $total_value_stolen = $amountTaken +
+            cd_idQuantityToResaleValue( $stuffTaken, cd_getPriceArray() );
 
         // log_id auto-assigned
         $query =
@@ -3023,7 +3051,7 @@ function cd_endRobHouse() {
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$house_money', '$house_value_estimate', ".
+            " $user_id, $victim_id, '$house_money', '$total_value_stolen', ".
             " '$house_vault_contents', '$house_gallery_contents', ".
             " '$rob_attempts', '$robber_deaths', ".
             " '$robber_name', '$victim_name', '$ownerDied',".
@@ -3032,11 +3060,15 @@ function cd_endRobHouse() {
             " '$house_map' );";
         cd_queryDatabase( $query );
 
-        // all loot taken
-        $house_money = 0;
-        $house_vault_contents = "#";
-        $house_gallery_contents = "#";
+        // some (or all) loot taken
+        $house_money -= $amountTaken;
 
+        if( $success ) {
+            // reached vault, stole everything there too    
+            $house_vault_contents = "#";
+            $house_gallery_contents = "#";
+            }
+        
         
 
         // clear rob stats now, because house loot is gone

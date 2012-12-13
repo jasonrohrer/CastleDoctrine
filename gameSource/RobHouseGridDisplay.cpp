@@ -84,6 +84,62 @@ int RobHouseGridDisplay::getDeathSourceState() {
 
 
 
+char RobHouseGridDisplay::getWifePresent() {
+    int numFamily = mFamilyStatus.size();
+    
+    for( int i=0; i<numFamily; i++ ) {
+            
+        // is wife?
+        int objectID = *( mFamilyObjects.getElement( i ) );
+        
+        if( isPropertySet( objectID, 0, wife ) ) {
+            return true;
+            }
+        }
+    
+
+    return false;
+    }
+
+
+
+char RobHouseGridDisplay::getWifeKilled() {
+    int numFamily = mFamilyStatus.size();
+    
+    for( int i=0; i<numFamily; i++ ) {
+        if( *( mFamilyStatus.getElement( i ) ) == 0 ) {
+            // killed
+            
+            // is wife?
+            int objectID = *( mFamilyObjects.getElement( i ) );
+            
+            if( isPropertySet( objectID, 0, wife ) ) {
+                return true;
+                }
+            }
+        }
+    
+
+    return false;
+    }
+
+
+
+char RobHouseGridDisplay::getAnyFamilyKilled() {
+    int numFamily = mFamilyStatus.size();
+    
+    for( int i=0; i<numFamily; i++ ) {
+        if( *( mFamilyStatus.getElement( i ) ) == 0 ) {
+            // killed
+            return true;
+            }
+        }
+    return false;
+    }
+
+
+
+
 char *RobHouseGridDisplay::getMoveList() {
     if( mMoveList.size() == 0 ) {
         return stringDuplicate( "#" );
