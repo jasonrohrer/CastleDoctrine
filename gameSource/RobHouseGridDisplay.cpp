@@ -224,6 +224,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     mFamilyExitPathProgress.deleteAll();
     mFamilyObjects.deleteAll();
+    mFamilyStatus.deleteAll();
     
     int numPaths = mFamilyExitPaths.size();
     
@@ -236,6 +237,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         int startIndex = start.y * mFullMapD + start.x;
         
         mFamilyObjects.push_back( mHouseMapIDs[ startIndex ] );
+        mFamilyStatus.push_back( 1 );
         }
     
 
@@ -283,6 +285,8 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                     // killed!
                     // don't move
                     
+                    // dead status
+                    *( mFamilyStatus.getElement( i ) ) = 0;
                     }
                 else {
                     
@@ -322,6 +326,9 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                     
                     mHouseMapIDs[oldIndex] = 0;
                     mHouseMapCellStates[oldIndex] = 1;
+                    
+                    // escaped status
+                    *( mFamilyStatus.getElement( i ) ) = 2;
                     }
                 }
             
@@ -351,6 +358,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                                         mDeathSourceID,
                                         mDeathSourceState );
         mSuccess = 0;
+        processFamilyAtEnd();
         }
     else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
                             mHouseMapMobileCellStates[ mRobberIndex ], 
@@ -365,6 +373,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                                         mDeathSourceID,
                                         mDeathSourceState );
         mSuccess = 0;
+        processFamilyAtEnd();
         }
 
     
@@ -708,6 +717,8 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     
     if( mRobberIndex == mGoalIndex ) {
         mSuccess = 1;
+        processFamilyAtEnd();
+
         fireActionPerformed( this );
         }
     }
@@ -716,6 +727,8 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
 void RobHouseGridDisplay::robberTriedToLeave() {
     mSuccess = 2;
+    processFamilyAtEnd();
+
     fireActionPerformed( this );
     }
 
@@ -852,3 +865,100 @@ void RobHouseGridDisplay::recomputeVisibility() {
         }
     
     }
+
+
+
+
+void RobHouseGridDisplay::processFamilyAtEnd() {
+    int numFamily = mFamilyObjects.size();
+    
+    for( int i=0; i<numFamily; i++ ) {
+        int status = *( mFamilyStatus.getElement( i ) );
+        
+        int objectID = *( mFamilyObjects.getElement( i ) );
+        
+        if( status == 2 ) {
+            // escaped safely!
+            
+            // move back into empty spot in house
+            // closest possible spot near door, following exit path back
+
+            int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+        
+            GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+
+            // start one step away from door
+            int pathSpot = pathLength - 2;
+            
+            if( pathLength < 3 ) {
+                pathSpot = pathLength - 1;
+                }
+
+            char found = false;
+
+            while( pathSpot > 0 ) {
+                int newIndex = posToIndex( path[pathSpot] );
+    
+                if( mHouseMapIDs[ newIndex ] == 0 ) {
+                    
+                    found = true;
+                    
+                    mHouseMapIDs[ newIndex ] = objectID;
+                    mHouseMapCellStates[ newIndex ] = 1;
+                    break;
+                    }
+                pathSpot--;
+                }
+            
+            if( !found ) {
+                
+                // search columns backward away from door
+                
+                for( int x=0; x<mFullMapD; x++ ) {
+                    
+                    // above door
+                    for( int y=mFullMapD/2; y<mFullMapD; y++ ) {
+                        int index = y * mFullMapD + x;
+                        
+                        if( mHouseMapIDs[ index ] == 0 ) {
+                            
+                            found = true;
+                    
+                            mHouseMapIDs[ index ] = objectID;
+                            mHouseMapCellStates[ index ] = 1;
+                            break;
+                            }
+                        }
+                    if( found ) {
+                        break;
+                        }
+
+                    // below door
+                    for( int y=mFullMapD/2-1; y>=0; y-- ) {
+                        int index = y * mFullMapD + x;
+                        
+                        if( mHouseMapIDs[ index ] == 0 ) {
+                            
+                            found = true;
+                    
+                            mHouseMapIDs[ index ] = objectID;
+                            mHouseMapCellStates[ index ] = 1;
+                            break;
+                            }
+                        }
+
+                    if( found ) {
+                        break;
+                        }
+                    }
+                }
+            
+            // still possible that not found here.
+            // in that case (house is so full that there's no room
+            // for this family member), well... family member leaves for good!
+            }
+                
+        }
+    
+    }
+

@@ -114,6 +114,15 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // step index for each family member
         SimpleVector<int> mFamilyExitPathProgress;
         SimpleVector<int> mFamilyObjects;
+        // for each member:
+        // 1 = alive in house
+        // 2 = escaped
+        // 0 = killed in house
+        SimpleVector<int> mFamilyStatus;
+        
+        
+        // at end of robbery, deal with family repositioning
+        void processFamilyAtEnd();
         
     };
 
