@@ -122,6 +122,11 @@ char *RobCheckoutHousePage::getGalleryContents() {
     }
 
 
+int RobCheckoutHousePage::getWifeMoney() {
+    return mWifeMoney;
+    }
+
+
 int RobCheckoutHousePage::getMusicSeed() {
     return mMusicSeed;
     }
@@ -174,8 +179,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 6 ||
-                        strcmp( *( tokens->getElement( 5 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 7 ||
+                        strcmp( *( tokens->getElement( 6 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -190,19 +195,24 @@ void RobCheckoutHousePage::step() {
                         mBackpackContents = *( tokens->getElement( 2 ) );
                         mGalleryContents = *( tokens->getElement( 3 ) );
 
-                        mMusicSeed = 0;
+                        mWifeMoney = 0;
                         sscanf( *( tokens->getElement( 4 ) ),
+                                "%d", &mWifeMoney );
+                        mMusicSeed = 0;
+                        sscanf( *( tokens->getElement( 5 ) ),
                                 "%d", &mMusicSeed );
 
                         printf( "OwnerName = %s\n", mOwnerName );
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Backpack = %s\n", mBackpackContents );
                         printf( "Gallery = %s\n", mGalleryContents );
+                        printf( "WifeMoney = %d\n", mWifeMoney );
                         printf( "MusicSeed = %d\n", mMusicSeed );
                         
 
                         delete [] *( tokens->getElement( 4 ) );
                         delete [] *( tokens->getElement( 5 ) );
+                        delete [] *( tokens->getElement( 6 ) );
 
                         // reset ping time, because house check-out
                         // counts as a ping

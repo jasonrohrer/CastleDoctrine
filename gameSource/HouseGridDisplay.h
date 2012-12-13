@@ -68,6 +68,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // destroyed by caller
         virtual void setHouseMap( const char *inHouseMap );
         
+        virtual void setWifeMoney( int inMoney );
+        
         
         // destroyed by caller
         char *getHouseMap();
@@ -128,6 +130,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mRobberState;
         int mRobberOrientation;
         
+        int mWifeMoney;
+
         char *mHouseMap;
         
         int mNumMapSpots;

@@ -636,6 +636,7 @@ function cd_setupDatabase() {
             "loot_value INT NOT NULL," .
             // loot plus resale value of vault items, rounded
             "value_estimate INT NOT NULL," .
+            "wife_present TINYINT NOT NULL," . 
             // loot carried back from latest robbery, not deposited in vault
             // yet.  Deposited when house is next checked out for editing. 
             "carried_loot_value INT NOT NULL," .
@@ -2279,6 +2280,7 @@ function cd_endEditHouse() {
     // first, find all living family locations on map
     $familyObjects = array_merge( $wifeList, $sonList );
     $familyLocations = array();
+    $wife_present = 0;
     
     $houseArray = preg_split( "/#/", $house_map );
 
@@ -2302,11 +2304,18 @@ function cd_endEditHouse() {
             $objectAlive ) {
             
             $familyLocations[] = $index;
+
+            if( array_search( $objectParts[0], $wifeList ) !== false ) {
+                $wife_present = true;
+                }
             }
         
         $index ++;
         }
 
+    
+    
+    
     
     $numPaths = 0;
     // array of arrays
@@ -2460,7 +2469,8 @@ function cd_endEditHouse() {
         "gallery_contents='$gallery_contents', ".
         "edit_count='$edit_count', ".
         "self_test_move_list='$self_test_move_list', ".
-        "loot_value='$loot_value', value_estimate='$value_estimate' ".
+        "loot_value='$loot_value', value_estimate='$value_estimate', ".
+        "wife_present='$wife_present' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -2675,7 +2685,7 @@ function cd_startRobHouse() {
     // out for robbery
     
     $query = "SELECT house_map, gallery_contents, ".
-        "character_name, rob_attempts, music_seed ".
+        "character_name, rob_attempts, music_seed, wife_present, loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 AND rob_checkout = 0 ".
@@ -2695,6 +2705,9 @@ function cd_startRobHouse() {
     $gallery_contents = $row[ "gallery_contents" ];
     $character_name = $row[ "character_name" ];
     $music_seed = $row[ "music_seed" ];
+    $wife_present = $row[ "wife_present" ];
+    $loot_value = $row[ "loot_value" ];
+    
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
 
@@ -2715,10 +2728,18 @@ function cd_startRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+
+    $wife_money = 0;
+
+    if( $wife_present ) {
+        $wife_money = (int)( $loot_value / 2 );
+        }
+    
     echo "$character_name\n";
     echo "$house_map\n";
     echo "$backpack_contents\n";
     echo "$gallery_contents\n";
+    echo "$wife_money\n";
     echo "$music_seed\n";
     echo "OK";
     }
@@ -2735,7 +2756,7 @@ function cd_endRobHouse() {
     $user_id = cd_getUserID();
 
     $success = cd_requestFilter( "success", "/[012]/" );
-    $wife_present = cd_requestFilter( "wife_present", "/[01]/" );
+    $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
     $wife_robbed = cd_requestFilter( "wife_robbed", "/[01]/" );
     $any_family_killed = cd_requestFilter( "any_family_kiled", "/[01]/" );
 
@@ -2842,7 +2863,7 @@ function cd_endRobHouse() {
     
     $ownerDied = 0;
     
-    $query = "SELECT loot_value, value_estimate, ".
+    $query = "SELECT loot_value, value_estimate, wife_present, ".
         "house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, edit_count ".
@@ -2906,6 +2927,7 @@ function cd_endRobHouse() {
 
     $house_money = $row[ "loot_value" ];
     $house_value_estimate = $row[ "value_estimate" ];
+    $wife_present = $row[ "wife_present" ];
     $house_vault_contents = $row[ "vault_contents" ];
     $house_gallery_contents = $row[ "gallery_contents" ];
     
@@ -3111,6 +3133,10 @@ function cd_endRobHouse() {
     
         
     if( ! $ownerDied ) {
+        if( $wife_killed ) {
+            $wife_present = 0;
+            }
+        
         // update main table with changes, post-robbery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "rob_checkout = 0, edit_count = '$edit_count', ".
@@ -3118,6 +3144,7 @@ function cd_endRobHouse() {
             "robber_deaths = '$robber_deaths',".
             "house_map='$house_map', ".
             "loot_value = $house_money,  ".
+            "wife_present = $wife_present,  ".
             "vault_contents = '$house_vault_contents', ".
             "gallery_contents = '$house_gallery_contents' ".
             "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
@@ -3895,7 +3922,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "'$music_seed', ".
-            "0, '#', 1000, 1000, ".
+            "0, '#', 1000, 1000, 1, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".

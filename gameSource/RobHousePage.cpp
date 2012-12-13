@@ -137,6 +137,11 @@ void RobHousePage::setGalleryContents( char *inGalleryContents ) {
     }
 
 
+void RobHousePage::setWifeMoney( int inMoney ) {
+    mGridDisplay.setWifeMoney( inMoney );
+    }
+
+
 void RobHousePage::setMusicSeed( int inMusicSeed ) {
     mMusicSeed = inMusicSeed;
     }

@@ -1088,6 +1088,10 @@ void drawFrame( char inUpdate ) {
                     selfHouseTestPage->setDescription( 
                         translate( "selfTestDescription" ) );
 
+                    // wife carries half money, rounded down
+                    selfHouseTestPage->setWifeMoney(
+                        editHousePage->getLootValue() / 2 );
+
                     // still present in checkoutHousePage, use it
                     // (editHousePage doesn't need it)
                     selfHouseTestPage->setMusicSeed( 
@@ -1403,6 +1407,9 @@ void drawFrame( char inUpdate ) {
                     delete [] description;
 
 
+                    robHousePage->setWifeMoney(
+                        robCheckoutHousePage->getWifeMoney() );
+                    
                     robHousePage->setMusicSeed( 
                         robCheckoutHousePage->getMusicSeed() );
 
@@ -1425,8 +1432,8 @@ void drawFrame( char inUpdate ) {
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
                               
-                robCheckinHousePage->setWifePresent( 
-                    robHousePage->getWifePresent() );
+                robCheckinHousePage->setWifeKilled( 
+                    robHousePage->getWifeKilled() );
                 robCheckinHousePage->setWifeRobbed( 
                     robHousePage->getWifeRobbed() );
 

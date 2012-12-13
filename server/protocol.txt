@@ -304,6 +304,7 @@ character_name
 houseMap
 backpack_contents
 gallery_contents
+wife_money
 music_seed
 OK
 
@@ -336,8 +337,8 @@ server.php?action=end_rob_house&user_id=[id number]
                                &sequence_number=[number]
                                &ticket_hash=[sha1 hash, hex-encoded]
                                &success=[0(die) or 1(hit vault) or 2(leave)]
-							   &wife_present=[0(false) or 1(true)]
-							   &wife_robbed=[0(false) or 1(true)]
+							   &wife_killed=[0(false) or 1(true)]
+                               &wife_robbed=[0(false) or 1(true)]
 							   &any_family_killed=[0(false) or 1(true)]
 							   $backpack_contents=[contents as ASCII string]
                                &move_list=[move list as ASCII string]

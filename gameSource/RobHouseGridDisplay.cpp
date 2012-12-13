@@ -85,25 +85,6 @@ int RobHouseGridDisplay::getDeathSourceState() {
 
 
 
-char RobHouseGridDisplay::getWifePresent() {
-    int numFamily = mFamilyStatus.size();
-    
-    for( int i=0; i<numFamily; i++ ) {
-            
-        // is wife?
-        int objectID = *( mFamilyObjects.getElement( i ) );
-        
-        if( isPropertySet( objectID, 0, wife ) ) {
-            return true;
-            }
-        }
-    
-
-    return false;
-    }
-
-
-
 char RobHouseGridDisplay::getWifeRobbed() {
     return mRobberStoleFromWife;
     }
@@ -779,6 +760,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     if( getWifeKilled() ) {
         if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 0, wife ) ) {
             mRobberStoleFromWife = true;
+            setWifeMoney( 0 );
             }
         }
 

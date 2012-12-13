@@ -40,6 +40,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
 
         void setGalleryContents( char *inGalleryContents );
         
+        void setWifeMoney( int inMoney );
+
         void setMusicSeed( int inMusicSeed );
 
         char getSuccess() {
@@ -50,8 +52,9 @@ class RobHousePage : public LiveHousePage, public ActionListener {
             return mGridDisplay.getMoveList();
             }
         
-        char getWifePresent() {
-            return mGridDisplay.getWifePresent();
+
+        char getWifeKilled() {
+            return mGridDisplay.getWifeKilled();
             }
 
         char getWifeRobbed() {

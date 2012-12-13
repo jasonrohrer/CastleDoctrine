@@ -120,13 +120,15 @@ listRobberyReplays "View Security Tapes"
 startProofReplay "View House Self-Test"
 
 
-robPickListTip = "%d tried to rob %s house.  %d died trying"
+robPickListTip "%d tried to rob %s house.  %d died trying"
 
-replayPickListTip = "%s stole $%d after %d tried and %d died"
+replayPickListTip "%s stole $%d after %d tried and %d died"
 
 
 
 startTileDescription "Welcome Mat"
+
+wifeHolding "%s (carrying $%d)"
 
 
 robDescription "Robbing %s house"

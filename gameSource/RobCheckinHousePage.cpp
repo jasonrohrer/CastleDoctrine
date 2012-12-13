@@ -25,7 +25,7 @@ RobCheckinHousePage::RobCheckinHousePage()
           mBackpackContents( NULL ),
           mMoveList( NULL ),
           mHouseMap( NULL ),
-          mWifePresent( false ),
+          mWifeKilled( false ),
           mWifeRobbed( false ),
           mAnyFamilyKilled( false ),
           mSuccess( false ),
@@ -134,10 +134,11 @@ void RobCheckinHousePage::setMoveList( char *inMoveList ) {
 
 
 
-void RobCheckinHousePage::setWifePresent( char inPresent ) {
-    mWifePresent = inPresent;
-    }
 
+
+void RobCheckinHousePage::setWifeKilled( char inKilled ) {
+    mWifeKilled = inKilled;
+    }
 
 
 void RobCheckinHousePage::setWifeRobbed( char inRobbed ) {
@@ -326,14 +327,14 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         "action=end_rob_house&user_id=%d"
         "&%s"
         "&success=%d"
-        "&wife_present=%d"
+        "&wife_killed=%d"
         "&wife_robbed=%d"
         "&any_family_kiled=%d"
         "&backpack_contents=%s"
         "&move_list=%s"
         "&house_map=%s",
         userID, ticketHash, 
-        mSuccess, mWifePresent, mWifeRobbed, mAnyFamilyKilled,
+        mSuccess, mWifeKilled, mWifeRobbed, mAnyFamilyKilled,
         mBackpackContents, 
         mMoveList, mHouseMap );
     delete [] ticketHash;

@@ -41,6 +41,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
                                     HouseObjectPicker *inPicker )
         : PageComponent( inX, inY ),
           mPicker( inPicker ),
+          mWifeMoney( 0 ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
@@ -350,6 +351,12 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mEditHistory.deleteAll();
 
     checkExitPaths();
+    }
+
+
+
+void HouseGridDisplay::setWifeMoney( int inMoney ) {
+    mWifeMoney = inMoney;
     }
 
 
@@ -1494,16 +1501,30 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
         int fullI = subToFull( mHighlightIndex );
         
         
-        const char *nonMobileDescription; 
+        char *nonMobileDescription; 
 
-        if( fullI == mStartIndex ) {
-            nonMobileDescription = translate( "startTileDescription" );
-            }
-        else { 
+        if( fullI == mStartIndex && mHouseMapIDs[fullI] == 0 ) {
             nonMobileDescription = 
-                getObjectDescription( 
-                    mHouseSubMapIDs[ mHighlightIndex ],
-                    mHouseSubMapCellStates[ mHighlightIndex ] );
+                stringDuplicate( translate( "startTileDescription" ) );
+            }
+        else {                
+            nonMobileDescription = 
+                stringDuplicate( 
+                    getObjectDescription( 
+                        mHouseSubMapIDs[ mHighlightIndex ],
+                        mHouseSubMapCellStates[ mHighlightIndex ] ) );
+
+            if( mWifeMoney > 0 && 
+                isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
+                               wife ) ) {
+
+                char *fullDescription =
+                    autoSprintf( translate( "wifeHolding" ), 
+                                 nonMobileDescription, mWifeMoney );
+                
+                delete [] nonMobileDescription;
+                nonMobileDescription = fullDescription;
+                }
             }
         
 
@@ -1525,6 +1546,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
             setToolTipDirect( (char*)nonMobileDescription );
             }
         
+        delete [] nonMobileDescription;
         }
     }
 
