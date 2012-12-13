@@ -30,6 +30,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         int getDeathSourceState();
 
         char getWifePresent();
+        // true if robber killed wife and reached her body
+        char getWifeRobbed();
         char getWifeKilled();
         char getAnyFamilyKilled();
 
@@ -127,6 +129,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         
         // at end of robbery, deal with family repositioning
         void processFamilyAtEnd();
+        
+
+        // true if robber reaches wife's cell after killing her
+        char mRobberStoleFromWife;
         
     };
 

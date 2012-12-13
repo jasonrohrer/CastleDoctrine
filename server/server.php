@@ -2736,7 +2736,7 @@ function cd_endRobHouse() {
 
     $success = cd_requestFilter( "success", "/[012]/" );
     $wife_present = cd_requestFilter( "wife_present", "/[01]/" );
-    $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
+    $wife_robbed = cd_requestFilter( "wife_robbed", "/[01]/" );
     $any_family_killed = cd_requestFilter( "any_family_kiled", "/[01]/" );
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
@@ -2988,7 +2988,7 @@ function cd_endRobHouse() {
 
         $amountTaken = 0;
 
-        if( $wife_killed ) {
+        if( $wife_robbed ) {
             $amountTaken += $wifeMoney;
             }
         if( $success == 1 ) {

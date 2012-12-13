@@ -1427,8 +1427,8 @@ void drawFrame( char inUpdate ) {
                               
                 robCheckinHousePage->setWifePresent( 
                     robHousePage->getWifePresent() );
-                robCheckinHousePage->setWifeKilled( 
-                    robHousePage->getWifeKilled() );
+                robCheckinHousePage->setWifeRobbed( 
+                    robHousePage->getWifeRobbed() );
 
                 robCheckinHousePage->setAnyFamilyKilled( 
                     robHousePage->getAnyFamilyKilled() );

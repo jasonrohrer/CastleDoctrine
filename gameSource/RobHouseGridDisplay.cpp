@@ -35,7 +35,8 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mDeathSourceState( 1 ),
           mLeaveSprite( loadSprite( "left.tga" ) ),
           mCurrentTool( -1 ),
-          mToolJustUsed( false ) {
+          mToolJustUsed( false ),
+          mRobberStoleFromWife( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
@@ -99,6 +100,12 @@ char RobHouseGridDisplay::getWifePresent() {
     
 
     return false;
+    }
+
+
+
+char RobHouseGridDisplay::getWifeRobbed() {
+    return mRobberStoleFromWife;
     }
 
 
@@ -296,6 +303,8 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         mFamilyStatus.push_back( 1 );
         }
     
+
+    mRobberStoleFromWife = false;
 
     // switch all unstuck
     // to "1" state for presentation to robber
@@ -764,6 +773,13 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     if( mSuccess == 2 ) {
         // left, don't apply transitions
         return;
+        }
+
+    // did robber step onto killed wife?
+    if( getWifeKilled() ) {
+        if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 0, wife ) ) {
+            mRobberStoleFromWife = true;
+            }
         }
 
     applyTransitionsAndProcess();

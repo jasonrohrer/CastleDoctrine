@@ -54,8 +54,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
             return mGridDisplay.getWifePresent();
             }
 
-        char getWifeKilled() {
-            return mGridDisplay.getWifeKilled();
+        char getWifeRobbed() {
+            return mGridDisplay.getWifeRobbed();
             }
         
         char getAnyFamilyKilled() {
