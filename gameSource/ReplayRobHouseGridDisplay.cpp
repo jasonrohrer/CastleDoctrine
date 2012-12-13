@@ -34,6 +34,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mStepsUntilNextPlayStep( 0 ),
           mVisibilityToggle( false ),
           mToolIDJustPicked( -1 ),
+          mOriginalWifeMoney( 0 ),
           mOriginalMoveList( NULL ) {
 
     mStopButton.setVisible( false );
@@ -61,6 +62,13 @@ ReplayRobHouseGridDisplay::~ReplayRobHouseGridDisplay() {
     if( mOriginalMoveList != NULL ) {
         delete [] mOriginalMoveList;
         }
+    }
+
+
+void ReplayRobHouseGridDisplay::setWifeMoney( int inMoney ) {
+    mOriginalWifeMoney = inMoney;
+
+    RobHouseGridDisplay::setWifeMoney( inMoney );
     }
 
 
@@ -142,7 +150,16 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 // because it detects success condition and fires an event,
                 // which we don't want to do during replay
                 HouseGridDisplay::moveRobber( newIndex );
-                
+
+                // robber stepped onto wife after killing her, taking
+                // her money
+                if( getWifeKilled() ) {
+                    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
+                                       0, wife ) ) {
+                        RobHouseGridDisplay::setWifeMoney( 0 );
+                        }
+                    }
+
                 shouldDeleteMove = true;
                 
                 applyTransitionsAndProcess();
@@ -253,6 +270,8 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         char *newMoveList = stringDuplicate( mOriginalMoveList );
         setMoveList( newMoveList );
         delete [] newMoveList;
+        
+        RobHouseGridDisplay::setWifeMoney( mOriginalWifeMoney );
         
         mRestartButton.setVisible( false );
         mStopButton.setVisible( false );

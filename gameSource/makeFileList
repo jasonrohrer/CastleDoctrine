@@ -61,6 +61,7 @@ musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
 pathFind.cpp \
+seededMusic.cpp \
 
 
 

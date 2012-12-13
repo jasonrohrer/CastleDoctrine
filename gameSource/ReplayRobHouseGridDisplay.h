@@ -18,7 +18,9 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         
         virtual ~ReplayRobHouseGridDisplay();
 
-        
+        // override
+        virtual void setWifeMoney( int inMoney );
+
         // must be called AFTER setting house map
 
         // list as a whitespace-free string
@@ -73,6 +75,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         void takeStep();
         
         // for restart
+        char mOriginalWifeMoney;
         char *mOriginalMoveList;
     };
 

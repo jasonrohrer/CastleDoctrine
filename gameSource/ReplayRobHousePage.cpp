@@ -2,7 +2,7 @@
 
 
 #include "message.h"
-
+#include "seededMusic.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -22,6 +22,7 @@ extern int userID;
 
 ReplayRobHousePage::ReplayRobHousePage() 
         : mWebRequest( -1 ),
+          mMusicSeed( 0 ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mDescription( NULL ) {
@@ -80,7 +81,10 @@ ReplayRobHousePage::~ReplayRobHousePage() {
 void ReplayRobHousePage::setLog( RobberyLog inLog ) {
     mGridDisplay.setHouseMap( inLog.houseMap );
     mGridDisplay.setMoveList( inLog.moveList );
-
+    mGridDisplay.setWifeMoney( inLog.wifeMoney );
+    
+    mMusicSeed = inLog.musicSeed;
+    
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
@@ -98,10 +102,12 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
 void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mDoneButton ) {
         mDone = true;
+        clearNotes();
         }
     else if( inTarget == &mGridDisplay ) {
         if( mGridDisplay.getSuccess() ) {
             mDone = true;
+            clearNotes();
             }
         else {
             int pickedID = mGridDisplay.getToolIDJustPicked();
@@ -196,6 +202,8 @@ void ReplayRobHousePage::makeActive( char inFresh ) {
         }
     
     mDone = false;
+    
+    setMusicFromSeed( mMusicSeed );
     }
         
 

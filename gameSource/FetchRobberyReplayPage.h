@@ -18,6 +18,8 @@ typedef struct RobberyLog {
         char *backpackContents;
         char *moveList;
         int lootValue;
+        int wifeMoney;
+        int musicSeed;
     } RobberyLog;
 
 

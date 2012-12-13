@@ -133,8 +133,8 @@ void FetchRobberyReplayPage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 7 ||
-                        strcmp( *( tokens->getElement( 6 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 9 ||
+                        strcmp( *( tokens->getElement( 8 ) ), "OK" ) != 0 ) {
 
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
@@ -156,9 +156,15 @@ void FetchRobberyReplayPage::step() {
 
                         sscanf( *( tokens->getElement( 5 ) ),
                                 "%d", &( mLogRecord.lootValue ) );
+                        sscanf( *( tokens->getElement( 6 ) ),
+                                "%d", &( mLogRecord.wifeMoney ) );
+                        sscanf( *( tokens->getElement( 7 ) ),
+                                "%d", &( mLogRecord.musicSeed ) );
                         
                         delete [] *( tokens->getElement( 5 ) );
                         delete [] *( tokens->getElement( 6 ) );
+                        delete [] *( tokens->getElement( 7 ) );
+                        delete [] *( tokens->getElement( 8 ) );
 
                         mRecordReady = true;
                         }

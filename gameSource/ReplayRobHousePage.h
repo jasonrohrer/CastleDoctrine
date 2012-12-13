@@ -45,7 +45,8 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
     protected:
         
         int mWebRequest;
-
+        
+        int mMusicSeed;
 
         ReplayRobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;

@@ -734,9 +734,11 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "loot_value INT NOT NULL," .
+            "wife_money INT NOT NULL," .
             "value_estimate INT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "gallery_contents LONGTEXT NOT NULL," .
+            "music_seed INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
@@ -2863,7 +2865,7 @@ function cd_endRobHouse() {
     
     $ownerDied = 0;
     
-    $query = "SELECT loot_value, value_estimate, wife_present, ".
+    $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
         "house_map, user_id, character_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, edit_count ".
@@ -2942,6 +2944,7 @@ function cd_endRobHouse() {
     $rob_attempts = $row[ "rob_attempts" ];
     $robber_deaths = $row[ "robber_deaths" ];
     $edit_count = $row[ "edit_count" ];
+    $music_seed = $row[ "music_seed" ];
 
 
 
@@ -3001,17 +3004,17 @@ function cd_endRobHouse() {
         $edit_count = 0;
 
         // wife carries half money, if she's there
-        $wifeMoney = (int)( $house_money / 2 );
+        $wife_money = (int)( $house_money / 2 );
         if( !$wife_present ) {
-            $wifeMoney = 0;
+            $wife_money = 0;
             }
         
-        $vaultMoney = $house_money - $wifeMoney;
+        $vaultMoney = $house_money - $wife_money;
 
         $amountTaken = 0;
 
         if( $wife_robbed ) {
-            $amountTaken += $wifeMoney;
+            $amountTaken += $wife_money;
             }
         if( $success == 1 ) {
             $amountTaken += $vaultMoney;
@@ -3066,15 +3069,19 @@ function cd_endRobHouse() {
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
-            "(user_id, house_user_id, loot_value, value_estimate, ".
-            " vault_contents, gallery_contents,".
+            "(user_id, house_user_id, loot_value, wife_money, ".
+            "value_estimate, ".
+            " vault_contents, gallery_contents, ".
+            " music_seed, ".
             " rob_attempts, robber_deaths,".
             " robber_name, victim_name, owner_now_dead, rob_time, ".
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$house_money', '$total_value_stolen', ".
+            " $user_id, $victim_id, '$house_money', '$wife_money', ".
+            "'$total_value_stolen', ".
             " '$house_vault_contents', '$house_gallery_contents', ".
+            " '$music_seed', ".
             " '$rob_attempts', '$robber_deaths', ".
             " '$robber_name', '$victim_name', '$ownerDied',".
             " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
@@ -3287,7 +3294,7 @@ function cd_getRobberyLog() {
     
     $query = "SELECT user_id, house_user_id, ".
         "robber_name, victim_name, house_start_map, loadout, ".
-        "move_list, loot_value ".
+        "move_list, loot_value, wife_money, music_seed ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
 
@@ -3333,6 +3340,8 @@ function cd_getRobberyLog() {
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";
     echo $row[ "loot_value" ] . "\n";
+    echo $row[ "wife_money" ] . "\n";
+    echo $row[ "music_seed" ] . "\n";
     echo "OK";
     }
 

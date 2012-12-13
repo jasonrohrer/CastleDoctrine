@@ -419,6 +419,7 @@ houseMap
 backpack_contents
 moveList
 loot_value
+wife_money
 OK
 
 Where:
