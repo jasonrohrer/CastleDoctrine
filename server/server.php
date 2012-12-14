@@ -2984,15 +2984,8 @@ function cd_endRobHouse() {
         $galleryStuffTaken = "#";
         
         if( $success == 0 ) {
-            // robber dies
+            // robber dies, and death count in this house not reset
             $robber_deaths ++;
-            
-            // drops backpack in this house's vault
-            $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
-                                                        $backpack_contents );
-            
-            // starts over as new character, house destroyed
-            cd_newHouseForUser( $user_id );
             }
         }
     else {
@@ -3013,9 +3006,11 @@ function cd_endRobHouse() {
 
         $amountTaken = 0;
 
-        if( $wife_robbed ) {
+        if( $success != 0 && $wife_robbed ) {
+            // robbed wife without dying
             $amountTaken += $wife_money;
             }
+        
         if( $success == 1 ) {
             $amountTaken += $vaultMoney;
             }
@@ -3108,6 +3103,15 @@ function cd_endRobHouse() {
         $robber_deaths = 0;
         }
 
+    
+    if( $success == 0 ) {
+        // drops backpack in this house's vault
+        $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                    $backpack_contents );
+        
+        // starts over as new character, house destroyed
+        cd_newHouseForUser( $user_id );
+        }
 
 
     
