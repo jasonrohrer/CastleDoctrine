@@ -971,7 +971,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 isSubMapPropertySet( i, structural ) ||
                 isSubMapPropertySet( i, shadowMaking );
                      
-            char familyObject = isSubMapPropertySet( i, family );
+            char familyObject = 
+                isSubMapPropertySet( i, family ) ||
+                isSubMapPropertySet( i, deadFamily );
             
             
             doublePair tilePos = getTilePos( i );

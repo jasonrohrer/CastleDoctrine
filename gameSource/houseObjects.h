@@ -48,6 +48,7 @@ int getObjectID( const char *inName );
     F(permanent), \
     F(mandatory), \
     F(family), \
+    F(deadFamily), \
     F(wife), \
     F(son), \
     F(daughter), \
