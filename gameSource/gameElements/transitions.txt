@@ -163,4 +163,7 @@ crowbar  # cat:1 => 7
 
 
 gun # wife:1 => 5
+gun # wife2:1 => 5
+
 crowbar # wife:1 => 7
+crowbar # wife2:1 => 7
