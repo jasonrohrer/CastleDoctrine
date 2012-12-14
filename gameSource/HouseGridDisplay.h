@@ -214,6 +214,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char mAllFamilyObjectsHaveExitPath;
 
+        // contains mNumMapSpots elements for family pathfinding
+        // destroyed by caller
+        char *getBlockedMap();
+        
         void checkExitPaths();
 
         // paths as allocated arrays of GridPos 

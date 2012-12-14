@@ -2425,9 +2425,7 @@ void HouseGridDisplay::setPickedTargetHighlight( int inPickedFullIndex ) {
 
 
 
-
-void HouseGridDisplay::checkExitPaths() {
-    
+char *HouseGridDisplay::getBlockedMap() {
     char *blockedMap = new char[mNumMapSpots];
     for( int i=0; i<mNumMapSpots; i++ ) {
         if( !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
@@ -2442,7 +2440,15 @@ void HouseGridDisplay::checkExitPaths() {
             blockedMap[i] = false;
             }
         }
+    return blockedMap;
+    }
 
+
+
+void HouseGridDisplay::checkExitPaths() {
+    
+    char *blockedMap = getBlockedMap();
+    
     GridPos goalPos = { mStartIndex % mFullMapD, mStartIndex / mFullMapD };
     
 

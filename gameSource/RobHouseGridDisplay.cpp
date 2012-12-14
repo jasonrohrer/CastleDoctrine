@@ -307,6 +307,70 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
 
 
+void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
+    int numPaths = mFamilyExitPaths.size();
+    for( int i=0; i<numPaths; i++ ) {
+        int progress = *( mFamilyExitPathProgress.getElement( i ) );
+        
+        GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+        
+        int status = *( mFamilyStatus.getElement( i ) );
+        
+        // still in house, alive
+        if( status == 1 ) {
+            
+            int oldIndex = posToIndex( path[progress] );
+
+            // wife and still alive
+            if( isPropertySet( mHouseMapIDs[ oldIndex ],
+                               mHouseMapCellStates[ oldIndex ], wife ) ) {
+
+                char *blockedMap = getBlockedMap();
+                
+                // make dead child location unblocked
+                // wife will walk to an adjacent square and stop
+                blockedMap[ inIndex ] = false;
+                
+                GridPos startPos = 
+                    { oldIndex % mFullMapD, oldIndex / mFullMapD };
+                
+                GridPos goalPos = 
+                    { inIndex % mFullMapD, inIndex / mFullMapD };
+
+                int numStepsToGoal;
+                GridPos *fullPath;
+                
+                char found = pathFind( mFullMapD, mFullMapD,
+                                       blockedMap, 
+                                       startPos, goalPos, 
+                                       &numStepsToGoal,
+                                       &fullPath );
+            
+                if( found && numStepsToGoal != 0 ) {
+                    delete [] *( mFamilyExitPaths.getElement( i ) );
+                    *( mFamilyExitPaths.getElement( i ) ) = fullPath;
+                    
+                    *( mFamilyExitPathLengths.getElement( i ) ) = 
+                        numStepsToGoal;
+
+                    // new path, new progress
+                    *( mFamilyExitPathProgress.getElement( i ) ) = 0;
+                    }
+                else {
+                    // no path found
+                    // keep going to exit (original path)
+                    }
+                
+                delete [] blockedMap;
+                
+                break;
+                }
+            }
+        }       
+    }
+
+
+
 void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
     if( ! areMobilesFrozen() ) {
@@ -331,8 +395,22 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                     // killed!
                     // don't move
                     
-                    // dead status
-                    *( mFamilyStatus.getElement( i ) ) = 0;
+                    if( *( mFamilyStatus.getElement( i ) ) != 0 ) {
+                        // just died
+                        
+                        if( isPropertySet( mHouseMapIDs[oldIndex],
+                                           mHouseMapCellStates[oldIndex],
+                                           son ) ||
+                            isPropertySet( mHouseMapIDs[oldIndex],
+                                           mHouseMapCellStates[oldIndex],
+                                           daughter ) ) {
+
+                            startWifeSearchForDeadChild( oldIndex );
+                            }
+
+                        // dead status
+                        *( mFamilyStatus.getElement( i ) ) = 0;
+                        }
                     }
                 else {
                     

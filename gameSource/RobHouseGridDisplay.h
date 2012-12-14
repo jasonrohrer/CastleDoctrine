@@ -110,6 +110,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         void applyCurrentTool( int inTargetFullIndex );
 
+        // instead of running to exit, wife will run to inIndex
+        // replaces her current exit path
+        void startWifeSearchForDeadChild( int inIndex );
 
         
         // override from HouseGridDisplay
