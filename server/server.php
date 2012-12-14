@@ -3294,7 +3294,7 @@ function cd_getRobberyLog() {
     
     $query = "SELECT user_id, house_user_id, ".
         "robber_name, victim_name, house_start_map, loadout, ".
-        "move_list, loot_value, wife_money, music_seed ".
+        "move_list, value_estimate, wife_money, music_seed ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
 
@@ -3339,7 +3339,7 @@ function cd_getRobberyLog() {
     echo $row[ "house_start_map" ] . "\n";    
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";
-    echo $row[ "loot_value" ] . "\n";
+    echo $row[ "value_estimate" ] . "\n";
     echo $row[ "wife_money" ] . "\n";
     echo $row[ "music_seed" ] . "\n";
     echo "OK";
