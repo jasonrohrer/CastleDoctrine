@@ -1882,7 +1882,7 @@ function cd_endEditHouse() {
     $priceArray[ 0 ] = 0;
 
     
-    // also for all possible wives/sons
+    // also for all possible wives/sons/daughters
     global $wifeList;
     foreach( $wifeList as $wife ) {
         $priceArray[ $wife ] = 0;
@@ -1890,6 +1890,10 @@ function cd_endEditHouse() {
     global $sonList;
     foreach( $sonList as $son ) {
         $priceArray[ $son ] = 0;
+        }
+    global $daughterList;
+    foreach( $daughterList as $daughter ) {
+        $priceArray[ $daughter ] = 0;
         }
     
 
@@ -2280,7 +2284,7 @@ function cd_endEditHouse() {
     // now check family exit paths
 
     // first, find all living family locations on map
-    $familyObjects = array_merge( $wifeList, $sonList );
+    $familyObjects = array_merge( $wifeList, $sonList, $daughterList );
     $familyLocations = array();
     $wife_present = 0;
     
@@ -3864,10 +3868,11 @@ function cd_newHouseForUser( $user_id ) {
     $foundName = false;
     
 
-    global $wifeList, $sonList;
+    global $wifeList, $sonList, $daughterList;
 
     $pickedWife = $wifeList[ array_rand( $wifeList, 1 ) ];
     $pickedSon = $sonList[ array_rand( $sonList, 1 ) ];
+    $pickedDaughter = $daughterList[ array_rand( $daughterList, 1 ) ];
     
     
     // default house map, 32x32 map
@@ -3898,7 +3903,7 @@ function cd_newHouseForUser( $user_id ) {
         
         "0#0#0#0#0#0#0#0#0#999#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#$pickedSon#0#$pickedWife#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#$pickedSon#0#$pickedWife#0#$pickedDaughter#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
 
         "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".

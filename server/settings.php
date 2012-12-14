@@ -138,6 +138,9 @@ $wifeList = array( 1010,
 // same for sons
 $sonList = array( 1020 );
 
+// same for daughters
+$daughterList = array( 1040 );
+
 
 
 

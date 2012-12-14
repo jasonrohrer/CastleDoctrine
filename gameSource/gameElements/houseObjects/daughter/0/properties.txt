@@ -1,0 +1,4 @@
+mandatory
+family
+daughter
+playerSeeking
