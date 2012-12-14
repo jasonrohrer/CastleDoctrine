@@ -49,6 +49,8 @@ int getObjectID( const char *inName );
     F(mandatory), \
     F(family), \
     F(wife), \
+    F(son), \
+    F(daughter), \
     F(blocking), \
     F(visionBlocking), \
     F(shadowMaking), \
