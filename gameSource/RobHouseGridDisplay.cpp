@@ -1009,13 +1009,33 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
         
         int objectID = *( mFamilyObjects.getElement( i ) );
         
-        if( status == 2 ) {
-            // escaped safely!
+        int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+
+        int progress = *( mFamilyExitPathProgress.getElement( i ) );
+
+        char standingOnMat = false;
+        
+        if( status == 1 && progress == pathLength - 1 ) {
+            standingOnMat = true;
             
+            // remove from mat
+            mHouseMapIDs[ mStartIndex ] = 0;
+            mHouseMapCellStates[ mStartIndex ] = 1;
+            }
+        
+
+
+        if( status == 2 
+            || 
+            standingOnMat ) {
+            // escaped safely!
+            // OR
+            // still alive and standing on mat
+
             // move back into empty spot in house
             // closest possible spot near door, following exit path back
 
-            int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+            
         
             GridPos *path = *( mFamilyExitPaths.getElement( i ) );
 

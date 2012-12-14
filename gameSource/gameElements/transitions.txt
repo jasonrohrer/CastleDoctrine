@@ -167,7 +167,12 @@ gun # wife2:1 => 5
 
 gun # son:1 => 5
 
+gun # daughter:1 => 5
+
+
 crowbar # wife:1 => 7
 crowbar # wife2:1 => 7
 
 crowbar # son:1 => 7
+
+crowbar # daughter:1 => 7
