@@ -125,6 +125,16 @@ class PageComponent : public GUIComponent {
         
 
 
+        // passes a waiting status from this component, up through parents,
+        // to containing GamePage
+        // Indicates whether we're in a waiting state (like waiting on 
+        // a server response) so that an appropriate indicator can be 
+        // displayed.
+        // inWaiting is true if waiting, false if done waiting.
+        virtual void setWaiting( char inWaiting );
+        
+
+
 
         SimpleVector<PageComponent*> mComponents;
         

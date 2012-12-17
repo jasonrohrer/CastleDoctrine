@@ -7,6 +7,12 @@
 
 
 
+int GamePage::sPageCount = 0;
+SpriteHandle GamePage::sWaitingSprite = NULL;
+double GamePage::sWaitingFade = 0;
+char GamePage::sWaiting = false;
+
+
 
 GamePage::GamePage()
         : PageComponent( 0, 0 ),
@@ -15,7 +21,13 @@ GamePage::GamePage()
           mStatusMessage( NULL ),
           mTipKey( NULL ),
           mTip( NULL ) {
+
+    if( sWaitingSprite == NULL ) {
+        sWaitingSprite = loadSprite( "loading.tga", true );
+        }
+    sPageCount++;
     }
+
 
 
 
@@ -25,6 +37,11 @@ GamePage::~GamePage() {
         }
     if( mTip != NULL ) {
         delete [] mTip;
+        }
+    sPageCount--;
+    if( sPageCount == 0 ) {
+        freeSprite( sWaitingSprite );
+        sWaitingSprite = NULL;
         }
     }
 
@@ -114,8 +131,39 @@ void GamePage::base_draw( doublePair inViewCenter,
         drawMessage( mTip, labelPos );
         }
 
+    if( sWaitingFade > 0 ) {
+        setDrawColor( 1, 1, 1, sWaitingFade );
+        
+        doublePair spritePos = { -8, 6 };
+        
+        drawSprite( sWaitingSprite, spritePos, 1/16.0 );
+        }
+    
     draw( inViewCenter, inViewSize );
     }
+
+
+extern double frameRateFactor;
+
+
+void GamePage::base_step() {
+    PageComponent::base_step();
+
+    if( sWaiting ) {
+        sWaitingFade += 0.05 * frameRateFactor;
+    
+        if( sWaitingFade > 1 ) {
+            sWaitingFade = 1;
+            }
+        }
+    else {
+        sWaitingFade -= 0.05 * frameRateFactor;
+        if( sWaitingFade < 0 ) {
+            sWaitingFade = 0;
+            }
+        }
+    }
+
 
 
 
@@ -144,6 +192,13 @@ void GamePage::base_makeNotActive(){
     makeNotActive();
     }
 
+
+
+
+void GamePage::setWaiting( char inWaiting ) {
+    sWaiting = inWaiting;
+    }
+    
 
 
 

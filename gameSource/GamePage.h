@@ -3,6 +3,7 @@
 
 
 #include "minorGems/game/doublePair.h"
+#include "minorGems/game/gameGraphics.h"
 
 #include "PageComponent.h"
 
@@ -40,7 +41,9 @@ class GamePage : public PageComponent {
                                 double inViewSize );
 
 
-        
+        // override to step waiting display
+        virtual void base_step();
+
         
     protected:
         
@@ -91,6 +94,9 @@ class GamePage : public PageComponent {
             };
         
 
+        // override this from PageComponent to show waiting status
+        virtual void setWaiting( char inWaiting );
+
 
         
         GamePage();
@@ -103,6 +109,11 @@ class GamePage : public PageComponent {
 
         const char *mTipKey;
         char *mTip;
+
+        static int sPageCount;
+        static SpriteHandle sWaitingSprite;
+        static double sWaitingFade;
+        static char sWaiting;
     };
 
 

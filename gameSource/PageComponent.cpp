@@ -237,3 +237,11 @@ void PageComponent::addComponent( PageComponent *inComponent ){
 
     inComponent->setParent( this );
     }
+
+
+
+void PageComponent::setWaiting( char inWaiting ) {
+    if( mParent != NULL ) {
+        mParent->setWaiting( inWaiting );
+        }
+    }
