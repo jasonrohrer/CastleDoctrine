@@ -114,27 +114,38 @@ Image *doubleImage( Image *inImage ) {
     int dW = w * 2;
     
     Image *doubledImage = new Image( dW, dH, n, false );    
+
+    double **channels = new double*[n];
+    double **dChannels = new double*[n];
+    
+    
     
 
     for( int c=0; c<n; c++ ) {
-        double *channel = inImage->getChannel( c );
-        double *dChannel = doubledImage->getChannel( c );
+        channels[c] = inImage->getChannel( c );
+        dChannels[c] = doubledImage->getChannel( c );
         
-        for( int dY=0; dY<dH; dY++ ) {
-            int y = dY / 2;
+        }    
+        
+        
+    for( int dY=0; dY<dH; dY++ ) {
+        int y = dY / 2;
+        
+        for( int dX=0; dX<dW; dX++ ) {
+            int x = dX / 2;
             
-            for( int dX=0; dX<dW; dX++ ) {
-                int x = dX / 2;
-                
-                int dI = dY * dW + dX;
-                
-                int i = y * w + x;
-                
-                dChannel[dI] = channel[i];
+            int dI = dY * dW + dX;
+            
+            int i = y * w + x;
+            
+            for( int c=0; c<n; c++ ) {
+                dChannels[c][dI] = channels[c][i];
                 }
             }
         }
     
+    delete [] channels;
+    delete [] dChannels;
     
     delete inImage;
 
@@ -280,7 +291,7 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
 
 
     if( inShadeMapTgaPath != NULL ) {
-        printf( "Trying to read shade map tga from %s\n", inShadeMapTgaPath );
+       //printf( "Trying to read shade map tga from %s\n", inShadeMapTgaPath );
         
         Image *shadeMapImage = readTGAFileBase( inShadeMapTgaPath );
         delete [] inShadeMapTgaPath;
@@ -316,7 +327,7 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
 
     int numOrientations = fullH / tileH;
     
-    printf( "  Reading %d orientations\n", numOrientations );
+    //printf( "  Reading %d orientations\n", numOrientations );
 
     for( int o=0; o<numOrientations; o++ ) {
         
@@ -489,7 +500,7 @@ static houseObjectState readState( File *inStateDir ) {
     
 
     
-    printf( "Trying to read tga from %s\n", tgaPath );
+    //printf( "Trying to read tga from %s\n", tgaPath );
 
     state.numOrientations =
         readShadeMappedSprites( tgaPath, shadeMapTgaPath, state.stateSprite );
@@ -498,7 +509,7 @@ static houseObjectState readState( File *inStateDir ) {
 
     if( behindTgaPath != NULL ) {
         
-        printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
+        //printf( "Trying to read behind-image tga from %s\n", behindTgaPath );
 
         int numOrientationsPresent = 
             readShadeMappedSprites( behindTgaPath, behindShadeMapTgaPath, 
@@ -517,7 +528,7 @@ static houseObjectState readState( File *inStateDir ) {
 
     if( underTgaPath != NULL ) {
         
-        printf( "Trying to read under-image tga from %s\n", underTgaPath );
+        //printf( "Trying to read under-image tga from %s\n", underTgaPath );
 
         int numOrientationsPresent = 
             readShadeMappedSprites( underTgaPath, underShadeMapTgaPath, 

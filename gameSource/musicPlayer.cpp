@@ -641,8 +641,15 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
 // actually, this is way too many:  it takes forever to compute
 // use a lower limit instead
 // This produces fine results (almost perfect square wave)
-int nLimit = 40;
+#define nLimit 40
 
+double sumCoefficients[nLimit];
+
+void initSumCoefficients() {
+    for( int n=1; n<nLimit; n++ ) {
+        sumCoefficients[n] = 1.0/n;
+        }
+    }
 
 
 // square wave with period of 2pi
@@ -650,7 +657,7 @@ double squareWave( double inT ) {
     double sum = 0;
     
     for( int n=1; n<nLimit; n+=2 ) {
-        sum += 1.0/n * sin( n * inT );
+        sum += sumCoefficients[n] * sin( n * inT );
         }
     return sum;
     }
@@ -662,7 +669,7 @@ double sawWave( double inT ) {
     double sum = 0;
     
     for( int n=1; n<nLimit; n++ ) {
-        sum += 1.0/n * sin( n * inT );
+        sum += sumCoefficients[n] * sin( n * inT );
         }
     return sum;
     }
@@ -1113,7 +1120,8 @@ void setDefaultMusicSounds() {
 
 
 void initMusicPlayer() {
-
+    
+    initSumCoefficients();
 
     /*
     // test for profiler
