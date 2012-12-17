@@ -119,6 +119,7 @@ startRobHouse "Rob House"
 listRobberyReplays "View Security Tapes"
 startProofReplay "View House Self-Test"
 
+emptyList "None found."
 
 robPickListTip "%d tried to rob %s house.  %d died trying"
 

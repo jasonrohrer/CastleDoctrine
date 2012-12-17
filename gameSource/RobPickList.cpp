@@ -481,6 +481,20 @@ void RobPickList::draw() {
             altColor = ! altColor;
             }
         }
+
+    if( mHouseList.size() == 0 && mWebRequest == -1 ) {
+        // request done, and list still empty
+        
+        // empty list back from server.
+
+        setDrawColor( 1, 1, 1, 1 );
+
+        doublePair drawPos = { 0, 0 };
+        
+        mainFont->drawString( translate( "emptyList" ), drawPos, alignCenter );
+        }
+    
+        
     }
 
 
