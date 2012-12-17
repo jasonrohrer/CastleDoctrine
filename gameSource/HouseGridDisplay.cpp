@@ -1259,6 +1259,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 else if( ( highlightPick == 0 && houseTile != 0 ) || 
                          ( highlightPick != 0 && 
                            houseTile == highlightPick ) || 
+                         isSubMapPropertySet( i, family ) ||
                          houseTile == GOAL_ID ) {
                     
                     // darken existing tile to imply removal on click
