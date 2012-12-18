@@ -111,7 +111,15 @@ class GamePage : public PageComponent {
         char *mTip;
 
         static int sPageCount;
-        static SpriteHandle sWaitingSprite;
+
+        static SpriteHandle sWaitingSprites[3];
+        static int sCurrentWaitingSprite;
+        static int sLastWaitingSprite;
+        static int sWaitingSpriteDirection;
+        static double sCurrentWaitingSpriteFade;
+        
+        
+
         static double sWaitingFade;
         static char sWaiting;
     };
