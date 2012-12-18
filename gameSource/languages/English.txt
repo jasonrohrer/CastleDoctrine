@@ -149,6 +149,9 @@ doneStale "Okay"
 leave "Leave"
 
 
+musicOff "Turn music off"
+musicOn "Turn music on"
+
 
 killedBy "You were killed by:"
 

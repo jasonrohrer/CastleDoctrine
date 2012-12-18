@@ -114,6 +114,7 @@ int screenW, screenH;
 
 float mouseSpeed;
 
+char musicOff;
 
 
 
@@ -193,16 +194,18 @@ static int stepsBetweenDeleteRepeat;
 
 
 static const char *customDataFormatWriteString = 
-    "version%d_mouseSpeed%f_downloadCode%s_email%s";
+    "version%d_mouseSpeed%f_musicOff%d_downloadCode%s_email%s";
 
 static const char *customDataFormatReadString = 
-    "version%d_mouseSpeed%f_downloadCode%10s_email%99s";
+    "version%d_mouseSpeed%f_musicOff%d_downloadCode%10s_email%99s";
 
 
 char *getCustomRecordedGameData() {    
     
     float mouseSpeedSetting = 
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
+    int musicOffSetting = 
+        SettingsManager::getIntSetting( "musicOff", 0 );
     
     char *email =
         SettingsManager::getStringSetting( "email" );
@@ -243,7 +246,7 @@ char *getCustomRecordedGameData() {
 
     char * result = autoSprintf(
         customDataFormatWriteString,
-        versionNumber, mouseSpeedSetting, code, email );
+        versionNumber, mouseSpeedSetting, musicOffSetting, code, email );
 
     delete [] email;
     delete [] code;
@@ -296,8 +299,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     unlockAudio();
 
-    setMusicLoudness( 1.0 );
-    setSoundPlaying( true );
+    
 
 
 
@@ -355,6 +357,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     float mouseSpeedSetting = 1.0f;
+    
+    int musicOffSetting = 0;
 
     userEmail = new char[100];
     downloadCode = new char[11];
@@ -365,9 +369,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           customDataFormatReadString, 
                           &readVersionNumber,
                           &mouseSpeedSetting, 
+                          &musicOffSetting,
                           downloadCode,
                           userEmail );
-    if( numRead != 4 ) {
+    if( numRead != 5 ) {
         // no recorded game?
         }
     else {
@@ -411,7 +416,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     mouseSpeed = mouseParam * inWidth / viewWidth;
 
-
+    musicOff = musicOffSetting;
 
     reflectorURL = SettingsManager::getStringSetting( "reflectorURL" );
 
@@ -458,6 +463,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     currentGamePage->base_makeActive( true );
 
 
+
+    if( musicOff ) {
+        setMusicLoudness( 0 );
+        }
+    else {
+        setMusicLoudness( 1.0 );
+        }
+    setSoundPlaying( true );
     }
 
 
@@ -938,7 +951,9 @@ void drawFrame( char inUpdate ) {
             currentGamePage->base_makeActive( false );
             }
         // fade music in
-        setMusicLoudness( 1.0 );
+        if( ! musicOff ) {
+            setMusicLoudness( 1.0 );
+            }
         wasPaused = false;
         }
     

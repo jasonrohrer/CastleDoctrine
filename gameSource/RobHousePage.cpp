@@ -3,12 +3,14 @@
 #include "message.h"
 
 #include "seededMusic.h"
+#include "musicPlayer.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 #include "minorGems/game/drawUtils.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 
 
 
@@ -20,12 +22,14 @@ extern char *serverURL;
 
 extern int userID;
 
+extern int musicOff;
 
 
 RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( inDoneButtonKey ) ),
+          mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDoneButtonKey( inDoneButtonKey ),
@@ -35,7 +39,7 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
     addComponent( &mDoneButton );
     addComponent( &mGallery );
     addComponent( &mGridDisplay );
-
+    addComponent( &mMusicToggleButton );
 
     mGallery.setAllowEdit( false );
     
@@ -43,7 +47,11 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
     mDoneButton.setMouseOverTip( "" );
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
+    mMusicToggleButton.addActionListener( this );
 
+    mMusicToggleButton.setMouseOverTip( translate( "musicOff" ) );
+    mMusicToggleButton.setMouseOverTipB( translate( "musicOn" ) );
+    
 
     doublePair slotCenter = { 7.25, 4 };
 
@@ -162,6 +170,17 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         clearNotes();
         }
+    else if( inTarget == &mMusicToggleButton ) {
+        musicOff = mMusicToggleButton.getToggled();
+        
+        if( musicOff ) {
+            setMusicLoudness( 0 );
+            }
+        else {
+            setMusicLoudness( 1 );
+            }
+        SettingsManager::setSetting( "musicOff", musicOff );
+        }
     else if( inTarget == &mGridDisplay ) {
         mGallery.fadeOut( mGridDisplay.getAboutToLeave() );
 
@@ -276,6 +295,8 @@ void RobHousePage::makeActive( char inFresh ) {
 
     
     setMusicFromSeed( mMusicSeed );
+
+    mMusicToggleButton.setToggled( musicOff );
     }
 
 

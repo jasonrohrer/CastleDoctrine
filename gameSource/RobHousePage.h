@@ -3,6 +3,9 @@
 #include "TextField.h"
 #include "TextButton.h"
 
+#include "SpriteToggleButton.h"
+
+
 #include "RobHouseGridDisplay.h"
 
 #include "Gallery.h"
@@ -89,6 +92,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
         
+        SpriteToggleButton mMusicToggleButton;
+
         Gallery mGallery;
         
         int mMusicSeed;
