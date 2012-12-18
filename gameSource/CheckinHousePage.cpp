@@ -201,6 +201,10 @@ void CheckinHousePage::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
+        
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
 
         switch( stepResult ) {
             case 0:
@@ -290,6 +294,8 @@ void CheckinHousePage::makeActive( char inFresh ) {
 
     mMenuButton.setVisible( false );
     mStartOverButton.setVisible( false );
+    
+    setWaiting( true );
     }
 
 

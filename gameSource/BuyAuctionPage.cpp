@@ -104,6 +104,10 @@ void BuyAuctionPage::step() {
             
         int stepResult = stepWebRequest( mWebRequest );
 
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
+
         switch( stepResult ) {
             case 0:
                 break;
@@ -238,6 +242,8 @@ void BuyAuctionPage::makeActive( char inFresh ) {
     mHomeButton.setVisible( false );
     
     mBoughtSlot.setVisible( false );
+
+    setWaiting( true );
     }
 
 

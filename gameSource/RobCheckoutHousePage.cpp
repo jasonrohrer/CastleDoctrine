@@ -145,7 +145,11 @@ void RobCheckoutHousePage::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
-                
+        
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
+
         switch( stepResult ) {
             case 0:
                 break;
@@ -270,5 +274,7 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
     mStatusMessageKey = NULL;
 
     mReturnToMenu = false;
+    
+    setWaiting( true );
     }
 

@@ -238,6 +238,8 @@ void LoginPage::step() {
                                         fullRequestURL );
 
                                 delete [] fullRequestURL;
+                                
+                                setWaiting( true );
                                 }
                             else {
                                 // doesn't end with OK
@@ -264,6 +266,10 @@ void LoginPage::step() {
 
             if( mRequestSteps > minRequestSteps ) {
                 
+                if( result != 0 ) {
+                    setWaiting( false );
+                    }
+
                 switch( result ) {
                     case 0:
                         break;
@@ -418,6 +424,8 @@ void LoginPage::startLogin( char inFreshLogin ) {
 
     mStatusError = false;
     mStatusMessageKey = "loginMessage";
+
+    setWaiting( true );
     }
 
 

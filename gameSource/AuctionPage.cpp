@@ -281,6 +281,10 @@ void AuctionPage::step() {
             
         int stepResult = stepWebRequest( mWebRequest );
     
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
+
         switch( stepResult ) {
             case 0:
                 break;
@@ -549,6 +553,8 @@ void AuctionPage::refreshPrices() {
 
 
     delete [] actionString;
+
+    setWaiting( true );
     }
 
 

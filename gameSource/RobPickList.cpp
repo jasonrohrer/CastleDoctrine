@@ -156,6 +156,8 @@ void RobPickList::refreshList( char inPreserveSearch,
 
     // nothing selected now (so selection might have changed)
     fireActionPerformed( this );
+    
+    setWaiting( true );
     }
 
 
@@ -238,7 +240,11 @@ void RobPickList::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
-              
+        
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
+
         mProgressiveDrawSteps = 0;
         
         switch( stepResult ) {

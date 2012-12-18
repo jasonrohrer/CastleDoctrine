@@ -173,6 +173,10 @@ void RobCheckinHousePage::step() {
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
+        
+        if( stepResult != 0 ) {
+            setWaiting( false );
+            }
 
         switch( stepResult ) {
             case 0:
@@ -388,6 +392,9 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         }
 
     mGalleryDisplay.clearObjects();
+
+
+    setWaiting( true );
     }
 
 
