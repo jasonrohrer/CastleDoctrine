@@ -1,6 +1,7 @@
 #include "GamePage.h"
 
 #include "TextButton.h"
+#include "SpriteToggleButton.h"
 
 #include "ReplayRobHouseGridDisplay.h"
 #include "FetchRobberyReplayPage.h"
@@ -50,7 +51,8 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
 
         ReplayRobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
-        
+        SpriteToggleButton mMusicToggleButton;
+
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
 
         

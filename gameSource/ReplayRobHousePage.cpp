@@ -3,12 +3,14 @@
 
 #include "message.h"
 #include "seededMusic.h"
+#include "musicPlayer.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 #include "minorGems/game/drawUtils.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 
 
 extern Font *mainFont;
@@ -18,6 +20,7 @@ extern char *serverURL;
 
 extern int userID;
 
+extern int musicOff;
 
 
 ReplayRobHousePage::ReplayRobHousePage() 
@@ -25,15 +28,22 @@ ReplayRobHousePage::ReplayRobHousePage()
           mMusicSeed( 0 ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
+          mMusicToggleButton( "musicOn.tga", "musicOff.tga", 8, -3, 1/16.0 ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
+    addComponent( &mMusicToggleButton );
+
 
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
+    mMusicToggleButton.addActionListener( this );
 
     mDoneButton.setMouseOverTip( "" );
+
+    mMusicToggleButton.setMouseOverTip( translate( "musicOff" ) );
+    mMusicToggleButton.setMouseOverTipB( translate( "musicOn" ) );
 
     
     doublePair slotCenter = { 7.25, 4 };
@@ -103,6 +113,17 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mDoneButton ) {
         mDone = true;
         clearNotes();
+        }
+    else if( inTarget == &mMusicToggleButton ) {
+        musicOff = mMusicToggleButton.getToggled();
+        
+        if( musicOff ) {
+            setMusicLoudness( 0 );
+            }
+        else {
+            setMusicLoudness( 1 );
+            }
+        SettingsManager::setSetting( "musicOff", musicOff );
         }
     else if( inTarget == &mGridDisplay ) {
         if( mGridDisplay.getSuccess() ) {
@@ -204,6 +225,8 @@ void ReplayRobHousePage::makeActive( char inFresh ) {
     mDone = false;
     
     setMusicFromSeed( mMusicSeed );
+    
+    mMusicToggleButton.setToggled( musicOff );
     }
         
 
