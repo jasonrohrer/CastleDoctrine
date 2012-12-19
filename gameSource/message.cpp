@@ -12,17 +12,17 @@ extern Font *mainFont;
 
 
 void drawMessage( const char *inTranslationKey, doublePair inCenter,
-                  char inRed ) {
+                  char inRed, double inFade ) {
 
     const char *inMessage = translate( inTranslationKey );
     
     
 
     if( inRed ) {
-        setDrawColor( 1, 0, 0, 1 );
+        setDrawColor( 1, 0, 0, inFade );
         }
     else {
-        setDrawColor( 1, 1, 1, 1 );
+        setDrawColor( 1, 1, 1, inFade );
         }
     
 

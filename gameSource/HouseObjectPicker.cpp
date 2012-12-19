@@ -484,6 +484,10 @@ void HouseObjectPicker::pointerMove( float inX, float inY ) {
         mHover = true;
         }
     else {
+        if( mHover ) {
+            // hover just left
+            setToolTip( NULL );
+            }
         mHover = false;
         }
     }
@@ -496,6 +500,10 @@ void HouseObjectPicker::pointerDrag( float inX, float inY ) {
         triggerToolTip();
         }
     else {
+        if( mDragOver ) {
+            // drag just left
+            setToolTip( NULL );
+            }
         mDragOver = false;
         }
     mHover = false;

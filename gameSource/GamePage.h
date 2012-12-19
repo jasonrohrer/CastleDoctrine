@@ -109,6 +109,8 @@ class GamePage : public PageComponent {
         
 
         char *mTip;
+        char *mLastTip;
+        double mLastTipFade;
 
         static int sPageCount;
 

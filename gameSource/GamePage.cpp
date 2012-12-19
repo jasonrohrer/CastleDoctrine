@@ -25,7 +25,9 @@ GamePage::GamePage()
           mStatusError( false ),
           mStatusMessageKey( NULL ),
           mStatusMessage( NULL ),
-          mTip( NULL ) {
+          mTip( NULL ),
+          mLastTip( NULL ),
+          mLastTipFade( 1 ) {
 
     if( sWaitingSprites[0] == NULL ) {
         sWaitingSprites[0] = loadSprite( "loading.tga", true );
@@ -45,6 +47,10 @@ GamePage::~GamePage() {
     if( mTip != NULL ) {
         delete [] mTip;
         }
+    if( mLastTip != NULL ) {
+        delete [] mLastTip;
+        }
+    
     sPageCount--;
     if( sPageCount == 0 ) {
         freeSprite( sWaitingSprites[0] );
@@ -89,10 +95,24 @@ void GamePage::setStatusDirect( char *inStatusMessage, char inError ) {
 
 
 void GamePage::setToolTip( const char *inTip ) {
-    if( mTip != NULL ) {
+    if( mTip != NULL && inTip == NULL ) {
+        // tip disappearing, save it as mLastTip
+        if( mLastTip != NULL ) {
+            delete [] mLastTip;
+            }
+        mLastTip = mTip;
+        mLastTipFade = 1.0;
+        }
+    else if( mTip != NULL ) {
         delete [] mTip;
         }
-    mTip = stringDuplicate( inTip );
+        
+    if( inTip != NULL ) {
+        mTip = stringDuplicate( inTip );
+        }
+    else {
+        mTip = NULL;
+        }
     }
 
 
@@ -121,7 +141,12 @@ void GamePage::base_draw( doublePair inViewCenter,
         
         drawMessage( mTip, labelPos );
         }
-
+    else if( mLastTip != NULL && mLastTipFade > 0 ) {
+        doublePair labelPos = { 0, -7 };
+        
+        drawMessage( mLastTip, labelPos, false, mLastTipFade );
+        }
+    
     if( sWaitingFade > 0 ) {
         
         doublePair spritePos = { 9.25, 7 };
@@ -151,6 +176,13 @@ extern double frameRateFactor;
 
 void GamePage::base_step() {
     PageComponent::base_step();
+
+
+    mLastTipFade -= 0.025 * frameRateFactor;
+    if( mLastTipFade < 0 ) {
+        mLastTipFade = 0;
+        }
+    
 
     if( sWaiting ) {
         sWaitingFade += 0.05 * frameRateFactor;

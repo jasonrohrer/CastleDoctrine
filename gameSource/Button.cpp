@@ -132,6 +132,10 @@ void Button::pointerMove( float inX, float inY ) {
             }
         }
     else {
+        if( mHover ) {
+            // just hovered out
+            setToolTip( NULL );
+            }
         mHover = false;
         }
     }
@@ -151,6 +155,10 @@ void Button::pointerDrag( float inX, float inY ) {
             }
         }
     else {
+        if( mDragOver ) {
+            // just dragged out
+            setToolTip( NULL );
+            }
         mDragOver = false;
         }
     mHover = false;

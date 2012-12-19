@@ -1502,6 +1502,8 @@ void HouseGridDisplay::draw() {
 
 
 void HouseGridDisplay::pointerOver( float inX, float inY ) {
+    int oldHighlightIndex = mHighlightIndex;
+    
     mHighlightIndex = getTileIndex( inX, inY );
 
     if( mHighlightIndex != -1 ) {
@@ -1555,6 +1557,10 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
             }
         
         delete [] nonMobileDescription;
+        }
+    else if( oldHighlightIndex != -1 ) {
+        // just moved off grid
+        setToolTip( NULL );
         }
     }
 

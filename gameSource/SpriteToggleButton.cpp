@@ -34,6 +34,9 @@ SpriteToggleButton::~SpriteToggleButton() {
     if( mShouldDestroySpriteB ) {
         freeSprite( mSpriteB );
         }
+    if( mMouseOverTipB != NULL ) {
+        delete [] mMouseOverTipB;
+        }
     }
 
 
