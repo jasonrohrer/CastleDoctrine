@@ -250,6 +250,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
                                  int inTileID, int inTileState );
         
         
+        char mPointerInside;
+        
         virtual void pointerOver( float inX, float inY );
 
 

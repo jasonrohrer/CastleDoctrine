@@ -64,6 +64,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mMandatoryNeedsPlacing( false ),
           mMandatoryToPlaceID( -1 ),
           mAllFamilyObjectsHaveExitPath( false ),
+          mPointerInside( false ),
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
@@ -1502,12 +1503,11 @@ void HouseGridDisplay::draw() {
 
 
 void HouseGridDisplay::pointerOver( float inX, float inY ) {
-    int oldHighlightIndex = mHighlightIndex;
-    
     mHighlightIndex = getTileIndex( inX, inY );
 
     if( mHighlightIndex != -1 ) {
-
+        mPointerInside = true;
+        
         int fullI = subToFull( mHighlightIndex );
         
         
@@ -1558,9 +1558,11 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
         
         delete [] nonMobileDescription;
         }
-    else if( oldHighlightIndex != -1 ) {
+    else if( mPointerInside ) {
         // just moved off grid
         setToolTip( NULL );
+        
+        mPointerInside = false;
         }
     }
 

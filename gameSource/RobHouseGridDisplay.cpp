@@ -750,9 +750,13 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
 
 void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
     
+    int overIndex = getTileIndex( inX, inY );
+    
+
     // don't show tool tips for invisible tiles (shrouded)
     // or during blackout after robber hits goal
-    if( mTileVisbleMap[ getTileIndex( inX, inY ) ] 
+    if( overIndex != -1 && 
+        mTileVisbleMap[ overIndex ] 
         &&
         mRobberIndex != mGoalIndex ) {
 
@@ -762,6 +766,15 @@ void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
         // but override so that highlight is never shown
         mHighlightIndex = -1;
         }
+    else if( mPointerInside ) {
+        // pointer just left visible region
+        setToolTip( NULL );
+        
+        mPointerInside = false;
+        }
+    
+        
+        
     }
 
 
