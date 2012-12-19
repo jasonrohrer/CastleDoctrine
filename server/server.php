@@ -1786,8 +1786,9 @@ function cd_endEditHouse() {
 
     // different from move_list in endRobHouse, because tW@X moves (tool use)
     // aren't allowed
+    // also, no valid self test ends with L (leaving house)
     $self_test_move_list =
-        cd_requestFilter( "self_test_move_list", "/[m0-9#]+/" );
+        cd_requestFilter( "self_test_move_list", "/[m0-9#S]+/" );
 
     
     $died = cd_requestFilter( "died", "/[01]/" );
@@ -2802,7 +2803,7 @@ function cd_endRobHouse() {
 
 
 
-    $move_list = cd_requestFilter( "move_list", "/[mt0-9@#]+/" );
+    $move_list = cd_requestFilter( "move_list", "/[mt0-9@#LS]+/" );
     
 
     // make sure tools used in move_list agrees with change to backpack

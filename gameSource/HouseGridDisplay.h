@@ -126,6 +126,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
     protected:
         HouseObjectPicker *mPicker;
 
+        char mHideRobber;
+
         int mRobberIndex;
         int mRobberState;
         int mRobberOrientation;
@@ -177,6 +179,11 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
             };
         
 
+        // for when robber should not be drawn 
+        virtual void hideRobber( char inHidden ) {
+            mHideRobber = inHidden;
+            }
+        
         
         char isSubMapPropertySet( int inSubCellIndex, propertyID inProperty );
 

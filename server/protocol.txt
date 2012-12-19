@@ -359,10 +359,19 @@ List of moves separated by # where a move is either:
 mX   (where X is the index of move destination)
 or
 tW@X (where W is the tool ID and X is the index of the tool target)
+or
+L (if the robber leaves the house)
+or
+S (if the robber commits suicide)
 
-move_list example:
+move_list examples:
 
-m328#m329#m297#t500@298#m297
+m328#m329#m297#t500@298#m297    (reaches vault at spot 297)
+
+m513#514#515#514#513#512#L   (turns around and leaves)
+
+m513#514#515#S       (walks a few steps in and then commits suicide)
+
 
 
 stuff_taken is an ASCII encoded quantity list (see vault_contents for 

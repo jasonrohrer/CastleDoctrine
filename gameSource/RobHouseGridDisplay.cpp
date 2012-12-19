@@ -134,6 +134,11 @@ char *RobHouseGridDisplay::getMoveList() {
         return stringDuplicate( "#" );
         }
     
+    if( mSuccess == 0 && ! mDead ) {
+        // must have committed suicide
+        mMoveList.push_back( stringDuplicate( "S" ) );
+        }
+
     char **moveArray = mMoveList.getElementArray();
     
     char *moveString = join( moveArray, mMoveList.size(), "#" );
@@ -861,6 +866,8 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 void RobHouseGridDisplay::robberTriedToLeave() {
     mSuccess = 2;
     processFamilyAtEnd();
+
+    mMoveList.push_back( stringDuplicate( "L" ) );
 
     fireActionPerformed( this );
     }

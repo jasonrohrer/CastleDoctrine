@@ -102,6 +102,8 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     mPlayButton.setVisible( true );
     mStopButton.setVisible( false );
     mRestartButton.setVisible( false );
+
+    hideRobber( false );
     }
 
 
@@ -197,6 +199,14 @@ void ReplayRobHouseGridDisplay::takeStep() {
 
                     shouldDeleteMove = true;
                     }
+                }
+            else if( move[0] == 'L' ) {
+                hideRobber( true );
+                shouldDeleteMove = true;
+                }
+            else if( move[0] == 'S' ) {
+                mRobberState = 99;
+                shouldDeleteMove = true;
                 }
             }
 

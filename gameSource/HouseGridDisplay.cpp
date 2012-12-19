@@ -41,6 +41,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
                                     HouseObjectPicker *inPicker )
         : PageComponent( inX, inY ),
           mPicker( inPicker ),
+          mHideRobber( false ),
           mWifeMoney( 0 ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
@@ -936,6 +937,10 @@ void HouseGridDisplay::drawDropShadow( doublePair inPosition ) {
 
 
 void HouseGridDisplay::drawRobber( doublePair inPosition ) {
+    if( mHideRobber ) {
+        return;
+        }
+
     if( ! isPropertySet( PLAYER_ID, mRobberState, noDropShadow ) ) {
         // first drop shadow
         drawDropShadow( inPosition );
