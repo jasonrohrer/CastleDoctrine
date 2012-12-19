@@ -25,7 +25,6 @@ GamePage::GamePage()
           mStatusError( false ),
           mStatusMessageKey( NULL ),
           mStatusMessage( NULL ),
-          mTipKey( NULL ),
           mTip( NULL ) {
 
     if( sWaitingSprites[0] == NULL ) {
@@ -89,29 +88,13 @@ void GamePage::setStatusDirect( char *inStatusMessage, char inError ) {
 
 
 
-void GamePage::setToolTip( const char *inTipKey ) {
-    mTipKey = inTipKey;
-
+void GamePage::setToolTip( const char *inTip ) {
     if( mTip != NULL ) {
         delete [] mTip;
-        mTip = NULL;
         }
+    mTip = stringDuplicate( inTip );
     }
 
-
-
-void GamePage::setToolTipDirect( const char *inTip ) {
-    if( mTip != NULL ) {
-        delete [] mTip;
-        mTip = NULL;
-        }
-    
-    if( inTip != NULL ) {
-        mTip = stringDuplicate( inTip );
-        
-        mTipKey = NULL;
-        }
-    }
 
 
 
@@ -133,12 +116,7 @@ void GamePage::base_draw( doublePair inViewCenter,
         }
 
 
-    if( mTipKey != NULL ) {
-        doublePair labelPos = { 0, -7 };
-        
-        drawMessage( mTipKey, labelPos );
-        }
-    else if( mTip != NULL ) {
+    if( mTip != NULL ) {
         doublePair labelPos = { 0, -7 };
         
         drawMessage( mTip, labelPos );

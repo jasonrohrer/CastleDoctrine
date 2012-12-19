@@ -1546,12 +1546,12 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
             char *tip = autoSprintf( "%s  /  %s",
                                      nonMobileDescription, mobileDescription );
             
-            setToolTipDirect( tip );
+            setToolTip( tip );
             
             delete [] tip;
             }
         else {
-            setToolTipDirect( (char*)nonMobileDescription );
+            setToolTip( nonMobileDescription );
             }
         
         delete [] nonMobileDescription;

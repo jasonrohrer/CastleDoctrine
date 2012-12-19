@@ -24,17 +24,9 @@ void PageComponent::setParent( PageComponent *inParent ) {
 
 
 
-void PageComponent::setToolTip( const char *inTipKey ) {
+void PageComponent::setToolTip( const char *inTip ) {
     if( mParent != NULL ) {
-        mParent->setToolTip( inTipKey );
-        }
-    }
-
-
-        
-void PageComponent::setToolTipDirect( const char *inTipMessage ) {
-    if( mParent != NULL ) {
-        mParent->setToolTipDirect( inTipMessage );
+        mParent->setToolTip( inTip );
         }
     }
 

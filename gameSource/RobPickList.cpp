@@ -587,7 +587,7 @@ void RobPickList::setTip( HouseRecord *inRecord ) {
         delete [] possessiveName;
         }
         
-    setToolTipDirect( tip );
+    setToolTip( tip );
 
     delete [] tip;
     }

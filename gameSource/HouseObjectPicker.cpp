@@ -115,14 +115,12 @@ HouseObjectPicker::~HouseObjectPicker() {
 
 void HouseObjectPicker::triggerToolTip() {
     if( mShowTools ) {
-        setToolTipDirect( 
-            (char *)getToolDescription( 
-                mObjectList.getElement( mSelectedIndex )->id ) );
+        setToolTip( getToolDescription( 
+                        mObjectList.getElement( mSelectedIndex )->id ) );
         }
     else {    
-        setToolTipDirect( 
-            (char *)getObjectDescription( 
-                mObjectList.getElement( mSelectedIndex )->id, 0 ) );
+        setToolTip( getObjectDescription( 
+                        mObjectList.getElement( mSelectedIndex )->id, 0 ) );
         }
     }
 

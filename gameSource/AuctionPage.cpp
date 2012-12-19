@@ -194,7 +194,7 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
         }    
     else if( inTarget == &mUpdateButton ) {
         mUpdateButton.setVisible( false );
-        setToolTipDirect( "" );
+        setToolTip( "" );
         refreshPrices();
         
         // keep house checked out as long as user is still actively

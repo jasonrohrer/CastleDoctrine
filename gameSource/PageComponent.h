@@ -23,11 +23,10 @@ class PageComponent : public GUIComponent {
 
         // default implementations pass tool tip up to parent
 
-        virtual void setToolTip( const char *inTipKey );
-        
-        // inTipMessage destroyed by caller
-        virtual void setToolTipDirect( const char *inTipMessage );
 
+        // inTip destroyed by caller
+        virtual void setToolTip( const char *inTip );
+        
         
         virtual void setVisible( char inIsVible ) {
             mVisible = inIsVible;

@@ -128,7 +128,7 @@ void Button::pointerMove( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         mHover = true;
         if( mMouseOverTip != NULL ) {
-            setToolTipDirect( (char*)mMouseOverTip );
+            setToolTip( mMouseOverTip );
             }
         }
     else {
@@ -147,7 +147,7 @@ void Button::pointerDrag( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         mDragOver = true;
         if( mMouseOverTip != NULL ) {
-            setToolTipDirect( (char*)mMouseOverTip );
+            setToolTip( mMouseOverTip );
             }
         }
     else {
@@ -162,7 +162,7 @@ void Button::pointerUp( float inX, float inY ) {
     mDragOver = false;
     if( isInside( inX, inY ) ) {
         mHover = true;
-        setToolTipDirect( "" );
+        setToolTip( "" );
         fireActionPerformed( this );
         }
     }        

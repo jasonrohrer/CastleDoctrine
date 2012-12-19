@@ -289,7 +289,7 @@ void RobHousePage::makeActive( char inFresh ) {
     mDoneButton.setLabelText( translate( mDoneButtonKey ) );
 
     // no tool tip
-    setToolTipDirect( NULL );
+    setToolTip( NULL );
 
 
 

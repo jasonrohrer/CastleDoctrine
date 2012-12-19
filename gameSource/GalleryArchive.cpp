@@ -169,7 +169,7 @@ char GalleryArchive::isVisible() {
 void GalleryArchive::triggerToolTip() {
     
     if( mSelectedIndex != -1 ) {
-        setToolTipDirect( 
+        setToolTip( 
             getGalleryObjectDescription( 
                 *( mObjectList.getElement( mSelectedIndex ) ) ) );
         

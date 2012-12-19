@@ -72,7 +72,7 @@ void SpriteToggleButton::pointerUp( float inX, float inY ) {
     Button::pointerUp( inX, inY );
 
     // but keep tool tip displayed
-    setToolTipDirect( (char*)mMouseOverTip );
+    setToolTip( mMouseOverTip );
     }        
 
 
