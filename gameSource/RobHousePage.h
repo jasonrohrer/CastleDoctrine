@@ -80,6 +80,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
+        virtual void step();
+        
         virtual void draw( doublePair inViewCenter, 
                    double inViewSize );
 

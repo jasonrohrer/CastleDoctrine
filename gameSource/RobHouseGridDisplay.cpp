@@ -33,6 +33,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mDead( false ),
           mDeathSourceID( -1 ),
           mDeathSourceState( 1 ),
+          mLeaveDisplayCanBeShown( true ),
           mLeaveSprite( loadSprite( "left.tga" ) ),
           mCurrentTool( -1 ),
           mToolJustUsed( false ),
@@ -698,7 +699,7 @@ void RobHouseGridDisplay::draw() {
     disableScissor();
 
 
-    if( mRobberIndex == mStartIndex ) {
+    if( mLeaveDisplayCanBeShown && mRobberIndex == mStartIndex ) {
         doublePair startPos = getTilePosFull( mStartIndex );
         
         startPos.x -= 1;

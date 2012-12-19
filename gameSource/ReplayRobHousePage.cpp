@@ -68,6 +68,10 @@ ReplayRobHousePage::ReplayRobHousePage()
         slotCenter.y = 4;
         slotCenter.x += 1.5;
         }
+
+    // never show Leave indicator, because it can overlap with
+    // playback control buttons
+    mGridDisplay.setLeaveCanBeShown( false );
     }
 
 

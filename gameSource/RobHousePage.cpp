@@ -301,8 +301,16 @@ void RobHousePage::makeActive( char inFresh ) {
 
 
 
+
+void RobHousePage::step() {
+    mGridDisplay.setLeaveCanBeShown( ! mGallery.isVisible() );
+    }
+
+
+
+
 void RobHousePage::draw( doublePair inViewCenter, 
-                               double inViewSize ) {
+                         double inViewSize ) {
      
     if( mDescription != NULL ) {
         doublePair labelPos = { 0, 6.75 };

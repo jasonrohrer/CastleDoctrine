@@ -55,7 +55,12 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         // override to shift visibility map too
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
-
+        
+        // toggles whether leave display can be shown
+        virtual void setLeaveCanBeShown( char inCanBeShown ) {
+            mLeaveDisplayCanBeShown = inCanBeShown;
+            }
+        
 
         virtual void draw();
 
@@ -73,6 +78,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mDeathSourceID;
         char mDeathSourceState;
 
+        char mLeaveDisplayCanBeShown;
         SpriteHandle mLeaveSprite;
 
         int mCurrentTool;
