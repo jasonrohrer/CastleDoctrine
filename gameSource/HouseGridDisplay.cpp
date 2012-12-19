@@ -1651,9 +1651,10 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
 
             // placement of floor is always drag-place
             if( mPlaceOnDrag &&
-                ( mPointerDownObjectID == 0 ||
-                  old != mPointerDownObjectID &&
-                  oldMobile != mPointerDownObjectID ) ) {
+                ( mPointerDownObjectID == 0 
+                  ||
+                  ( old != mPointerDownObjectID &&
+                    oldMobile != mPointerDownObjectID ) ) ) {
                 
                 // drag-place
                 if( mAllowPlacement ) {
@@ -1773,8 +1774,9 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
             int picked = mPicker->getSelectedObject();
             
             // floor placement always counts as place mode
-            if( picked == 0 ||
-                old != picked && oldMobile != picked ) {
+            if( picked == 0 
+                ||
+                ( old != picked && oldMobile != picked ) ) {
                 // place mode (or replace mode)
                 if( mAllowPlacement ) {
                     mHouseSubMapIDs[ index ] = picked;
