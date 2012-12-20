@@ -1063,9 +1063,8 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
             // start one step away from door
             int pathSpot = pathLength - 2;
             
-            if( pathLength < 3 ) {
-                pathSpot = pathLength - 1;
-                }
+            // pathSpot might be 0, which is okay if path is too short
+            // catch that case below
 
             char found = false;
 
@@ -1087,7 +1086,7 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
                 
                 // search columns backward away from door
                 
-                for( int x=0; x<mFullMapD; x++ ) {
+                for( int x=1; x<mFullMapD; x++ ) {
                     
                     // above door
                     for( int y=mFullMapD/2; y<mFullMapD; y++ ) {
