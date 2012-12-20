@@ -2211,21 +2211,21 @@ void HouseGridDisplay::recomputeWallShadows() {
         }
     
     
-    // clear border again
+    // set border regions to solid black to avoid light halo
     for( int y=0; y<paddedSize; y++ ) {
         for( int x=0; x<blowUpBorder; x++ ) {
-            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 255;
             }
         for( int x=paddedSize - blowUpBorder; x<paddedSize; x++ ) {
-            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 255;
             }
         }
     for( int x=0; x<paddedSize; x++ ) {
         for( int y=0; y<blowUpBorder; y++ ) {
-            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 255;
             }
         for( int y=paddedSize - blowUpBorder; y<paddedSize; y++ ) {
-            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 0;
+            fullGridChannelsBlownUpAlpha[ y * paddedSize + x ] = 255;
             }
         }
         
