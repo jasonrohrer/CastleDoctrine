@@ -47,6 +47,8 @@ typedef struct houseObjectState {
 
         SpriteHandle stateSpriteUnder[ MAX_ORIENTATIONS ];
         
+        char haloGenerated;
+        
         SpriteHandle haloSprite[ MAX_ORIENTATIONS ];
 
         char properties[ endPropertyID ];
@@ -613,9 +615,18 @@ static houseObjectState readState( File *inStateDir ) {
     
     //printf( "Trying to read tga from %s\n", tgaPath );
 
+    // only generate halo sprite if property set
+    SpriteHandle *haloArray = NULL;
+    state.haloGenerated = false;
+    
+    if( state.properties[ darkHaloBehind ] ) {
+        haloArray = state.haloSprite;
+        state.haloGenerated = true;
+        }
+
     state.numOrientations =
         readShadeMappedSprites( tgaPath, shadeMapTgaPath, state.stateSprite,
-                                state.haloSprite );
+                                haloArray );
     
 
 
@@ -889,7 +900,9 @@ void freeHouseObjects() {
                 if( r.states[s].underSpritePresent ) {
                     freeSprite( r.states[s].stateSpriteUnder[o] );
                     }
-                freeSprite( r.states[s].haloSprite[o] );
+                if( r.states[s].haloGenerated ) {
+                    freeSprite( r.states[s].haloSprite[o] );
+                    }
                 }
             
             if( r.states[s].subDescription != NULL ) {
