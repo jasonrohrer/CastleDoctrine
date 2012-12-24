@@ -47,6 +47,8 @@ typedef struct houseObjectState {
 
         SpriteHandle stateSpriteUnder[ MAX_ORIENTATIONS ];
         
+        SpriteHandle haloSprite[ MAX_ORIENTATIONS ];
+
         char properties[ endPropertyID ];
 
         char *subDescription;
@@ -274,10 +276,115 @@ static void applyShadeMap( Image *inImage, Image *inShadeMap ) {
 
 
 
+#include "FastBoxBlurFilter.h"
+
+
+static SpriteHandle imageToHaloSprite( Image *inImage ) {
+    Image *alphaImage = inImage->generateAlphaChannel();
+    
+    
+    int w = alphaImage->getWidth();
+    int h = alphaImage->getHeight();
+    
+    // extra room
+    int haloW = w * 2;
+    int haloH = h * 2;
+    
+    int offsetX = w/2;
+    int offsetY = h/2;
+    
+
+    int numHaloPixels = haloW * haloH;
+    
+    double *imageAlpha = alphaImage->getChannel( 3 );
+
+    unsigned char *haloChannel = new unsigned char[ numHaloPixels ];
+    
+    int *touchedPixels = new int[ numHaloPixels ];
+    int numTouched = 0;
+
+    memset( haloChannel, 0, numHaloPixels );
+    
+    for( int y=0; y<haloH; y++ ) {
+        int imY = y - offsetY;
+        
+        for( int x=0; x<haloW; x++ ) {
+            int imX = x - offsetX;
+            
+            int haloI = y * haloW + x;
+            
+            int imI = imY * w + imX;
+            
+            
+            if( imY >=0 && imY < h &&
+                imX >=0 && imX < w &&
+                imageAlpha[ imI] > 0 ) {
+                haloChannel[haloI] = 255;
+                }
+            
+            if( y > 1 && y < haloH - 1 
+                && 
+                x > 1 && x < haloW - 1 ) {
+                // away from border
+                touchedPixels[ numTouched ] = haloI;
+                numTouched++;
+                }
+            }
+        }
+    
+
+    FastBoxBlurFilter blur;
+        
+        
+        
+        
+    //for( int i=0; i<20; i++ ) {
+    for( int i=0; i<1; i++ ) {
+        
+        blur.applySubRegion( haloChannel,
+                             touchedPixels,
+                             numTouched,
+                             haloW, haloH );
+        }
+
+    // now apply threshold 
+    // (to create a 1-pixel wide black outline around sprite)
+    for( int i=0; i<numHaloPixels; i++ ) {
+        if( haloChannel[i] > 0 ) {
+            haloChannel[i]=255;
+            }
+        }
+
+    // blur that outline
+    for( int i=0; i<5; i++ ) {
+        
+        blur.applySubRegion( haloChannel,
+                             touchedPixels,
+                             numTouched,
+                             haloW, haloH );
+        }
+   
+    delete [] touchedPixels;
+        
+
+    SpriteHandle haloSprite = fillSpriteAlphaOnly( haloChannel,
+                                                   haloW, haloH );
+    delete [] haloChannel;
+    
+    delete alphaImage;
+
+
+    return haloSprite;
+    }
+
+
+
+
 // inTgaPath and inShadeMapTgaPath are deleted if not NULL
 // returns number of orientaitons
 int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
                             SpriteHandle *inSpriteOrientationArray,
+                            SpriteHandle *inHaloSpriteOrientationArray,
                             char inForceUnderShading ) {
     
     Image *image = readTGAFileBase( inTgaPath );
@@ -336,6 +443,10 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
         
         inSpriteOrientationArray[o] = fillSprite( subImage, transCorner );
         
+        if( inHaloSpriteOrientationArray != NULL ) {
+            inHaloSpriteOrientationArray[o] = imageToHaloSprite( subImage );
+            }
+
         delete subImage;
         }
 
@@ -503,7 +614,8 @@ static houseObjectState readState( File *inStateDir ) {
     //printf( "Trying to read tga from %s\n", tgaPath );
 
     state.numOrientations =
-        readShadeMappedSprites( tgaPath, shadeMapTgaPath, state.stateSprite );
+        readShadeMappedSprites( tgaPath, shadeMapTgaPath, state.stateSprite,
+                                state.haloSprite );
     
 
 
@@ -533,6 +645,7 @@ static houseObjectState readState( File *inStateDir ) {
         int numOrientationsPresent = 
             readShadeMappedSprites( underTgaPath, underShadeMapTgaPath, 
                                     state.stateSpriteUnder,
+                                    NULL,
                                     // force under shading if no
                                     // shade map present
                                     state.properties[ underLayerShaded ] );
@@ -776,6 +889,7 @@ void freeHouseObjects() {
                 if( r.states[s].underSpritePresent ) {
                     freeSprite( r.states[s].stateSpriteUnder[o] );
                     }
+                freeSprite( r.states[s].haloSprite[o] );
                 }
             
             if( r.states[s].subDescription != NULL ) {
@@ -900,6 +1014,20 @@ SpriteHandle getObjectSprite( int inObjectID,
         }    
 
     return state->stateSprite[inOrientation];
+    }
+
+
+SpriteHandle getObjectHaloSprite( int inObjectID, 
+                                  int inOrientation, int inState ) {
+    
+    houseObjectState *state = getObjectState( inObjectID, inState );
+
+    if( inOrientation >= state->numOrientations ) {
+        // default
+        inOrientation = 0;
+        }    
+
+    return state->haloSprite[inOrientation];
     }
 
 

@@ -949,8 +949,14 @@ void HouseGridDisplay::drawRobber( doublePair inPosition ) {
         
     setDrawColor( 1, 1, 1, 1 );
     
-    doublePair robberPos = inPosition;
+    SpriteHandle haloSprite = 
+        getObjectHaloSprite( PLAYER_ID, 
+                             mRobberOrientation, 
+                             mRobberState );
+        
+    drawSprite( haloSprite, inPosition, 1.0/32.0 );
     
+
     SpriteHandle sprite = 
         getObjectSprite( PLAYER_ID, 
                          mRobberOrientation, 

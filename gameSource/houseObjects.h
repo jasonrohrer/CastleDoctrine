@@ -109,6 +109,9 @@ char isUnderSpritePresent( int inObjectID, int inState );
 // flags
 SpriteHandle getObjectSprite( int inObjectID, int inOrientation, int inState );
 
+SpriteHandle getObjectHaloSprite( int inObjectID, int inOrientation, 
+                                  int inState );
+
 // drawn behind mobile objects
 SpriteHandle getObjectSpriteBehind( int inObjectID, int inOrientation, 
                                     int inState );
@@ -131,6 +134,7 @@ SpriteHandle getObjectSpriteUnder( int inObjectID, int inOrientation,
 // but ONLY if no shade map present
 int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
                             SpriteHandle *inSpriteOrientationArray,
+                            SpriteHandle *inHaloSpriteOrientationArray = NULL,
                             char inForceUnderShading = false );
 
 
