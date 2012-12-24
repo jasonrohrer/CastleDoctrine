@@ -2,3 +2,4 @@ deadly
 playerSeeking
 mobile
 onTopOfPlayer
+darkHaloBehind

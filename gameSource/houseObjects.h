@@ -65,6 +65,7 @@ int getObjectID( const char *inName );
     F(conductiveTopToBottom), \
     F(mobile), \
     F(noDropShadow), \
+    F(darkHaloBehind), \
     F(mobileBlocking), \
     F(playerSeeking), \
     F(playerAvoiding), \
