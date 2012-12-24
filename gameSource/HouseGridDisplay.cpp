@@ -1093,7 +1093,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     
                     if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
                         
-                        setDrawColor( 1, 1, 1, 0.75 );
+                        setDrawColor( 1, 1, 1, 0.5 );
                         
                         SpriteHandle sprite = 
                             getObjectHaloSprite( mobID, 
