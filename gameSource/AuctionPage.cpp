@@ -277,6 +277,8 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
 
 
 void AuctionPage::step() {
+    LiveHousePage::step();
+    
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
