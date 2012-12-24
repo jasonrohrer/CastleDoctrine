@@ -303,6 +303,7 @@ void RobHousePage::makeActive( char inFresh ) {
 
 
 void RobHousePage::step() {
+    LiveHousePage::step();
     mGridDisplay.setLeaveCanBeShown( ! mGallery.isVisible() );
     }
 
