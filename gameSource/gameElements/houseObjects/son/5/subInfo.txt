@@ -1,1 +1,1 @@
-"Shot Son"
+"%s Shot"

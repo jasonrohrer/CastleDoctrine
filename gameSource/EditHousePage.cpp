@@ -89,6 +89,33 @@ EditHousePage::~EditHousePage() {
 
 
 
+void EditHousePage::setWifeName( const char *inWifeName ) {
+    mGridDisplay.setWifeName( inWifeName );
+    }
+
+void EditHousePage::setSonName( const char *inSonName ) {
+    mGridDisplay.setSonName( inSonName );
+    }
+
+void EditHousePage::setDaughterName( const char *inDaughterName ) {
+    mGridDisplay.setDaughterName( inDaughterName );
+    }
+
+
+char *EditHousePage::getWifeName() {
+    return mGridDisplay.getWifeName();
+    }
+
+char *EditHousePage::getSonName() {
+    return mGridDisplay.getSonName();
+    }
+
+char *EditHousePage::getDaughterName() {
+    return mGridDisplay.getDaughterName();
+    }
+
+
+
 void EditHousePage::setHouseMap( const char *inHouseMap ) {
     if( mStartHouseMap != NULL ) {
         delete [] mStartHouseMap;

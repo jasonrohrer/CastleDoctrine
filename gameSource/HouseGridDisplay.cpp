@@ -43,6 +43,9 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mPicker( inPicker ),
           mHideRobber( false ),
           mWifeMoney( 0 ),
+          mWifeName( NULL ),
+          mSonName( NULL ),
+          mDaughterName( NULL ),
           mHouseMap( NULL ), 
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
@@ -168,6 +171,15 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
 
 
 HouseGridDisplay::~HouseGridDisplay() {
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
+        }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
@@ -224,6 +236,33 @@ HouseGridDisplay::~HouseGridDisplay() {
     mFamilyExitPaths.deleteAll();
     mFamilyExitPathLengths.deleteAll();
     }
+
+
+
+void HouseGridDisplay::setWifeName( const char *inWifeName ) {
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    mWifeName = stringDuplicate( inWifeName );
+    }
+
+
+void HouseGridDisplay::setSonName( const char *inSonName ) {
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    mSonName = stringDuplicate( inSonName );
+    }
+
+
+void HouseGridDisplay::setDaughterName( const char *inDaughterName ) {
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
+        }
+    mDaughterName = stringDuplicate( inDaughterName );
+    }
+
+    
 
 
 
@@ -397,6 +436,35 @@ void HouseGridDisplay::resetToggledStates( int inTargetState ) {
     copyAllIntoSubCells();
 
     recomputeWallShadows();
+    }
+
+
+
+char *HouseGridDisplay::getWifeName() {
+    if( mWifeName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mWifeName );
+        }
+    }
+
+char *HouseGridDisplay::getSonName() {
+    if( mSonName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mSonName );
+        }
+    }
+
+char *HouseGridDisplay::getDaughterName() {
+    if( mDaughterName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mDaughterName );
+        }
     }
 
 
@@ -1582,6 +1650,37 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                     getObjectDescription( 
                         mHouseSubMapIDs[ mHighlightIndex ],
                         mHouseSubMapCellStates[ mHighlightIndex ] ) );
+
+
+            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
+                               wife ) ) {
+
+                char *nameInserted =
+                    autoSprintf( nonMobileDescription, mWifeName );
+                
+                delete [] nonMobileDescription;
+                nonMobileDescription = nameInserted;
+                }
+            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
+                               son ) ) {
+                
+                char *nameInserted =
+                    autoSprintf( nonMobileDescription, mSonName );
+                
+                delete [] nonMobileDescription;
+                nonMobileDescription = nameInserted;
+                }
+            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
+                               daughter ) ) {
+
+                char *nameInserted =
+                    autoSprintf( nonMobileDescription, mDaughterName );
+                
+                delete [] nonMobileDescription;
+                nonMobileDescription = nameInserted;
+                }
+            
+
 
             if( mWifeMoney > 0 && 
                 isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],

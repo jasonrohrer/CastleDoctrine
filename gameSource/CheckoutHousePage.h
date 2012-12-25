@@ -18,6 +18,13 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         virtual char getReturnToMenu();
         
+        
+        // destroyed by caller if not NULL
+        virtual char *getWifeName();
+        virtual char *getSonName();
+        virtual char *getDaughterName();
+
+
         // destroyed by caller if not NULL
         virtual char *getHouseMap();
 
@@ -50,6 +57,10 @@ class CheckoutHousePage : public GamePage, public ActionListener {
 
         int mWebRequest;
 
+        char *mWifeName;
+        char *mSonName;
+        char *mDaughterName;
+        
         char *mHouseMap;
         char *mVaultContents;
         char *mBackpackContents;

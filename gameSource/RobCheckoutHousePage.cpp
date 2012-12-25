@@ -23,6 +23,9 @@ extern int userID;
 
 RobCheckoutHousePage::RobCheckoutHousePage() 
         : mWebRequest( -1 ),
+          mWifeName( NULL ),
+          mSonName( NULL ),
+          mDaughterName( NULL ),
           mOwnerName( NULL ),
           mHouseMap( NULL ),
           mBackpackContents( NULL ),
@@ -40,6 +43,15 @@ RobCheckoutHousePage::RobCheckoutHousePage()
 RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
+        }
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
         }
     if( mOwnerName != NULL ) {
         delete [] mOwnerName;
@@ -76,6 +88,38 @@ void RobCheckoutHousePage::setToRobCharacterName( const char *inName ) {
 
 char RobCheckoutHousePage::getReturnToMenu() {
     return mReturnToMenu;
+    }
+
+
+
+
+char *RobCheckoutHousePage::getWifeName() {
+    if( mWifeName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mWifeName );
+        }
+    }
+
+
+char *RobCheckoutHousePage::getSonName() {
+    if( mSonName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mSonName );
+        }
+    }
+
+
+char *RobCheckoutHousePage::getDaughterName() {
+    if( mDaughterName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mDaughterName );
+        }
     }
 
 
@@ -183,8 +227,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 7 ||
-                        strcmp( *( tokens->getElement( 6 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 10 ||
+                        strcmp( *( tokens->getElement( 9 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -205,6 +249,10 @@ void RobCheckoutHousePage::step() {
                         mMusicSeed = 0;
                         sscanf( *( tokens->getElement( 5 ) ),
                                 "%d", &mMusicSeed );
+                        
+                        mWifeName = *( tokens->getElement( 6 ) );
+                        mSonName = *( tokens->getElement( 7 ) );
+                        mDaughterName = *( tokens->getElement( 8 ) );
 
                         printf( "OwnerName = %s\n", mOwnerName );
                         printf( "HouseMap = %s\n", mHouseMap );
@@ -212,11 +260,14 @@ void RobCheckoutHousePage::step() {
                         printf( "Gallery = %s\n", mGalleryContents );
                         printf( "WifeMoney = %d\n", mWifeMoney );
                         printf( "MusicSeed = %d\n", mMusicSeed );
-                        
+                        printf( "Wife = %s\n", mWifeName );
+                        printf( "Son = %s\n", mSonName );
+                        printf( "Daughter = %s\n", mDaughterName );
+
 
                         delete [] *( tokens->getElement( 4 ) );
                         delete [] *( tokens->getElement( 5 ) );
-                        delete [] *( tokens->getElement( 6 ) );
+                        delete [] *( tokens->getElement( 9 ) );
 
                         // reset ping time, because house check-out
                         // counts as a ping

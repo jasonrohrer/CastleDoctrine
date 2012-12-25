@@ -23,6 +23,9 @@ extern int userID;
 
 CheckoutHousePage::CheckoutHousePage() 
         : mWebRequest( -1 ),
+          mWifeName( NULL ),
+          mSonName( NULL ),
+          mDaughterName( NULL ),
           mHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
@@ -40,6 +43,15 @@ CheckoutHousePage::CheckoutHousePage()
 CheckoutHousePage::~CheckoutHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequest( mWebRequest );
+        }
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
         }
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
@@ -62,6 +74,37 @@ CheckoutHousePage::~CheckoutHousePage() {
 
 char CheckoutHousePage::getReturnToMenu() {
     return mReturnToMenu;
+    }
+
+
+
+char *CheckoutHousePage::getWifeName() {
+    if( mWifeName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mWifeName );
+        }
+    }
+
+
+char *CheckoutHousePage::getSonName() {
+    if( mSonName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mSonName );
+        }
+    }
+
+
+char *CheckoutHousePage::getDaughterName() {
+    if( mDaughterName == NULL ) {
+        return NULL;
+        }
+    else {
+        return stringDuplicate( mDaughterName );
+        }
     }
 
 
@@ -181,9 +224,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 9
+                    if( lines->size() != 12
                         ||
-                        strcmp( *( lines->getElement( 8 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 11 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -217,11 +260,16 @@ void CheckoutHousePage::step() {
                         mMusicSeed = 0;
                         sscanf( *( lines->getElement( 7 ) ),
                                 "%d", &mMusicSeed );
+                        
+                        mWifeName = *( lines->getElement( 8 ) );
+                        mSonName = *( lines->getElement( 9 ) );
+                        mDaughterName = *( lines->getElement( 10 ) );
+
 
                         delete [] *( lines->getElement( 5 ) );
                         delete [] *( lines->getElement( 6 ) );
                         delete [] *( lines->getElement( 7 ) );
-                        delete [] *( lines->getElement( 8 ) );
+                        delete [] *( lines->getElement( 11 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Vault = %s\n", mVaultContents );
@@ -230,7 +278,10 @@ void CheckoutHousePage::step() {
                         printf( "PriceList = %s\n", mPriceList );
                         printf( "LootValue = %d\n", mLootValue );
                         printf( "MusicSeed = %d\n", mMusicSeed );
-
+                        printf( "Wife = %s\n", mWifeName );
+                        printf( "Son = %s\n", mSonName );
+                        printf( "Daughter = %s\n", mDaughterName );
+                        
                         // reset ping time, because house check-out
                         // counts as a ping
                         LiveHousePage::sLastPingTime = time( NULL );

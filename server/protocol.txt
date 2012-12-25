@@ -72,6 +72,9 @@ price_list
 current_balance
 must_self_test
 music_seed
+wife_name
+son_name
+daughter_name
 OK
 
 Where:
@@ -306,6 +309,9 @@ backpack_contents
 gallery_contents
 wife_money
 music_seed
+wife_name
+son_name
+daughter_name
 OK
 
 --OR--

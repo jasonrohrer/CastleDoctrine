@@ -22,6 +22,16 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         virtual ~EditHousePage();
         
+
+        // destroyed by caller
+        void setWifeName( const char *inWifeName );
+        void setSonName( const char *inSonName );
+        void setDaughterName( const char *inDaughterName );
+        
+        char *getWifeName();
+        char *getSonName();
+        char *getDaughterName();
+        
         
         // destroyed by caller
         void setHouseMap( const char *inHouseMap );

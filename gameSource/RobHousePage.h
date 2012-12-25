@@ -32,6 +32,11 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         // defaults to showing them
         void showBackpack( char inShow );
         
+
+        // destroyed by caller
+        void setWifeName( const char *inWifeName );
+        void setSonName( const char *inSonName );
+        void setDaughterName( const char *inDaughterName );
         
         // destroyed by caller
         void setHouseMap( char *inHouseMap );

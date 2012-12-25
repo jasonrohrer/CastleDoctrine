@@ -64,6 +64,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         virtual ~HouseGridDisplay();
         
+        // destroyed by caller
+        void setWifeName( const char *inWifeName );
+        void setSonName( const char *inSonName );
+        void setDaughterName( const char *inDaughterName );
 
         // destroyed by caller
         virtual void setHouseMap( const char *inHouseMap );
@@ -72,6 +76,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         
         // destroyed by caller
+        char *getWifeName();
+        char *getSonName();
+        char *getDaughterName();
+
         char *getHouseMap();
         char *getEditList();
         
@@ -133,6 +141,11 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int mRobberOrientation;
         
         int mWifeMoney;
+
+        char *mWifeName;
+        char *mSonName;
+        char *mDaughterName;
+        
 
         char *mHouseMap;
         

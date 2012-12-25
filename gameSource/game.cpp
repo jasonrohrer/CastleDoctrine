@@ -974,6 +974,10 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else {
+                char *wifeName = checkoutHousePage->getWifeName();
+                char *sonName = checkoutHousePage->getSonName();
+                char *daughterName = checkoutHousePage->getDaughterName();
+
                 char *houseMap = checkoutHousePage->getHouseMap();
                 char *vaultContents = checkoutHousePage->getVaultContents();
                 char *backpackContents = 
@@ -984,12 +988,19 @@ void drawFrame( char inUpdate ) {
                 int lootValue = checkoutHousePage->getLootValue();
                 char mustSelfTest = checkoutHousePage->getMustSelfTest();
                 
-                if( houseMap != NULL && 
+                if( wifeName != NULL && 
+                    sonName != NULL && 
+                    daughterName != NULL && 
+                    houseMap != NULL && 
                     vaultContents != NULL &&
                     backpackContents != NULL && 
                     galleryContents != NULL && 
                     priceList != NULL ) {
                     
+                    editHousePage->setWifeName( wifeName );
+                    editHousePage->setSonName( sonName );
+                    editHousePage->setDaughterName( daughterName );
+
                     editHousePage->setHouseMap( houseMap );
                     editHousePage->setVaultContents( vaultContents );
                     editHousePage->setBackpackContents( backpackContents );
@@ -1004,6 +1015,9 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setSellList( "#" );
                     
 
+                    delete [] wifeName;
+                    delete [] sonName;
+                    delete [] daughterName;
                     delete [] houseMap;
                     delete [] vaultContents;
                     delete [] backpackContents;
@@ -1014,6 +1028,15 @@ void drawFrame( char inUpdate ) {
                     currentGamePage->base_makeActive( true );
                     }
                 else {
+                    if( wifeName != NULL ) {
+                        delete [] wifeName;
+                        }
+                    if( sonName != NULL ) {
+                        delete [] sonName;
+                        }
+                    if( daughterName != NULL ) {
+                        delete [] daughterName;
+                        }
                     if( houseMap != NULL ) {
                         delete [] houseMap;
                         }
@@ -1083,7 +1106,11 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else if( editHousePage->getDone() ) {
-
+                
+                char *wifeName = editHousePage->getWifeName();
+                char *sonName = editHousePage->getSonName();
+                char *daughterName = editHousePage->getDaughterName();
+                
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
@@ -1096,6 +1123,11 @@ void drawFrame( char inUpdate ) {
                 
                 if( editHousePage->houseMapChanged() ) {
                     // force player to test own house first
+                    
+                    selfHouseTestPage->setWifeName( wifeName );
+                    selfHouseTestPage->setSonName( sonName );
+                    selfHouseTestPage->setDaughterName( daughterName );
+                    
                     selfHouseTestPage->setHouseMap( houseMap );
                     
                     selfHouseTestPage->setGalleryContents( galleryContents );
@@ -1133,6 +1165,10 @@ void drawFrame( char inUpdate ) {
                     currentGamePage = checkinHousePage;
                     currentGamePage->base_makeActive( true );
                     }
+
+                delete [] wifeName;
+                delete [] sonName;
+                delete [] daughterName;
 
                 delete [] houseMap;
                 delete [] vaultContents;
@@ -1377,9 +1413,23 @@ void drawFrame( char inUpdate ) {
                 char *houseMap = robCheckoutHousePage->getHouseMap();
                 
                 if( houseMap != NULL ) {
-                    
+
                     robHousePage->setHouseMap( houseMap );
                     delete [] houseMap;
+
+                    char *wifeName = robCheckoutHousePage->getWifeName();
+                    robHousePage->setWifeName( wifeName );
+                    delete [] wifeName;
+                    
+                    char *sonName = robCheckoutHousePage->getSonName();
+                    robHousePage->setSonName( sonName );
+                    delete [] sonName;
+                    
+                    char *daughterName = 
+                        robCheckoutHousePage->getDaughterName();
+                    robHousePage->setDaughterName( daughterName );
+                    delete [] daughterName;
+                    
 
                     char *backpackContents = 
                         robCheckoutHousePage->getBackpackContents();

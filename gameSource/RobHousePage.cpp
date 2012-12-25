@@ -105,6 +105,19 @@ void RobHousePage::showBackpack( char inShow ) {
 
 
 
+void RobHousePage::setWifeName( const char *inWifeName ) {
+    mGridDisplay.setWifeName( inWifeName );
+    }
+
+void RobHousePage::setSonName( const char *inSonName ) {
+    mGridDisplay.setSonName( inSonName );
+    }
+
+void RobHousePage::setDaughterName( const char *inDaughterName ) {
+    mGridDisplay.setDaughterName( inDaughterName );
+    }
+
+
 
 void RobHousePage::setHouseMap( char *inHouseMap ) {
     mGridDisplay.setHouseMap( inHouseMap );

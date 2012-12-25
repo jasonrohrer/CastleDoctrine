@@ -250,7 +250,10 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."prices" ) &&
         cd_doesTableExist( $tableNamePrefix."auction" ) &&
         cd_doesTableExist( $tableNamePrefix."last_names" ) &&
-        cd_doesTableExist( $tableNamePrefix."first_names" );
+        cd_doesTableExist( $tableNamePrefix."first_names" ) &&
+        cd_doesTableExist( $tableNamePrefix."wife_names" ) &&
+        cd_doesTableExist( $tableNamePrefix."son_names" ) &&
+        cd_doesTableExist( $tableNamePrefix."daughter_names" );
     
         
     if( $allExist  ) {
@@ -284,7 +287,7 @@ cd_closeDatabase();
 
 
 
-
+// populate name table from file that is in census percentage format
 function cd_populateNameTable( $inFileName, $inTableName ) {
     $totalPopulation = 257746103;
     
@@ -320,6 +323,52 @@ function cd_populateNameTable( $inFileName, $inTableName ) {
                 $cumulative_count =
                     ( $cumulativePercent / 100 ) * $totalPopulation;
                 
+                if( ! $firstLine ) {
+                    $query = $query . ",";
+                    }
+                
+                $query = $query . " ( $cumulative_count, '$name' )";
+                
+                $firstLine = false;
+                }
+            }
+        
+        fclose( $file );
+
+        $query = $query . ";";
+
+        $result = cd_queryDatabase( $query );
+        }
+    }
+
+
+
+// populate name table from file that is in SSA occurrence-count format
+function cd_populateNameTableSSA( $inFileName, $inTableName ) {
+    global $tableNamePrefix;
+
+    $tableName = $tableNamePrefix . $inTableName;
+
+    
+    if( $file = fopen( $inFileName, "r" ) ) {
+        $firstLine = true;
+
+        $query = "INSERT INTO $tableName VALUES ";
+
+        $cumulative_count = 0;
+        
+        while( !feof( $file ) ) {
+            $line = fgets( $file);
+
+            $tokens = preg_split( "/,/", trim( $line ) );
+            
+            if( count( $tokens ) == 3 ) {
+                
+                $name = $tokens[0];
+                $nameCount = $tokens[2];
+                
+                $cumulative_count += $nameCount;
+
                 if( ! $firstLine ) {
                     $query = $query . ",";
                     }
@@ -625,6 +674,9 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL PRIMARY KEY," .
             "character_name VARCHAR(62) NOT NULL," .
             "UNIQUE KEY( character_name )," .
+            "wife_name VARCHAR(20) NOT NULL," .
+            "son_name VARCHAR(20) NOT NULL," .
+            "daughter_name VARCHAR(20) NOT NULL," .
             "house_map LONGTEXT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
@@ -850,6 +902,82 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table created<BR>";
 
         cd_populateNameTable( "namesFirst.txt", "first_names" );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    
+    $tableName = $tableNamePrefix . "wife_names";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+
+        // a source list of character first names
+        // cumulative count is number of people in 1993 population
+        // who have this name or a more common name
+        // less common names have higher cumulative counts
+        $query =
+            "CREATE TABLE $tableName(" .
+            "cumulative_count INT NOT NULL PRIMARY KEY," .
+            "name VARCHAR(20) NOT NULL );";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        cd_populateNameTableSSA( "namesWife.txt", "wife_names" );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+    
+    $tableName = $tableNamePrefix . "son_names";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+
+        // a source list of character first names
+        // cumulative count is number of people in 1993 population
+        // who have this name or a more common name
+        // less common names have higher cumulative counts
+        $query =
+            "CREATE TABLE $tableName(" .
+            "cumulative_count INT NOT NULL PRIMARY KEY," .
+            "name VARCHAR(20) NOT NULL );";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        cd_populateNameTableSSA( "namesSon.txt", "son_names" );
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    $tableName = $tableNamePrefix . "daughter_names";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+
+        // a source list of character first names
+        // cumulative count is number of people in 1993 population
+        // who have this name or a more common name
+        // less common names have higher cumulative counts
+        $query =
+            "CREATE TABLE $tableName(" .
+            "cumulative_count INT NOT NULL PRIMARY KEY," .
+            "name VARCHAR(20) NOT NULL );";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+
+        cd_populateNameTableSSA( "namesDaughter.txt", "daughter_names" );
         }
     else {
         echo "<B>$tableName</B> table already exists<BR>";
@@ -1385,7 +1513,8 @@ function cd_startEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT house_map, vault_contents, backpack_contents, ".
+    $query = "SELECT wife_name, son_name, daughter_name, ".
+        "house_map, vault_contents, backpack_contents, ".
         "gallery_contents, ".
         "loot_value, ".
         "carried_loot_value, carried_vault_contents, ".
@@ -1404,6 +1533,10 @@ function cd_startEditHouse() {
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
+    $wife_name = $row[ "wife_name" ];
+    $son_name = $row[ "son_name" ];
+    $daughter_name = $row[ "daughter_name" ];
+    
     $house_map = $row[ "house_map" ];
     $vault_contents = $row[ "vault_contents" ];
     $backpack_contents = $row[ "backpack_contents" ];
@@ -1538,6 +1671,12 @@ function cd_startEditHouse() {
     echo $must_self_test;
     echo "\n";
     echo $music_seed;
+    echo "\n";
+    echo $wife_name;
+    echo "\n";
+    echo $son_name;
+    echo "\n";
+    echo $daughter_name;
     echo "\nOK";
     }
 
@@ -2691,7 +2830,8 @@ function cd_startRobHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT house_map, gallery_contents, ".
+    $query = "SELECT wife_name, son_name, daughter_name, ".
+        "house_map, gallery_contents, ".
         "character_name, rob_attempts, music_seed, wife_present, loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
@@ -2708,6 +2848,10 @@ function cd_startRobHouse() {
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
+    $wife_name = $row[ "wife_name" ];
+    $son_name = $row[ "son_name" ];
+    $daughter_name = $row[ "daughter_name" ];
+    
     $house_map = $row[ "house_map" ];
     $gallery_contents = $row[ "gallery_contents" ];
     $character_name = $row[ "character_name" ];
@@ -2748,6 +2892,9 @@ function cd_startRobHouse() {
     echo "$gallery_contents\n";
     echo "$wife_money\n";
     echo "$music_seed\n";
+    echo "$wife_name\n";
+    echo "$son_name\n";
+    echo "$daughter_name\n";
     echo "OK";
     }
 
@@ -3931,6 +4078,10 @@ function cd_newHouseForUser( $user_id ) {
     $carried_gallery_contents = "#";
 
     $music_seed = mt_rand();
+
+    $wife_name = cd_pickName( "wife_names" );
+    $son_name = cd_pickName( "son_names" );
+    $daughter_name = cd_pickName( "daughter_names" );
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
@@ -3938,6 +4089,7 @@ function cd_newHouseForUser( $user_id ) {
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', ".
+            "'$wife_name', '$son_name', '$daughter_name', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "'$music_seed', ".
