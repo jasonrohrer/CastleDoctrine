@@ -241,13 +241,27 @@ void EditHousePage::checkIfPlacementAllowed() {
 
 
 char EditHousePage::houseMapChanged() {
+
+    char *editList = getEditList();
+    
+    int comp = strcmp( editList, "" );
+    
+    delete [] editList;
+
+    if( comp != 0 ) {
+        // some edits to report, whether or not map was actually changed
+        // by edits, count it as changed
+        return true;
+        }
+    
+
     if( mStartHouseMap == NULL || mMustSelfTest ) {
         return true;
         }
 
     char *newMap = mGridDisplay.getHouseMap();
 
-    int comp = strcmp( newMap, mStartHouseMap );
+    comp = strcmp( newMap, mStartHouseMap );
 
     if( comp != 0 ) {
         
