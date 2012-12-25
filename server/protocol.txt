@@ -435,6 +435,10 @@ backpack_contents
 moveList
 loot_value
 wife_money
+music_seed
+wife_name
+son_name
+daughter_name
 OK
 
 Where:

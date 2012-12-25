@@ -50,7 +50,11 @@ void FetchRobberyReplayPage::clearRecord() {
         delete [] mLogRecord.victimName;
         delete [] mLogRecord.houseMap;
         delete [] mLogRecord.backpackContents;
-        delete [] mLogRecord.moveList;        
+        delete [] mLogRecord.moveList;   
+        
+        delete [] mLogRecord.wifeName;
+        delete [] mLogRecord.sonName;
+        delete [] mLogRecord.daughterName;
         }
 
     mLogRecord.robberName = NULL;
@@ -58,6 +62,10 @@ void FetchRobberyReplayPage::clearRecord() {
     mLogRecord.houseMap = NULL;
     mLogRecord.backpackContents = NULL;
     mLogRecord.moveList = NULL;
+
+    mLogRecord.wifeName = NULL;
+    mLogRecord.sonName = NULL;
+    mLogRecord.daughterName = NULL;
     
     mRecordReady = false;
     }
@@ -137,8 +145,8 @@ void FetchRobberyReplayPage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 9 ||
-                        strcmp( *( tokens->getElement( 8 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 12 ||
+                        strcmp( *( tokens->getElement( 11 ) ), "OK" ) != 0 ) {
 
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
@@ -165,10 +173,15 @@ void FetchRobberyReplayPage::step() {
                         sscanf( *( tokens->getElement( 7 ) ),
                                 "%d", &( mLogRecord.musicSeed ) );
                         
+                        mLogRecord.wifeName = *( tokens->getElement( 8 ) );
+                        mLogRecord.sonName = *( tokens->getElement( 9 ) );
+                        mLogRecord.daughterName = 
+                            *( tokens->getElement( 10 ) );
+
                         delete [] *( tokens->getElement( 5 ) );
                         delete [] *( tokens->getElement( 6 ) );
                         delete [] *( tokens->getElement( 7 ) );
-                        delete [] *( tokens->getElement( 8 ) );
+                        delete [] *( tokens->getElement( 11 ) );
 
                         mRecordReady = true;
                         }

@@ -97,6 +97,11 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
     mGridDisplay.setMoveList( inLog.moveList );
     mGridDisplay.setWifeMoney( inLog.wifeMoney );
     
+    mGridDisplay.setWifeName( inLog.wifeName );
+    mGridDisplay.setSonName( inLog.sonName );
+    mGridDisplay.setDaughterName( inLog.daughterName );
+    
+
     mMusicSeed = inLog.musicSeed;
     
     if( mDescription != NULL ) {

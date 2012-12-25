@@ -795,6 +795,9 @@ function cd_setupDatabase() {
             "robber_deaths INT NOT NULL,".
             "robber_name VARCHAR(62) NOT NULL," .
             "victim_name VARCHAR(62) NOT NULL," .
+            "wife_name VARCHAR(20) NOT NULL," .
+            "son_name VARCHAR(20) NOT NULL," .
+            "daughter_name VARCHAR(20) NOT NULL," .
             // flag logs for which the owner is now dead (moved onto a new
             // character/life) and can no longer see the log
             // These area candidates for deletion after enough time has passed
@@ -3019,6 +3022,7 @@ function cd_endRobHouse() {
     
     $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
         "house_map, user_id, character_name, ".
+        "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, edit_count ".
         "FROM $tableNamePrefix"."houses ".
@@ -3097,6 +3101,11 @@ function cd_endRobHouse() {
     $robber_deaths = $row[ "robber_deaths" ];
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
+
+
+    $wife_name = $row[ "wife_name" ];
+    $son_name = $row[ "son_name" ];
+    $daughter_name = $row[ "daughter_name" ];
 
 
 
@@ -3221,7 +3230,9 @@ function cd_endRobHouse() {
             " vault_contents, gallery_contents, ".
             " music_seed, ".
             " rob_attempts, robber_deaths,".
-            " robber_name, victim_name, owner_now_dead, rob_time, ".
+            " robber_name, victim_name,".
+            " wife_name, son_name, daughter_name,".
+            " owner_now_dead, rob_time,".
             " scouting_count, last_scout_time, ".
             " house_start_map, loadout, move_list, house_end_map ) ".
             "VALUES(" .
@@ -3230,8 +3241,10 @@ function cd_endRobHouse() {
             " '$house_vault_contents', '$house_gallery_contents', ".
             " '$music_seed', ".
             " '$rob_attempts', '$robber_deaths', ".
-            " '$robber_name', '$victim_name', '$ownerDied',".
-            " CURRENT_TIMESTAMP, '$scouting_count', '$last_scout_time', ".
+            " '$robber_name', '$victim_name',".
+            " '$wife_name', '$son_name', '$daughter_name',".
+            " '$ownerDied', CURRENT_TIMESTAMP,".
+            " '$scouting_count', '$last_scout_time', ".
             " '$old_house_map', '$loadout', '$move_list', ".
             " '$house_map' );";
         cd_queryDatabase( $query );
@@ -3449,7 +3462,9 @@ function cd_getRobberyLog() {
     
     
     $query = "SELECT user_id, house_user_id, ".
-        "robber_name, victim_name, house_start_map, loadout, ".
+        "robber_name, victim_name, ".
+        "wife_name, son_name, daughter_name, ".
+        "house_start_map, loadout, ".
         "move_list, value_estimate, wife_money, music_seed ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
@@ -3468,6 +3483,11 @@ function cd_getRobberyLog() {
     $robber_name = $row[ "robber_name" ];
     $victim_name = $row[ "victim_name" ];
 
+    $wife_name = $row[ "wife_name" ];
+    $son_name = $row[ "son_name" ];
+    $daughter_name = $row[ "daughter_name" ];
+
+    
     if( !$admin ) {
         // if NOT admin
         // don't allow user to obtain someone else's log
@@ -3498,6 +3518,9 @@ function cd_getRobberyLog() {
     echo $row[ "value_estimate" ] . "\n";
     echo $row[ "wife_money" ] . "\n";
     echo $row[ "music_seed" ] . "\n";
+    echo $row[ "wife_name" ] . "\n";
+    echo $row[ "son_name" ] . "\n";
+    echo $row[ "daughter_name" ] . "\n";
     echo "OK";
     }
 
