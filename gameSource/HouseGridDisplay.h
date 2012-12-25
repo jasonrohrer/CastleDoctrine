@@ -294,6 +294,11 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
 
         void drawDropShadow( doublePair inPosition );
+        
+        void drawDarkHaloBehind( int inObjectID, int inOrientation,
+                                 int inState, 
+                                 doublePair inPosition );
+        
         void drawRobber( doublePair inPosition );
 
         

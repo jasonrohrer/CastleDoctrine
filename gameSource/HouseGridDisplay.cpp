@@ -937,6 +937,27 @@ void HouseGridDisplay::drawDropShadow( doublePair inPosition ) {
 
 
 
+
+void HouseGridDisplay::drawDarkHaloBehind( int inObjectID, int inOrientation,
+                                           int inState, 
+                                           doublePair inPosition ) {
+    
+    setDrawColor( 1, 1, 1, 0.5 );
+
+    SpriteHandle haloSprite = 
+        getObjectHaloSprite( inObjectID, 
+                             inOrientation, 
+                             inState );
+    
+    toggleLinearMagFilter( true );
+
+    drawSprite( haloSprite, inPosition, 1.0/32.0 );
+
+    toggleLinearMagFilter( false );
+    }
+
+
+
 void HouseGridDisplay::drawRobber( doublePair inPosition ) {
     if( mHideRobber ) {
         return;
@@ -949,14 +970,10 @@ void HouseGridDisplay::drawRobber( doublePair inPosition ) {
         
     
     if( isPropertySet( PLAYER_ID, mRobberState, darkHaloBehind ) ) {
-        setDrawColor( 1, 1, 1, 0.75 );
-
-        SpriteHandle haloSprite = 
-            getObjectHaloSprite( PLAYER_ID, 
-                                 mRobberOrientation, 
-                                 mRobberState );
-        
-        drawSprite( haloSprite, inPosition, 1.0/32.0 );
+        drawDarkHaloBehind( PLAYER_ID, 
+                            mRobberOrientation, 
+                            mRobberState,
+                            inPosition );
         }
 
     setDrawColor( 1, 1, 1, 1 );
@@ -1093,14 +1110,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     
                     if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
                         
-                        setDrawColor( 1, 1, 1, 0.5 );
-                        
-                        SpriteHandle sprite = 
-                            getObjectHaloSprite( mobID, 
-                                                 mobOrientation, 
-                                                 mobState );
-                
-                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        drawDarkHaloBehind( mobID, mobOrientation, mobState,
+                                            tilePos );
                         }
 
                     if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
@@ -1127,14 +1138,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     if( isPropertySet( houseTile, houseTileState, 
                                        darkHaloBehind ) ) {
                         
-                        setDrawColor( 1, 1, 1, 0.75 );
-                        
-                        SpriteHandle sprite = 
-                            getObjectHaloSprite( houseTile, 
-                                                 orientationIndex, 
-                                                 houseTileState );
-                
-                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        drawDarkHaloBehind( houseTile, orientationIndex,
+                                            houseTileState,
+                                            tilePos );
                         }
                         
                     drawDropShadow( tilePos );
@@ -1167,14 +1173,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // now draw tile itself, on top of floor
 
                 if( isSubMapPropertySet( i, darkHaloBehind ) ) {
-                    setDrawColor( 1, 1, 1, 0.75 );
-                        
-                    SpriteHandle sprite = 
-                        getObjectHaloSprite( houseTile, 
-                                             orientationIndex, 
-                                             houseTileState );
                     
-                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    drawDarkHaloBehind( houseTile, orientationIndex,
+                                        houseTileState,
+                                        tilePos );
                     }
 
                 if( isSubMapPropertySet( i, mobile ) &&
@@ -1197,14 +1199,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // now draw blocking objects on top of floor
 
                 if( isSubMapPropertySet( i, darkHaloBehind ) ) {
-                    setDrawColor( 1, 1, 1, 0.75 );
-                        
-                    SpriteHandle sprite = 
-                        getObjectHaloSprite( houseTile, 
-                                             orientationIndex, 
-                                             houseTileState );
                     
-                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    drawDarkHaloBehind( houseTile, orientationIndex,
+                                            houseTileState,
+                                            tilePos );
                     }
 
 
