@@ -1271,11 +1271,10 @@ function cd_checkUser() {
             "?action=get_ticket_id".
             "&email=$email" );
 
-        // FIXME:  don't use strlen here
-        // (don't assume tickets are 10 chars long)
-        // Instead, run a regexp filter to remove non-hex characters.
+        // Run a regexp filter to remove non-hex characters.
+        $match = preg_match( "/[0-9A-F]+/", $result, $matches );
         
-        if( $result == "DENIED" || strlen( $result ) != 10 ) {
+        if( $result == "DENIED" || $match != 1 ) {
             echo "DENIED";
 
             cd_log( "checkUser for $email DENIED, email not found ".
@@ -1283,7 +1282,7 @@ function cd_checkUser() {
             return;
             }
         else {
-            $ticket_id = $result;
+            $ticket_id = $matches[0];
 
             // decrypt it
 
@@ -1337,10 +1336,11 @@ function cd_checkUser() {
 
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
-            "(ticket_id, character_name_history, admin, sequence_number, ".
+            "(ticket_id, email, character_name_history, ".
+            " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', '', 0, 0, 0, 0 );";
+            " '$ticket_id', '$email', '', 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
