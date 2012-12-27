@@ -1,4 +1,4 @@
-#include "GamePage.h"
+#include "LiveHousePage.h"
 
 #include "TextField.h"
 #include "TextButton.h"
@@ -6,7 +6,7 @@
 #include "minorGems/ui/event/ActionListener.h"
 
 
-class CheckinHousePage : public GamePage, public ActionListener {
+class CheckinHousePage : public LiveHousePage, public ActionListener {
         
     public:
         
@@ -45,7 +45,8 @@ class CheckinHousePage : public GamePage, public ActionListener {
 
 
     protected:
-
+        int mRequestStarted;
+        
         int mWebRequest;
 
         char *mHouseMap;

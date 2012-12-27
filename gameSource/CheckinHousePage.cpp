@@ -19,7 +19,8 @@ extern int userID;
 
 
 CheckinHousePage::CheckinHousePage() 
-        : mWebRequest( -1 ),
+        : mRequestStarted( false ),
+          mWebRequest( -1 ),
           mHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
@@ -198,6 +199,49 @@ void CheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
 
 
 void CheckinHousePage::step() {
+    LiveHousePage::step();
+    
+    // wait until pending LiveHousePage requests are sent
+    // to prevent bad request orderings (house checked in before 
+    //  start_self_test received by server).
+    if( LiveHousePage::areRequestsPending() ) {
+        return;
+        }
+    
+    if( ! mRequestStarted ) {
+        // send back to server            
+        char *ticketHash = getTicketHash();
+        
+            
+    
+        char *actionString = autoSprintf( 
+            "action=end_edit_house&user_id=%d"
+            "&%s&died=%d&house_map=%s&vault_contents=%s"
+            "&backpack_contents=%s&gallery_contents=%s"
+            "&price_list=%s&edit_list=%s&purchase_list=%s&sell_list=%s"
+            "&self_test_move_list=%s&family_exit_paths=%s",
+            userID, ticketHash, mDied, mHouseMap, mVaultContents, 
+            mBackpackContents, mGalleryContents, 
+            mPriceList, mEditList, mPurchaseList, mSellList, mMoveList,
+            mFamilyExitPaths );
+        delete [] ticketHash;
+            
+    
+        mWebRequest = startWebRequest( "POST", 
+                                       serverURL, 
+                                       actionString );
+    
+        printf( "Starting web request %s %s\n", serverURL, actionString );
+
+        delete [] actionString;
+
+        mRequestStarted = true;
+        
+        return;
+        }
+    
+
+
     if( mWebRequest != -1 ) {
             
         int stepResult = stepWebRequest( mWebRequest );
@@ -256,35 +300,14 @@ void CheckinHousePage::step() {
 
         
 void CheckinHousePage::makeActive( char inFresh ) {
+    LiveHousePage::makeActive( inFresh );
+
     if( !inFresh ) {
         return;
         }
     
-    // send back to server            
-    char *ticketHash = getTicketHash();
-        
-            
     
-    char *actionString = autoSprintf( 
-        "action=end_edit_house&user_id=%d"
-        "&%s&died=%d&house_map=%s&vault_contents=%s"
-        "&backpack_contents=%s&gallery_contents=%s"
-        "&price_list=%s&edit_list=%s&purchase_list=%s&sell_list=%s"
-        "&self_test_move_list=%s&family_exit_paths=%s",
-        userID, ticketHash, mDied, mHouseMap, mVaultContents, 
-        mBackpackContents, mGalleryContents, 
-        mPriceList, mEditList, mPurchaseList, mSellList, mMoveList,
-        mFamilyExitPaths );
-    delete [] ticketHash;
-            
-    
-    mWebRequest = startWebRequest( "POST", 
-                                   serverURL, 
-                                   actionString );
-    
-    printf( "Starting web request %s %s\n", serverURL, actionString );
-
-    delete [] actionString;
+    mRequestStarted = false;
 
     mReturnToMenu = false;
     mStartOver = false;

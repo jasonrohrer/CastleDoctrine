@@ -47,10 +47,13 @@ class LiveHousePage : public GamePage {
         // substatial (e.g., place object in house) to show that they are
         // still present and in the game
         virtual void actionHappened();
+        
+        // true if we have any request that we're waiting for responses
+        // from or any queued up to be sent
+        char areRequestsPending();
 
 
     private:
-        
 
 
 
@@ -71,9 +74,6 @@ class LiveHousePage : public GamePage {
         static SimpleVector<const char *> sPendingTestRequests;
 
         
-        // true if we have any request that we're waiting for responses
-        // from or any queued up to be sent
-        char areRequestsPending();
         
     };
 
