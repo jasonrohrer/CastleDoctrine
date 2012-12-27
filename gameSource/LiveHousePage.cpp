@@ -23,11 +23,8 @@ int LiveHousePage::sLastPingTime = time( NULL );
 
 int LiveHousePage::sWebRequest = -1;
 
-char LiveHousePage::sStartSelfTestPending = false;
-char LiveHousePage::sStartSelfTestSent = false;
 
-char LiveHousePage::sEndSelfTestPending = false;
-char LiveHousePage::sEndSelfTestSent = false;
+SimpleVector<const char *> LiveHousePage::sPendingTestRequests;
 
 
 
@@ -65,12 +62,12 @@ void LiveHousePage::actionHappened() {
 
 
 void LiveHousePage::startSelfTest() {
-    sStartSelfTestPending = true;
+    sPendingTestRequests.push_back( "start_self_test" );
     }
 
 
 void LiveHousePage::endSelfTest() {
-    sEndSelfTestPending = true;
+    sPendingTestRequests.push_back( "end_self_test" );
     }
 
 
@@ -82,8 +79,8 @@ void LiveHousePage::step() {
           
         if( result != 0 ) {
             // send is over, not matter what response we get back
-            sStartSelfTestSent = false;
-            sEndSelfTestSent = false;
+            
+            // same response possibilies for all requests types here
             
             switch( result ) {
                 case -1:
@@ -109,21 +106,10 @@ void LiveHousePage::step() {
             sWebRequest = -1;
             }
         }
-    else if( sStartSelfTestPending || sEndSelfTestPending ) {
+    else if( sPendingTestRequests.size() > 0 ) {
 
-        const char *command;
-        
-        if( sStartSelfTestPending ) {
-            command = "start_self_test";
-            sStartSelfTestSent = true;
-            sStartSelfTestPending = false;
-            }
-        else {
-            command = "end_self_test";
-            sEndSelfTestSent = true;
-            sEndSelfTestPending = false;
-            }
-        
+        const char *command = *( sPendingTestRequests.getElement( 0 ) );
+        sPendingTestRequests.deleteElement( 0 );        
 
         char *ticketHash = getTicketHash();
             
@@ -177,6 +163,17 @@ void LiveHousePage::step() {
         
         }
     
+    }
+
+
+
+char LiveHousePage::areRequestsPending() {
+    if( sWebRequest != -1 ||
+        sPendingTestRequests.size() > 0 ) {
+        return true;
+        }
+
+    return false;
     }
 
 

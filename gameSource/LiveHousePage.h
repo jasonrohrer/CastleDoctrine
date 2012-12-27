@@ -7,7 +7,6 @@
 
 
 
-
 // base class for live house checkouts that handles pinging house on server
 // to keep it checked out
 class LiveHousePage : public GamePage {
@@ -67,12 +66,15 @@ class LiveHousePage : public GamePage {
         // started by a previous, now-closed page
         static int sWebRequest;
 
-        static char sStartSelfTestPending;
-        static char sStartSelfTestSent;
-        
-        static char sEndSelfTestPending;
-        static char sEndSelfTestSent;
 
+        // a fifo queue of pending Start- and EndSelfTest requests
+        static SimpleVector<const char *> sPendingTestRequests;
+
+        
+        // true if we have any request that we're waiting for responses
+        // from or any queued up to be sent
+        char areRequestsPending();
+        
     };
 
 
