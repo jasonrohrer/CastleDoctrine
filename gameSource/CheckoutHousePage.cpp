@@ -304,6 +304,21 @@ void CheckoutHousePage::makeActive( char inFresh ) {
         return;
         }
 
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    mWifeName = NULL;
+    
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    mSonName = NULL;
+    
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
+        }
+    mDaughterName = NULL;
+    
     if( mHouseMap != NULL ) {
         delete [] mHouseMap;
         }
