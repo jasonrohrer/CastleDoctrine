@@ -35,7 +35,8 @@ AuctionPage::AuctionPage()
           mDone( false ),
           mBuyExecuted( false ), 
           mBoughtObjectID( -1 ),
-          mForceRefresh( false ) {
+          mForceRefresh( false ),
+          mRefreshPending( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mUpdateButton );
@@ -277,7 +278,10 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
 
 
 void AuctionPage::step() {
-    LiveHousePage::step();
+    // DON'T step LHP every time, because we don't want it to interleave
+    // fresh pings with our pending web request (out of order sequence numbers 
+    // possible)
+    // LiveHousePage::step();
     
     if( mWebRequest != -1 ) {
             
@@ -409,12 +413,48 @@ void AuctionPage::step() {
     
     // else no web request
 
-    if( getPricesStale() ) {
-        // expired
+
+    if( ! mRefreshPending && getPricesStale() ) {
+        // expired, and no update pending
         mUpdateButton.setVisible( true );
         turnAllRingsOff();
         mBuyButton.setVisible( false );
         }
+    
+
+    // safe to step LHP and possibly send new pings to server
+    // (because we have no web request in motion)
+    LiveHousePage::step();
+    
+    if( ! LiveHousePage::areRequestsPending() ) {
+        
+        if( mRefreshPending ) {
+        
+            // safe, with now LHP requests in motion 
+
+            // request house list from server
+            char *ticketHash = getTicketHash();
+    
+            char *actionString = 
+                autoSprintf( "action=list_auctions&user_id=%d&%s", 
+                             userID, ticketHash );
+            delete [] ticketHash;
+            
+    
+            mWebRequest = startWebRequest( "POST", 
+                                           serverURL, 
+                                           actionString );
+            printf( "Web POST action string = %s\n", actionString );
+
+
+            delete [] actionString;
+        
+            mRefreshPending = false;
+            }
+        }
+
+    
+    
     }
 
 
@@ -539,23 +579,10 @@ void AuctionPage::refreshPrices() {
 
     mSecondsUntilUpdate = -1;
     mBaseTimestamp = -1;
-
-    // request house list from server
-    char *ticketHash = getTicketHash();
     
-    char *actionString = autoSprintf( "action=list_auctions&user_id=%d&%s", 
-                                      userID, ticketHash );
-    delete [] ticketHash;
-            
+
+    mRefreshPending = true;
     
-    mWebRequest = startWebRequest( "POST", 
-                                   serverURL, 
-                                   actionString );
-    printf( "Web POST action string = %s\n", actionString );
-
-
-    delete [] actionString;
-
     setWaiting( true );
     }
 
