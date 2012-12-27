@@ -1884,7 +1884,8 @@ function cd_endEditHouse() {
     // out for robbery
     
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
-        "vault_contents, backpack_contents, gallery_contents ".
+        "vault_contents, backpack_contents, gallery_contents, ".
+        "self_test_running ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -1897,9 +1898,11 @@ function cd_endEditHouse() {
         cd_transactionDeny();
         return;
         }
+    
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $edit_count = $row[ "edit_count" ];
+    $self_test_running = $row[ "self_test_running" ];
     $loot_value = $row[ "loot_value" ];
     $old_house_map = $row[ "house_map" ];
     $old_vault_contents = $row[ "vault_contents" ];
@@ -1945,6 +1948,44 @@ function cd_endEditHouse() {
 
         
         cd_newHouseForUser( $user_id );
+
+        echo "OK";
+
+        // skip rest
+        return;
+        }
+
+
+
+    $editArray = preg_split( "/#/", $edit_list );
+    
+    $numEdits = count( $editArray );
+
+
+    if( $edit_list == "" ) {
+        // split on empty string returns array with 1 element, which screws
+        // up loop below
+        $numEdits = 0;
+        }
+
+
+    
+    if( $numEdits == 0 && ! $self_test_running ) {
+        // don't need to check edit or update anything,
+        // because there wasn't an edit.
+
+        // (case where user visited house without changing anything)
+
+        // don't update the edit count either
+
+        $query = "UPDATE $tableNamePrefix"."houses ".
+            "SET rob_checkout = 0, edit_checkout = 0, self_test_running = 0 ".
+            "WHERE user_id = '$user_id';";
+
+        cd_queryDatabase( $query );
+
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
         echo "OK";
 
@@ -2194,18 +2235,8 @@ function cd_endEditHouse() {
 
     $oldHouseArray = preg_split( "/#/", $old_house_map );
 
-    $editArray = preg_split( "/#/", $edit_list );
-    
     $editedHouseArray = $oldHouseArray;
-
-    $numEdits = count( $editArray );
-
-
-    if( $edit_list == "" ) {
-        // split on empty string returns array with 1 element, which screws
-        // up loop below
-        $numEdits = 0;
-        }
+    
 
     if( $numEdits > 0 && $self_test_move_list == "#" ) {
 
