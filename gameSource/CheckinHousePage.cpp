@@ -199,12 +199,18 @@ void CheckinHousePage::actionPerformed( GUIComponent *inTarget ) {
 
 
 void CheckinHousePage::step() {
-    LiveHousePage::step();
     
     // wait until pending LiveHousePage requests are sent
     // to prevent bad request orderings (house checked in before 
     //  start_self_test received by server).
     if( LiveHousePage::areRequestsPending() ) {
+        
+        // note that we don't step LiveHousePage otherwise, because
+        // we don't want it starting NEW ping requests after
+        // we send our request (lest our request's sequence number
+        // will be stale)
+        LiveHousePage::step();
+
         return;
         }
     
