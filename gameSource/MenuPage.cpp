@@ -122,7 +122,8 @@ void MenuPage::makeActive( char inFresh ) {
     mStartEditHouse = false;
     mStartRobHouse = false;
     mShowReplayList = false;
-    
+    mStartSelfTestReplay = false;
+
     mStatusMessageKey = NULL;
     mStatusError = false;
     }

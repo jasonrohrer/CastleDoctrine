@@ -50,7 +50,11 @@ void FetchSelfTestReplayPage::clearRecord() {
         delete [] mLogRecord.victimName;
         delete [] mLogRecord.houseMap;
         delete [] mLogRecord.backpackContents;
-        delete [] mLogRecord.moveList;        
+        delete [] mLogRecord.moveList;
+        delete [] mLogRecord.wifeName;
+        delete [] mLogRecord.sonName;
+        delete [] mLogRecord.daughterName;
+        
         }
 
     mLogRecord.robberName = NULL;
@@ -58,6 +62,9 @@ void FetchSelfTestReplayPage::clearRecord() {
     mLogRecord.houseMap = NULL;
     mLogRecord.backpackContents = NULL;
     mLogRecord.moveList = NULL;
+    mLogRecord.wifeName = NULL;
+    mLogRecord.sonName = NULL;
+    mLogRecord.daughterName = NULL;
     
     mRecordReady = false;
     }
@@ -137,8 +144,8 @@ void FetchSelfTestReplayPage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 4 ||
-                        strcmp( *( tokens->getElement( 3 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 9 ||
+                        strcmp( *( tokens->getElement( 8 ) ), "OK" ) != 0 ) {
 
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
@@ -157,11 +164,24 @@ void FetchSelfTestReplayPage::step() {
                         mLogRecord.backpackContents = stringDuplicate( "" );
                         mLogRecord.moveList = *( tokens->getElement( 2 ) );
 
+                        sscanf( *( tokens->getElement( 3 ) ),
+                                "%d", &( mLogRecord.wifeMoney ) );
+                        sscanf( *( tokens->getElement( 4 ) ),
+                                "%d", &( mLogRecord.musicSeed ) );
+                        
+                        mLogRecord.wifeName = *( tokens->getElement( 5 ) );
+                        mLogRecord.sonName = *( tokens->getElement( 6 ) );
+                        mLogRecord.daughterName = 
+                            *( tokens->getElement( 7 ) );
+
+
                         mLogRecord.lootValue = 0;
                         
                         mRecordReady = true;
 
                         delete [] *( tokens->getElement( 3 ) );
+                        delete [] *( tokens->getElement( 4 ) );
+                        delete [] *( tokens->getElement( 8 ) );
                         }
                     
                     delete tokens;

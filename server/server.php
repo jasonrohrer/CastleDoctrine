@@ -3482,11 +3482,6 @@ function cd_getRobberyLog() {
 
     $robber_name = $row[ "robber_name" ];
     $victim_name = $row[ "victim_name" ];
-
-    $wife_name = $row[ "wife_name" ];
-    $son_name = $row[ "son_name" ];
-    $daughter_name = $row[ "daughter_name" ];
-
     
     if( !$admin ) {
         // if NOT admin
@@ -3548,7 +3543,9 @@ function cd_getSelfTestLog() {
     
     
     $query = "SELECT character_name, ".
-        "house_map, self_test_move_list ".
+        "wife_name, son_name, daughter_name, ".
+        "house_map, self_test_move_list, wife_present, ".
+        "loot_value, music_seed ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$house_owner_id';";
 
@@ -3563,14 +3560,21 @@ function cd_getSelfTestLog() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
-    $owner_name = $row[ "character_name" ];
-    $house_map = $row[ "house_map" ];
-    $self_test_move_list = $row[ "self_test_move_list" ];
+    $wife_money = 0;
+
+    if( $row[ "wife_present" ] ) {
+        $wife_money = (int)( $row[ "loot_value" ] / 2 );
+        }
     
-    
-    echo $owner_name . "\n";    
-    echo $house_map . "\n";
-    echo $self_test_move_list . "\n";    
+    echo $row[ "character_name" ] . "\n";
+    echo $row[ "house_map" ] . "\n";
+    echo $row[ "self_test_move_list" ] . "\n";
+    echo $wife_money. "\n";
+    echo $row[ "music_seed" ] . "\n";
+    echo $row[ "wife_name" ] . "\n";
+    echo $row[ "son_name" ] . "\n";
+    echo $row[ "daughter_name" ] . "\n";
+
     echo "OK";
     }
 

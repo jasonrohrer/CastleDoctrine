@@ -464,6 +464,11 @@ Returns:
 owner_name
 houseMap
 moveList
+wife_money
+music_seed
+wife_name
+son_name
+daughter_name
 OK
 
 Where:
