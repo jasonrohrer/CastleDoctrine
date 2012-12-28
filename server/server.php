@@ -67,6 +67,9 @@ if( get_magic_quotes_gpc() ) {
 
 
 
+// testing:
+//echo "fsfDENasdfIED"; die();
+//sleep( rand( 1, 5 ) );
 
 
 // all calls need to connect to DB, so do it once here
