@@ -349,6 +349,7 @@ void LoginPage::acceptInput() {
     for( int i=0; i<2; i++ ) {
         mFields[i]->setActive( true );
         }
+    setWaiting( false );
     }
 
 
