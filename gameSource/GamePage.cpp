@@ -94,6 +94,12 @@ void GamePage::setStatusDirect( char *inStatusMessage, char inError ) {
 
 
 
+char GamePage::isStatusShowing() {
+    return ( mStatusMessage != NULL || mStatusMessageKey != NULL );
+    }
+
+
+
 void GamePage::setToolTip( const char *inTip ) {
     if( mTip != NULL && inTip == NULL ) {
         // tip disappearing, save it as mLastTip

@@ -416,7 +416,11 @@ void AuctionPage::step() {
 
     if( ! mRefreshPending && getPricesStale() ) {
         // expired, and no update pending
-        mUpdateButton.setVisible( true );
+        
+        if( ! isStatusShowing() ) {
+            mUpdateButton.setVisible( true );
+            }
+
         turnAllRingsOff();
         mBuyButton.setVisible( false );
         }

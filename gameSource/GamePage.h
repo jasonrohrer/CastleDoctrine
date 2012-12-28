@@ -21,6 +21,8 @@ class GamePage : public PageComponent {
         // inStatusMessage destroyed by caller
         void setStatusDirect( char *inStatusMessage, char inError );
 
+        char isStatusShowing();
+        
         
         // override these from PageComponent to actually SHOW
         // the tool tip, instead of passing it further up the parent chain
