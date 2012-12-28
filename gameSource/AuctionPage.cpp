@@ -583,6 +583,7 @@ void AuctionPage::refreshPrices() {
 
     // populate slots with empty list to clear them
     populateSlots();
+    setUpDownVisibility();
     
     
     mUpdateButton.setVisible( false );

@@ -49,6 +49,7 @@ GallerySlotButton::~GallerySlotButton() {
 void GallerySlotButton::setObject( int inID ) {
     if( inID == -1 ) {
         InventorySlotButton::setObject( inID );
+        setVisible( false );
         }
     else {
         mObjectID = inID;
@@ -56,6 +57,8 @@ void GallerySlotButton::setObject( int inID ) {
         setMouseOverTip( getGalleryObjectDescription( mObjectID ) );
         mSprite = getGalleryObjectSprite( mObjectID );
         mQuantity = 1;
+
+        setVisible( true );
         }
     }
 
