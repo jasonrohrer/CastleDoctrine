@@ -413,7 +413,13 @@ void AuctionPage::step() {
     
     // else no web request
 
-
+    if( !mRefreshPending ) {  
+        // don't let DONE press interrupt request and leave it hanging
+        // (it can become out-of-order if other requests are triggered
+        //  immediately after leaving this page).
+        mDoneButton.setVisible( true );
+        }
+    
     if( ! mRefreshPending && getPricesStale() ) {
         // expired, and no update pending
         
@@ -581,6 +587,8 @@ void AuctionPage::refreshPrices() {
     
     mUpdateButton.setVisible( false );
 
+    mDoneButton.setVisible( false );
+    
     mSecondsUntilUpdate = -1;
     mBaseTimestamp = -1;
     
