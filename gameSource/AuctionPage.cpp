@@ -8,6 +8,8 @@
 #include "ticketHash.h"
 #include "galleryObjects.h"
 
+#include "serialWebRequests.h"
+
 
 #include <time.h>
 
@@ -102,7 +104,7 @@ AuctionPage::AuctionPage()
         
 AuctionPage::~AuctionPage() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
 
 
@@ -285,7 +287,7 @@ void AuctionPage::step() {
     
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
     
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -296,12 +298,12 @@ void AuctionPage::step() {
                 break;
             case -1:
                 setStatus( "err_webRequest", true );
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );
@@ -451,7 +453,7 @@ void AuctionPage::step() {
             delete [] ticketHash;
             
     
-            mWebRequest = startWebRequest( "POST", 
+            mWebRequest = startWebRequestSerial( "POST", 
                                            serverURL, 
                                            actionString );
             printf( "Web POST action string = %s\n", actionString );
@@ -574,7 +576,7 @@ void AuctionPage::refreshPrices() {
     mForceRefresh = false;
 
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
 
     mDisplayOffset = 0;

@@ -3,6 +3,8 @@
 #include "message.h"
 #include "galleryObjects.h"
 
+#include "serialWebRequests.h"
+
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -43,7 +45,7 @@ BuyAuctionPage::BuyAuctionPage()
         
 BuyAuctionPage::~BuyAuctionPage() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     if( mGalleryContents != NULL ) {
         delete [] mGalleryContents;
@@ -102,7 +104,7 @@ void BuyAuctionPage::actionPerformed( GUIComponent *inTarget ) {
 void BuyAuctionPage::step() {
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
 
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -114,13 +116,13 @@ void BuyAuctionPage::step() {
             case -1:
                 mStatusError = true;
                 mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mHomeButton.setVisible( true );
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );
@@ -223,7 +225,7 @@ void BuyAuctionPage::makeActive( char inFresh ) {
     delete [] ticketHash;
             
     
-    mWebRequest = startWebRequest( "POST", 
+    mWebRequest = startWebRequestSerial( "POST", 
                                    serverURL, 
                                    actionString );
     

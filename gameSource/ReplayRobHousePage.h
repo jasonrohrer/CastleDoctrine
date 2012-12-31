@@ -33,8 +33,6 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
 
         virtual void actionPerformed( GUIComponent *inTarget );
 
-
-        virtual void step();
         
 
         virtual void draw( doublePair inViewCenter, 
@@ -44,8 +42,6 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-        
-        int mWebRequest;
         
         int mMusicSeed;
 

@@ -1,5 +1,7 @@
 #include "RobPickList.h"
 
+#include "serialWebRequests.h"
+
 
 #include "ticketHash.h"
 
@@ -71,7 +73,7 @@ RobPickList::RobPickList( double inX, double inY,
 
 RobPickList::~RobPickList() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     clearHouseList();
 
@@ -109,7 +111,7 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
 void RobPickList::refreshList( char inPreserveSearch,
                                char inPreservePosition ) {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     clearHouseList();
 
@@ -146,7 +148,7 @@ void RobPickList::refreshList( char inPreserveSearch,
     delete [] ticketHash;
             
     
-    mWebRequest = startWebRequest( "POST", 
+    mWebRequest = startWebRequestSerial( "POST", 
                                    serverURL, 
                                    actionString );
     
@@ -239,7 +241,7 @@ static char *trimName( char *inName, double inMaxLength ) {
 void RobPickList::step() {
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
         
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -252,12 +254,12 @@ void RobPickList::step() {
                 break;
             case -1:
                 mParentPage->setStatus( "err_webRequest", true );
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );

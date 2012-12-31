@@ -2,6 +2,8 @@
 #include "ticketHash.h"
 #include "message.h"
 
+#include "serialWebRequests.h"
+
 #include "nameProcessing.h"
 
 
@@ -38,7 +40,7 @@ FetchRobberyReplayPage::FetchRobberyReplayPage()
         
 FetchRobberyReplayPage::~FetchRobberyReplayPage() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     clearRecord();
     }
@@ -111,7 +113,7 @@ void FetchRobberyReplayPage::actionPerformed( GUIComponent *inTarget ) {
 void FetchRobberyReplayPage::step() {
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
         
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -123,13 +125,13 @@ void FetchRobberyReplayPage::step() {
             case -1:
                 mStatusError = true;
                 mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mMenuButton.setVisible( true );
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );
@@ -214,7 +216,7 @@ void FetchRobberyReplayPage::makeActive( char inFresh ) {
         serverURL, userID, mLogID, ticketHash );
     delete [] ticketHash;
     
-    mWebRequest = startWebRequest( "GET", 
+    mWebRequest = startWebRequestSerial( "GET", 
                                    fullRequestURL, 
                                    NULL );
     

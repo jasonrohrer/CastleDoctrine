@@ -24,8 +24,7 @@ extern int musicOff;
 
 
 ReplayRobHousePage::ReplayRobHousePage() 
-        : mWebRequest( -1 ),
-          mMusicSeed( 0 ),
+        : mMusicSeed( 0 ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", 8, -3, 1/16.0 ),
@@ -77,10 +76,7 @@ ReplayRobHousePage::ReplayRobHousePage()
 
         
 ReplayRobHousePage::~ReplayRobHousePage() {
-    if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
-        }
-
+    
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
@@ -161,49 +157,6 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
                         }
                     }
                 }
-            }
-        }
-    }
-
-
-
-void ReplayRobHousePage::step() {
-    if( mWebRequest != -1 ) {
-            
-        int result = stepWebRequest( mWebRequest );
-                
-        switch( result ) {
-            case 0:
-                break;
-            case -1:
-                mStatusError = true;
-                mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
-                mWebRequest = -1;
-                break;
-            case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
-                mWebRequest = -1;
-                        
-                if( strstr( result, "DENIED" ) != NULL ) {
-                    mStatusError = true;
-                    mStatusMessageKey = "houseBeingRobbed";
-                    }
-                else {
-                    // house checked out!
-                    
-                    //int size = strlen( result );
-                    
-                    //mHouseMap = new char[ size + 1 ];
-                    
-                    //sscanf( result, "%s", mHouseMap );
-                    }
-                        
-                        
-                delete [] result;
-                }
-                break;
             }
         }
     }

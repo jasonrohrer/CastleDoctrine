@@ -2,6 +2,8 @@
 #include "ticketHash.h"
 #include "message.h"
 
+#include "serialWebRequests.h"
+
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -70,7 +72,7 @@ LoginPage::LoginPage()
 LoginPage::~LoginPage() {
     
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     }
 
@@ -91,7 +93,7 @@ void LoginPage::step() {
 
     if( !mHaveServerURL ) {
         if( mWebRequest != -1 ) {
-            int stepResult = stepWebRequest( mWebRequest );
+            int stepResult = stepWebRequestSerial( mWebRequest );
 
             if( mRequestSteps > minRequestSteps ) {
             
@@ -101,14 +103,14 @@ void LoginPage::step() {
                     case -1:
                         mStatusError = true;
                         mStatusMessageKey = "err_webRequest";
-                        clearWebRequest( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         acceptInput();
                         mLoginButton.setVisible( true );
                         break;
                     case 1: {
-                        char *result = getWebResult( mWebRequest );
-                        clearWebRequest( mWebRequest );
+                        char *result = getWebResultSerial( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         
                         if( strstr( result, "DENIED" ) != NULL ) {
@@ -139,7 +141,7 @@ void LoginPage::step() {
                             
                                 mStatusError = true;
                                 mStatusMessageKey = "reflectorFailed";
-                                clearWebRequest( mWebRequest );
+                                clearWebRequestSerial( mWebRequest );
                                 mWebRequest = -1;
                                 acceptInput();
                                 mLoginButton.setVisible( true );
@@ -156,7 +158,7 @@ void LoginPage::step() {
     else if( userID == -1 ) {
         if( mWebRequest != -1 ) {
             
-            int stepResult = stepWebRequest( mWebRequest );
+            int stepResult = stepWebRequestSerial( mWebRequest );
 
             if( mRequestSteps > minRequestSteps ) {
                 
@@ -166,14 +168,14 @@ void LoginPage::step() {
                     case -1:
                         mStatusError = true;
                         mStatusMessageKey = "err_webRequest";
-                        clearWebRequest( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         acceptInput();
                         mLoginButton.setVisible( true );
                         break;
                     case 1: {
-                        char *result = getWebResult( mWebRequest );
-                        clearWebRequest( mWebRequest );
+                        char *result = getWebResultSerial( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         
                         if( strstr( result, "DENIED" ) != NULL ) {
@@ -230,7 +232,7 @@ void LoginPage::step() {
                                     serverURL, userID, ticketHash );
                                 delete [] ticketHash;
 
-                                mWebRequest = startWebRequest( "GET", 
+                                mWebRequest = startWebRequestSerial( "GET", 
                                                                fullRequestURL, 
                                                                NULL );
         
@@ -262,7 +264,7 @@ void LoginPage::step() {
     else if( !mLoggedIn ) {
         if( mWebRequest != -1 ) {
 
-            int result = stepWebRequest( mWebRequest );
+            int result = stepWebRequestSerial( mWebRequest );
 
             if( mRequestSteps > minRequestSteps ) {
                 
@@ -276,7 +278,7 @@ void LoginPage::step() {
                     case -1:
                         mStatusError = true;
                         mStatusMessageKey = "err_webRequest";
-                        clearWebRequest( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         // reset entire process
                         userID = -1;
@@ -284,8 +286,8 @@ void LoginPage::step() {
                         mLoginButton.setVisible( true );
                         break;
                     case 1: {
-                        char *result = getWebResult( mWebRequest );
-                        clearWebRequest( mWebRequest );
+                        char *result = getWebResultSerial( mWebRequest );
+                        clearWebRequestSerial( mWebRequest );
                         mWebRequest = -1;
                         
                         if( strstr( result, "OK" ) != NULL ) {
@@ -417,7 +419,7 @@ void LoginPage::startLogin( char inFreshLogin ) {
     
     delete [] email;
 
-    mWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
+    mWebRequest = startWebRequestSerial( "GET", fullRequestURL, NULL );
         
     printf( "Starting web request with URL %s\n", fullRequestURL );
 

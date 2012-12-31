@@ -2,6 +2,8 @@
 
 #include "ticketHash.h"
 
+#include "serialWebRequests.h"
+
 #include "minorGems/game/game.h"
 
 #include "minorGems/util/stringUtils.h"
@@ -37,7 +39,7 @@ LiveHousePage::LiveHousePage()
 
 LiveHousePage::~LiveHousePage() {
     if( sWebRequest != -1 ) {
-        clearWebRequest( sWebRequest );
+        clearWebRequestSerial( sWebRequest );
         sWebRequest = -1;
         }
     }
@@ -75,7 +77,7 @@ void LiveHousePage::endSelfTest() {
 void LiveHousePage::step() {
     if( sWebRequest != -1 ) {
             
-        int result = stepWebRequest( sWebRequest );
+        int result = stepWebRequestSerial( sWebRequest );
           
         if( result != 0 ) {
             // send is over, not matter what response we get back
@@ -88,7 +90,7 @@ void LiveHousePage::step() {
                     printf( "Web request FAILED!\n" );
                     break;
                 case 1: {
-                    char *response = getWebResult( sWebRequest );
+                    char *response = getWebResultSerial( sWebRequest );
 
                     printf( "Server response:  %s\n", response );
                     
@@ -102,7 +104,7 @@ void LiveHousePage::step() {
                     }
                 }
 
-            clearWebRequest( sWebRequest );
+            clearWebRequestSerial( sWebRequest );
             sWebRequest = -1;
             }
         }
@@ -119,7 +121,7 @@ void LiveHousePage::step() {
             serverURL, command, userID, ticketHash );
         delete [] ticketHash;
         
-        sWebRequest = startWebRequest( "GET", 
+        sWebRequest = startWebRequestSerial( "GET", 
                                        fullRequestURL, 
                                        NULL );
         
@@ -149,7 +151,7 @@ void LiveHousePage::step() {
                     serverURL, userID, ticketHash );
                 delete [] ticketHash;
                 
-                sWebRequest = startWebRequest( "GET", 
+                sWebRequest = startWebRequestSerial( "GET", 
                                                fullRequestURL, 
                                                NULL );
                 

@@ -4,6 +4,8 @@
 #include "nameProcessing.h"
 #include "LiveHousePage.h"
 
+#include "serialWebRequests.h"
+
 #include <time.h>
 
 #include "minorGems/game/Font.h"
@@ -42,7 +44,7 @@ RobCheckoutHousePage::RobCheckoutHousePage()
         
 RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     if( mWifeName != NULL ) {
         delete [] mWifeName;
@@ -188,7 +190,7 @@ void RobCheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
 void RobCheckoutHousePage::step() {
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
         
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -200,13 +202,13 @@ void RobCheckoutHousePage::step() {
             case -1:
                 mStatusError = true;
                 mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mMenuButton.setVisible( true );
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );
@@ -310,7 +312,7 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         serverURL, userID, mToRobUserID, mToRobCharacterName, ticketHash );
     delete [] ticketHash;
     
-    mWebRequest = startWebRequest( "GET", 
+    mWebRequest = startWebRequestSerial( "GET", 
                                    fullRequestURL, 
                                    NULL );
     

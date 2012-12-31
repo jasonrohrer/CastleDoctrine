@@ -2,6 +2,8 @@
 #include "ticketHash.h"
 #include "message.h"
 
+#include "serialWebRequests.h"
+
 #include "nameProcessing.h"
 
 
@@ -38,7 +40,7 @@ FetchSelfTestReplayPage::FetchSelfTestReplayPage()
         
 FetchSelfTestReplayPage::~FetchSelfTestReplayPage() {
     if( mWebRequest != -1 ) {
-        clearWebRequest( mWebRequest );
+        clearWebRequestSerial( mWebRequest );
         }
     clearRecord();
     }
@@ -110,7 +112,7 @@ void FetchSelfTestReplayPage::actionPerformed( GUIComponent *inTarget ) {
 void FetchSelfTestReplayPage::step() {
     if( mWebRequest != -1 ) {
             
-        int stepResult = stepWebRequest( mWebRequest );
+        int stepResult = stepWebRequestSerial( mWebRequest );
         
         if( stepResult != 0 ) {
             setWaiting( false );
@@ -122,13 +124,13 @@ void FetchSelfTestReplayPage::step() {
             case -1:
                 mStatusError = true;
                 mStatusMessageKey = "err_webRequest";
-                clearWebRequest( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mMenuButton.setVisible( true );
                 break;
             case 1: {
-                char *result = getWebResult( mWebRequest );
-                clearWebRequest( mWebRequest );
+                char *result = getWebResultSerial( mWebRequest );
+                clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                      
                 printf( "Web result = %s\n", result );
@@ -212,7 +214,7 @@ void FetchSelfTestReplayPage::makeActive( char inFresh ) {
         serverURL, userID, mOwnerID, ticketHash );
     delete [] ticketHash;
     
-    mWebRequest = startWebRequest( "GET", 
+    mWebRequest = startWebRequestSerial( "GET", 
                                    fullRequestURL, 
                                    NULL );
     
