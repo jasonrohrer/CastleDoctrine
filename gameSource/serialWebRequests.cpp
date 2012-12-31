@@ -19,7 +19,7 @@ static SimpleVector<SerialWebRecord> serialRecords;
 
 int startWebRequestSerial( const char *inMethod, const char *inURL,
                            const char *inBody ) {
-    if( true ) return startWebRequest( inMethod, inURL, inBody );
+    //if( true ) return startWebRequest( inMethod, inURL, inBody );
 
     SerialWebRecord r;
 
@@ -28,13 +28,15 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
     r.done = false;
     
     serialRecords.push_back( r );
+    
+    return r.handle;
     }
 
 
 
 int stepWebRequestSerial( int inHandle ) {
 
-    if( true ) return stepWebRequest( inHandle );
+    //if( true ) return stepWebRequest( inHandle );
     
 
     int numRecords = serialRecords.size();
@@ -90,7 +92,7 @@ char *getWebResultSerial( int inHandle ) {
 
 
 void clearWebRequestSerial( int inHandle ) {
-    if( true ) return clearWebRequest( inHandle );
+    //if( true ) return clearWebRequest( inHandle );
     
     int numRecords = serialRecords.size();
     
@@ -100,7 +102,7 @@ void clearWebRequestSerial( int inHandle ) {
         
         if( r->handle == inHandle ) {
             serialRecords.deleteElement( i );
-            clearWebRequestSerial( inHandle );
+            clearWebRequest( inHandle );
             return;
             }
         }
