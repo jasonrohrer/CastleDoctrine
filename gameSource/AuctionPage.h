@@ -75,8 +75,6 @@ class AuctionPage : public LiveHousePage, public ActionListener {
         // whether or not prices are stale
         char mForceRefresh;
         
-        // refresh triggered, but request not sent to server yet
-        char mRefreshPending;
 
         void refreshPrices();
 
