@@ -136,7 +136,8 @@ $mobileList = array( 70, 71, 72 );
 $wifeList = array( 1010,
                    1011 );
 // same for sons
-$sonList = array( 1020 );
+$sonList = array( 1020,
+                  1021 );
 
 // same for daughters
 $daughterList = array( 1040 );
