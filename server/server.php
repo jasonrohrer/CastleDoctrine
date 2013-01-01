@@ -4148,7 +4148,12 @@ function cd_newHouseForUser( $user_id ) {
 
     $wife_name = cd_pickName( "wife_names" );
     $son_name = cd_pickName( "son_names" );
-    $daughter_name = cd_pickName( "daughter_names" );
+
+    // make sure daughter has name unique from wife
+    $daughter_name = $wife_name;
+    while( $daughter_name == $wife_name ) {
+        $daughter_name = cd_pickName( "daughter_names" );
+        }
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();

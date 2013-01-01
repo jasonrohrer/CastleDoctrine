@@ -171,7 +171,6 @@ Tammie,F,2241
 Alicia,F,2216
 Lynne,F,2202
 April,F,2197
-Jo,F,2193
 Patty,F,2192
 Joy,F,2181
 Rachel,F,2179
