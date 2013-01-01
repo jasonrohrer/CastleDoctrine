@@ -312,6 +312,12 @@ function cd_populateNameTable( $inFileName, $inTableName ) {
 			(5, 'Bhau',10);
         */
 
+        // Compute our own cumulative percent from the
+        // per-name percent field in the file.
+        // Don't use cumulative percent field in file, because
+        // we are manually removing some lines from the file,
+        // so the cumulative percent field can be off.
+        $cumulativePercent = 0;
         
         while( !feof( $file ) ) {
             $line = fgets( $file);
@@ -321,7 +327,7 @@ function cd_populateNameTable( $inFileName, $inTableName ) {
             if( count( $tokens ) == 4 ) {
                 
                 $name = $tokens[0];
-                $cumulativePercent = $tokens[2];
+                $cumulativePercent += $tokens[1];
                 
                 $cumulative_count =
                     ( $cumulativePercent / 100 ) * $totalPopulation;
