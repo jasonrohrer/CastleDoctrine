@@ -134,7 +134,8 @@ $mobileList = array( 70, 71, 72 );
 
 // list of all possible objects to use as wife
 $wifeList = array( 1010,
-                   1011 );
+                   1011,
+                   1012 );
 // same for sons
 $sonList = array( 1020,
                   1021,
