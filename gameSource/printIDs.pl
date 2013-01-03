@@ -34,6 +34,21 @@ foreach $line (@sortedIDLines) {
 }
 
 
+print "\n\nGallery array for settings.php:\n";
+
+foreach $line (@sortedIDLines) {
+	$line =~ /(\d+)\s+(.+)/;
+	
+	if( $1 >= 2000 ) {
+		# gallery item
+
+		
+		# array( 3000, 500, 1, "Dummy 0 --- by No One" ),
+
+		printf( "    array( %d, 10000, 1, %s ),\n", $1, $2 );
+	}
+}
+
 
 sub idComp {
 	my ($id_a, $name_a) = split( /\s+/, $a );
