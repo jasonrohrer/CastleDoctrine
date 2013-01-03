@@ -144,7 +144,8 @@ $sonList = array( 1020,
                   1023 );
 
 // same for daughters
-$daughterList = array( 1040 );
+$daughterList = array( 1040,
+                       1041 );
 
 
 
