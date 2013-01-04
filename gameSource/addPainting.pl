@@ -66,7 +66,12 @@ if( $author ne "" ) {
 print "Full title text is \"$fullTitleText\"\n";
 
 
+# no spaces in folder name
 $folderName =~ s/\s+/_/g;
+
+# no punctuation in folder name, other than _
+$folderName =~ s/\W//g;
+
 
 print "Folder name \"$folderName\"\n";
 
