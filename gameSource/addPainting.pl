@@ -5,7 +5,7 @@ my $wgetPath = "/usr/bin/wget";
 
 my $numArgs = $#ARGV + 1;
 
-if( $numArgs != 1 ) {
+if( $numArgs != 1 && $numArgs != 3 ) {
     usage();
     }
 
@@ -43,17 +43,29 @@ $newID = $maxGalleryID + 1;
 
 print "Adding painting with ID $newID\n";
 
-print "Enter painting title:  ";
 
-$title = <STDIN>;
+$title = "";
+$author = "";
 
-chomp( $title );
+if( $numArgs != 3 ) {
 
-print "Enter author (optional):  ";
+	print "Enter painting title:  ";
 
-$author = <STDIN>;
+	$title = <STDIN>;
 
-chomp( $author );
+	chomp( $title );
+	
+	print "Enter author (optional):  ";
+	
+	$author = <STDIN>;
+
+	chomp( $author );
+}
+else {
+	$title = $ARGV[1];
+	$author = $ARGV[2];
+}
+
 
 $fullTitleText = $title;
 $folderName = $title;
@@ -104,9 +116,11 @@ $result = `convert $pngFilePath $tgaFilePath`;
 
 sub usage {
     print "Usage:\n";
-    print "  addPainting.pl pngFile\n";
-    print "Example:\n";
+    print "  addPainting.pl pngFile [paintingTitle paintingAuthor]\n";
+    print "User is prompted for title/author if none provided.\n";
+    print "Examples:\n";
     print "  addPainting.pl test.png\n";
+    print "  addPainting.pl test.png \"A Test Painting\" \"Joe Blow\"\n";
     die;
     }
 
