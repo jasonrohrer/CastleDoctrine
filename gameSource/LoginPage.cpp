@@ -227,7 +227,7 @@ void LoginPage::step() {
                                 char *ticketHash = getTicketHash();
 
                                 char *fullRequestURL = autoSprintf( 
-                                    "%s?action=check_hash&user_id=%d"
+                                    "%s?action=check_hmac&user_id=%d"
                                     "&%s",
                                     serverURL, userID, ticketHash );
                                 delete [] ticketHash;

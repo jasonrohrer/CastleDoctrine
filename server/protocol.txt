@@ -20,7 +20,7 @@ OK
 Where:
 minVersionNumber = minimum client version number compatible with this server
 userID = unique user ID number
-sequenceNumber = sequence number for sha1 secure hashing of download keys
+sequenceNumber = sequence number for hmac-sha1 secure hashing of download keys
                  to sign future transactions.  Any transactions using
                  lower sequence numbers will be denied as stale replays. 
 adminStatus = 0 or 1
@@ -32,9 +32,9 @@ To verify the identity of the user making each transaction, a hash of
 that user's original download ticket ID is included with the transaction call.
 That hash is constructed in the following way:
 
-  sha1( download_ticket_id . sequence_number )
+  HMAC_SHA1( download_ticket_id, sequence_number )
 
-Where the download ticket ID is concatonated with the ascii, base-10 
+Where the two inputs are the download ticket ID and the ascii, base-10 
 representation of the sequence number.
 
 Each transaction updates the sequence number associated with the user on
@@ -49,9 +49,9 @@ possession of the ticket ID (which only one person in the world should have).
 
 
 === Call:
-server.php?action=check_hash&user_id=[id number]
+server.php?action=check_hmac&user_id=[id number]
                             &sequence_number=[number]
-                            &ticket_hash=[sha1 hash, hex-encoded]
+                            &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
 
@@ -62,7 +62,7 @@ OK
 === Call:
 server.php?action=start_edit_house&user_id=[id number]
                                   &sequence_number=[number]
-                                  &ticket_hash=[sha1 hash, hex-encoded]
+                                  &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 houseMap
 vault_contents
@@ -123,9 +123,9 @@ LIST_NUMBER:1@10#2@20#5@25:SIGNATURE
 
 Where SIGNATURE is computed as follows:
 
-sha1( LIST_NUMBER . list_body . server_secret )
+HMAC_SHA1( server_secret, LIST_NUMBER . list_body )
 
-Where "." is concatonate.
+Where "." is concatonate, and the resulting HMAC is hex encoded.
 
 Each LIST_NUMBER can only be used once by a given user in a house 
 modification, and then it becomes stale.
@@ -147,7 +147,7 @@ music_seed = integer used to seed music generator for this house's song
 === Call:
 server.php?action=start_self_test&user_id=[id number]
                                  &sequence_number=[number]
-                                 &ticket_hash=[sha1 hash, hex-encoded]
+                                 &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
 or
@@ -165,7 +165,7 @@ Counts as a house ping.
 === Call:
 server.php?action=end_self_test&user_id=[id number]
                                &sequence_number=[number]
-                               &ticket_hash=[sha1 hash, hex-encoded]
+                               &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
 or
@@ -187,7 +187,7 @@ Counts as a house ping.
 === Call:
 server.php?action=end_edit_house&user_id=[id number]
                                 &sequence_number=[number]
-                                &ticket_hash=[sha1 hash, hex-encoded]
+                                &ticket_hmac=[hmac-sha1, hex-encoded]
 								&died=[0 or 1]
                                 &house_map=[house map ASCII string]
                                 &vault_contents=[vault contents ASCII string]
@@ -251,7 +251,7 @@ and other family members can be present on path)
 === Call:
 server.php?action=ping_house&user_id=[id number]
                             &sequence_number=[number]
-                            &ticket_hash=[sha1 hash, hex-encoded]
+                            &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
 or
@@ -275,7 +275,7 @@ server.php?action=list_houses&user_id=[id number]
                              &limit=[number]
 							 &name_search=[single word]
                              &sequence_number=[number]
-                             &ticket_hash=[sha1 hash, hex-encoded]
+                             &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
@@ -301,7 +301,7 @@ server.php?action=start_rob_house&user_id=[id number]
                                  &to_rob_user_id=[id number]
 								 &to_rob_character_name=[name]
                                  &sequence_number=[number]
-                                 &ticket_hash=[sha1 hash, hex-encoded]
+                                 &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 character_name
 houseMap
@@ -341,7 +341,7 @@ music_seed = integer used to seed music generator for this house's song
 === Call:
 server.php?action=end_rob_house&user_id=[id number]
                                &sequence_number=[number]
-                               &ticket_hash=[sha1 hash, hex-encoded]
+                               &ticket_hmac=[hmac-sha1, hex-encoded]
                                &success=[0(die) or 1(hit vault) or 2(leave)]
 							   &wife_killed=[0(false) or 1(true)]
                                &wife_robbed=[0(false) or 1(true)]
@@ -401,7 +401,7 @@ server.php?action=list_logged_robberies&user_id=[id number]
                                        &limit=[number]
                                        &name_search=[single word]
                                        &sequence_number=[number]
-                                       &ticket_hash=[sha1 hash, hex-encoded]
+                                       &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
@@ -425,7 +425,7 @@ If robber or victim is user_id, corresponding "_name" field is set to "You".
 === Call:
 server.php?action=get_robbery_log&user_id=[id number]
                                  &sequence_number=[number]
-                                 &ticket_hash=[sha1 hash, hex-encoded]
+                                 &ticket_hmac=[hmac-sha1, hex-encoded]
                                  &log_id=[id_number]
 Returns:
 robber_name
@@ -458,7 +458,7 @@ If robber or victim is user_id, corresponding "_name" field is set to "You".
 === Call:
 server.php?action=get_self_test_log&user_id=[id number]
                                    &sequence_number=[number]
-                                   &ticket_hash=[sha1 hash, hex-encoded]
+                                   &ticket_hmac=[hmac-sha1, hex-encoded]
                                    &house_owner_id=[id number]
 Returns:
 owner_name
@@ -486,7 +486,7 @@ This call is DENIED if user_id does not have admin status.
 === Call:
 server.php?action=list_auctions&user_id=[id number]
                                &sequence_number=[number]
-                               &ticket_hash=[sha1 hash, hex-encoded]
+                               &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 seconds_until_price_drop
 object_id#current_price
@@ -506,7 +506,7 @@ seconds_until_price_drop can be meaningless if list is empty
 === Call:
 server.php?action=buy_auction&user_id=[id number]
                              &sequence_number=[number]
-                             &ticket_hash=[sha1 hash, hex-encoded]
+                             &ticket_hmac=[hmac-sha1, hex-encoded]
                              &object_id=[id_number]
 Returns:
 purchase_price

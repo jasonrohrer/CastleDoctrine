@@ -135,8 +135,8 @@ else if( $action == "clear_log" ) {
 else if( $action == "check_user" ) {
     cd_checkUser();
     }
-else if( $action == "check_hash" ) {
-    cd_checkHash();
+else if( $action == "check_hmac" ) {
+    cd_checkHmac();
     }
 else if( $action == "start_edit_house" ) {
     cd_startEditHouse();
@@ -1408,7 +1408,7 @@ function cd_checkUser() {
 
 
 
-function cd_checkHash() {
+function cd_checkHmac() {
     if( ! cd_verifyTransaction() ) {
         return;
         }
@@ -1657,7 +1657,8 @@ function cd_startEditHouse() {
     global $serverSecretKey;
     
     $signature =
-        sha1( $last_price_list_number . $priceListBody . $serverSecretKey );
+        cd_hmac_sha1( $serverSecretKey,
+                      $last_price_list_number . $priceListBody );
 
 
     $must_self_test = 0;
@@ -2043,7 +2044,8 @@ function cd_endEditHouse() {
     global $serverSecretKey;
     
     $true_sig =
-        sha1( $last_price_list_number . $priceListBody . $serverSecretKey );
+        cd_hmac_sha1( $serverSecretKey,
+                      $last_price_list_number . $priceListBody );
 
     if( $true_sig != $sig ) {
         cd_log( "House check-in with badly-signed price list denied" );
@@ -3854,7 +3856,7 @@ function cd_getUserID() {
 
 
 
-// checks the ticket hash for the user ID and sequence number
+// checks the ticket HMAC for the user ID and sequence number
 // attached to a transaction (also makes sure user isn't blocked!)
 function cd_verifyTransaction() {
     global $tableNamePrefix;
@@ -3863,7 +3865,7 @@ function cd_verifyTransaction() {
 
     $sequence_number = cd_requestFilter( "sequence_number", "/\d+/" );
 
-    $ticket_hash = cd_requestFilter( "ticket_hash", "/[A-F0-9]+/i" );
+    $ticket_hmac = cd_requestFilter( "ticket_hmac", "/[A-F0-9]+/i" );
     
 
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -3903,14 +3905,14 @@ function cd_verifyTransaction() {
     $ticket_id = $row[ "ticket_id" ];
 
 
-    $correct_ticket_hash = sha1( $ticket_id . "$sequence_number" );
+    $correct_ticket_hmac = cd_hmac_sha1( $ticket_id, "$sequence_number" );
 
 
-    if( strtoupper( $correct_ticket_hash ) !=
-        strtoupper( $ticket_hash ) ) {
+    if( strtoupper( $correct_ticket_hmac ) !=
+        strtoupper( $ticket_hmac ) ) {
         cd_transactionDeny();
         cd_log( "Transaction denied for user_id $user_id, ".
-                "hash check failed" );
+                "hmac check failed" );
 
         return 0;
         }
@@ -5418,6 +5420,13 @@ function cd_countUsers() {
     return mysql_result( $result, 0, 0 );
     }
 
+
+
+
+function cd_hmac_sha1( $inKey, $inData ) {
+    return hash_hmac( "sha1", 
+                      $inData, $inKey );
+    }
 
 
 

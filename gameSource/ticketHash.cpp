@@ -16,13 +16,13 @@ char *getTicketHash() {
         codeToHash = downloadCode;
         }
 
-    char *toHash = autoSprintf( "%s%d", codeToHash, serverSequenceNumber );
+    char *toHash = autoSprintf( "%d", serverSequenceNumber );
     
-    char *hash = computeSHA1Digest( toHash );
+    char *hash = hmac_sha1( codeToHash, toHash );
     
     delete [] toHash;
 
-    char *result = autoSprintf( "sequence_number=%d&ticket_hash=%s",
+    char *result = autoSprintf( "sequence_number=%d&ticket_hmac=%s",
                                 serverSequenceNumber,
                                 hash );
     delete [] hash;
