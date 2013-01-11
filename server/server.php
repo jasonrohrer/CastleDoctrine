@@ -5307,7 +5307,11 @@ function cd_checkPassword( $inFunctionName ) {
     $cookieName = $tableNamePrefix . "cookie_password_hash";
 
     
+    $passwordSent = false;
+    
     if( isset( $_REQUEST[ "password" ] ) ) {
+        $passwordSent = true;
+        
         $password = $_REQUEST[ "password" ];
 
         // generate a new hash cookie from this password
@@ -5374,7 +5378,7 @@ function cd_checkPassword( $inFunctionName ) {
         }
     else {
         
-        if( $enableYubikey ) {
+        if( $passwordSent && $enableYubikey ) {
             global $yubikeyIDs, $yubicoClientID, $yubicoSecretKey,
                 $serverSecretKey;
             
