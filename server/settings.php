@@ -20,7 +20,7 @@ $ticketServerURL = "http://localhost/jcr13/ticketServer/server.php";
 
 // The ticket server encrypts the ticket IDs that it returns to us
 // using this shared secret
-$sharedEncryptionSecret = "secret2";
+$sharedEncryptionSecret = "19fbc6168268d7a80945e35d999f0d0ddae4cdff";
 
 
 
