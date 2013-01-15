@@ -17,6 +17,14 @@ include( "settings.php" );
 // no end-user settings below this point
 
 
+// for use in readable base-32 encoding
+// elimates 0/O and 1/I
+global $readableBase32DigitArray;
+$readableBase32DigitArray =
+    array( "2", "3", "4", "5", "6", "7", "8", "9",
+           "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M",
+           "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" );
+
 
 // no caching
 //header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -1280,8 +1288,8 @@ function cd_checkUser() {
             "?action=get_ticket_id".
             "&email=$email" );
 
-        // Run a regexp filter to remove non-hex characters.
-        $match = preg_match( "/[0-9A-F]+/", $result, $matches );
+        // Run a regexp filter to remove non-base-32 characters.
+        $match = preg_match( "/[A-HJ-NP-Z2-9]+/", $result, $matches );
         
         if( $result == "DENIED" || $match != 1 ) {
             echo "DENIED";
@@ -1295,30 +1303,49 @@ function cd_checkUser() {
 
             // decrypt it
 
-            $ticketLength = strlen( $ticket_id );
-    
-            $hexToMix = strtoupper( substr( md5( $sharedEncryptionSecret ),
-                                            0, $ticketLength  ) );
+            $ticket_id_bits = cd_readableBase32DecodeToBitString( $ticket_id );
+
+            $ticketLengthBits = strlen( $ticket_id_bits );
 
 
-            
-            $ticketArray = str_split( $ticket_id );
-            $mixArray = str_split( $hexToMix );
-            $resultArray = array();
-            for( $i=0; $i<$ticketLength; $i++ ) {
-                $digit = strtoupper( dechex(
-                    hexdec( $ticketArray[$i] ) ^ hexdec( $mixArray[$i] ) ) );
-                $resultArray[] = $digit;
+            // generate enough bits by hashing shared secret repeatedly
+            $hexToMixBits = "";
+
+            $runningSecret = sha1( $sharedEncryptionSecret );
+            while( strlen( $hexToMixBits ) < $ticketLengthBits ) {
+
+                $newBits = cd_hexDecodeToBitString( $runningSecret );
+
+                $hexToMixBits = $hexToMixBits . $newBits;
+
+                $runningSecret = sha1( $runningSecret );
                 }
-            $ticket_id = implode( $resultArray );
 
-            // back to human-readable, all letter form
-            $digitArray =
-                array( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" );
-            $letterArray =
-                array( "W", "H", "J", "K", "X", "M", "N", "P", "T", "Y" );
-            
-            $ticket_id = str_replace( $digitArray, $letterArray, $ticket_id );
+            // trim down to bits that we need
+            $hexToMixBits = substr( $hexToMixBits, 0, $ticketLengthBits );
+
+            $mixBits = str_split( $hexToMixBits );
+            $ticketBits = str_split( $ticket_id_bits );
+
+            // bitwise xor
+            $i = 0;
+            foreach( $mixBits as $bit ) {
+                if( $bit == "1" ) {
+                    if( $ticket_id_bits[$i] == "1" ) {
+                
+                        $ticketBits[$i] = "0";
+                        }
+                    else {
+                        $ticketBits[$i] = "1";
+                        }
+                    }
+                $i++;
+                }
+
+            $ticket_id_bits = implode( $ticketBits );
+
+            $ticket_id =
+                cd_readableBase32EncodeFromBitString( $ticket_id_bits );
             }
         }
 
@@ -5505,6 +5532,80 @@ function cd_countUsers() {
 function cd_hmac_sha1( $inKey, $inData ) {
     return hash_hmac( "sha1", 
                       $inData, $inKey );
+    }
+
+
+
+
+
+// encodes a string of 0s and 1s into an ASCII readable-base32 string 
+function cd_readableBase32EncodeFromBitString( $inBitString ) {
+    global $readableBase32DigitArray;
+
+
+    // chunks of 5 bits
+    $chunksOfFive = str_split( $inBitString, 5 );
+
+    $encodedString = "";
+    foreach( $chunksOfFive as $chunk ) {
+        $index = bindec( $chunk );
+
+        $encodedString = $encodedString . $readableBase32DigitArray[ $index ];
+        }
+    
+    return $encodedString;
+    }
+ 
+
+
+// decodes an ASCII readable-base32 string into a string of 0s and 1s 
+function cd_readableBase32DecodeToBitString( $inBase32String ) {
+    global $readableBase32DigitArray;
+    
+    $digits = str_split( $inBase32String );
+
+    $bitString = "";
+
+    foreach( $digits as $digit ) {
+        $index = array_search( $digit, $readableBase32DigitArray );
+
+        $binDigitString = decbin( $index );
+
+        // pad with 0s
+        $binDigitString =
+            substr( "00000", 0, 5 - strlen( $binDigitString ) ) .
+            $binDigitString;
+
+        $bitString = $bitString . $binDigitString;
+        }
+
+    return $bitString;
+    }
+ 
+ 
+ 
+// decodes a ASCII hex string into an array of 0s and 1s 
+function cd_hexDecodeToBitString( $inHexString ) {
+        global $readableBase32DigitArray;
+    
+    $digits = str_split( $inHexString );
+
+    $bitString = "";
+
+    foreach( $digits as $digit ) {
+        $index = hexdec( $digit );
+
+        $binDigitString = decbin( $index );
+
+        // pad with 0s
+        $binDigitString =
+            substr( "0000", 0, 4 - strlen( $binDigitString ) ) .
+            $binDigitString;
+
+        $bitString = $bitString . $binDigitString;
+        }
+
+    return $bitString;
     }
 
 
