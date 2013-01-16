@@ -48,7 +48,7 @@ LoginPage::LoginPage()
           mTicketField( mainFontFixed, mainFont, 0, -1, 13, true,
                         translate( "downloadCode" ),
                         // allow only ticket code characters
-                        "ABCDEFWHJKXMNPTY" ),
+                        "23456789ABCDEFGHJKLMNPQRSTUVWXYZ-" ),
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
           mHaveServerURL( false ),
           mLoggedIn( false ),

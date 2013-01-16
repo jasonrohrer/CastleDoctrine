@@ -659,7 +659,7 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
-            "ticket_id CHAR(10) NOT NULL," .
+            "ticket_id VARCHAR(255) NOT NULL," .
             "email VARCHAR(255) NOT NULL," .
             "character_name_history LONGTEXT NOT NULL,".
             "admin TINYINT NOT NULL,".

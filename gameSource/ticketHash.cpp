@@ -16,10 +16,26 @@ char *getTicketHash() {
         codeToHash = downloadCode;
         }
 
+    
+    // strip out "-" separators
+    int numParts;
+    char **codeParts = split( codeToHash, "-", &numParts );
+    
+    char *pureCode =
+        join( codeParts, numParts, "" );
+    
+    for( int i=0; i<numParts; i++ ) {
+        delete [] codeParts[i];
+        }
+    delete [] codeParts;
+
+
+
     char *toHash = autoSprintf( "%d", serverSequenceNumber );
     
-    char *hash = hmac_sha1( codeToHash, toHash );
+    char *hash = hmac_sha1( pureCode, toHash );
     
+    delete [] pureCode;
     delete [] toHash;
 
     char *result = autoSprintf( "sequence_number=%d&ticket_hmac=%s",
