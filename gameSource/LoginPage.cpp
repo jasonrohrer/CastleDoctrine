@@ -40,12 +40,12 @@ static int minRequestSteps;
 
 
 LoginPage::LoginPage()
-        : mEmailField( mainFontFixed, mainFont, 0, 1, 13, false, 
+        : mEmailField( mainFontFixed, mainFont, 0, 1, 16, false, 
                        translate( "email" ),
                        NULL,
                        // forbid only spaces
                        " "),
-          mTicketField( mainFontFixed, mainFont, 0, -1, 13, true,
+          mTicketField( mainFontFixed, mainFont, 0, -1, 16, true,
                         translate( "downloadCode" ),
                         // allow only ticket code characters
                         "23456789ABCDEFGHJKLMNPQRSTUVWXYZ-" ),
