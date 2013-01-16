@@ -49,6 +49,7 @@ LoginPage::LoginPage()
                         translate( "downloadCode" ),
                         // allow only ticket code characters
                         "23456789ABCDEFGHJKLMNPQRSTUVWXYZ-" ),
+          mPasteButton( mainFont, 6, -1, translate( "paste" ), 'v', 'V' ),
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
           mHaveServerURL( false ),
           mLoggedIn( false ),
@@ -61,10 +62,12 @@ LoginPage::LoginPage()
     minRequestSteps = (int)( 60 / frameRateFactor );
     
     addComponent( &mLoginButton );
+    addComponent( &mPasteButton );
     addComponent( &mEmailField );
     addComponent( &mTicketField );
     
     mLoginButton.addActionListener( this );
+    mPasteButton.addActionListener( this );
     }
 
           
@@ -85,6 +88,9 @@ char LoginPage::getLoginDone() {
 
 
 void LoginPage::step() {
+    mPasteButton.setVisible( isClipboardSupported() &&
+                             mTicketField.isFocused() );
+        
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
         }
@@ -437,6 +443,14 @@ void LoginPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mLoginButton ) {
         startLogin();
         }
+    else if( inTarget == &mPasteButton ) {
+        char *clipboardText = getClipboardText();
+        
+        mTicketField.setText( clipboardText );
+    
+        delete [] clipboardText;
+        }
+    
     }
 
 

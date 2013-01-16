@@ -2,6 +2,7 @@
 
 #include "TextField.h"
 #include "TextButton.h"
+#include "KeyEquivalentTextButton.h"
 
 
 #include "minorGems/ui/event/ActionListener.h"
@@ -44,6 +45,8 @@ class LoginPage : public GamePage, public ActionListener {
         TextField mTicketField;
 
         TextField *mFields[2];
+
+        KeyEquivalentTextButton mPasteButton;
         
         TextButton mLoginButton;
 

@@ -17,6 +17,10 @@ quitMessage "Press ESC to Quit"
 
 email "Email:"
 downloadCode "Download Code:"
+
+paste "Paste"
+
+
 loginButton "Login"
 
 loginMessage "Logging in..."
