@@ -114,6 +114,10 @@ class TextField : public PageComponent, public ActionListenerList {
         void clearArrowRepeat();
         
         
+        // returns 0 if character completely forbidden by field rules
+        unsigned char processCharacter( unsigned char inASCII );
+        
+        
 
         // clever (!) way of handling focus?
 

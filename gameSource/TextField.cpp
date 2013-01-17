@@ -6,6 +6,7 @@
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SimpleVector.h"
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
@@ -101,8 +102,21 @@ TextField::~TextField() {
 void TextField::setText( const char *inText ) {
     delete [] mText;
     
-    mText = stringDuplicate( inText );
+    // obeys same rules as typing (skip blocked characters)
+    SimpleVector<char> filteredText;
     
+    int length = strlen( inText );
+    for( int i=0; i<length; i++ ) {
+        unsigned char processedChar = processCharacter( inText[i] );
+        
+        if( processedChar != 0 ) {
+            filteredText.push_back( processedChar );
+            }
+        }
+    
+
+    mText = filteredText.getElementString();
+
     mCursorPosition = strlen( mText );
 
     // hold-downs broken
@@ -428,6 +442,49 @@ void TextField::pointerUp( float inX, float inY ) {
     }
 
 
+
+
+unsigned char TextField::processCharacter( unsigned char inASCII ) {
+
+    unsigned char processedChar = inASCII;
+        
+    if( mForceCaps ) {
+        processedChar = toupper( inASCII );
+        }
+
+    if( mForbiddenChars != NULL ) {
+        int num = strlen( mForbiddenChars );
+            
+        for( int i=0; i<num; i++ ) {
+            if( mForbiddenChars[i] == processedChar ) {
+                return 0;
+                }
+            }
+        }
+        
+
+    if( mAllowedChars != NULL ) {
+        int num = strlen( mAllowedChars );
+            
+        char allowed = false;
+            
+        for( int i=0; i<num; i++ ) {
+            if( mAllowedChars[i] == processedChar ) {
+                allowed = true;
+                break;
+                }
+            }
+
+        if( !allowed ) {
+            return 0;
+            }
+        }
+
+    return processedChar;
+    }
+
+
+
 void TextField::keyDown( unsigned char inASCII ) {
     if( !mFocused ) {
         return;
@@ -454,40 +511,7 @@ void TextField::keyDown( unsigned char inASCII ) {
         }
     else if( inASCII >= 32 ) {
 
-        unsigned char processedChar = inASCII;
-        
-        if( mForceCaps ) {
-            processedChar = toupper( inASCII );
-            }
-
-        if( mForbiddenChars != NULL ) {
-            int num = strlen( mForbiddenChars );
-            
-            for( int i=0; i<num; i++ ) {
-                if( mForbiddenChars[i] == processedChar ) {
-                    return;
-                    }
-                }
-            }
-        
-
-        if( mAllowedChars != NULL ) {
-            int num = strlen( mAllowedChars );
-            
-            char allowed = false;
-            
-            for( int i=0; i<num; i++ ) {
-                if( mAllowedChars[i] == processedChar ) {
-                    allowed = true;
-                    break;
-                    }
-                }
-
-            if( !allowed ) {
-                return;
-                }
-            }
-    
+        unsigned char processedChar = processCharacter( inASCII );    
 
         // add to it
         char *oldText = mText;
