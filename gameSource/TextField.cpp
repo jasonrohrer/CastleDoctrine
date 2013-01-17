@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/drawUtils.h"
 #include "minorGems/util/stringUtils.h"
@@ -432,7 +433,11 @@ void TextField::keyDown( unsigned char inASCII ) {
         return;
         }
     
-
+    if( isCommandKeyDown() ) {
+        // not a normal key stroke
+        // ignore it as input
+        return;
+        }
     
 
     if( inASCII == 127 || inASCII == 8 ) {
