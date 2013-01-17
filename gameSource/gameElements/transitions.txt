@@ -28,20 +28,20 @@ pit # cat => 2
 pit # player => 2
 
 
-trapdoor:2 # pitbull => 2
-trapdoor:2 # chihuahua => 2
-trapdoor:2 # cat => 2
-trapdoor:2 # player => 2
+trapdoor:1 # pitbull => 2
+trapdoor:1 # chihuahua => 2
+trapdoor:1 # cat => 2
+trapdoor:1 # player => 2
 
-trapdoor:1 # pitbull:2 => 20
-trapdoor:1 # chihuahua:2 => 20
-trapdoor:1 # cat:2 => 20
-trapdoor:1 # player:2 => 20
+trapdoor:2 # pitbull:2 => 20
+trapdoor:2 # chihuahua:2 => 20
+trapdoor:2 # cat:2 => 20
+trapdoor:2 # player:2 => 20
 
-trapdoor:0 # pitbull:2 => 20
-trapdoor:0 # chihuahua:2 => 20
-trapdoor:0 # cat:2 => 20
-trapdoor:0 # player:2 => 20
+trapdoor:2 # pitbull:2 => 20
+trapdoor:2 # chihuahua:2 => 20
+trapdoor:2 # cat:2 => 20
+trapdoor:2 # player:2 => 20
 
 
 
