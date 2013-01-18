@@ -1946,7 +1946,6 @@ function cd_endEditHouse() {
     $old_backpack_contents = $row[ "backpack_contents" ];
     $old_gallery_contents = $row[ "gallery_contents" ];
     
-    $edit_count ++;
     
     $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
 
@@ -2005,11 +2004,36 @@ function cd_endEditHouse() {
         $numEdits = 0;
         }
 
+    
+    $sellArray = preg_split( "/#/", $sell_list );
+
+    $numSold = count( $sellArray );
+        
+    
+    if( $sell_list == "#" ) {
+        $numSold = 0;
+        }
 
     
-    if( $numEdits == 0 && ! $self_test_running ) {
+    $purchaseArray = preg_split( "/#/", $purchase_list );
+
+    $numPurchases = count( $purchaseArray );
+        
+    
+    if( $purchase_list == "#" ) {
+        $numPurchases = 0;
+        }
+
+    
+    if( $numEdits == 0 && $numSold == 0 && $numPurchases == 0 &&
+        $old_backpack_contents == $backpack_contents &&
+        $old_vault_contents == $vault_contents &&
+        ! $self_test_running ) {
         // don't need to check edit or update anything,
-        // because there wasn't an edit.
+        // because there wasn't an edit, or a sale, or a purchase.
+        // nor was inventory moved around in backpack or vault
+        // nor was a forced self-test running (post robbery, which
+        // counts as an edit even if the owner changed nothing)
 
         // (case where user visited house without changing anything)
 
@@ -2030,6 +2054,11 @@ function cd_endEditHouse() {
         return;
         }
     
+
+    if( $numEdits > 0 || $self_test_running ) {
+        // don't count purchases or sales or inventory transfer as edits
+        $edit_count ++;
+        }
 
     
 
@@ -2229,14 +2258,7 @@ function cd_endEditHouse() {
     // player may have used money from loot sold to buy house edits
     global $resaleRate;
     
-    $sellArray = preg_split( "/#/", $sell_list );
-
-    $numSold = count( $sellArray );
-        
     
-    if( $sell_list == "#" ) {
-        $numSold = 0;
-        }
     
     for( $i=0; $i<$numSold; $i++ ) {
         $sellParts = preg_split( "/:/", $sellArray[$i] );
@@ -2391,14 +2413,6 @@ function cd_endEditHouse() {
     // NEXT:
     // Check that purchases don't exceed loot value,
 
-    $purchaseArray = preg_split( "/#/", $purchase_list );
-
-    $numPurchases = count( $purchaseArray );
-        
-    
-    if( $purchase_list == "#" ) {
-        $numPurchases = 0;
-        }
     
     for( $i=0; $i<$numPurchases; $i++ ) {
         $purchaseParts = preg_split( "/:/", $purchaseArray[$i] );
