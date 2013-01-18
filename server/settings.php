@@ -164,7 +164,15 @@ $defaultPrices = array(
     array( 2026, 10000, 1, "Flicker --- by American McGee" ),
     array( 2027, 10000, 1, "Xian --- by American McGee" ),
     array( 2028, 10000, 1, "Whoops --- by Anthony Burch" ),
-    array( 2029, 10000, 1, "Today --- by Nick Montfort" )
+    array( 2029, 10000, 1, "Today --- by Nick Montfort" ),
+    array( 2030, 10000, 1, "Felicity --- by Cactus" ),
+    array( 2031, 10000, 1, "Checker --- by Chris Hecker" ),
+    array( 2032, 10000, 1, "Warhol --- by Victor Stone" ),
+    array( 2033, 10000, 1, "Ass Over Tea Kettle --- by Victor Stone" ),
+    array( 2034, 10000, 1, "Study in Blue --- by Rod Humble" ),
+    array( 2035, 10000, 1, "Portrait of a Raindrop --- by Rod Humble" ),
+    array( 2036, 10000, 1, "The Storm --- by Rod Humble" ),
+    array( 2037, 10000, 1, "The Escape --- by Rod Humble" )
     );
 
     
