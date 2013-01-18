@@ -32,7 +32,9 @@ SimpleVector<const char *> LiveHousePage::sPendingTestRequests;
 
 LiveHousePage::LiveHousePage()
         : mLastActionTime( time( NULL ) ),
-          mCheckoutStale( false ) {
+          mCheckoutStale( false ),
+          mStartTestFailed( false ),
+          mCurrentRequestForStartTest( false ) {
     }
 
 
@@ -54,6 +56,8 @@ void LiveHousePage::makeActive( char inFresh ) {
     // this page becoming active is an action
     mLastActionTime = time( NULL );
     mCheckoutStale = false;
+    mStartTestFailed = false;
+    mCurrentRequestForStartTest = false;
     }
 
 
@@ -87,6 +91,9 @@ void LiveHousePage::step() {
             switch( result ) {
                 case -1:
                     mCheckoutStale = true;
+                    if( mCurrentRequestForStartTest ) {
+                        mStartTestFailed = true;
+                        }
                     printf( "Web request FAILED!\n" );
                     break;
                 case 1: {
@@ -98,6 +105,9 @@ void LiveHousePage::step() {
                     // have sent a ping or a self-test start/end
                     if( strstr( response, "OK" ) == NULL ) {
                         mCheckoutStale = true;
+                        if( mCurrentRequestForStartTest ) {
+                            mStartTestFailed = true;
+                            }
                         }
 
                     delete [] response;
@@ -112,6 +122,10 @@ void LiveHousePage::step() {
 
         const char *command = *( sPendingTestRequests.getElement( 0 ) );
         sPendingTestRequests.deleteElement( 0 );        
+
+        if( strcmp( command, "start_self_test" ) == 0 ) {
+            mCurrentRequestForStartTest = true;
+            }
 
         char *ticketHash = getTicketHash();
             

@@ -1200,7 +1200,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == loadBackpackPage ) {
-            if( loadBackpackPage->showGridToolPicker() ) {
+            if( loadBackpackPage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( loadBackpackPage->showGridToolPicker() ) {
                 toolPickerGridPage->setLootValue( 
                     loadBackpackPage->getLootValue() );
                 toolPickerGridPage->pullFromPicker( 
@@ -1238,7 +1242,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == objectPickerGridPage ) {
-            if( objectPickerGridPage->getDone() ) {
+            if( objectPickerGridPage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( objectPickerGridPage->getDone() ) {
                 // object picked
                 
                 int newObject = objectPickerGridPage->getSelectedObject();
@@ -1252,7 +1260,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == toolPickerGridPage ) {
-            if( toolPickerGridPage->getDone() ) {
+            if( toolPickerGridPage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( toolPickerGridPage->getDone() ) {
                 // tool picked
                 
                 int newTool = toolPickerGridPage->getSelectedObject();
@@ -1266,7 +1278,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == auctionPage ) {
-            if( auctionPage->getDone() ) {
+            if( auctionPage->isStale() ) {
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( auctionPage->getDone() ) {
                 // done with auctions, back to editor
                 currentGamePage = editHousePage;
                 currentGamePage->base_makeActive( true );
@@ -1296,7 +1312,17 @@ void drawFrame( char inUpdate ) {
                 }
             }
         else if( currentGamePage == selfHouseTestPage ) {
-            if( selfHouseTestPage->isStale() ) {
+            if( selfHouseTestPage->didStartTestFail() ) {
+                // starting self test failed (stale checkout)
+                // but player was not in danger when this happened
+                // (just started self test)
+                // So don't display a dead message
+                currentGamePage = staleHousePage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( selfHouseTestPage->isStale() ) {
+                // house test stale, and starting the test didn't fail
+                // player died from letting the self test go stale
                 currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
                 }

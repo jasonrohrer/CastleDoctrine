@@ -24,6 +24,10 @@ class LiveHousePage : public GamePage {
         virtual char isStale() {
             return mCheckoutStale;
             }
+
+        virtual char didStartTestFail() {
+            return mStartTestFailed;
+            }
         
         // tells server that owner is self testing house
         virtual void startSelfTest();
@@ -64,6 +68,11 @@ class LiveHousePage : public GamePage {
         // becomes true when a ping fails
         char mCheckoutStale;
         
+        // true if starting a self test failed
+        char mStartTestFailed;
+        
+        char mCurrentRequestForStartTest;
+
 
         // static, because one page might need to finish up a request
         // started by a previous, now-closed page
