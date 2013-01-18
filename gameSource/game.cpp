@@ -72,6 +72,8 @@ CustomRandomSource randSource;
 
 #include "musicPlayer.h"
 
+#include "seededMusic.h"
+
 
 
 GamePage *currentGamePage = NULL;
@@ -1319,12 +1321,14 @@ void drawFrame( char inUpdate ) {
                 // So don't display a dead message
                 currentGamePage = staleHousePage;
                 currentGamePage->base_makeActive( true );
+                clearNotes();
                 }
             else if( selfHouseTestPage->isStale() ) {
                 // house test stale, and starting the test didn't fail
                 // player died from letting the self test go stale
                 currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
+                clearNotes();
                 }
             else if( selfHouseTestPage->getDone() ) {
                 char *houseMap = editHousePage->getHouseMap();
@@ -1513,6 +1517,7 @@ void drawFrame( char inUpdate ) {
             if( robHousePage->isStale() ) {
                 currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
+                clearNotes();
                 }
             else if( robHousePage->getDone() ) {
                 char *houseMap = robHousePage->getHouseMap();

@@ -126,6 +126,9 @@ void LiveHousePage::step() {
         if( strcmp( command, "start_self_test" ) == 0 ) {
             mCurrentRequestForStartTest = true;
             }
+        else {
+            mCurrentRequestForStartTest = false;
+            }
 
         char *ticketHash = getTicketHash();
             
@@ -169,6 +172,8 @@ void LiveHousePage::step() {
                                                fullRequestURL, 
                                                NULL );
                 
+                mCurrentRequestForStartTest = false;
+
                 printf( "Sending web request:  %s\n", fullRequestURL );
                 
                 delete [] fullRequestURL;
