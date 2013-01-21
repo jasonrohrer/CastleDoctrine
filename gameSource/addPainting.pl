@@ -110,7 +110,7 @@ $tgaFilePath = "$path/$tgaFileName";
 
 print "TGA file is in $tgaFilePath\n";
 
-$result = `convert $pngFilePath $tgaFilePath`;
+$result = `convert $pngFilePath -type TrueColor $tgaFilePath`;
 
 
 
