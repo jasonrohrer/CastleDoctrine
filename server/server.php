@@ -196,6 +196,9 @@ else if( $action == "count_users" ) {
 else if( $action == "show_data" ) {
     cd_showData();
     }
+else if( $action == "show_prices" ) {
+    cd_showPrices();
+    }
 else if( $action == "show_detail" ) {
     cd_showDetail();
     }
@@ -4488,14 +4491,7 @@ function cd_formatBytes( $inNumBytes ) {
     }
 
 
-
-function cd_showData() {
-
-    global $tableNamePrefix, $remoteIP;
-
-
-    cd_checkPassword( "show_data" );
-
+function cd_generateHeader() {
     $bytesUsed = cd_getTotalSpace();
 
     $sizeString = cd_formatBytes( $bytesUsed );
@@ -4506,12 +4502,27 @@ function cd_showData() {
     
     echo "<table width='100%' border=0><tr>".
         "<td>[<a href=\"server.php?action=show_data" .
-            "\">Main</a>]</td>".
+            "\">Main</a>] ".
+            "[<a href=\"server.php?action=show_prices" .
+            "\">Prices</a>]</td>".
         "<td align=center>$sizeString ($perUserString per user)</td>".
         "<td align=right>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
+    }
 
+
+
+function cd_showData() {
+
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_data" );
+
+    
+    cd_generateHeader();
+    
     
     $search = cd_requestFilter( "search", "/[A-Z0-9_@. -]+/i" );
     $order_by = cd_requestFilter( "order_by", "/[A-Z_]+/i", "last_ping_time" );
@@ -4551,8 +4562,27 @@ function cd_showData() {
 
         echo "<hr>";
         }
-    
 
+
+    echo "<hr>";
+
+    echo "<a href=\"server.php?action=show_log\">".
+        "Show log</a>";
+    echo "<hr>";
+    echo "Generated for $remoteIP\n";
+    
+    }
+
+
+    
+function cd_showPrices() {
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_prices" );
+
+    cd_generateHeader();
+    
     $query = "SELECT object_id, price, in_gallery, order_number, note ".
         "FROM $tableNamePrefix"."prices ORDER BY order_number;";
     $result = cd_queryDatabase( $query );
@@ -4907,7 +4937,7 @@ function cd_defaultPrices() {
 
         cd_log( "Default prices restored by $remoteIP" );
     
-        cd_showData();
+        cd_showPrices();
         }
     else {
         cd_nonFatalError( "Double confirmation boxes not checked to restore ".
@@ -4941,7 +4971,7 @@ function cd_updatePrices() {
             $in_gallery = cd_requestFilter( "in_gallery_$i", "/1/", "0" );
             $order_number = cd_requestFilter( "order_number_$i", "/\d+/" );
             
-            $note = cd_requestFilter( "note_$i", "/[A-Z0-9.' _-]+/i" );
+            $note = cd_requestFilter( "note_$i", "/[A-Z0-9.' _\-,!?()]+/i" );
             
             if( $id != "" && $price != "" && $order_number != "" ) {
 
@@ -5012,7 +5042,7 @@ function cd_updatePrices() {
 
 
     
-    cd_showData();
+    cd_showPrices();
     }
 
 
@@ -5046,7 +5076,7 @@ function cd_deletePrice() {
         cd_nonFatalError( "Failed to delete price for '$object_id'" );
         }
     
-    cd_showData();
+    cd_showPrices();
     }
 
 
