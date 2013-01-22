@@ -16,25 +16,11 @@ fi
 
 rm -rf mac
 
-mkdir mac
+
+./makeBaseDistributionFolder $1
 
 
-
-mkdir mac/CastleDoctrine_$1
-mkdir mac/CastleDoctrine_$1/graphics
-mkdir mac/CastleDoctrine_$1/gameElements
-mkdir mac/CastleDoctrine_$1/settings
-mkdir mac/CastleDoctrine_$1/languages
-
-
-
-cp ../gameSource/graphics/*.tga mac/CastleDoctrine_$1/graphics
-cp ../gameSource/settings/*.ini mac/CastleDoctrine_$1/settings
-cp ../gameSource/languages/*.txt mac/CastleDoctrine_$1/languages
-cp ../gameSource/language.txt mac/CastleDoctrine_$1
-
-cp -r ../gameSource/gameElements/* mac/CastleDoctrine_$1/gameElements/
-
+mv base mac
 
 
 cp -r macOSX/CastleDoctrine.app mac/CastleDoctrine_$1/CastleDoctrine.app

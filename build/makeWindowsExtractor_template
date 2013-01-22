@@ -1,7 +1,7 @@
 
 
-7z a -tzip StarFilledSky_%version%_Windows.zip StarFilledSky_%version% -r
+7z a -tzip CastleDoctrine_%version%_Windows.zip CastleDoctrine_%version% -r
 
-makesfx.exe /zip="StarFilledSky_%version%_Windows.zip" /sfx="StarFilledSky_%version%_Windows.exe" /title="Inside a Star-filled Sky %version%" /website="http://insideastarfilledsky.net" /intro="This will extract the game." /defaultpath="$curdir$" /icon="..\win32\icon_installer.ico"
+makesfx.exe /zip="CastleDoctrine_%version%_Windows.zip" /sfx="CastleDoctrine_%version%_Windows.exe" /title="The Castle Doctrine %version%" /website="http://thecastledoctrine.net" /intro="This will extract the game." /defaultpath="$curdir$" /icon="..\win32\icon_installer.ico"
 
 pause
