@@ -226,7 +226,6 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
     else if( !getPricesStale() ) {
         // don't allow user to pick items to buy if prices are stale
 
-        char hit = false;
         for( int i=0; i<NUM_AUCTION_SLOTS; i++ ) {
             if( inTarget == mAuctionSlots[i] ) {
                 
@@ -268,7 +267,6 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
                     }
                 
 
-                hit = true;
                 break;
                 }
             }
