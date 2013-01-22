@@ -8,7 +8,7 @@
 #
 
 
-if [ $# -lt 2 ] ; then
+if [ $# -lt 1 ] ; then
    echo "Usage: $0 release_name"
    exit 1
 fi
@@ -23,9 +23,9 @@ mv base windows
 
 
 
-cp ../gameSource/StarFilledSky.exe windows/StarFilledSky_$1/
+cp ../gameSource/CastleDoctrine.exe windows/CastleDoctrine_$1/
 
-cp win32/*.dll windows/StarFilledSky_$1/
+cp win32/*.dll windows/CastleDoctrine_$1/
 
 
 g++ -o unix2dos unix2dos.c 
@@ -42,12 +42,6 @@ do
 done
 
 
-
-#./unix2dosScript "StarFilledSky_$1/Readme.txt"
-#./unix2dosScript "StarFilledSky_$1/Upgrading.txt"
-
-
-zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky_$1
 
 
 
