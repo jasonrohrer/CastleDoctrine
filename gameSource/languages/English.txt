@@ -1,6 +1,8 @@
 writeFailed "Error:  game folder is read-only"
 
 
+loading "Loading..."
+
 
 
 pauseMessage1 "Press ENTER to resume"

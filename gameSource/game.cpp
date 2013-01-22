@@ -114,6 +114,8 @@ double viewHeightFraction;
 
 int screenW, screenH;
 
+char initDone = false;
+
 float mouseSpeed;
 
 char musicOff;
@@ -275,7 +277,27 @@ char *getHashSalt() {
 
 
 
+void initDrawString( int inWidth, int inHeight ) {
+    mainFont = new Font( getFontTGAFileName(), 1, 4, false );
 
+    setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
+
+    viewHeightFraction = inHeight / (double)inWidth;
+
+    // monitors vary in width relative to height
+    // keep visible vertical view span constant (15)
+    // which is what it would be for a view width of 20 at a 4:3 aspect
+    // ratio
+    viewWidth = 15 * 1.0 / viewHeightFraction;
+    
+    
+    setViewSize( viewWidth );
+    }
+
+
+void freeDrawString() {
+    delete mainFont;
+    }
 
 
 
@@ -352,7 +374,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     
     
-    mainFont = new Font( getFontTGAFileName(), 1, 4, false );
     mainFontFixed = new Font( getFontTGAFileName(), 1, 4, true );
     
     tinyFont = new Font( "font_4_8.tga", 1, 2, false );
@@ -473,11 +494,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         setMusicLoudness( 1.0 );
         }
     setSoundPlaying( true );
+
+    initDone = true;
     }
 
 
 void freeFrameDrawer() {
-    delete mainFont;
     delete mainFontFixed;
     delete tinyFont;
     
@@ -1825,17 +1847,24 @@ void drawString( const char *inString ) {
 
     doublePair messagePos = lastScreenViewCenter;
 
-    messagePos.x -= viewWidth / 2;
+    TextAlignment align = alignCenter;
+    
+    if( initDone ) {
+        // stick messages in corner
+        messagePos.x -= viewWidth / 2;
         
-    messagePos.x +=  0.25;
+        messagePos.x +=  0.25;
     
 
     
-    messagePos.y += (viewWidth * viewHeightFraction) /  2;
+        messagePos.y += (viewWidth * viewHeightFraction) /  2;
     
-    messagePos.y -= 0.4375;
-    messagePos.y -= 0.5;
-    
+        messagePos.y -= 0.4375;
+        messagePos.y -= 0.5;
+
+        align = alignLeft;
+        }
+    // else leave centered
 
     int numLines;
     
@@ -1844,7 +1873,7 @@ void drawString( const char *inString ) {
     for( int i=0; i<numLines; i++ ) {
         
 
-        mainFont->drawString( lines[i], messagePos, alignLeft );
+        mainFont->drawString( lines[i], messagePos, align );
         messagePos.y -= 0.75;
         
         delete [] lines[i];
