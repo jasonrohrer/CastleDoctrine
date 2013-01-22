@@ -534,7 +534,7 @@ function cd_restoreDefaultPrices() {
                     }
                 
                 if( !$foundOwned ) {
-                    cd_startAuction( $object_id, $price );
+                    cd_startAuction( $object_id, $order_number, $price );
                     }
                 }
             
@@ -546,7 +546,7 @@ function cd_restoreDefaultPrices() {
     }
 
 
-function cd_startAuction( $object_id, $start_price ) {
+function cd_startAuction( $object_id, $order_number, $start_price ) {
     global $tableNamePrefix, $auctionPriceDropInterval;
 
     $tableName = $tableNamePrefix . "auction";
@@ -558,7 +558,7 @@ function cd_startAuction( $object_id, $start_price ) {
     // http://stackoverflow.com/questions/9680144/
     //        mysql-date-time-round-to-nearest-hour
     $query = "INSERT INTO $tableName ".
-        "VALUES ( '$object_id', '$start_price', " .
+        "VALUES ( '$object_id', '$order_number', '$start_price', " .
         "DATE_SUB( ".
         "  DATE_SUB( CURRENT_TIMESTAMP, ".
         "            INTERVAL MOD( MINUTE(CURRENT_TIMESTAMP), ".
@@ -578,7 +578,7 @@ function cd_startInitialAuctions() {
     cd_queryDatabase( "DELETE FROM $tableNamePrefix"."auction" );
     
     
-    $query = "SELECT object_id, price FROM ".
+    $query = "SELECT object_id, order_number, price FROM ".
         "$tableNamePrefix"."prices WHERE in_gallery = 1;";
     
     $result = cd_queryDatabase( $query );
@@ -587,9 +587,10 @@ function cd_startInitialAuctions() {
 
     for( $i=0; $i<$numRows; $i++ ) {
         $object_id = mysql_result( $result, $i, "object_id" );
+        $order_number = mysql_result( $result, $i, "order_number" );
         $price = mysql_result( $result, $i, "price" );
         
-        cd_startAuction( $object_id, $price );
+        cd_startAuction( $object_id, $order_number, $price );
         }    
     }
 
@@ -866,6 +867,7 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "object_id INT NOT NULL PRIMARY KEY," .
+            "order_number INT NOT NULL, ".
             "start_price INT NOT NULL, ".
             "start_time DATETIME NOT NULL ) ENGINE = INNODB;";
 
@@ -3707,7 +3709,7 @@ function cd_listAuctions() {
         "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
         "   as elapsed_seconds ".
         "FROM $tableName ".
-        "ORDER BY elapsed_seconds DESC, start_price ASC;";
+        "ORDER BY elapsed_seconds DESC, order_number ASC;";
 
     $result = cd_queryDatabase( $query );
 
@@ -3987,7 +3989,7 @@ function cd_returnGalleryContents( $gallery_contents ) {
 
         foreach( $galleryArray as $galleryID ) {                
             
-            $query = "SELECT price FROM ".
+            $query = "SELECT order_number, price FROM ".
                 "$tableNamePrefix"."prices WHERE ".
                 "in_gallery = 1 AND object_id = '$galleryID';";
     
@@ -3996,9 +3998,10 @@ function cd_returnGalleryContents( $gallery_contents ) {
             $numRows = mysql_numrows( $result );
 
             if( $numRows > 0 ) {
+                $order_number = mysql_result( $result, 0, "order_number" );
                 $price = mysql_result( $result, 0, "price" );
                 
-                cd_startAuction( $galleryID, $price );
+                cd_startAuction( $galleryID, $order_number, $price );
                 }
             }
         }
@@ -5001,7 +5004,7 @@ function cd_updatePrices() {
             }
 
         if( $in_gallery == 1 ) {
-            cd_startAuction( $id, $price );
+            cd_startAuction( $id, $order_number, $price );
             }
         
         }
