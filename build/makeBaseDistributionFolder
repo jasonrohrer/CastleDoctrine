@@ -25,6 +25,8 @@ cp ../gameSource/graphics/*.tga $baseFolder/graphics
 cp ../gameSource/settings/*.ini $baseFolder/settings
 cp ../gameSource/languages/*.txt $baseFolder/languages
 cp ../gameSource/language.txt $baseFolder
+cp ../documentation/Readme.txt $baseFolder
+
 
 cp -r ../gameSource/gameElements/* $baseFolder/gameElements/
 
