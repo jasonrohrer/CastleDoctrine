@@ -6,7 +6,7 @@ if [ $# -lt 1 ] ; then
 fi
 
 
-bundleDir="StarFilledSky_$1_UnixSource"
+bundleDir="CastleDoctrine_$1_UnixSource"
 
 mkdir $bundleDir
 
@@ -19,7 +19,7 @@ cd $bundleDir
 cp ../runToBuild .
 
 # fix date stamping so that tga files aren't rebuilt by accident
-cd game10/gameSource/graphics
+cd CastleDoctrine/gameSource/graphics
 touch *.tga
 
 cd ../../../..

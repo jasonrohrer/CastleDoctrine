@@ -4,10 +4,10 @@ rm -r minorGems/doc
 rm -r minorGems/examples
 rm -r minorGems/sound/portaudio
 
-rm -r game10/documentation/html
-rm -r game10/documentation/art
-rm -r game10/documentation/submissions
-rm -r game10/documentation/videos
+rm -r CastleDoctrine/documentation/html
+rm -r CastleDoctrine/documentation/sourceArt
+rm -r CastleDoctrine/documentation/visualStyle
+rm -r CastleDoctrine/documentation/press
 
 
 

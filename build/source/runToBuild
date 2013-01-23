@@ -14,7 +14,7 @@
 #
 
 
-cd game10
+cd CastleDoctrine
 chmod u+x ./configure
 ./configure $@ || exit 1
 
@@ -24,7 +24,7 @@ chmod u+x ./configure
 cd gameSource
 
 
-echo "Building StarFilledSky..."
+echo "Building CastleDoctrine..."
 
 make || exit 1
 
@@ -33,23 +33,24 @@ make || exit 1
 cd ../..
 
 mkdir -p graphics
+mkdir -p gameElements
 mkdir -p settings
 mkdir -p languages
 
 
 
 
-cp game10/gameSource/StarFilledSky ./StarFilledSkyApp
-cp game10/documentation/Readme.txt .
-cp game10/documentation/Upgrading.txt .
-cp game10/gameSource/graphics/* ./graphics
-cp game10/gameSource/settings/* ./settings
-cp game10/gameSource/languages/* ./languages
-cp game10/gameSource/language.txt ./
+cp CastleDoctrine/gameSource/CastleDoctrine ./CastleDoctrineApp
+cp CastleDoctrine/documentation/Readme.txt .
+cp CastleDoctrine/gameSource/graphics/* ./graphics
+cp CastleDoctrine/gameSource/settings/* ./settings
+cp CastleDoctrine/gameSource/languages/* ./languages
+cp CastleDoctrine/gameSource/language.txt ./
+
+cp -r CastleDoctrine/gameSource/gameElements/* ./gameElements
 
 
-
-echo "Run StarFilledSkyApp to play."
+echo "Run CastleDoctrineApp to play."
 
 
 
