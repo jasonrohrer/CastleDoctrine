@@ -367,10 +367,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     // world coordinates
     setMouseReportingMode( true );
     
-    if( !inPlayingBack ) {    
-        int x,y;
-        warpMouseToCenter( &x, &y );
-        }
     
     
     
@@ -494,6 +490,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         setMusicLoudness( 1.0 );
         }
     setSoundPlaying( true );
+
+
+    if( !inPlayingBack ) {    
+        int x,y;
+        warpMouseToCenter( &x, &y );
+        }
 
     initDone = true;
     }
