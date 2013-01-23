@@ -1850,6 +1850,9 @@ void drawString( const char *inString ) {
     TextAlignment align = alignCenter;
     
     if( initDone ) {
+        // transparent message
+        setDrawColor( 1, 1, 1, 0.75 );
+
         // stick messages in corner
         messagePos.x -= viewWidth / 2;
         
@@ -1864,7 +1867,13 @@ void drawString( const char *inString ) {
 
         align = alignLeft;
         }
-    // else leave centered
+    else {
+        // fully opaque message
+        setDrawColor( 1, 1, 1, 1 );
+
+        // leave centered
+        }
+    
 
     int numLines;
     
