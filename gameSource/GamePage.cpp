@@ -250,6 +250,13 @@ void GamePage::base_makeActive( char inFresh ){
             
             c->base_clearState();
             }
+
+        // don't show lingering tool tips from last time page was shown
+        mLastTipFade = 0;
+        if( mTip != NULL ) {
+            delete [] mTip;
+            mTip = NULL;
+            }
         }
     
 
