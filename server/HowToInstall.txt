@@ -16,7 +16,8 @@ The PHP for the ticketServer is in:
 minorGems/game/ticketServer/
 
 
-A. Set up a MySQL database, and edit settings.php to point to that database.
+A. Set up a MySQL database and database user, and edit settings.php to point to
+   that database.
 
 B. Edit various other settings in settings.php as you see fit.  In particular,
    be sure to replace the various "secrets" (hex strings) with your own
