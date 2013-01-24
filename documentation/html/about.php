@@ -1,4 +1,18 @@
-<?php include( "head.php" ); ?>
+<?php
+
+// no caching
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+
+error_reporting( E_ALL );
+
+
+$pathToRoot = "";
+
+include( "header.php" );
+
+?>
 
 <center>
 
@@ -48,4 +62,4 @@ Email Address: <input type="text" name="email" value="">
 
 
 </center>
-<?php include( "foot.php" ); ?>
+<?php include( "footer.php" ); ?>
