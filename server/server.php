@@ -4507,9 +4507,13 @@ function cd_generateHeader() {
 
     $sizeString = cd_formatBytes( $bytesUsed );
 
+    $userCount = cd_countUsers();
 
-    $perUserString = cd_formatBytes( $bytesUsed / cd_countUsers() );
-
+    $perUserString = "?";
+    if( $userCount > 0 ) {
+        $perUserString = cd_formatBytes( $bytesUsed / $userCount );
+        }
+    
     
     echo "<table width='100%' border=0><tr>".
         "<td>[<a href=\"server.php?action=show_data" .
