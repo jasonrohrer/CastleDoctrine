@@ -843,6 +843,7 @@ function cd_setupDatabase() {
 
 
     $tableName = $tableNamePrefix . "prices";
+    $pricesCreated = false;
     if( ! cd_doesTableExist( $tableName ) ) {
 
         $query =
@@ -856,7 +857,7 @@ function cd_setupDatabase() {
         $result = cd_queryDatabase( $query );
 
         echo "<B>$tableName</B> table created<BR>";
-        cd_restoreDefaultPrices();
+        $pricesCreated = true;
         }
     else {
         echo "<B>$tableName</B> table already exists<BR>";
@@ -865,6 +866,7 @@ function cd_setupDatabase() {
 
     
     $tableName = $tableNamePrefix . "auction";
+    $auctionCreated = false;
     if( ! cd_doesTableExist( $tableName ) ) {
 
         $query =
@@ -877,10 +879,19 @@ function cd_setupDatabase() {
         $result = cd_queryDatabase( $query );
 
         echo "<B>$tableName</B> table created<BR>";
-        cd_startInitialAuctions();
+        $auctionCreated = true;
         }
     else {
         echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+    // wait until both tables exist before doing either of these
+    if( $pricesCreated ) {
+        cd_restoreDefaultPrices();
+        }
+    if( $auctionCreated ) {
+        cd_startInitialAuctions();
         }
     
     
