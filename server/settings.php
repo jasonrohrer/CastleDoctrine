@@ -342,5 +342,10 @@ $auctionPriceHalfLife = 30;
 
 
 
+// how much money players start with on new lives
+$playerStartMoney = 2000;
+
+
+
 
 ?>

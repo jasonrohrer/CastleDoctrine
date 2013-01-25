@@ -4217,7 +4217,8 @@ function cd_newHouseForUser( $user_id ) {
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
-        
+
+        global $playerStartMoney;
         
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', ".
@@ -4225,7 +4226,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "'$music_seed', ".
-            "0, '#', 1000, 1000, 1, ".
+            "0, '#', '$playerStartMoney', '$playerStartMoney', 1, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
