@@ -33,9 +33,7 @@ can also toggle full-screen mode.  Once the game has been started in
 full-screen mode, you can switch to windowed mode by pressing Alt-Enter.
 
 If the game seems sluggish at the default 60 frames-per-second, 
-particularly when entering things (which is the most CPU-intensive part of 
-the game), try switching to 30 FPS by putting a 1 in 
-"settings/halfFrameRate.ini".
+try switching to 30 FPS by putting a 1 in "settings/halfFrameRate.ini".
 
 If it still seems sluggish at 30 FPS, switch to 15 FPS by putting a 2 in 
 that settings file.  If it still seems sluggish, try 7.5 FPS by putting a 3 
