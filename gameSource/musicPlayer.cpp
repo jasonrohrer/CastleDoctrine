@@ -819,7 +819,7 @@ CoeffFilterState sawFilterState;
 
 // file for input into gnuplot to view filtered vs unfiltered waves
 // plot "saw.txt" using 1:2 with lines, "saw.txt" using 1:3 with lines
-FILE *sawFile = fopen( "saw.txt", "w" );
+//FILE *sawFile = fopen( "saw.txt", "w" );
 // must init sawFilterState before calling
 int tableCount = 0;
 double filteredSawWave( double inT ) {
@@ -833,9 +833,9 @@ double filteredSawWave( double inT ) {
     
     double filteredSaw = coeffFilter( plainSaw, &sawFilterState );
     
-    if( tableCount < 2 ) {
-        fprintf( sawFile, "%f %f %f\n", inT, plainSaw, filteredSaw );
-        }
+    //if( tableCount < 2 ) {
+    //    fprintf( sawFile, "%f %f %f\n", inT, plainSaw, filteredSaw );
+    //    }
 
     return filteredSaw;
     }
