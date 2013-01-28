@@ -28,6 +28,8 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
     r.done = false;
     
     serialRecords.push_back( r );
+
+    printf( "Starting web request %d\n", r.handle );
     
     return r.handle;
     }
