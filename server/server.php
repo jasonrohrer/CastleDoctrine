@@ -1119,11 +1119,14 @@ function cd_checkForFlush() {
 
 
         // for each robber who quit game mid-robbery, clear robbery checkout
-        $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
+        $query = "SELECT robbing_user_id, last_ping_time ".
+            "FROM $tableNamePrefix"."houses ".
             "WHERE rob_checkout = 1 ".
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
 
+        $staleRobberyIDList = "";
+        
         $result = cd_queryDatabase( $query );
 
         $numRows = mysql_numrows( $result );
@@ -1131,8 +1134,12 @@ function cd_checkForFlush() {
         for( $i=0; $i<$numRows; $i++ ) {
 
             $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
+            $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
 
             cd_processStaleCheckouts( $robbing_user_id );
+
+            $staleRobberyIDList =
+                "$user_id"."[$last_ping_time], $staleRobberyIDList";
             }
 
         $totalFlushCount = $numRows;
@@ -1140,8 +1147,8 @@ function cd_checkForFlush() {
 
         // repeat for owner-died shadow table
         // for each robber who quit game mid-robbery, clear robbery checkout
-        $query = "SELECT robbing_user_id FROM ".
-            "$tableNamePrefix"."houses_owner_died ".
+        $query = "SELECT robbing_user_id, last_ping_time ".
+            "FROM $tableNamePrefix"."houses_owner_died ".
             "WHERE rob_checkout = 1 ".
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
@@ -1153,8 +1160,12 @@ function cd_checkForFlush() {
         for( $i=0; $i<$numRows; $i++ ) {
 
             $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
-
+            $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
+            
             cd_processStaleCheckouts( $robbing_user_id );
+
+            $staleRobberyIDList =
+                "$user_id"."[$last_ping_time], $staleRobberyIDList";
             }
 
         $totalFlushCount += $numRows;
@@ -1167,19 +1178,26 @@ function cd_checkForFlush() {
         // (Do this now to return paintings to auction house, otherwise
         //  an owner that quits suring self test and never comes back could
         //  trap the paintings forever even though they are logically dead)
-        $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+        $query = "SELECT user_id, last_ping_time ".
+            "FROM $tableNamePrefix"."houses ".
             "WHERE edit_checkout = 1 AND self_test_running = 1 ".
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
 
+        $staleSelfTestIDList = "";
+        
         $result = cd_queryDatabase( $query );
 
         $numRows = mysql_numrows( $result );
     
         for( $i=0; $i<$numRows; $i++ ) {
             $user_id = mysql_result( $result, $i, "user_id" );
+            $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
 
             cd_processStaleCheckouts( $user_id );
+
+            $staleSelfTestIDList =
+                "$user_id"."[$last_ping_time], $staleSelfTestIDList";
             }
 
         $totalFlushCount += $numRows;
@@ -1188,6 +1206,27 @@ function cd_checkForFlush() {
         
         // now clear checkout status on stale edit checkouts that were
         // not in the middle of self-test
+        $query = "SELECT user_id, last_ping_time ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE edit_checkout = 1 AND self_test_running = 0 ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+
+        $staleEditIDList = "";
+        
+        for( $i=0; $i<$numRows; $i++ ) {
+            $user_id = mysql_result( $result, $i, "user_id" );
+            $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
+            
+            $staleEditIDList =
+                "$user_id"."[$last_ping_time], $staleEditIDList";
+            }
+        
+
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET rob_checkout = 0, edit_checkout = 0 ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
@@ -1199,7 +1238,9 @@ function cd_checkForFlush() {
         $totalFlushCount += mysql_affected_rows();
 
         cd_log( "Flush operation checked back in $totalFlushCount ".
-                "stale houses." );
+                "stale houses (in-edit: $staleEditIDList; ".
+                "in-test: $staleSelfTestIDList; ".
+                "in-rob: $staleRobberyIDList )." );
 
         global $enableLog;
         
@@ -2756,6 +2797,8 @@ function cd_pingHouse() {
         echo "OK";
         }
     else {
+        cd_log( "Ping failed" );
+        
         echo "FAILED";
         }
     }
