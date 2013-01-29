@@ -1655,7 +1655,7 @@ function cd_startEditHouse() {
         $gallery_contents = $carried_gallery_contents;
         }
     else {
-        if( $carried_vault_contents != "#" ) {
+        if( $carried_gallery_contents != "#" ) {
             // append
             $gallery_contents =
                 $gallery_contents . "#" . $carried_gallery_contents;

@@ -1,3 +1,15 @@
+Version 2    ???
+
+--Added recording and playback of time() values in game recording system.  This
+  fixes playback timing bugs when the playback machine runs the game slower
+  or faster than the original recording machine (or when playback is manually
+  slowed or sped up).
+
+--Removed an error-prone initial mouse-warp-to-center call that was potentially
+  causing future mouse motion events to be ignored.
+  
+
+
 Version 1    2013-January-25
 
 Initial release to beta testers.
