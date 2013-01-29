@@ -9,7 +9,6 @@
 #include "minorGems/util/stringUtils.h"
 
 
-#include <time.h>
 
 
 extern char *serverURL;
@@ -31,7 +30,7 @@ SimpleVector<const char *> LiveHousePage::sPendingTestRequests;
 
 
 LiveHousePage::LiveHousePage()
-        : mLastActionTime( time( NULL ) ),
+        : mLastActionTime( game_time( NULL ) ),
           mCheckoutStale( false ),
           mStartTestFailed( false ),
           mCurrentRequestForStartTest( false ) {
@@ -54,7 +53,7 @@ void LiveHousePage::makeActive( char inFresh ) {
         }
 
     // this page becoming active is an action
-    mLastActionTime = time( NULL );
+    mLastActionTime = game_time( NULL );
     mCheckoutStale = false;
     mStartTestFailed = false;
     mCurrentRequestForStartTest = false;
@@ -63,7 +62,7 @@ void LiveHousePage::makeActive( char inFresh ) {
 
 
 void LiveHousePage::actionHappened() {
-    mLastActionTime = time( NULL );
+    mLastActionTime = game_time( NULL );
     }
 
 
@@ -147,10 +146,10 @@ void LiveHousePage::step() {
         delete [] fullRequestURL;
         
         // counts as a ping
-        sLastPingTime = time( NULL );
+        sLastPingTime = game_time( NULL );
         }
     else if( ! mCheckoutStale ) {
-        int currentTime = time( NULL );
+        int currentTime = game_time( NULL );
         
         if( currentTime > sLastPingTime + 60 * 4 ) {
             // getting close to five minute timeout mark

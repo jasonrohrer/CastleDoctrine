@@ -11,7 +11,6 @@
 #include "serialWebRequests.h"
 
 
-#include <time.h>
 
 
 extern Font *mainFont;
@@ -182,7 +181,7 @@ char AuctionPage::getPricesStale() {
     if( mSecondsUntilUpdate <= 0 ) {
         return true;
         }
-    if( ( time(NULL) - mBaseTimestamp ) >= mSecondsUntilUpdate ) {
+    if( ( game_time(NULL) - mBaseTimestamp ) >= mSecondsUntilUpdate ) {
         return true;
         }
     return false;
@@ -332,7 +331,7 @@ void AuctionPage::step() {
                         delete [] string;
 
                         if( mSecondsUntilUpdate > 0 ) {
-                            mBaseTimestamp = time( NULL );
+                            mBaseTimestamp = game_time( NULL );
                             }
                         }
                         
@@ -447,7 +446,7 @@ void AuctionPage::draw( doublePair inViewCenter,
     
     if( mSecondsUntilUpdate > 0 ) {
         
-        int currentTime = time( NULL );
+        int currentTime = game_time( NULL );
         
         int timeLeft = mSecondsUntilUpdate - ( currentTime - mBaseTimestamp );
         
