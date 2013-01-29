@@ -492,10 +492,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     setSoundPlaying( true );
 
 
-    if( !inPlayingBack ) {    
-        int x,y;
-        warpMouseToCenter( &x, &y );
-        }
 
     initDone = true;
     }
