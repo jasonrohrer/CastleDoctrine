@@ -69,13 +69,15 @@ void SpriteToggleButton::pointerUp( float inX, float inY ) {
     if( isInside( inX, inY ) ) {
         setToggled( ! mToggled );
         
+        // let superclass fire event
+        Button::pointerUp( inX, inY );
+
+        // but keep tool tip displayed because it has changed 
+        // (override superclass)
+        setToolTip( mMouseOverTip );
+
         }
 
-    // let superclass fire event
-    Button::pointerUp( inX, inY );
-
-    // but keep tool tip displayed
-    setToolTip( mMouseOverTip );
     }        
 
 

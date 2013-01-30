@@ -16,6 +16,9 @@ Version 2    ???
 --Fixed major bug in path finding for family-blocked-in detection 
   (thanks Eric McQuiggan). 
 
+--Fixed tool tip bug that triggered music toggle button tip spuriously 
+  (thanks Garrett).
+
 
 Version 1    2013-January-25
 
