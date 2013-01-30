@@ -6,7 +6,6 @@
 
 #include "serialWebRequests.h"
 
-#include <time.h>
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -273,7 +272,7 @@ void RobCheckoutHousePage::step() {
 
                         // reset ping time, because house check-out
                         // counts as a ping
-                        LiveHousePage::sLastPingTime = time( NULL );
+                        LiveHousePage::sLastPingTime = game_time( NULL );
                         }
                     
                     delete tokens;
