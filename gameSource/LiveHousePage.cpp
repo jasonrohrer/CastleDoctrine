@@ -157,15 +157,12 @@ void LiveHousePage::step() {
         
         // counts as a ping
         sLastPingTime = game_time( NULL );
-        printf( "Setting last ping time to %d\n", sLastPingTime );
         }
     else if( ! mCheckoutStale ) {
         int currentTime = game_time( NULL );
         
-        if( currentTime > sLastPingTime + 30 /*60 * 4*/ ) {
+        if( currentTime > sLastPingTime + 60 * 4 ) {
             // getting close to five minute timeout mark
-            printf( "Current time =%d, last ping time =%d, ping overdue\n",
-                    currentTime, sLastPingTime );
             
             if( currentTime - mLastActionTime < 60 * 5 ) {
                 // there's been activity in the last five minutes
@@ -191,7 +188,6 @@ void LiveHousePage::step() {
                 delete [] fullRequestURL;
                 
                 sLastPingTime = currentTime;
-                printf( "Setting last ping time to %d\n", sLastPingTime );
                 }
             }
         
