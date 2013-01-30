@@ -513,20 +513,24 @@ void TextField::keyDown( unsigned char inASCII ) {
 
         unsigned char processedChar = processCharacter( inASCII );    
 
-        // add to it
-        char *oldText = mText;
+        if( processedChar != 0 ) {
+            
+            // add to it
+            char *oldText = mText;
         
-        char *preCursor = stringDuplicate( mText );
-        preCursor[ mCursorPosition ] = '\0';
-        char *postCursor = &( mText[ mCursorPosition ] );
-
-        mText = autoSprintf( "%s%c%s", preCursor, processedChar, postCursor );
-        
-        delete [] preCursor;
-
-        delete [] oldText;
-
-        mCursorPosition++;
+            char *preCursor = stringDuplicate( mText );
+            preCursor[ mCursorPosition ] = '\0';
+            char *postCursor = &( mText[ mCursorPosition ] );
+            
+            mText = autoSprintf( "%s%c%s", 
+                                 preCursor, processedChar, postCursor );
+            
+            delete [] preCursor;
+            
+            delete [] oldText;
+            
+            mCursorPosition++;
+            }
         
         mHoldDeleteSteps = -1;
         mFirstDeleteRepeatDone = false;

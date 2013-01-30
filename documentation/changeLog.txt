@@ -9,7 +9,9 @@ Version 2    ???
   causing future mouse motion events to be ignored.
   
 --Fixed server typo that resulted in stolen paintings not being added to the
-  robber's house (thanks Allen Trivette). 
+  robber's house (thanks Allen Trivette).
+
+--Fixed TextField glitchy behavior when user types forbidden characters. 
 
 
 Version 1    2013-January-25
