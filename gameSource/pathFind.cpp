@@ -359,7 +359,7 @@ char  pathFind( int inMapH, int inMapW,
         }
 
     char failed = false;
-    if( recordsToSearch.head == NULL ) {
+    if( ! done ) {
         failed = true;
         }
     

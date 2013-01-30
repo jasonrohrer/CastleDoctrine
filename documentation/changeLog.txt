@@ -11,7 +11,10 @@ Version 2    ???
 --Fixed server typo that resulted in stolen paintings not being added to the
   robber's house (thanks Allen Trivette).
 
---Fixed TextField glitchy behavior when user types forbidden characters. 
+--Fixed TextField glitchy behavior when user types forbidden characters.
+
+--Fixed major bug in path finding for family-blocked-in detection 
+  (thanks Eric McQuiggan). 
 
 
 Version 1    2013-January-25
