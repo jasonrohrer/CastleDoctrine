@@ -8,6 +8,8 @@ Version 2    ???
 --Removed an error-prone initial mouse-warp-to-center call that was potentially
   causing future mouse motion events to be ignored.
   
+--Fixed server typo that resulted in stolen paintings not being added to the
+  robber's house (thanks Allen Trivette). 
 
 
 Version 1    2013-January-25
