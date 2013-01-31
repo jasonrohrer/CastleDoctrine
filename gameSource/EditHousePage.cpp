@@ -125,6 +125,11 @@ void EditHousePage::setHouseMap( const char *inHouseMap ) {
     mGridDisplay.setHouseMap( inHouseMap );
 
     mUndoButton.setVisible( mGridDisplay.canUndo() );
+
+    mDoneButton.setVisible( 
+        mGridDisplay.areMandatoriesPlaced()
+        &&
+        mGridDisplay.doAllFamilyObjectsHaveExitPath() );
     }
 
 

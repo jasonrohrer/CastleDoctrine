@@ -22,6 +22,9 @@ Version 2    ???
 --Fixed so that empty self-test recordings (when user edits backpack but 
   not house map) do not replace last valid self-test recording in database.
 
+--Fixed 'Family blocked in' message overlaying Done button on house load.
+
+
 
 Version 1    2013-January-25
 
