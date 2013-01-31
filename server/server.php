@@ -1139,7 +1139,7 @@ function cd_checkForFlush() {
             cd_processStaleCheckouts( $robbing_user_id );
 
             $staleRobberyIDList =
-                "$user_id"."[$last_ping_time], $staleRobberyIDList";
+                "$robbing_user_id"."[$last_ping_time], $staleRobberyIDList";
             }
 
         $totalFlushCount = $numRows;
@@ -1165,7 +1165,7 @@ function cd_checkForFlush() {
             cd_processStaleCheckouts( $robbing_user_id );
 
             $staleRobberyIDList =
-                "$user_id"."[$last_ping_time], $staleRobberyIDList";
+                "$robbing_user_id"."[$last_ping_time], $staleRobberyIDList";
             }
 
         $totalFlushCount += $numRows;
