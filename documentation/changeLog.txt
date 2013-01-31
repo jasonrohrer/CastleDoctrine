@@ -24,6 +24,8 @@ Version 2    ???
 
 --Fixed 'Family blocked in' message overlaying Done button on house load.
 
+--Fixed dead wife sprites overhanging walls (and also moved all dead objects 
+  under wall shadows, which looks much better).
 
 
 Version 1    2013-January-25

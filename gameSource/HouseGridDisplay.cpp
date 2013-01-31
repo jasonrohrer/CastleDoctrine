@@ -1072,11 +1072,18 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 isSubMapPropertySet( i, structural ) ||
                 isSubMapPropertySet( i, shadowMaking );
                      
+            char deadFamilyObject =
+                isSubMapPropertySet( i, deadFamily );
+
             char familyObject = 
                 isSubMapPropertySet( i, family ) ||
-                isSubMapPropertySet( i, deadFamily );
+                deadFamilyObject;
             
+            char forceUnderShadowsObject = 
+                isSubMapPropertySet( i, forceUnderShadows ) ||
+                deadFamilyObject;
             
+
             doublePair tilePos = getTilePos( i );
  
 
@@ -1103,8 +1110,11 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     }
                 
 
-                if( mHighlightIndex != i ) {
+                if( mHighlightIndex != i && fullI != mRobberIndex 
+                    && mHouseMapMobileIDs[ fullI ] == 0
+                    && ! familyObject ) {
                     // nothing left to draw, if no highlight is here
+                    // no mobile or family object is here
                     i++;
                     continue;
                     }
@@ -1149,90 +1159,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 }
             
 
-            char robberDrawn = false;
-
-            // mobile objects above shadows, behind structural tiles in 
-            // current row only
-            if( ! inBeneathShadowsOnly ) {
-                
-                if( mHouseMapMobileIDs[fullI] != 0 ) {
-                    // mobile object here
-                    
-                    
-
-                    int mobID = mHouseMapMobileIDs[fullI];
-                    int mobState = mHouseMapMobileCellStates[fullI];
-
-                    if( isPropertySet( mobID, mobState, onTopOfPlayer ) ) {
-                        
-                        if( mRobberIndex == fullI ) {
-                            // draw robber under this mobile
-                            drawRobber( tilePos );
-                            robberDrawn = true;
-                            }
-                        }
-                    
-
-                    int mobOrientation = getOrientationIndex( fullI, mobID,
-                                                              mobState );
-                    
-                    if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
-                        
-                        drawDarkHaloBehind( mobID, mobOrientation, mobState,
-                                            tilePos );
-                        }
-
-                    if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
-                        // first drop shadow
-                        drawDropShadow( tilePos );
-                        }
-                        
-                    setDrawColor( 1, 1, 1, 1 );
-                
-                    SpriteHandle sprite = 
-                        getObjectSprite( mobID, 
-                                         mobOrientation, 
-                                         mobState );
-                
-                    drawSprite( sprite, tilePos, 1.0/32.0 );
-                    }
-
-                // family objects draw like mobiles, but they're not
-                // (because they can co-occupy a space with a mobile,
-                //  and they move differently)
-                if( familyObject ) {
-                    
-                                        
-                    if( isPropertySet( houseTile, houseTileState, 
-                                       darkHaloBehind ) ) {
-                        
-                        drawDarkHaloBehind( houseTile, orientationIndex,
-                                            houseTileState,
-                                            tilePos );
-                        }
-                        
-                    drawDropShadow( tilePos );
-                    
-                    setDrawColor( 1, 1, 1, 1 );
-                    
-                    SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                           orientationIndex, 
-                                                           houseTileState );
-                
-                    drawSprite( sprite, tilePos, 1.0/32.0 );
-                    }
-                }
-
-            // same for robber (if not already drawn under a mobile)
-            if( !inBeneathShadowsOnly && mRobberIndex == fullI
-                &&
-                ! robberDrawn ) {
-
-                drawRobber( tilePos );
-                }
-
-
-
+            // also draw beneath shadow tiles under robber or mobile
+            // even if robber/mobile is under shadows itself (robber/mobile
+            // is always on top of wires, switches, etc.)
+            
             if( inBeneathShadowsOnly && 
                 ! aboveShadows &&
                 ! familyObject &&
@@ -1262,7 +1192,119 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 drawSprite( sprite, tilePos, 1.0/32.0 );
                 }
-            else if( !inBeneathShadowsOnly && aboveShadows 
+
+
+
+
+            char robberDrawn = false;
+
+            // mobile objects above shadows (unless forced under, 
+            // behind structural tiles in current row only
+            
+                
+            if( mHouseMapMobileIDs[fullI] != 0 ) {
+                // mobile object here
+                    
+                    
+
+                int mobID = mHouseMapMobileIDs[fullI];
+                int mobState = mHouseMapMobileCellStates[fullI];
+                
+                
+                // all stuck mobiles are dead and under shadows too
+                char mobForcedUnderShadows = 
+                    isPropertySet( mobID, mobState, stuck )
+                    ||
+                    isPropertySet( mobID, mobState, forceUnderShadows );
+                
+
+                if( ! inBeneathShadowsOnly && ! mobForcedUnderShadows
+                    ||
+                    inBeneathShadowsOnly && mobForcedUnderShadows ) {
+
+                    int mobOrientation = getOrientationIndex( fullI, mobID,
+                                                              mobState );
+                    
+                    if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
+                        
+                        drawDarkHaloBehind( mobID, mobOrientation, mobState,
+                                            tilePos );
+                        }
+
+                    if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
+                        // first drop shadow
+                        drawDropShadow( tilePos );
+                        }
+                        
+                    setDrawColor( 1, 1, 1, 1 );
+                
+                    SpriteHandle sprite = 
+                        getObjectSprite( mobID, 
+                                         mobOrientation, 
+                                         mobState );
+                
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
+                }
+            
+
+            // family objects draw like mobiles, but they're not
+            // (because they can co-occupy a space with a mobile,
+            //  and they move differently)
+            if( familyObject ) {
+                
+                if( ! inBeneathShadowsOnly && ! forceUnderShadowsObject
+                    ||
+                    inBeneathShadowsOnly && forceUnderShadowsObject ) {  
+                    
+                    // draw now
+
+                    if( isPropertySet( houseTile, houseTileState, 
+                                       darkHaloBehind ) ) {
+                        
+                        drawDarkHaloBehind( houseTile, orientationIndex,
+                                            houseTileState,
+                                            tilePos );
+                        }
+                        
+                    drawDropShadow( tilePos );
+                    
+                    setDrawColor( 1, 1, 1, 1 );
+                    
+                    SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                           orientationIndex, 
+                                                           houseTileState );
+                    
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
+                }
+
+
+            // same for robber (if not already drawn under a mobile)
+            if( !inBeneathShadowsOnly && mRobberIndex == fullI
+                &&
+                ! robberDrawn ) {
+
+                if( ! isPropertySet( PLAYER_ID, 
+                                     mRobberState, forceUnderShadows ) ) {
+                    drawRobber( tilePos );
+                    }
+                }
+            else if( inBeneathShadowsOnly && mRobberIndex == fullI 
+                     &&
+                     ! robberDrawn ) {
+                if( isPropertySet( PLAYER_ID, 
+                                   mRobberState, forceUnderShadows ) ) {
+                    drawRobber( tilePos );
+                    }
+                }
+            
+                
+                
+
+
+
+            if( !inBeneathShadowsOnly && aboveShadows 
                      && houseTile != 0 ) {
                 // now draw blocking objects on top of floor
 
