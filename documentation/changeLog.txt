@@ -27,6 +27,10 @@ Version 2    ???
 --Fixed dead wife sprites overhanging walls (and also moved all dead objects 
   under wall shadows, which looks much better).
 
+--Added better logging of flush operations on server.
+
+--Fixed lingering pitbull attack stance post-robbery.
+
 
 Version 1    2013-January-25
 

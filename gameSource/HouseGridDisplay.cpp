@@ -345,6 +345,18 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
             if( isPropertySet( id, state, mobile ) ) {
                 mHouseMapMobileIDs[i] = id;
+                
+                
+                if( isPropertySet( id, state, interactingWithPlayer ) &&
+                    ! isPropertySet( id, state, stuck ) ) {
+                    // left over state where this mobile interacted with
+                    // last robber
+
+                    // but that robber no longer present, so discard
+                    // this state
+                    state = 0;
+                    }
+
                 mHouseMapMobileCellStates[i] = state;
                 }
             else {
