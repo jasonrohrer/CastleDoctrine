@@ -19,6 +19,9 @@ Version 2    ???
 --Fixed tool tip bug that triggered music toggle button tip spuriously 
   (thanks Garrett).
 
+--Fixed so that empty self-test recordings (when user edits backpack but 
+  not house map) do not replace last valid self-test recording in database.
+
 
 Version 1    2013-January-25
 

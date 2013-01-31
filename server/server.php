@@ -1979,7 +1979,7 @@ function cd_endEditHouse() {
     
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
         "vault_contents, backpack_contents, gallery_contents, ".
-        "self_test_running ".
+        "self_test_move_list, self_test_running ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -1997,6 +1997,7 @@ function cd_endEditHouse() {
 
     $edit_count = $row[ "edit_count" ];
     $self_test_running = $row[ "self_test_running" ];
+    $old_self_test_move_list = $row[ "self_test_move_list" ];
     $loot_value = $row[ "loot_value" ];
     $old_house_map = $row[ "house_map" ];
     $old_vault_contents = $row[ "vault_contents" ];
@@ -2749,6 +2750,20 @@ function cd_endEditHouse() {
     // purchases okay
     // all living family members have clear exit paths
     // accept it and check house back in with these changes
+
+    if( $self_test_move_list == "#" ) {
+        // NEVER put an empty self-test move list in place in the DB.
+        // But an empty one can be submitted if the user didn't edit map
+        // (but bought some stuff or rearranged vault/back).
+        // Map didn't change, so we don't need a new self-test.
+        // But we don't want to replace the old, valid one with the
+        // submitted empty one.
+        // (We check above to ensure that self-test is NOT empty if
+        //  house edited.)
+
+        $self_test_move_list = $old_self_test_move_list;
+        }
+    
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
