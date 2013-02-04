@@ -647,8 +647,42 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                                     int inMapW, int inMapH,
                                     int inRobberIndex ) {
     
+    
+    // process transitions for house objects under player
+    // e.g., if player opens a player-only-door, the door opens before
+    // mobiles move.
+    if( inMapIDs[ inRobberIndex ] != 0 ) {
+        TransitionTriggerRecord *r = 
+            &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+        
+        int playerOnID = inMapIDs[ inRobberIndex ];
+        int playerOnState = inMapStates[ inRobberIndex ];
 
-    // first, move mobile objects around
+        for( int i=0; i<r->numTransitions; i++ ) {
+            TransitionRecord *transRecord = &( r->transitions[i] );
+        
+            if( transRecord->targetID == playerOnID
+                &&
+                ( transRecord->targetStartState == playerOnState
+                  ||
+                  transRecord->targetStartState == -1 )
+                &&
+                transRecord->targetEndState != playerOnState ) {
+                
+                inMapStates[ inRobberIndex ] = 
+                    transRecord->targetEndState;
+                
+                // only allow one transition triggered for
+                // the object that overlaps with player
+                break;
+                }
+            }
+        }
+
+
+
+
+    // next, move mobile objects around
 
     
     // process playerSeeking properties

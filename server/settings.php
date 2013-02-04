@@ -104,6 +104,7 @@ $defaultPrices = array(
     array( 2, 20, 0, "Steel Wall" ),
     array( 3, 50, 0, "Concrete Wall" ),
     array( 0, 0, 0, "Empty Floor" ),
+    array( 21, 20, 0, "Door" ),
     array( 20, 15, 0, "Window" ),
     array( 111, 100, 0, "Pit" ),
     array( 103, 200, 0, "Power Source" ),

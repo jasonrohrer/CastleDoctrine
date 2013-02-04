@@ -14,6 +14,7 @@ mobile   #   power_door:1  => 3
 noMobile #   power_door:3  => 1
 
 
+player   #   door_push   =>  2
 
 
 floor_electric:2 # pitbull => 3

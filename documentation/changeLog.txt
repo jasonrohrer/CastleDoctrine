@@ -42,6 +42,7 @@ Version 2    ???
 --Security tapes are now saved whenever a robber dies (so owners can see their 
   traps working).
 
+--Added push-doors (thanks Nicholas Rodine).
 
 
 Version 1    2013-January-25
