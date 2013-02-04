@@ -1426,7 +1426,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
 
             if( highlightPick != -1 ) {
-                    
+                int mobID = mHouseMapMobileIDs[fullI];
+                
                 if( mMandatoryNeedsPlacing ) {
                     // ghost of to-place mandatory for placement
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -1443,36 +1444,67 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
                     }
-                else if( ( highlightPick == 0 && houseTile != 0 ) || 
-                         ( highlightPick != 0 && 
-                           houseTile == highlightPick ) || 
-                         isSubMapPropertySet( i, family ) ||
-                         houseTile == GOAL_ID ) {
+                else if( 
+                    // placing empty floor, and current tile not empty floor
+                    ( highlightPick == 0 && houseTile != 0 ) ||
+                    // not placing empty, and current tile matches placement
+                    // (erase-same behavior)
+                    ( highlightPick != 0 && 
+                      houseTile == highlightPick ) ||
+                    // mobile here
+                    // placing empty floor or erase mode
+                    ( mobID != 0 &&
+                      ( highlightPick == 0 || highlightPick == mobID ) ) ||
+                    // family here (clicking always removes them)
+                    isSubMapPropertySet( i, family ) ||
+                    // vault here (clicking always removes it)
+                    houseTile == GOAL_ID ) {
+
                     
+
+
                     // darken existing tile to imply removal on click
                     setDrawColor( 0, 0, 0, 0.35 );
                     
                     SpriteHandle sprite;
 
-                    if( isUnderSpritePresent( houseTile, 0 ) ) {
+                    if( isUnderSpritePresent( houseTile, houseTileState ) ) {
                         sprite = getObjectSpriteUnder( houseTile, 
                                                        orientationIndex,
-                                                       0 );
+                                                       houseTileState );
                         drawSprite( sprite, tilePos, 1.0/32.0 );
                         }
-                    if( isBehindSpritePresent( houseTile, 0 ) ) {
+                    if( isBehindSpritePresent( houseTile, houseTileState ) ) {
                         sprite = getObjectSpriteBehind( houseTile, 
-                                                       orientationIndex,
-                                                       0 );
+                                                        orientationIndex,
+                                                        houseTileState );
                         drawSprite( sprite, tilePos, 1.0/32.0 );
                         }
                     
+                    
+                    if( houseTile != 0 ) {
+                        
+                        sprite = getObjectSprite( houseTile, 
+                                                  orientationIndex, 
+                                                  houseTileState );
+                        
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }
 
-                    sprite = getObjectSprite( houseTile, 
-                                              orientationIndex, 
-                                              0 );
-                
-                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    
+                    if( mobID != 0 ) {
+                        int mobState = mHouseMapMobileCellStates[fullI];
+                        
+                        int mobOrientation = getOrientationIndex( fullI, mobID,
+                                                                  mobState );
+
+                        sprite = getObjectSprite( mobID, 
+                                                  mobOrientation, 
+                                                  mobState);
+                                                  
+                        drawSprite( sprite, tilePos, 1.0/32.0 );
+                        }                    
+
                     }
                 else if( houseTile != highlightPick ) {
                     setDrawColor( 1, 1, 1, 0.35 );
@@ -1981,9 +2013,10 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         // changes reset state
         mHouseSubMapCellStates[ index ] = 0;
 
-        // clear mobile objects
-        mHouseMapMobileIDs[ fullIndex ] = 0;
-        mHouseMapMobileCellStates[ fullIndex ] = 0;
+        
+        // Don't clear mobile objects just because mandatory picked up 
+        // from there
+        
 
         copySubCellBack( index );
         fireActionPerformed( this );

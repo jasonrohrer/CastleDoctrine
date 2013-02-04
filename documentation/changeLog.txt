@@ -31,6 +31,12 @@ Version 2    ???
 
 --Fixed lingering pitbull attack stance post-robbery.
 
+--Fixed so that erase highlights (darkening) in editor match state of object 
+  being erased.
+
+--Changed so that picking up a family member who is standing with a mobile does
+  not erase that mobile.
+
 
 Version 1    2013-January-25
 
