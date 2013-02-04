@@ -194,6 +194,11 @@ char *EditHousePage::getFamilyExitPaths() {
     }
 
 
+char EditHousePage::getWifeLiving() {
+    return mGridDisplay.getWifeLiving();
+    }
+
+
 char *EditHousePage::getPurchaseList() {
     return stringDuplicate( mPurchaseList );
     }

@@ -85,6 +85,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char *getFamilyExitPaths();
 
+        char getWifeLiving();
+
         char areMandatoriesPlaced();
         
         char doAllFamilyObjectsHaveExitPath();

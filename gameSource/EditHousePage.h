@@ -56,6 +56,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *getEditList();
         char *getFamilyExitPaths();
         
+        char getWifeLiving();
+        
 
         // list of purchases added to vault/backpack
         void setPurchaseList( const char *inPurchaseList );

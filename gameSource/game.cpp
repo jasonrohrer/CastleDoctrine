@@ -1157,10 +1157,17 @@ void drawFrame( char inUpdate ) {
                     selfHouseTestPage->setDescription( 
                         translate( "selfTestDescription" ) );
 
-                    // wife carries half money, rounded down
-                    selfHouseTestPage->setWifeMoney(
-                        editHousePage->getLootValue() / 2 );
+                    if( editHousePage->getWifeLiving() ) {    
+                        // wife carries half money, rounded down
+                        selfHouseTestPage->setWifeMoney(
+                            editHousePage->getLootValue() / 2 );
+                        }
+                    else {
+                        // dead wife carries nothing
+                        selfHouseTestPage->setWifeMoney( 0 );
+                        }
 
+                    
                     // still present in checkoutHousePage, use it
                     // (editHousePage doesn't need it)
                     selfHouseTestPage->setMusicSeed( 

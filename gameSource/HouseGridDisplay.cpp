@@ -667,6 +667,27 @@ char *HouseGridDisplay::getFamilyExitPaths() {
 
 
 
+char HouseGridDisplay::getWifeLiving() {
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        int id = mHouseMapIDs[i];
+        int state = mHouseMapCellStates[i];
+        
+        if( isPropertySet( id, state, wife ) ) {
+            
+            if( isPropertySet( id, state, deadFamily ) ) {    
+                return false;
+                }
+            else if( isPropertySet( id, state, family ) ) {
+                return true;
+                }
+            }
+        }
+
+    return false;
+    }
+
+
+
 char HouseGridDisplay::areMandatoriesPlaced() {
     return !mMandatoryNeedsPlacing;
     }

@@ -37,6 +37,8 @@ Version 2    ???
 --Changed so that picking up a family member who is standing with a mobile does
   not erase that mobile.
 
+--Fixed so that dead wife not shown carrying money during self tests.
+
 
 Version 1    2013-January-25
 
