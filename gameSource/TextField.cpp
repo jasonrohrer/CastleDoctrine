@@ -491,9 +491,19 @@ void TextField::keyDown( unsigned char inASCII ) {
         }
     
     if( isCommandKeyDown() ) {
-        // not a normal key stroke
+        // not a normal key stroke (command key)
         // ignore it as input
-        return;
+
+        // but ONLY if it's an alphabetical key (A-Z,a-z)
+        // Some international keyboards use ALT to type certain symbols
+
+        if( ( inASCII >= 'A' && inASCII <= 'Z' )
+            ||
+            ( inASCII >= 'a' && inASCII <= 'z' ) ) {
+            
+            return;
+            }
+        
         }
     
 

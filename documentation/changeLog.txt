@@ -46,6 +46,9 @@ Version 2    ???
 
 --Tweaked window position to line up with push-doors.
 
+--Fixed typing @ on Spanish keyboards (thanks Manuel Magalhães).
+
+
 
 
 Version 1    2013-January-25
