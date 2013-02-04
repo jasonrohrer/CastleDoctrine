@@ -39,6 +39,10 @@ Version 2    ???
 
 --Fixed so that dead wife not shown carrying money during self tests.
 
+--Security tapes are now saved whenever a robber dies (so owners can see their 
+  traps working).
+
+
 
 Version 1    2013-January-25
 

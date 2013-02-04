@@ -3288,7 +3288,15 @@ function cd_endRobHouse() {
 
 
 
+    $robber_name = cd_getCharacterName( $user_id );
+    
+    $loadout = $old_backpack_contents;
 
+    // wife carries half money, if she's there
+    $wife_money = (int)( $house_money / 2 );
+    if( !$wife_present ) {
+        $wife_money = 0;
+        }
     
     
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
@@ -3302,7 +3310,44 @@ function cd_endRobHouse() {
         $galleryStuffTaken = "#";
         
         if( $success == 0 ) {
-            // robber dies, and death count in this house not reset
+            // robber dies
+
+
+            // log this robbery too, because it can cause change owner can
+            // notice (backpack stuff dropped in the vault)
+
+            // died, stol nothing
+            $total_value_stolen = 0;
+
+            // log_id auto-assigned
+            $query =
+                "INSERT INTO $tableNamePrefix"."robbery_logs ".
+                "(user_id, house_user_id, loot_value, wife_money, ".
+                "value_estimate, ".
+                " vault_contents, gallery_contents, ".
+                " music_seed, ".
+                " rob_attempts, robber_deaths,".
+                " robber_name, victim_name,".
+                " wife_name, son_name, daughter_name,".
+                " owner_now_dead, rob_time,".
+                " scouting_count, last_scout_time, ".
+                " house_start_map, loadout, move_list, house_end_map ) ".
+                "VALUES(" .
+                " $user_id, $victim_id, '$house_money', '$wife_money', ".
+                "'$total_value_stolen', ".
+                " '$house_vault_contents', '$house_gallery_contents', ".
+                " '$music_seed', ".
+                " '$rob_attempts', '$robber_deaths', ".
+                " '$robber_name', '$victim_name',".
+                " '$wife_name', '$son_name', '$daughter_name',".
+                " '$ownerDied', CURRENT_TIMESTAMP,".
+                " '$scouting_count', '$last_scout_time', ".
+                " '$old_house_map', '$loadout', '$move_list', ".
+                " '$house_map' );";
+            cd_queryDatabase( $query );
+
+            
+            // death count in this house not reset
             $robber_deaths ++;
             }
         }
@@ -3313,12 +3358,7 @@ function cd_endRobHouse() {
 
         // permanent robbery result, has not been edited since
         $edit_count = 0;
-
-        // wife carries half money, if she's there
-        $wife_money = (int)( $house_money / 2 );
-        if( !$wife_present ) {
-            $wife_money = 0;
-            }
+        
         
         $vaultMoney = $house_money - $wife_money;
 
@@ -3371,9 +3411,6 @@ function cd_endRobHouse() {
 
 
         // log robbery
-        $robber_name = cd_getCharacterName( $user_id );
-
-        $loadout = $old_backpack_contents;
 
         // in log, value_estimate holds true value of stuff taken
         $total_value_stolen = $amountTaken +
