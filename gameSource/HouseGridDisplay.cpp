@@ -1251,9 +1251,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     isPropertySet( mobID, mobState, forceUnderShadows );
                 
 
-                if( ! inBeneathShadowsOnly && ! mobForcedUnderShadows
+                if( ( ! inBeneathShadowsOnly && ! mobForcedUnderShadows )
                     ||
-                    inBeneathShadowsOnly && mobForcedUnderShadows ) {
+                    ( inBeneathShadowsOnly && mobForcedUnderShadows ) ) {
 
                     int mobOrientation = getOrientationIndex( fullI, mobID,
                                                               mobState );
@@ -1286,9 +1286,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             //  and they move differently)
             if( familyObject ) {
                 
-                if( ! inBeneathShadowsOnly && ! forceUnderShadowsObject
+                if( ( ! inBeneathShadowsOnly && ! forceUnderShadowsObject )
                     ||
-                    inBeneathShadowsOnly && forceUnderShadowsObject ) {  
+                    ( inBeneathShadowsOnly && forceUnderShadowsObject ) ) {  
                     
                     // draw now
 
