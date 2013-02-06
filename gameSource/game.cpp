@@ -131,7 +131,7 @@ char firstDrawFrameCalled = false;
 
 
 const char *getWindowTitle() {
-    return "Game 10";
+    return "The Castle Doctrine";
     }
 
 
