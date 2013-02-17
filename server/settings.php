@@ -291,7 +291,8 @@ $defaultPrices = array(
     array( 2150, 10000, 1, "Run From Blue --- by Ayza" ),
     array( 2151, 10000, 1, "Watch Out, There's Traps Set --- by Ayza" ),
     array( 2152, 10000, 1, "Goth Knight Huskarl --- by Mez" ),
-    array( 2153, 10000, 1, "Roman Knight Order Giver --- by Mez" )
+    array( 2153, 10000, 1, "Roman Knight Order Giver --- by Mez" ),
+    array( 2154, 10000, 1, "Pepper --- by Jackie Rohrer" )
     );
 
     
