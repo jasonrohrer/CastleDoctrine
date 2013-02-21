@@ -14,6 +14,7 @@
 #include "pathFind.h"
 
 #include "minorGems/ui/event/ActionListenerList.h"
+#include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 #include "minorGems/util/SimpleVector.h"
 
@@ -30,7 +31,6 @@
 #define GOAL_ID  999
 #define START_ID  997
 #define PLAYER_ID 1000
-
 
 
 
@@ -127,6 +127,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         // WASD/IJKL key movement
         void keyDown( unsigned char inASCII );
+        void keyUp( unsigned char inASCII );
         
         // arrow key movement
         virtual void specialKeyDown( int inKeyCode );
@@ -333,6 +334,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         int mToolTargetPickedFullIndex;
         
+
+        char mAllowMoveKeyHold;
+        int mSpecialKeysHeldSteps[MG_KEY_LAST_CODE + 1];
     };
 
 

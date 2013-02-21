@@ -22,6 +22,7 @@
 #include "minorGems/util/random/CustomRandomSource.h"
 
 extern CustomRandomSource randSource;
+extern double frameRateFactor;
 
 
 char HouseGridDisplay::sInstanceCount = 0;
@@ -164,6 +165,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
         
         sNoiseTileBankPopulated = true;
         }
+    
+    mAllowMoveKeyHold = true;
     
     sInstanceCount++;
     }
@@ -405,6 +408,10 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mEditHistory.deleteAll();
 
     checkExitPaths();
+
+    for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
+        mSpecialKeysHeldSteps[i] = 0;
+        }
     }
 
 
@@ -713,6 +720,53 @@ int HouseGridDisplay::getLastPlacedObject() {
     
 
 void HouseGridDisplay::step() {
+    
+    // sync all key repeats up together
+    // even if user starts pressing them at different times
+    // those held together repeat together
+    int maxHoldSteps = 0;
+    
+    for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
+        if( mSpecialKeysHeldSteps[i] > maxHoldSteps ) {
+            maxHoldSteps = mSpecialKeysHeldSteps[i];
+            }
+        }
+    
+    // take a step from the max, and apply to all held keys
+    int nextStep = maxHoldSteps + 1;
+    
+    for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
+        if( mSpecialKeysHeldSteps[i] > 0 ) {
+            mSpecialKeysHeldSteps[i] = nextStep;
+            }
+        }
+
+
+    
+
+    int threshold = lrint( 30 / frameRateFactor );
+
+    int betweenJumpSteps = lrint( 8 / frameRateFactor );
+    
+    if( mAllowMoveKeyHold ) {
+        for( int i=MG_KEY_LEFT; i<=MG_KEY_DOWN; i++ ) {
+        
+            if( mSpecialKeysHeldSteps[i] > threshold ) {
+                
+                // repeat that key
+                specialKeyDown( i );
+                
+                // wait some steps before next repeat
+                mSpecialKeysHeldSteps[i] -= betweenJumpSteps;
+                }
+            
+            
+            }
+        
+        
+
+        }
+    
     }
 
 
@@ -2141,6 +2195,37 @@ void HouseGridDisplay::keyDown( unsigned char inASCII ) {
 
 
 
+void HouseGridDisplay::keyUp( unsigned char inASCII ) {    
+    switch( inASCII ) {
+        case 'w':
+        case 'W':
+        case 'i':
+        case 'I':
+            specialKeyUp( MG_KEY_UP );
+            break;
+        case 'a':
+        case 'A':
+        case 'j':
+        case 'J':
+            specialKeyUp( MG_KEY_LEFT );
+            break;
+        case 's':
+        case 'S':
+        case 'k':
+        case 'K':
+            specialKeyUp( MG_KEY_DOWN );
+            break;
+        case 'd':
+        case 'D':
+        case 'l':
+        case 'L':
+            specialKeyUp( MG_KEY_RIGHT );
+            break;
+        }
+    }
+
+
+
 // arrow key movement
 void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
@@ -2150,6 +2235,12 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     int newX = oldX;
     int newY = oldY;
+
+    if( mSpecialKeysHeldSteps[ inKeyCode ] == 0 ) {
+        // not already down
+
+        mSpecialKeysHeldSteps[ inKeyCode ] = 1;
+        }
     
 
     if( inKeyCode == MG_KEY_LEFT ) {
@@ -2194,6 +2285,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
 
 
 void HouseGridDisplay::specialKeyUp( int inKeyCode ) {
+    mSpecialKeysHeldSteps[ inKeyCode ] = 0;
     }
 
 

@@ -53,6 +53,8 @@ Version 2    ???
 --Greatly improved seek/avoid mobile behavior so that they don't get stuck on 
   corners (thanks Nicholas Rodine).
 
+--Added key repeat after holding movement key for 0.5+ seconds (to move across 
+  house with less tedium than pressing [->] 32 times).
 
 
 Version 1    2013-January-25
