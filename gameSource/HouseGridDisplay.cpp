@@ -398,6 +398,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mStartIndex = mFullMapD * ( mFullMapD / 2 );
     
     mRobberIndex = mStartIndex;
+    mLastRobberIndex = mStartIndex;
     mRobberState = 0;
     mRobberOrientation = 1;
     
@@ -2228,7 +2229,7 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
             }
         
 
-
+        mLastRobberIndex = mRobberIndex;
         mRobberIndex = inNewIndex;
 
         // if robber too close to edge, move view to keep robber on screen
@@ -2642,7 +2643,7 @@ int HouseGridDisplay::undo() {
     // consistency
     resetToggledStatesInternal( 0 );
     
-
+    mLastRobberIndex = mRobberIndex;
     mRobberIndex = r->robberIndex;
     
     

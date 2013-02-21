@@ -13,6 +13,7 @@
 
 
 #include <stdlib.h>
+#include <limits.h>
 
 
 
@@ -640,12 +641,32 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
 
+static double distance( int inXA, int inYA, int inXB, int inYB ) {
+    return sqrt( (inXA - inXB) * (inXA - inXB) +
+                 (inYA - inYB) * (inYA - inYB) );
+    }
+
+
+
+static char distCompare( double inDistA, double inDistB, char inSeek ) {
+    if( inSeek ) {
+        return inDistA < inDistB;
+        }
+    else {
+        return inDistA > inDistB;
+        }
+    }
+
+
+
+
 
 static void applyMobileTransitions( int *inMapIDs, int *inMapStates, 
                                     int *inMapMobileIDs, 
                                     int *inMapMobileStates,
                                     int inMapW, int inMapH,
-                                    int inRobberIndex ) {
+                                    int inRobberIndex,
+                                    int inLastRobberIndex  ) {
     
     
     // process transitions for house objects under player
@@ -692,6 +713,10 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     int robberX = inRobberIndex % inMapW;
     int robberY = inRobberIndex / inMapW;
 
+    int lastRobberX = inLastRobberIndex % inMapW;
+    int lastRobberY = inLastRobberIndex / inMapW;
+
+
     char *moveHappened = new char[ numCells ];
     
 
@@ -716,6 +741,10 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
             int dX = robberX - x;
             int dY = robberY - y;
             
+            int destX = x;
+            int destY = y;
+            
+
             if( dX == 0 && dY == 0 ) {
                 if( seek ) {
                     // no move, already on top of player
@@ -723,63 +752,97 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                     }
                 else {
                     // avoiding player AND on top of player
-                    // move in any available direction
+                    // move to spot furthest from robber's last position
+                    // (this feels like sensible "run away" behavior)
+
+                    double bestDistance = distance( x, y, 
+                                                    robberX, robberY );
+                    double bestDistanceFromLast = 
+                        distance( x, y,
+                                  lastRobberX, lastRobberY );
                 
                     int possibleDX[4] = { -1, 1, 0 , 0 };
                     int possibleDY[4] = { 0, 0, -1 , 1 };
                     
                     for( int d=0; d<4; d++ ) {
-                        int destX = x + possibleDX[d];
-                        int destY = y + possibleDY[d];
-                        int destI = destY * inMapW + destX;
+                        int tryX = x + possibleDX[d];
+                        int tryY = y + possibleDY[d];
+                        int destI = tryY * inMapW + tryX;
                         
-                        if( inMapMobileIDs[destI] == 0 &&
+                        double tryDist = 
+                            distance( tryX, tryY, robberX, robberY );
+                        double tryDistFromLast = 
+                            distance( tryX, tryY, 
+                                      lastRobberX, lastRobberY );
+                        
+                        char better = ( tryDist > bestDistance );
+                        
+                        if( ! better && 
+                            tryDist == bestDistance ) {
+                            
+                            // equal... maybe better in terms of dist from
+                            // last?
+                            
+                            if( tryDistFromLast > bestDistanceFromLast ) {
+                                better = true;
+                                }
+                            }
+                    
+                        if( better && 
+                            inMapMobileIDs[destI] == 0 &&
                             ! isPropertySet( inMapIDs[destI], 
                                              inMapStates[destI],
                                              blocking ) &&
                             ! isPropertySet( inMapIDs[destI], 
                                              inMapStates[destI],
                                              mobileBlocking ) ) {
-                            
-                            dX = possibleDX[d];
-                            dY = possibleDY[d];
-                            break;
+
+                            destX = tryX;
+                            destY = tryY;
+                            bestDistance = tryDist;
+                            bestDistanceFromLast = tryDistFromLast;
                             }
                         }
                     }
                 }
-            else if( !seek ) {
-                // move away from player
-                dX *= -1;
-                dY *= -1;
-                }
-            
-
-
-            int destX = x;
-            int destY = y;
-
-            if( abs( dX ) > abs( dY ) ) {
-                // x move
-                
-                if( dX < 0 ) {
-                    destX--;
-                    }
-                else {
-                    destX++;
-                    }
-                }
             else {
-                // y move
+                // seeking/avoiding player, and not on top of player
 
-                if( dY < 0 ) {
-                    destY--;
-                    }
-                else {
-                    destY++;
+                // pick unblocked spot 
+                // closest (or furthest) to (or from) player
+
+                double bestDistance = distance( x, y, robberX, robberY );
+                
+                int possibleDX[4] = { -1, 1, 0 , 0 };
+                int possibleDY[4] = { 0, 0, -1 , 1 };
+                
+                for( int d=0; d<4; d++ ) {
+                    int tryX = x + possibleDX[d];
+                    int tryY = y + possibleDY[d];
+                    int destI = tryY * inMapW + tryX;
+                        
+                    double tryDist = 
+                        distance( tryX, tryY, robberX, robberY );
+                    
+                    if( inMapMobileIDs[destI] == 0 &&
+                        ! isPropertySet( inMapIDs[destI], 
+                                         inMapStates[destI],
+                                         blocking ) &&
+                        ! isPropertySet( inMapIDs[destI], 
+                                         inMapStates[destI],
+                                         mobileBlocking ) &&
+                        distCompare( tryDist, bestDistance, seek ) ) {
+                        
+
+                        destX = tryX;
+                        destY = tryY;
+                        bestDistance = tryDist;
+                        }
                     }
                 }
 
+
+            // move to chosen dest
             int destI = destY * inMapW + destX;
             
             
@@ -938,12 +1001,14 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,
                        int inMapW, int inMapH,
-                       int inRobberIndex ) {
+                       int inRobberIndex,
+                       int inLastRobberIndex ) {
     
     if( !mobileObjectsFrozen ) {
         applyMobileTransitions( inMapIDs, inMapStates,
                                 inMapMobileIDs, inMapMobileStates,
-                                inMapW, inMapH, inRobberIndex );
+                                inMapW, inMapH, inRobberIndex,
+                                inLastRobberIndex );
         }
     
     int numCells = inMapW * inMapH;

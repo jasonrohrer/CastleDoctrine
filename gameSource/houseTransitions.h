@@ -20,7 +20,8 @@ char areMobilesFrozen();
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,
                        int inMapW, int inMapH,
-                       int inRobberIndex );
+                       int inRobberIndex,
+                       int inLastRobberIndex );
 
 
 

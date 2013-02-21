@@ -46,9 +46,12 @@ Version 2    ???
 
 --Tweaked window position to line up with push-doors.
 
---Fixed typing @ on Spanish keyboards (thanks Manuel Magalhães).
+--Fixed typing @ on Spanish keyboards (thanks Manuel Magalhaes).
 
 --Fixed window title.
+
+--Greatly improved seek/avoid mobile behavior so that they don't get stuck on 
+  corners (thanks Nicholas Rodine).
 
 
 

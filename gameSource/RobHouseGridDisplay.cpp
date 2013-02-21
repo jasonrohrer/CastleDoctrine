@@ -472,7 +472,8 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
                       mHouseMapMobileIDs, mHouseMapMobileCellStates,
                       mFullMapD, mFullMapD,
-                      mRobberIndex );
+                      mRobberIndex,
+                      mLastRobberIndex );
 
     copyAllIntoSubCells();
 

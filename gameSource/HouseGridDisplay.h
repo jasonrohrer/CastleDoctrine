@@ -138,6 +138,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         char mHideRobber;
 
+        int mLastRobberIndex;
         int mRobberIndex;
         int mRobberState;
         int mRobberOrientation;
