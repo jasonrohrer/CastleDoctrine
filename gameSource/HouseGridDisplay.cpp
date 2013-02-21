@@ -720,24 +720,10 @@ int HouseGridDisplay::getLastPlacedObject() {
     
 
 void HouseGridDisplay::step() {
-    
-    // sync all key repeats up together
-    // even if user starts pressing them at different times
-    // those held together repeat together
-    int maxHoldSteps = 0;
-    
-    for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
-        if( mSpecialKeysHeldSteps[i] > maxHoldSteps ) {
-            maxHoldSteps = mSpecialKeysHeldSteps[i];
-            }
-        }
-    
-    // take a step from the max, and apply to all held keys
-    int nextStep = maxHoldSteps + 1;
-    
+
     for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
         if( mSpecialKeysHeldSteps[i] > 0 ) {
-            mSpecialKeysHeldSteps[i] = nextStep;
+            mSpecialKeysHeldSteps[i] ++;
             }
         }
 
@@ -2240,6 +2226,13 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         // not already down
 
         mSpecialKeysHeldSteps[ inKeyCode ] = 1;
+        }
+
+    // clear hold status of all other special keys
+    for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
+        if( i != inKeyCode ) {
+            mSpecialKeysHeldSteps[i] = 0;
+            }
         }
     
 
