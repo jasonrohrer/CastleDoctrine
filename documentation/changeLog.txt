@@ -63,6 +63,11 @@ Version 2    ???
   right back to checking out your own house (less confusing if your house is 
   being robbed in the meantime).
 
+--Changed so that house never times out during first edit (when house isn't 
+  vulnerable to being robbed anyway, because you must edit it first) (thanks 
+  Madeleine Burleson).
+
+
 
 
 

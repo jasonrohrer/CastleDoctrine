@@ -1205,10 +1205,16 @@ function cd_checkForFlush() {
         
         
         // now clear checkout status on stale edit checkouts that were
-        // not in the middle of self-test
+        // not in the middle of self-test (and were not the first edit,
+        // post-robbery).
+        // No one can rob the house anyway until it is fully edited once,
+        // so there's no sense in timing it out, because the player isn't
+        // keeping the house away from a potential robber by keeping it checked
+        // out.
         $query = "SELECT user_id, last_ping_time ".
             "FROM $tableNamePrefix"."houses ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
+            "AND edit_count > 0 " .
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
 
@@ -1230,6 +1236,7 @@ function cd_checkForFlush() {
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET rob_checkout = 0, edit_checkout = 0 ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
+            "AND edit_count > 0 " .
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
 
