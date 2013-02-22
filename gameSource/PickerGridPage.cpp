@@ -120,7 +120,12 @@ void PickerGridPage::makeActive( char inFresh ) {
 void PickerGridPage::draw( doublePair inViewCenter, 
                           double inViewSize ) {
     
-    doublePair labelPos = { 8, 2 };
+    doublePair labelPos = { 0, 6.75 };
+    
+    drawMessage( "pickerDescription", labelPos, false );   
+
+    labelPos.x = 8;
+    labelPos.y = 2;
         
     drawMessage( "editBalance", labelPos, false );
     

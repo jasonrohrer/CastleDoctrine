@@ -65,6 +65,8 @@ gridViewObjects "View full grid of objects"
 gridViewTools "View full grid of tools"
 
 
+pickerDescription "Pick one:"
+
 
 doneEdit "Done"
 
