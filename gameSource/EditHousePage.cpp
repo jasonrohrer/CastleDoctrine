@@ -31,10 +31,14 @@ EditHousePage::EditHousePage()
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
+          mSuicideButton( mainFont, 8, -0.5, translate( "doneRob" ) ),
+          mBlockSuicideButton( false ),
           mGallery( mainFont, -8, 0 ),
-          mDone( false ) {
+          mDone( false ),
+          mDead( false ) {
 
     addComponent( &mDoneButton );
+    addComponent( &mSuicideButton );
     addComponent( &mBackpackButton );
     addComponent( &mAuctionButton );
     addComponent( &mUndoButton );
@@ -42,11 +46,13 @@ EditHousePage::EditHousePage()
     addComponent( &mObjectPicker );
 
     mDoneButton.setMouseOverTip( "" );
+    mSuicideButton.setMouseOverTip( "" );
     mUndoButton.setMouseOverTip( "" );
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
     mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );
 
     mDoneButton.addActionListener( this );
+    mSuicideButton.addActionListener( this );
     mBackpackButton.addActionListener( this );
     mAuctionButton.addActionListener( this );
     mUndoButton.addActionListener( this );
@@ -248,6 +254,8 @@ char *EditHousePage::getPriceList() {
 
 void EditHousePage::setLootValue( int inLootValue ) {
     mLootValue = inLootValue;
+    mBlockSuicideButton = false;
+
     checkIfPlacementAllowed();
     }
 
@@ -273,6 +281,14 @@ void EditHousePage::checkIfPlacementAllowed() {
         // not enough money
         mGridDisplay.allowPlacement( false );
         }
+
+    
+    // can't afford to place anything, house not edited yet
+    // allow suicide
+    mSuicideButton.setVisible(
+        ! mBlockSuicideButton &&
+        ! mUndoButton.isVisible() &&
+        mLootValue == 0 );
     }
 
 
@@ -329,6 +345,8 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
+
+        mUndoButton.setVisible( mGridDisplay.canUndo() );
         
         if( cost != -1 ) {
             mLootValue -= cost;
@@ -336,7 +354,6 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
             checkIfPlacementAllowed();
             }
-        mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         // change to house map
         actionHappened();
@@ -361,6 +378,12 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         mDone = true;
         }
+    else if( inTarget == &mSuicideButton ) {
+        mGridDisplay.resetToggledStates( 0 );
+
+        mDead = true;
+        mDone = true;
+        }
     else if( inTarget == &mObjectPicker ) {
         if( mObjectPicker.shouldShowGridView() ) {
             mShowGridObjectPicker = true;
@@ -372,13 +395,15 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mUndoButton ) {
         
+        mBlockSuicideButton = true;
+
         int cost = mGridDisplay.undo();
         
         mLootValue += cost;
-        
-        checkIfPlacementAllowed();
 
         mUndoButton.setVisible( mGridDisplay.canUndo() );
+
+        checkIfPlacementAllowed();
 
         mDoneButton.setVisible( 
             mGridDisplay.areMandatoriesPlaced()
@@ -404,6 +429,7 @@ void EditHousePage::makeActive( char inFresh ) {
         }
     
     mDone = false;
+    mDead = false;
     mShowLoadBackpack = false;
     mShowAuctions = false;
     mShowGridObjectPicker = false;

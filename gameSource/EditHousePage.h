@@ -90,6 +90,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char getDone() {
             return mDone;
             }
+        char getDead() {
+            return mDead;
+            }
 
         char showLoadBackpack() {
             return mShowLoadBackpack;
@@ -140,11 +143,20 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mBackpackButton;
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
+        TextButton mSuicideButton;
         
+        // Once undo pressed, never show suicide button again
+        // (it occupies same spot, and too risky for user to hit
+        //  undo-undo-undo-suicide)
+        // If they are able to edit house, suicide should not be an option
+        // anyway.
+        char mBlockSuicideButton;
         
+
         Gallery mGallery;
         
         char mDone;
+        char mDead;
         char mShowLoadBackpack;
         char mShowAuctions;
         char mShowGridObjectPicker;

@@ -1179,7 +1179,10 @@ void drawFrame( char inUpdate ) {
                     }
                 else {
                     // not changed, check it right in
-                
+                    // check for suicide (which can only happen on edit screen
+                    // if house not changed)                    
+                    checkinHousePage->setDied( editHousePage->getDead() );
+
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setVaultContents( vaultContents );
                     checkinHousePage->setBackpackContents( backpackContents );

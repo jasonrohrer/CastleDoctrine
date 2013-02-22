@@ -67,6 +67,8 @@ Version 2    ???
   vulnerable to being robbed anyway, because you must edit it first) (thanks 
   Madeleine Burleson).
 
+--Added suicide button to edit page when balance is 0.
+
 
 
 
