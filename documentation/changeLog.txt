@@ -59,6 +59,10 @@ Version 2    ???
 --Added 'Pick one:' to picker grids to make them less confusing (thanks 
   Madeleine Burleson).
 
+--Leaving house edit due to inactivity now returns you to the menu instead of 
+  right back to checking out your own house (less confusing if your house is 
+  being robbed in the meantime).
+
 
 
 

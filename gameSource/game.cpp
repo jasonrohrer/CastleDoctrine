@@ -1214,8 +1214,8 @@ void drawFrame( char inUpdate ) {
             if( staleHousePage->getDone() ) {
                 // house edit became stale
                 
-                // return to own house
-                currentGamePage = checkoutHousePage;
+                // return to menu
+                currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
             }
@@ -1223,7 +1223,7 @@ void drawFrame( char inUpdate ) {
             if( staleHouseDeadPage->getDone() ) {
                 // either robbery or house self-test became stale
                 
-                // return to own house in either case
+                // return to own, fresh house in either case
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
                 }
