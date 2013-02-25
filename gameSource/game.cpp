@@ -161,6 +161,7 @@ char gamePlayingBack = false;
 
 Font *mainFont;
 Font *mainFontFixed;
+Font *numbersFontFixed;
 
 Font *tinyFont;
 
@@ -371,6 +372,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     
     mainFontFixed = new Font( getFontTGAFileName(), 1, 4, true );
+    numbersFontFixed = new Font( getFontTGAFileName(), 1, 4, true, 1.0, 5 );
     
     tinyFont = new Font( "font_4_8.tga", 1, 2, false );
 
@@ -499,6 +501,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 void freeFrameDrawer() {
     delete mainFontFixed;
+    delete numbersFontFixed;
+
     delete tinyFont;
     
     if( currentUserTypedMessage != NULL ) {

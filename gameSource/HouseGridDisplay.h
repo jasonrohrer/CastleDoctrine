@@ -54,6 +54,15 @@ typedef struct GridChangeRecord {
 
 
 
+typedef struct GridDiffRecord {
+        int objectID;
+        int placementCount;
+    } GridDiffRecord;
+
+
+
+
+
 // fires actionPerformed whenever grid contents changes
 class HouseGridDisplay : public PageComponent, public ActionListenerList {
     
@@ -83,6 +92,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *getHouseMap();
         char *getEditList();
         
+        SimpleVector<GridDiffRecord> getEditDiff();
+        
+
         char *getFamilyExitPaths();
 
         char getWifeLiving();
@@ -160,6 +172,14 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         int *mHouseMapMobileIDs;
         int *mHouseMapMobileCellStates;
+
+
+        // for computing diffs during editing
+        int *mUntouchedHouseMapIDs;
+        int *mUntouchedHouseMapCellStates;
+        int *mUntouchedHouseMapMobileIDs;
+        int *mUntouchedHouseMapMobileCellStates;
+
         
         int mFullMapD;
 

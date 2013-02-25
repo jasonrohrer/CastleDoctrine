@@ -135,6 +135,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         int mLootValue;
 
+        int mChangesCost;
+
         char mMustSelfTest;
 
         HouseObjectPicker mObjectPicker;
@@ -162,6 +164,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char mShowGridObjectPicker;
         
         void checkIfPlacementAllowed();
+
+
+        void recomputeChangeCost();
+        
 
     };
 

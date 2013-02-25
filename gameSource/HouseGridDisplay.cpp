@@ -52,6 +52,10 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMapCellStates( NULL ),
           mHouseMapMobileIDs( NULL ),
           mHouseMapMobileCellStates( NULL ),
+          mUntouchedHouseMapIDs( NULL ),
+          mUntouchedHouseMapCellStates( NULL ),
+          mUntouchedHouseMapMobileIDs( NULL ),
+          mUntouchedHouseMapMobileCellStates( NULL ),
           mHouseMapNoiseTileIndices( NULL ),
           mSubMapOffsetX( 0 ),
           mSubMapOffsetY( 0 ),
@@ -200,6 +204,24 @@ HouseGridDisplay::~HouseGridDisplay() {
         delete [] mHouseMapMobileCellStates;
         }
 
+
+    if( mUntouchedHouseMapIDs != NULL ) {
+        delete [] mUntouchedHouseMapIDs;
+        }
+    if( mUntouchedHouseMapCellStates != NULL ) {
+        delete [] mUntouchedHouseMapCellStates;
+        }
+
+    if( mUntouchedHouseMapMobileIDs != NULL ) {
+        delete [] mUntouchedHouseMapMobileIDs;
+        }
+    if( mUntouchedHouseMapMobileCellStates != NULL ) {
+        delete [] mUntouchedHouseMapMobileCellStates;
+        }
+
+
+
+
     if( mHouseMapNoiseTileIndices != NULL ) {
         delete [] mHouseMapNoiseTileIndices;
         }
@@ -293,6 +315,24 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     if( mHouseMapMobileCellStates != NULL ) {
         delete [] mHouseMapMobileCellStates;
         }
+
+
+    if( mUntouchedHouseMapIDs != NULL ) {
+        delete [] mUntouchedHouseMapIDs;
+        }
+
+    if( mUntouchedHouseMapCellStates != NULL ) {
+        delete [] mUntouchedHouseMapCellStates;
+        }
+
+    if( mUntouchedHouseMapMobileIDs != NULL ) {
+        delete [] mUntouchedHouseMapMobileIDs;
+        }
+
+    if( mUntouchedHouseMapMobileCellStates != NULL ) {
+        delete [] mUntouchedHouseMapMobileCellStates;
+        }
+
 
     if( mHouseMapNoiseTileIndices != NULL ) {
         delete [] mHouseMapNoiseTileIndices;
@@ -393,8 +433,27 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         memcpy( sHouseMapNoiseTileIndices, mHouseMapNoiseTileIndices,
                 mNumMapSpots * sizeof( int ) );
         }
+    
+
+    mUntouchedHouseMapIDs = new int[ mNumMapSpots ];
+    mUntouchedHouseMapCellStates = new int[ mNumMapSpots ];
+    mUntouchedHouseMapMobileIDs = new int[ mNumMapSpots ];
+    mUntouchedHouseMapMobileCellStates = new int[ mNumMapSpots ];
+    
+    memcpy( mUntouchedHouseMapIDs, mHouseMapIDs, 
+            mNumMapSpots * sizeof( int ) );
+
+    memcpy( mUntouchedHouseMapCellStates, mHouseMapCellStates, 
+            mNumMapSpots * sizeof( int ) );
+
+    memcpy( mUntouchedHouseMapMobileIDs, mHouseMapMobileIDs, 
+            mNumMapSpots * sizeof( int ) );
+
+    memcpy( mUntouchedHouseMapMobileCellStates, mHouseMapMobileCellStates, 
+            mNumMapSpots * sizeof( int ) );
 
 
+    
     // center vertically, far left
     setVisibleOffset( 0, ( mFullMapD - HOUSE_D ) / 2 );
 
@@ -624,6 +683,46 @@ char *HouseGridDisplay::getEditList() {
 
     return editList;
     }
+
+
+static void addDiff( SimpleVector<GridDiffRecord> *inDiffList,
+                     int inObjectID ) {
+    
+    int numInList = inDiffList->size();
+    
+    for( int i=0; i<numInList; i++ ) {
+        GridDiffRecord *r = inDiffList->getElement( i );
+        
+        if( r->objectID == inObjectID ) {
+            r->placementCount ++;
+            return;
+            }
+        }
+
+    // not found
+    GridDiffRecord r = { inObjectID, 1 };
+    inDiffList->push_back( r );
+    }
+
+
+
+SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
+    SimpleVector<GridDiffRecord> diffList;
+    
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        if( mUntouchedHouseMapIDs[i] != mHouseMapIDs[i] ||
+            mUntouchedHouseMapCellStates[i] != mHouseMapCellStates[i] ) {
+            
+            addDiff( &diffList, mHouseMapIDs[i] );
+            }
+        
+        }
+        
+    return diffList;
+    }
+
+
+
 
 
 

@@ -136,6 +136,8 @@ void EditHousePage::setHouseMap( const char *inHouseMap ) {
         mGridDisplay.areMandatoriesPlaced()
         &&
         mGridDisplay.doAllFamilyObjectsHaveExitPath() );
+    
+    mChangesCost = 0;
     }
 
 
@@ -335,6 +337,26 @@ char EditHousePage::houseMapChanged() {
 
 
 
+
+void EditHousePage::recomputeChangeCost() {
+    mChangesCost = 0;
+        
+    SimpleVector<GridDiffRecord> diffList = mGridDisplay.getEditDiff();
+    
+    int numRecords = diffList.size();
+    
+    for( int i=0; i<numRecords; i++ ) {
+        GridDiffRecord *r = diffList.getElement( i );
+        
+        mChangesCost += 
+            r->placementCount *
+            mObjectPicker.getPrice( r->objectID );
+        }
+    }
+
+
+    
+
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
@@ -354,6 +376,10 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
             checkIfPlacementAllowed();
             }
+
+        
+        recomputeChangeCost();
+
 
         // change to house map
         actionHappened();
@@ -410,6 +436,8 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
             &&
             mGridDisplay.doAllFamilyObjectsHaveExitPath() );
         
+        recomputeChangeCost();
+
         // change to house map
         actionHappened();
         }    
@@ -436,6 +464,7 @@ void EditHousePage::makeActive( char inFresh ) {
     }
         
 
+extern Font *numbersFontFixed;
 
 
 void EditHousePage::draw( doublePair inViewCenter, 
@@ -453,10 +482,42 @@ void EditHousePage::draw( doublePair inViewCenter,
     labelPos.y = 1.25;
 
     char *balanceMessage = autoSprintf( "$%d", mLootValue );
-    
-    drawMessage( balanceMessage, labelPos, false );
+
+    numbersFontFixed->drawString( balanceMessage, 
+                                  labelPos, alignRight );
+
+    //drawMessage( balanceMessage, labelPos, false );
     
     delete [] balanceMessage;
+
+
+
+    if( mChangesCost >  0 ) {
+        
+        char costRed = ( mChangesCost > mLootValue );
+
+        //    labelPos.y = -6;
+        
+        //drawMessage( "editCost", labelPos, costRed );
+        
+        labelPos.y = 0.5;
+        
+        char *costMessage = autoSprintf( "-$%d", mChangesCost );
+        
+        if( !costRed ) {
+            setDrawColor( 0, 0.75, 0, 1 );
+            }
+        
+        numbersFontFixed->drawString( costMessage, 
+                                      labelPos, alignRight );
+
+        //drawMessage( costMessage, labelPos, costRed, 1, true );
+        
+        delete [] costMessage;
+        }
+    
+
+
 
     if( ! mGridDisplay.doAllFamilyObjectsHaveExitPath() ) {
         
