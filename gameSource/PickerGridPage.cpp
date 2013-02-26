@@ -1,6 +1,7 @@
 #include "PickerGridPage.h"
 
 #include "message.h"
+#include "balance.h"
 
 #include "minorGems/util/stringUtils.h"
 
@@ -124,18 +125,8 @@ void PickerGridPage::draw( doublePair inViewCenter,
     
     drawMessage( "pickerDescription", labelPos, false );   
 
-    labelPos.x = 8;
-    labelPos.y = 2;
-        
-    drawMessage( "editBalance", labelPos, false );
-    
-    labelPos.y = 1.25;
 
-    char *balanceMessage = autoSprintf( "$%d", mLootValue );
-    
-    drawMessage( balanceMessage, labelPos, false );
-    
-    delete [] balanceMessage;
+    drawBalance( mLootValue, 0 );
     }
 
 

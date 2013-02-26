@@ -5,6 +5,7 @@
 #include "minorGems/game/Font.h"
 
 #include "message.h"
+#include "balance.h"
 #include "ticketHash.h"
 #include "galleryObjects.h"
 
@@ -483,18 +484,8 @@ void AuctionPage::draw( doublePair inViewCenter,
         }
 
 
-    labelPos.x = 8;
-    labelPos.y = 2;
-    
-    drawMessage( "editBalance", labelPos, false );
-    
-    labelPos.y = 1.25;
 
-    char *balanceMessage = autoSprintf( "$%d", mLootValue );
-    
-    drawMessage( balanceMessage, labelPos, false );
-    
-    delete [] balanceMessage;
+    drawBalance( mLootValue, 0 );
     }
 
 
