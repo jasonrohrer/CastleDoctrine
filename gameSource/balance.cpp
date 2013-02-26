@@ -17,8 +17,6 @@ void drawBalance( int inLoot, int inChangeCost ) {
     
     
 
-    //drawMessage( "editBalance", labelPos, false );
-    
     mainFont->drawString( translate( "editBalance" ), 
                           labelPos, alignRight );
 
@@ -28,8 +26,6 @@ void drawBalance( int inLoot, int inChangeCost ) {
 
     numbersFontFixed->drawString( balanceMessage, 
                                   labelPos, alignRight );
-
-    //drawMessage( balanceMessage, labelPos, false );
     
     delete [] balanceMessage;
 
@@ -39,23 +35,23 @@ void drawBalance( int inLoot, int inChangeCost ) {
         
         char costRed = ( inChangeCost > inLoot );
 
-        //    labelPos.y = -6;
-        
-        //drawMessage( "editCost", labelPos, costRed );
         
         labelPos.y = 0.5;
         
         char *costMessage = autoSprintf( "-$%d", inChangeCost );
         
-        if( !costRed ) {
+        if( costRed ) {
+            setDrawColor( 1, 0, 0, 1 );
+            }
+        else {
+            // else green
             setDrawColor( 0, 0.75, 0, 1 );
             }
         
+
         numbersFontFixed->drawString( costMessage, 
                                       labelPos, alignRight );
 
-        //drawMessage( costMessage, labelPos, costRed, 1, true );
-        
         delete [] costMessage;
         }
 
