@@ -27,7 +27,6 @@ CheckinHousePage::CheckinHousePage()
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
           mGalleryContents( NULL ),
-          mEditList( NULL ),
           mFamilyExitPaths( NULL ),
           mPurchaseList( NULL ),
           mSellList( NULL ),
@@ -63,9 +62,6 @@ CheckinHousePage::~CheckinHousePage() {
         }
     if( mGalleryContents != NULL ) {
         delete [] mGalleryContents;
-        }
-    if( mEditList != NULL ) {
-        delete [] mEditList;
         }
     if( mFamilyExitPaths != NULL ) {
         delete [] mFamilyExitPaths;
@@ -131,14 +127,6 @@ void CheckinHousePage::setGalleryContents( const char *inGalleryContents ) {
     mGalleryContents = stringDuplicate( inGalleryContents );
     }
 
-
-
-void CheckinHousePage::setEditList( const char *inEditList ) {
-    if( mEditList != NULL ) {
-        delete [] mEditList;
-        }
-    mEditList = stringDuplicate( inEditList );
-    }
 
 
 void CheckinHousePage::setFamilyExitPaths( const char *inFamilyExitPaths ) {
@@ -226,11 +214,11 @@ void CheckinHousePage::step() {
             "action=end_edit_house&user_id=%d"
             "&%s&died=%d&house_map=%s&vault_contents=%s"
             "&backpack_contents=%s&gallery_contents=%s"
-            "&price_list=%s&edit_list=%s&purchase_list=%s&sell_list=%s"
+            "&price_list=%s&purchase_list=%s&sell_list=%s"
             "&self_test_move_list=%s&family_exit_paths=%s",
             userID, ticketHash, mDied, mHouseMap, mVaultContents, 
             mBackpackContents, mGalleryContents, 
-            mPriceList, mEditList, mPurchaseList, mSellList, mMoveList,
+            mPriceList, mPurchaseList, mSellList, mMoveList,
             mFamilyExitPaths );
         delete [] ticketHash;
             
@@ -278,7 +266,7 @@ void CheckinHousePage::step() {
                 if( strstr( result, "OK" ) != NULL ) {
                     // house checked in!
                     
-                    if( mDied == 0 ) {    
+                    if( mDied != 1 ) {    
                         mStatusError = false;
                         mStatusMessageKey = "houseCheckedIn";
                         mReturnToMenu = true;

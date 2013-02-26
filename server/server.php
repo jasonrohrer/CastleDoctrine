@@ -3,10 +3,10 @@
 
 
 global $cd_version;
-$cd_version = "1";
+$cd_version = "2";
 
 global $cd_minClientVersion;
-$cd_minClientVersion = "1";
+$cd_minClientVersion = "2";
 
 
 // edit settings.php to change server' settings
@@ -1968,6 +1968,48 @@ function cd_computeValueEstimate( $inLootValue, $inVaultContents ) {
 
 
 
+// returns array of id=>count pairs
+function cd_countMobiles( $inHouseMapArray ) {
+    global $mobileList;
+
+    $mobCounts = array();
+
+    foreach( $mobileList as $mobileID ) {
+        $mobCounts[$mobileID] = 0;
+        }
+
+    foreach( $inHouseMapArray as $cell ) {
+
+        $cellObjects = preg_split( "/,/", $cell );
+
+
+        foreach( $cellObjects as $object ) {
+            $objectParts = preg_split( "/:/", $object );
+            
+            $id = $objectParts[0];
+
+            $stuck = false;
+            if( count( $objectParts ) > 1 &&
+                strstr( $objectParts[1], "!" ) ) {
+                $stuck = true;
+                }
+
+            $mobile = false;
+            if( array_search( $id, $mobileList ) !== false ) {
+                $mobile = true;
+                }
+            
+            if( $mobile && ! $stuck ) {
+                $mobCounts[$id] ++;
+                }
+            }
+        }
+
+    return $mobCounts;
+    }
+
+
+
 
 function cd_endEditHouse() {
     global $tableNamePrefix;
@@ -2022,9 +2064,7 @@ function cd_endEditHouse() {
 
     $price_list = cd_requestFilter( "price_list",
                                     "/\d+:[0-9@#]+:[A-F0-9]+/i" );
-
-    $edit_list = cd_requestFilter( "edit_list", "/[0-9@#]+/" );
-
+    
     $family_exit_paths = cd_requestFilter( "family_exit_paths", "/[0-9@#]+/" );
     
     $purchase_list = cd_requestFilter( "purchase_list", "/[#0-9:]+/" );
@@ -2037,7 +2077,7 @@ function cd_endEditHouse() {
         cd_requestFilter( "self_test_move_list", "/[m0-9#S]+/" );
 
     
-    $died = cd_requestFilter( "died", "/[01]/" );
+    $died = cd_requestFilter( "died", "/[012]/" );
 
 
     if( $died == 1 ) {
@@ -2057,18 +2097,7 @@ function cd_endEditHouse() {
         }
 
 
-
-    $editArray = preg_split( "/#/", $edit_list );
     
-    $numEdits = count( $editArray );
-
-
-    if( $edit_list == "" ) {
-        // split on empty string returns array with 1 element, which screws
-        // up loop below
-        $numEdits = 0;
-        }
-
     
     $sellArray = preg_split( "/#/", $sell_list );
 
@@ -2089,8 +2118,8 @@ function cd_endEditHouse() {
         $numPurchases = 0;
         }
 
-    
-    if( $numEdits == 0 && $numSold == 0 && $numPurchases == 0 &&
+    // died == 2 if no self-test necessary (no changes to house map)
+    if( $died == 2 && $numSold == 0 && $numPurchases == 0 &&
         $old_backpack_contents == $backpack_contents &&
         $old_vault_contents == $vault_contents &&
         ! $self_test_running ) {
@@ -2120,7 +2149,7 @@ function cd_endEditHouse() {
         }
     
 
-    if( $numEdits > 0 || $self_test_running ) {
+    if( $died != 2 || $self_test_running ) {
         // don't count purchases or sales or inventory transfer as edits
         $edit_count ++;
         }
@@ -2353,47 +2382,119 @@ function cd_endEditHouse() {
 
     
     
-    
-    
-    // now walk through edit list, totalling cost, and making sure
-    // that changes result in new, submitted house map
 
+    
+    
+    // compute cost of house map diff
     $oldHouseArray = preg_split( "/#/", $old_house_map );
-
-    $editedHouseArray = $oldHouseArray;
+    $newHouseArray = preg_split( "/#/", $house_map );
     
 
-    if( $numEdits > 0 && $self_test_move_list == "#" ) {
+    if( $died != 2 && $self_test_move_list == "#" ) {
 
-        cd_log( "House check-in failed because edit list not accompanied by ".
+        cd_log( "House check-in failed:  edited house not accompanied by ".
                 "a self-test move list." );
         cd_transactionDeny();
         return;    
         }
+
+
+    // maps object IDs to placement counts
+    $diffList = array();
     
 
-    for( $i=0; $i<$numEdits; $i++ ) {
+    global $mobileList;
+    
+    
+    $oldNumHouseCells = count( $oldHouseArray );
 
-        // object_id@index
-        $editParts = preg_split( "/@/", $editArray[$i] );
+    if( $oldNumHouseCells != $numHouseCells ) {
+        cd_log( "House check-in failed:  map size mismatch." );
+        cd_transactionDeny();
+        return;
+        }
 
-        if( count( $editParts ) != 2 ) {
-            cd_log( "House check-in with badly-formatted edit list denied" );
-            cd_transactionDeny();
-            return;
-            }
-
-        $id = $editParts[0];
-        $mapIndex = $editParts[1];
+    
+    for( $i=0; $i<$numHouseCells; $i++ ) {
         
-        if( $mapIndex >= 32 * 32 || $mapIndex < 0 ) {
-            // out of bounds
-            cd_log( "House check-in with out-of-bounds edit denied" );
-            cd_transactionDeny();
-            return;
+        $newCell = $houseArray[ $i ];
+        $oldCell = $oldHouseArray[ $i ];
+
+        if( $oldCell == $newCell ) {
+            continue;
             }
+        
+        
+        $newCellObjects = preg_split( "/,/", $newCell );
+        $oldCellObjects = preg_split( "/,/", $oldCell );
+
+        foreach( $newCellObjects as $newObject ) {
+            $newObjectParts = preg_split( "/:/", $newObject );
+
+            $newID = $newObjectParts[0];
+            
+            $newMobile = false;
+
+            if( array_search( $newID, $mobileList ) !== false ) {
+                $newMobile = true;
+                }
+
+            if( !$newMobile ) {
+                // non-mobile here
+                
+                // search in old map cell, in its first spot only
+                
+                $oldObjectParts = preg_split( "/:/", $oldCellObjects[0] );
+
+                $oldID = $oldObjectParts[0];
+
+                $oldStuck = false;
+                if( count( $oldObjectParts ) > 1 &&
+                    strstr( $oldObjectParts[1], "!" ) ) {
+                    $oldStuck = true;
+                    }
+                
+                if( $oldID != $newID 
+                    ||
+                    ( $oldStuck &&
+                      ( count( $newObjectParts ) < 2 ||
+                        $oldObjectParts[1] != $newObjectParts[1] ) ) ) {
+
+                    if( array_key_exists( $newID, $diffList ) ) {
+                        $diffList[ $newID ] ++;;
+                        }
+                    else {
+                        $diffList[ $newID ] = 1;
+                        }
+                    }
+                }
+            }
+        }
 
 
+    // now look for excess mobiles in new map, and add them to diff
+    // (mobiles can be moved around freely during edit without cost)
+    $oldMobCounts = cd_countMobiles( $oldHouseArray );
+    $newMobCounts = cd_countMobiles( $newHouseArray );
+
+    
+    foreach( $newMobCounts as $id => $count ) {
+        $oldCount = 0;
+        if( array_key_exists( $id, $oldMobCounts ) ) {
+            $oldCount = $oldMobCounts[$id];
+            }
+        $extraCount = $count - $oldCount;
+
+        cd_log( "Mob $id old count = $oldCount, new count = $count" );
+        
+        if( $extraCount > 0 ) {
+            $diffList[$id] = $extraCount;
+            }
+        }
+
+    
+    // subtract cost of diff from balance
+    foreach( $diffList as $id => $count ) {
         if( ! array_key_exists( "$id", $priceArray ) ) {
             // id's not on the price list can't be placed!
             cd_log( "House check-in with unplaceable object in edit denied" );
@@ -2401,10 +2502,7 @@ function cd_endEditHouse() {
             return;
             }
         
-        
-        $editedHouseArray[ $editParts[1] ] = $id;
-
-        $loot_value -= $priceArray[ "$id" ];
+        $loot_value -= $priceArray[ "$id" ] * $count;
 
         if( $loot_value < 0 ) {
             // more edits than they could afford
@@ -2414,59 +2512,9 @@ function cd_endEditHouse() {
             }
         }
 
-    // all edits applied
-
-
-    // auto-reset any object states to 0 that aren't stuck
-    // these may be left over from previous robbery (switches that are toggled,
-    //  etc)
-    // (client does this every time an edit completes)
-
-    for( $i=0; $i<$numHouseCells; $i++ ) {
-
-        $cellObjects = preg_split( "/,/", $editedHouseArray[$i] );
-
-        $numObjects = count( $cellObjects );
-
-        for( $j=0; $j<$numObjects; $j++ ) {
-
-            $objectParts = preg_split( "/:/", $cellObjects[$j] );
-
-            if( count( $objectParts ) > 1 ) {
-
-                // second part is state
-
-                if( strstr( $objectParts[1], "!" ) ) {
-                    // stuck, don't change state
-                    }
-                else {
-                    // set state back to 0, which means state is simply left
-                    // off (implied ":0")
-                    // so drop second part of object, including ":" separator
-                    
-                    $cellObjects[$j] = $objectParts[0];
-                    }
-                }
-            }
-
-        $editedHouseArray[$i] = implode( ",", $cellObjects );        
-        }
     
 
     
-    
-    $edited_house_map = implode( "#", $editedHouseArray );
-
-
-    if( $edited_house_map != $house_map ) {
-        // edits + old map don't add up to the map that was submitted
-        cd_log( "House check-in with map and edits mismatch denied" );
-        
-        cd_transactionDeny();
-        return;
-        }
-    
-
     // Well...
     // if we get here, then we have a valid, edited house map.
 
@@ -2579,8 +2627,6 @@ function cd_endEditHouse() {
     $familyLocations = array();
     $wife_present = 0;
     
-    $houseArray = preg_split( "/#/", $house_map );
-
     $index = 0;
     foreach( $houseArray as $cell ) {
         $cellObjects = preg_split( "/,/", $cell );
@@ -2632,7 +2678,6 @@ function cd_endEditHouse() {
 
 
     
-    global $mobileList;
 
     // exit paths must make it all the way to map start
     $exitIndex = 32 * 16;

@@ -23,7 +23,6 @@ class CheckinHousePage : public LiveHousePage, public ActionListener {
         virtual void setVaultContents( const char *inVaultContents );
         virtual void setBackpackContents( const char *inBackpackContents );
         virtual void setGalleryContents( const char *inGalleryContents );
-        virtual void setEditList( const char *inEditList );
         virtual void setFamilyExitPaths( const char *inFamilyExitPaths );
         virtual void setPurchaseList( const char *inPurchaseList );
         virtual void setSellList( const char *inSellList );
@@ -53,7 +52,6 @@ class CheckinHousePage : public LiveHousePage, public ActionListener {
         char *mVaultContents;
         char *mBackpackContents;
         char *mGalleryContents;
-        char *mEditList;
         char *mFamilyExitPaths;
         char *mPurchaseList;
         char *mSellList;

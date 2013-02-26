@@ -1,4 +1,4 @@
-int versionNumber = 1;
+int versionNumber = 2;
 
 
 
@@ -1141,7 +1141,6 @@ void drawFrame( char inUpdate ) {
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
                 char *galleryContents = editHousePage->getGalleryContents();
-                char *editList = editHousePage->getEditList();
                 char *familyExitPaths = editHousePage->getFamilyExitPaths();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *sellList = editHousePage->getSellList();
@@ -1184,14 +1183,19 @@ void drawFrame( char inUpdate ) {
                 else {
                     // not changed, check it right in
                     // check for suicide (which can only happen on edit screen
-                    // if house not changed)                    
-                    checkinHousePage->setDied( editHousePage->getDead() );
-
+                    // if house not changed)
+                    if( editHousePage->getDead() ) {
+                        checkinHousePage->setDied( 1 );
+                        }
+                    else {
+                        // no self test needed
+                        checkinHousePage->setDied( 2 );
+                        }
+                    
                     checkinHousePage->setHouseMap( houseMap );
                     checkinHousePage->setVaultContents( vaultContents );
                     checkinHousePage->setBackpackContents( backpackContents );
                     checkinHousePage->setGalleryContents( galleryContents );
-                    checkinHousePage->setEditList( editList );
                     checkinHousePage->setFamilyExitPaths( familyExitPaths );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setSellList( sellList );
@@ -1210,7 +1214,6 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] galleryContents;
-                delete [] editList;
                 delete [] familyExitPaths;
                 delete [] purchaseList;
                 delete [] sellList;
@@ -1369,7 +1372,6 @@ void drawFrame( char inUpdate ) {
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
                 char *galleryContents = editHousePage->getGalleryContents();
-                char *editList = editHousePage->getEditList();
                 char *familyExitPaths = editHousePage->getFamilyExitPaths();
                 char *purchaseList = editHousePage->getPurchaseList();
                 char *sellList = editHousePage->getSellList();
@@ -1386,7 +1388,6 @@ void drawFrame( char inUpdate ) {
                     checkinHousePage->setVaultContents( vaultContents );
                     checkinHousePage->setBackpackContents( backpackContents );
                     checkinHousePage->setGalleryContents( galleryContents );
-                    checkinHousePage->setEditList( editList );
                     checkinHousePage->setFamilyExitPaths( familyExitPaths );
                     checkinHousePage->setPurchaseList( purchaseList );
                     checkinHousePage->setSellList( sellList );
@@ -1415,7 +1416,6 @@ void drawFrame( char inUpdate ) {
                 delete [] vaultContents;
                 delete [] backpackContents;
                 delete [] galleryContents;
-                delete [] editList;
                 delete [] familyExitPaths;
                 delete [] purchaseList;
                 delete [] sellList;
