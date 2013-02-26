@@ -271,21 +271,9 @@ void EditHousePage::setMustSelfTest( char inMustSelfTest ) {
 
 
 void EditHousePage::checkIfPlacementAllowed() {
-    int placementCost = 
-        mObjectPicker.getPrice( mObjectPicker.getSelectedObject() );
-    
-    if( placementCost == -1 ) {
-        mGridDisplay.allowPlacement( true );
-        }
-    else if( mLootValue >= placementCost ) {
-        mGridDisplay.allowPlacement( true );
-        }
-    else {
-        // not enough money
-        mGridDisplay.allowPlacement( false );
-        }
-
-    
+    // always allow placement with new accounting method
+    mGridDisplay.allowPlacement( true );
+        
     // can't afford to place anything, house not edited yet
     // allow suicide
     mSuicideButton.setVisible(
@@ -364,10 +352,14 @@ void EditHousePage::recomputeChangeCost() {
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
         // can't click DONE if house has no goal set
+        // or family blocked
+        // or spent more than we have on changes to house
         mDoneButton.setVisible( 
             mGridDisplay.areMandatoriesPlaced()
             &&
-            mGridDisplay.doAllFamilyObjectsHaveExitPath() );
+            mGridDisplay.doAllFamilyObjectsHaveExitPath()
+            &&
+            mLootValue >= mChangesCost );
 
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
@@ -375,7 +367,6 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mUndoButton.setVisible( mGridDisplay.canUndo() );
         
         if( cost != -1 ) {
-            mLootValue -= cost;
             mObjectPicker.useSelectedObject();
 
             checkIfPlacementAllowed();
@@ -427,10 +418,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         
         mBlockSuicideButton = true;
 
-        int cost = mGridDisplay.undo();
+        mGridDisplay.undo();
         
-        mLootValue += cost;
-
+        
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         checkIfPlacementAllowed();
@@ -438,7 +428,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDoneButton.setVisible( 
             mGridDisplay.areMandatoriesPlaced()
             &&
-            mGridDisplay.doAllFamilyObjectsHaveExitPath() );
+            mGridDisplay.doAllFamilyObjectsHaveExitPath()
+            &&
+            mLootValue >= mChangesCost );
         
         recomputeChangeCost();
 
