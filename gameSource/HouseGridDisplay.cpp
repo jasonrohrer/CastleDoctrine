@@ -1623,6 +1623,12 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                        houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/32.0 );
+
+                if( touched ) {
+                    setDrawColor( 0.06666, 0.68627451, 0.454901961, 0.5 );
+                    
+                    drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
+                    }
                 }
 
             
