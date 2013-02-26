@@ -165,6 +165,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         void checkIfPlacementAllowed();
 
+        void checkIfDoneButtonVisible();
+        
 
         void recomputeChangeCost();
         

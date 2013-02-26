@@ -284,6 +284,20 @@ void EditHousePage::checkIfPlacementAllowed() {
 
 
 
+void EditHousePage::checkIfDoneButtonVisible() {
+    // can't click DONE if house has no goal set
+    // or family blocked
+    // or spent more than we have on changes to house
+    mDoneButton.setVisible( 
+        mGridDisplay.areMandatoriesPlaced()
+        &&
+        mGridDisplay.doAllFamilyObjectsHaveExitPath()
+        &&
+        mLootValue >= mChangesCost );
+    }
+
+
+
 char EditHousePage::houseMapChanged() {
 
     char *editList = getEditList();
@@ -351,16 +365,6 @@ void EditHousePage::recomputeChangeCost() {
 
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mGridDisplay ) {
-        // can't click DONE if house has no goal set
-        // or family blocked
-        // or spent more than we have on changes to house
-        mDoneButton.setVisible( 
-            mGridDisplay.areMandatoriesPlaced()
-            &&
-            mGridDisplay.doAllFamilyObjectsHaveExitPath()
-            &&
-            mLootValue >= mChangesCost );
-
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
 
@@ -374,7 +378,7 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         
         recomputeChangeCost();
-
+        checkIfDoneButtonVisible();
 
         // change to house map
         actionHappened();
@@ -424,15 +428,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mUndoButton.setVisible( mGridDisplay.canUndo() );
 
         checkIfPlacementAllowed();
-
-        mDoneButton.setVisible( 
-            mGridDisplay.areMandatoriesPlaced()
-            &&
-            mGridDisplay.doAllFamilyObjectsHaveExitPath()
-            &&
-            mLootValue >= mChangesCost );
-        
+                
         recomputeChangeCost();
+        checkIfDoneButtonVisible();
 
         // change to house map
         actionHappened();
@@ -457,6 +455,8 @@ void EditHousePage::makeActive( char inFresh ) {
     mShowLoadBackpack = false;
     mShowAuctions = false;
     mShowGridObjectPicker = false;
+
+    checkIfDoneButtonVisible();
     }
         
 
