@@ -56,6 +56,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mUntouchedHouseMapCellStates( NULL ),
           mUntouchedHouseMapMobileIDs( NULL ),
           mUntouchedHouseMapMobileCellStates( NULL ),
+          mHouseMapSpotsTouched( NULL ),
           mHouseMapNoiseTileIndices( NULL ),
           mSubMapOffsetX( 0 ),
           mSubMapOffsetY( 0 ),
@@ -219,6 +220,10 @@ HouseGridDisplay::~HouseGridDisplay() {
         delete [] mUntouchedHouseMapMobileCellStates;
         }
 
+    if( mHouseMapSpotsTouched != NULL ) {
+        delete [] mHouseMapSpotsTouched;
+        }
+
 
 
 
@@ -331,6 +336,11 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     if( mUntouchedHouseMapMobileCellStates != NULL ) {
         delete [] mUntouchedHouseMapMobileCellStates;
+        }
+
+
+    if( mHouseMapSpotsTouched != NULL ) {
+        delete [] mHouseMapSpotsTouched;
         }
 
 
@@ -452,6 +462,10 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     memcpy( mUntouchedHouseMapMobileCellStates, mHouseMapMobileCellStates, 
             mNumMapSpots * sizeof( int ) );
 
+
+    mHouseMapSpotsTouched = new char[ mNumMapSpots ];
+    
+    memset( mHouseMapSpotsTouched, false, mNumMapSpots );
 
     
     // center vertically, far left
@@ -709,6 +723,11 @@ static void addToDiff( SimpleVector<GridDiffRecord> *inDiffList,
 
 
 SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
+
+    // recompute touched spots
+    memset( mHouseMapSpotsTouched, false, mNumMapSpots );
+
+
     SimpleVector<GridDiffRecord> diffList;
 
     SimpleVector<GridDiffRecord> oldMobCount;
@@ -732,6 +751,9 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
         char newIsMobile = isPropertySet( newID, 
                                           newState, 
                                           mobile );
+        char newIsMandatory = isPropertySet( newID, 
+                                             newState, 
+                                             mandatory );
 
 
         int oldMobID = mUntouchedHouseMapMobileIDs[i];
@@ -752,11 +774,14 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
         // non-free change in this cell?
         // (ignore mobiles, count them separately below)
         if( ! newIsMobile &&
+            ! newIsMandatory &&
             oldID != newID 
             ||
             ( oldIsStuck && oldState != newState ) ) {
             
             addToDiff( &diffList, newID );
+
+            mHouseMapSpotsTouched[i] = true;
             }
             
         
@@ -1339,6 +1364,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
             int houseTile = mHouseSubMapIDs[i];
             int houseTileState = mHouseSubMapCellStates[i];
+            
+            char touched = mHouseMapSpotsTouched[fullI];
             
             char aboveShadows = 
                 isSubMapPropertySet( i, structural ) ||

@@ -180,7 +180,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mUntouchedHouseMapMobileIDs;
         int *mUntouchedHouseMapMobileCellStates;
 
+        // true for each spot where house map has been touched
+        char *mHouseMapSpotsTouched;
         
+
         int mFullMapD;
 
         // maps each cell to a noise overlay sprite

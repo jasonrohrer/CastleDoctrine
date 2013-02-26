@@ -45,7 +45,7 @@ void drawBalance( int inLoot, int inChangeCost ) {
             }
         else {
             // else green
-            setDrawColor( 0, 0.75, 0, 1 );
+            setDrawColor( 0.06666, 0.68627451, 0.454901961, 1 );
             }
         
 

@@ -351,11 +351,9 @@ void EditHousePage::recomputeChangeCost() {
     for( int i=0; i<numRecords; i++ ) {
         GridDiffRecord *r = diffList.getElement( i );
         
-        if( ! isPropertySet( r->objectID, 0, mandatory ) ) {
-            mChangesCost += 
-                r->placementCount *
-                mObjectPicker.getPrice( r->objectID );
-            }
+        mChangesCost += 
+            r->placementCount *
+            mObjectPicker.getPrice( r->objectID );
         }
         
     }
