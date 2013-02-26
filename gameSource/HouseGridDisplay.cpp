@@ -685,8 +685,10 @@ char *HouseGridDisplay::getEditList() {
     }
 
 
-static void addDiff( SimpleVector<GridDiffRecord> *inDiffList,
-                     int inObjectID ) {
+
+
+static void addToDiff( SimpleVector<GridDiffRecord> *inDiffList,
+                       int inObjectID ) {
     
     int numInList = inDiffList->size();
     
@@ -708,16 +710,113 @@ static void addDiff( SimpleVector<GridDiffRecord> *inDiffList,
 
 SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
     SimpleVector<GridDiffRecord> diffList;
+
+    SimpleVector<GridDiffRecord> oldMobCount;
+    SimpleVector<GridDiffRecord> newMobCount;
     
     for( int i=0; i<mNumMapSpots; i++ ) {
-        if( mUntouchedHouseMapIDs[i] != mHouseMapIDs[i] ||
-            mUntouchedHouseMapCellStates[i] != mHouseMapCellStates[i] ) {
+        
+        int oldID = mUntouchedHouseMapIDs[i];
+        int oldState = mUntouchedHouseMapCellStates[i];
+        
+        char oldIsStuck = isPropertySet( oldID, 
+                                         oldState, 
+                                         stuck );
+
+        int newID = mHouseMapIDs[i];
+        int newState = mHouseMapCellStates[i];
+        
+        char newIsStuck = isPropertySet( newID, 
+                                         newState, 
+                                         stuck );
+        char newIsMobile = isPropertySet( newID, 
+                                          newState, 
+                                          mobile );
+
+
+        int oldMobID = mUntouchedHouseMapMobileIDs[i];
+        int oldMobState = mUntouchedHouseMapMobileCellStates[i];
+        
+        char oldMobIsStuck = isPropertySet( oldMobID, 
+                                            oldMobState, 
+                                            stuck );
+
+        int newMobID = mHouseMapMobileIDs[i];
+        int newMobState = mHouseMapMobileCellStates[i];
+        
+        char newMobIsStuck = isPropertySet( newMobID, 
+                                            newMobState, 
+                                            stuck );
+
+
+        // non-free change in this cell?
+        // (ignore mobiles, count them separately below)
+        if( ! newIsMobile &&
+            oldID != newID 
+            ||
+            ( oldIsStuck && oldState != newState ) ) {
             
-            addDiff( &diffList, mHouseMapIDs[i] );
+            addToDiff( &diffList, newID );
+            }
+            
+        
+        // count base-layer mobiles in this cell
+        if( isPropertySet( oldID, oldState, mobile ) &&
+            ! oldIsStuck ) {
+            
+            addToDiff( &oldMobCount, oldID );
+            }
+
+        if( isPropertySet( newID, newState, mobile ) &&
+            ! newIsStuck ) {
+            
+            addToDiff( &newMobCount, newID );
+            }
+
+        
+        // count mobile-layer mobiles in this cell
+        if( oldMobID != 0 && 
+            ! oldMobIsStuck ) {
+            
+            addToDiff( &oldMobCount, oldMobID );
+            }
+        if( newMobID != 0 && 
+            ! newMobIsStuck ) {
+            
+            addToDiff( &newMobCount, newMobID );
+            }
+        }
+
+    // now look for excess mobiles in new state, and add them to diff
+
+    int numNewRecords = newMobCount.size();
+    int numOldRecords = oldMobCount.size();
+
+    for( int i=0; i<numNewRecords; i++ ) {
+        GridDiffRecord rNew = *( newMobCount.getElement( i ) );
+    
+        int rNewID = rNew.objectID;
+        
+        // search in old records for match
+        for( int j=0; j<numOldRecords; j++ ) {
+            GridDiffRecord rOld = *( oldMobCount.getElement( j ) );
+        
+            if( rOld.objectID == rNewID ) {
+                
+                rNew.placementCount -= rOld.placementCount;
+                break;
+                }
             }
         
+        if( rNew.placementCount > 0 ) {
+            // excess
+
+            diffList.push_back( rNew );
+            }
         }
-        
+    
+
+
     return diffList;
     }
 
