@@ -1,6 +1,7 @@
 #include "EditHousePage.h"
 
 #include "message.h"
+#include "balance.h"
 
 
 #include "minorGems/game/Font.h"
@@ -474,48 +475,8 @@ void EditHousePage::draw( doublePair inViewCenter,
     
     drawMessage( "editDescription", labelPos, false );    
 
-    labelPos.x = 8;
-    labelPos.y = 2;
     
-    drawMessage( "editBalance", labelPos, false );
-    
-    labelPos.y = 1.25;
-
-    char *balanceMessage = autoSprintf( "$%d", mLootValue );
-
-    numbersFontFixed->drawString( balanceMessage, 
-                                  labelPos, alignRight );
-
-    //drawMessage( balanceMessage, labelPos, false );
-    
-    delete [] balanceMessage;
-
-
-
-    if( mChangesCost >  0 ) {
-        
-        char costRed = ( mChangesCost > mLootValue );
-
-        //    labelPos.y = -6;
-        
-        //drawMessage( "editCost", labelPos, costRed );
-        
-        labelPos.y = 0.5;
-        
-        char *costMessage = autoSprintf( "-$%d", mChangesCost );
-        
-        if( !costRed ) {
-            setDrawColor( 0, 0.75, 0, 1 );
-            }
-        
-        numbersFontFixed->drawString( costMessage, 
-                                      labelPos, alignRight );
-
-        //drawMessage( costMessage, labelPos, costRed, 1, true );
-        
-        delete [] costMessage;
-        }
-    
+    drawBalance( mLootValue, mChangesCost );
 
 
 

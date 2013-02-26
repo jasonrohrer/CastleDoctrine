@@ -64,7 +64,7 @@ pathFind.cpp \
 seededMusic.cpp \
 SpriteToggleButton.cpp \
 serialWebRequests.cpp \
-
+balance.cpp \
 
 
 
