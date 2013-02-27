@@ -1,4 +1,4 @@
-Version 2    ???
+Version 2    2013-February-27    (private pre-alpha)
 
 --Added recording and playback of time() values in game recording system.  This
   fixes playback timing bugs when the playback machine runs the game slower
@@ -86,4 +86,4 @@ Version 2    ???
 
 Version 1    2013-January-25
 
-Initial release to beta testers.
+Initial release to private testers.
