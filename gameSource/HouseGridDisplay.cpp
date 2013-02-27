@@ -77,6 +77,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mWallShadowSprite( NULL ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
+          mLastActionChangedDiff( false ),
           mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
           mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ),
           mToolTargetPickedFullIndex( -1 ) {
@@ -1417,6 +1418,20 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                houseTileState );
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
+
+                    if( touched ) {
+                        float fade = 0.75 * mTouchedHighlightFade;
+                    
+                        if( mTouchedHighlightRed ) {
+                            setDrawColor( 1, 0, 0, fade );
+                            }
+                        else {
+                            setDrawColor( 0.06666, 0.68627451, 0.454901961, 
+                                          fade );
+                            }
+                        
+                        drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
+                        }
                     }
                 
 
@@ -1465,6 +1480,20 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                houseTileState );
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
+
+                    if( touched ) {
+                        float fade = 0.75 * mTouchedHighlightFade;
+                        
+                        if( mTouchedHighlightRed ) {
+                            setDrawColor( 1, 0, 0, fade );
+                            }
+                        else {
+                            setDrawColor( 0.06666, 0.68627451, 0.454901961, 
+                                          fade );
+                            }
+                        
+                        drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
+                        }
                     }
                 }
             
@@ -1501,6 +1530,19 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                                        houseTileState );
                 
                 drawSprite( sprite, tilePos, 1.0/32.0 );
+
+                if( touched ) {
+                    float fade = 0.75 * mTouchedHighlightFade;
+                    
+                    if( mTouchedHighlightRed ) {
+                        setDrawColor( 1, 0, 0, fade );
+                        }
+                    else {
+                        setDrawColor( 0.06666, 0.68627451, 0.454901961, fade );
+                        }
+                    
+                    drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
+                    }
                 }
 
 
@@ -1554,6 +1596,20 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                                          mobState );
                 
                     drawSprite( sprite, tilePos, 1.0/32.0 );
+
+                    if( touched ) {
+                        float fade = 0.75 * mTouchedHighlightFade;
+                        
+                        if( mTouchedHighlightRed ) {
+                            setDrawColor( 1, 0, 0, fade );
+                            }
+                        else {
+                            setDrawColor( 0.06666, 0.68627451, 0.454901961, 
+                                          fade );
+                            }
+                        
+                        drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
+                        }
                     }
                 }
             
@@ -2154,6 +2210,8 @@ void HouseGridDisplay::placeMandatory( int inFullIndex, int inIndex ) {
     mHouseMapMobileCellStates[ inFullIndex ] = 0;
     
     copySubCellBack( inIndex );
+
+    mLastActionChangedDiff = false;
     fireActionPerformed( this );
     }
 
@@ -2244,6 +2302,8 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                     mHouseMapMobileCellStates[ fullIndex ] = 0;
                     
                     copySubCellBack( index );
+                    
+                    mLastActionChangedDiff = true;
                     fireActionPerformed( this );
                     }
                 }
@@ -2265,6 +2325,8 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                 mHouseMapMobileCellStates[ fullIndex ] = 0;
 
                 copySubCellBack( index );
+                
+                mLastActionChangedDiff = true;
                 fireActionPerformed( this );
                 }
             
@@ -2330,6 +2392,8 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         
 
         copySubCellBack( index );
+        
+        mLastActionChangedDiff = false;
         fireActionPerformed( this );
         }
     else if( fullIndex != mStartIndex ) {
@@ -2366,6 +2430,8 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                     mHouseMapMobileCellStates[ fullIndex ] = 0;
 
                     copySubCellBack( index );
+                    
+                    mLastActionChangedDiff = true;
                     fireActionPerformed( this );
                     }
                 }
@@ -2388,6 +2454,8 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                 mHouseMapMobileCellStates[ fullIndex ] = 0;
 
                 copySubCellBack( index );
+                
+                mLastActionChangedDiff = true;
                 fireActionPerformed( this );
                 }
             }
@@ -2519,6 +2587,8 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         // did not hit wall, can actually move here
         moveRobber( newRobberIndex );
         mLastPlacedObject = 0;
+        
+        mLastActionChangedDiff = false;
         fireActionPerformed( this );
         }
     

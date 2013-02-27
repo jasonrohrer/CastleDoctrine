@@ -375,8 +375,10 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
             checkIfPlacementAllowed();
             }
 
+        if( mGridDisplay.didLastActionChangeDifff() ) {    
+            recomputeChangeCost();
+            }
         
-        recomputeChangeCost();
         checkIfDoneButtonVisible();
 
         // change to house map
