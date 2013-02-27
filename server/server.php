@@ -2485,8 +2485,6 @@ function cd_endEditHouse() {
             }
         $extraCount = $count - $oldCount;
 
-        cd_log( "Mob $id old count = $oldCount, new count = $count" );
-        
         if( $extraCount > 0 ) {
             $diffList[$id] = $extraCount;
             }
