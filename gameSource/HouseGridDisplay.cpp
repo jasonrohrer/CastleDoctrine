@@ -466,7 +466,8 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mHouseMapSpotsTouched = new char[ mNumMapSpots ];
     
     memset( mHouseMapSpotsTouched, false, mNumMapSpots );
-
+    mTouchedHighlightFade = 0;
+    mTouchedHighlightRed = false;
     
     // center vertically, far left
     setVisibleOffset( 0, ( mFullMapD - HOUSE_D ) / 2 );
@@ -840,7 +841,8 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
             }
         }
     
-
+    
+    mTouchedHighlightFade = 1.0;
 
     return diffList;
     }
@@ -975,7 +977,12 @@ void HouseGridDisplay::step() {
         
 
         }
+
+    mTouchedHighlightFade -= 0.01 / frameRateFactor;
     
+    if( mTouchedHighlightFade < 0 ) {
+        mTouchedHighlightFade = 0;
+        }    
     }
 
 
@@ -1367,6 +1374,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             char touched = mHouseMapSpotsTouched[fullI];
             
+            if( mTouchedHighlightFade == 0 ) {
+                touched = false;
+                }
+
             char aboveShadows = 
                 isSubMapPropertySet( i, structural ) ||
                 isSubMapPropertySet( i, shadowMaking );
@@ -1625,7 +1636,14 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 drawSprite( sprite, tilePos, 1.0/32.0 );
 
                 if( touched ) {
-                    setDrawColor( 0.06666, 0.68627451, 0.454901961, 0.5 );
+                    float fade = 0.75 * mTouchedHighlightFade;
+                    
+                    if( mTouchedHighlightRed ) {
+                        setDrawColor( 1, 0, 0, fade );
+                        }
+                    else {
+                        setDrawColor( 0.06666, 0.68627451, 0.454901961, fade );
+                        }
                     
                     drawSpriteAlphaOnly( sprite, tilePos, 1.0/32.0 );
                     }

@@ -356,6 +356,7 @@ void EditHousePage::recomputeChangeCost() {
             mObjectPicker.getPrice( r->objectID );
         }
         
+    mGridDisplay.setTouchedHighlightRed( mChangesCost > mLootValue );
     }
 
 

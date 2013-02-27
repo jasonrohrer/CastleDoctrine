@@ -122,6 +122,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void resetToggledStates( int inTargetState );
 
         
+        void setTouchedHighlightRed( char inRed ) {
+            mTouchedHighlightRed = inRed;
+            }
+        
+        
+
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
         
@@ -183,6 +189,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // true for each spot where house map has been touched
         char *mHouseMapSpotsTouched;
         
+        double mTouchedHighlightFade;
+        char mTouchedHighlightRed;
+
 
         int mFullMapD;
 
