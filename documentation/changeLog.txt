@@ -69,6 +69,16 @@ Version 2    ???
 
 --Added suicide button to edit page when balance is 0.
 
+--Revamped house edit billing to only charge for differences from old map,
+  allowing you to place, erase, and replace walls many times during the same
+  editing session without incuring cost of each replacement.  Makes editing
+  much more fluid and less Undo-button dependent.  Also allows mobiles
+  to be moved around without cost (because you are only charged for those 
+  placed in excess of the ones already in your house).
+
+--Added (optional) highlight features that shows the changes made to the
+  current house map as you edit it.
+
 
 
 
