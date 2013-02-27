@@ -130,6 +130,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
             mTouchedHighlightRed = inRed;
             }
         
+        void toggleTouchedHighlights( char inOn );
+        
         
 
         
@@ -195,6 +197,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         double mTouchedHighlightFade;
         char mTouchedHighlightRed;
+        char mTouchedHighlightOn;
 
 
         int mFullMapD;

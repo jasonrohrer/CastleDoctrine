@@ -3,6 +3,7 @@
 #include "TextField.h"
 #include "TextButton.h"
 #include "KeyEquivalentTextButton.h"
+#include "SpriteToggleButton.h"
 
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
@@ -146,6 +147,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
         TextButton mSuicideButton;
+
+        SpriteToggleButton mDiffHighlightToggleButton;
         
         // Once undo pressed, never show suicide button again
         // (it occupies same spot, and too risky for user to hit

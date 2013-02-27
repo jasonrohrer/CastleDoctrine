@@ -469,6 +469,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     memset( mHouseMapSpotsTouched, false, mNumMapSpots );
     mTouchedHighlightFade = 0;
     mTouchedHighlightRed = false;
+    mTouchedHighlightOn = false;
     
     // center vertically, far left
     setVisibleOffset( 0, ( mFullMapD - HOUSE_D ) / 2 );
@@ -887,13 +888,29 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
             
         }
     
+    if( mTouchedHighlightOn ) {    
+        mTouchedHighlightFade = 1.0;
+        }
+    else {
+        mTouchedHighlightFade = 0;
+        }
     
-    mTouchedHighlightFade = 1.0;
-
     return diffList;
     }
 
 
+
+
+void HouseGridDisplay::toggleTouchedHighlights( char inOn ) {
+    mTouchedHighlightOn = inOn;
+
+    if( mTouchedHighlightOn ) {
+        mTouchedHighlightFade = 1.0;
+        }
+    else {
+        mTouchedHighlightFade = 0;
+        }
+    }
 
 
 
@@ -1420,7 +1437,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             char touched = mHouseMapSpotsTouched[fullI];
             
-            if( mTouchedHighlightFade == 0 ) {
+            if( ! mTouchedHighlightOn || 
+                mTouchedHighlightFade == 0 ) {
                 touched = false;
                 }
 

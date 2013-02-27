@@ -9,12 +9,14 @@
 #include "minorGems/game/drawUtils.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 
 
 
 extern Font *mainFont;
 
 
+extern int diffHighlightsOff;
 
 
 
@@ -33,6 +35,9 @@ EditHousePage::EditHousePage()
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
           mSuicideButton( mainFont, 8, -0.5, translate( "doneRob" ) ),
+          mDiffHighlightToggleButton( "diffHighlightsOn.tga", 
+                                      "diffHighlightsOff.tga", 
+                                      8, -1.75, 1/16.0 ),
           mBlockSuicideButton( false ),
           mGallery( mainFont, -8, 0 ),
           mDone( false ),
@@ -45,6 +50,9 @@ EditHousePage::EditHousePage()
     addComponent( &mUndoButton );
     addComponent( &mGridDisplay );
     addComponent( &mObjectPicker );
+
+    addComponent( &mDiffHighlightToggleButton );
+    
 
     mDoneButton.setMouseOverTip( "" );
     mSuicideButton.setMouseOverTip( "" );
@@ -61,6 +69,14 @@ EditHousePage::EditHousePage()
     mGridDisplay.addActionListener( this );
     mObjectPicker.addActionListener( this );
 
+
+    mDiffHighlightToggleButton.addActionListener( this );
+
+    mDiffHighlightToggleButton.setMouseOverTip( 
+        translate( "diffHighlightsOff" ) );
+    mDiffHighlightToggleButton.setMouseOverTipB( 
+        translate( "diffHighlightsOn" ) );
+    
     
     
     addComponent( &mGallery );
@@ -139,6 +155,7 @@ void EditHousePage::setHouseMap( const char *inHouseMap ) {
         mGridDisplay.doAllFamilyObjectsHaveExitPath() );
     
     mChangesCost = 0;
+    mDiffHighlightToggleButton.setVisible( false );
     }
 
 
@@ -357,6 +374,8 @@ void EditHousePage::recomputeChangeCost() {
         }
         
     mGridDisplay.setTouchedHighlightRed( mChangesCost > mLootValue );
+
+    mDiffHighlightToggleButton.setVisible( mChangesCost > 0 );
     }
 
 
@@ -383,6 +402,12 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         // change to house map
         actionHappened();
+        }
+    else if( inTarget == &mDiffHighlightToggleButton ) {
+        diffHighlightsOff = mDiffHighlightToggleButton.getToggled();
+        
+        SettingsManager::setSetting( "diffHighlightsOff", diffHighlightsOff );
+        mGridDisplay.toggleTouchedHighlights( ! diffHighlightsOff );
         }
     else if( inTarget == &mBackpackButton ) {
         mShowLoadBackpack = true;
@@ -458,6 +483,9 @@ void EditHousePage::makeActive( char inFresh ) {
     mShowGridObjectPicker = false;
 
     checkIfDoneButtonVisible();
+
+    mDiffHighlightToggleButton.setToggled( diffHighlightsOff );
+    mGridDisplay.toggleTouchedHighlights( ! diffHighlightsOff );
     }
         
 

@@ -118,8 +118,8 @@ char initDone = false;
 
 float mouseSpeed;
 
-char musicOff;
-
+int musicOff;
+int diffHighlightsOff;
 
 
 double frameRateFactor = 1;
@@ -199,10 +199,12 @@ static int stepsBetweenDeleteRepeat;
 
 
 static const char *customDataFormatWriteString = 
-    "version%d_mouseSpeed%f_musicOff%d_downloadCode%s_email%s";
+    "version%d_mouseSpeed%f_musicOff%d_"
+    "diffHighlightsOff%d_downloadCode%s_email%s";
 
 static const char *customDataFormatReadString = 
-    "version%d_mouseSpeed%f_musicOff%d_downloadCode%10s_email%99s";
+    "version%d_mouseSpeed%f_musicOff%d_"
+    "diffHighlightsOff%d_downloadCode%10s_email%99s";
 
 
 char *getCustomRecordedGameData() {    
@@ -211,6 +213,8 @@ char *getCustomRecordedGameData() {
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
     int musicOffSetting = 
         SettingsManager::getIntSetting( "musicOff", 0 );
+    int diffHighlightsOffSetting = 
+        SettingsManager::getIntSetting( "diffHighlightsOff", 0 );
     
     char *email =
         SettingsManager::getStringSetting( "email" );
@@ -251,7 +255,8 @@ char *getCustomRecordedGameData() {
 
     char * result = autoSprintf(
         customDataFormatWriteString,
-        versionNumber, mouseSpeedSetting, musicOffSetting, code, email );
+        versionNumber, mouseSpeedSetting, musicOffSetting,
+        diffHighlightsOffSetting, code, email );
 
     delete [] email;
     delete [] code;
@@ -380,6 +385,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     float mouseSpeedSetting = 1.0f;
     
     int musicOffSetting = 0;
+    int diffHighlightsOffSetting = 0;
 
     userEmail = new char[100];
     downloadCode = new char[11];
@@ -391,6 +397,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           &readVersionNumber,
                           &mouseSpeedSetting, 
                           &musicOffSetting,
+                          &diffHighlightsOffSetting,
                           downloadCode,
                           userEmail );
     if( numRead != 5 ) {
@@ -438,7 +445,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     mouseSpeed = mouseParam * inWidth / viewWidth;
 
     musicOff = musicOffSetting;
-
+    diffHighlightsOff = diffHighlightsOffSetting;
+    
     reflectorURL = SettingsManager::getStringSetting( "reflectorURL" );
 
     if( reflectorURL == NULL ) {

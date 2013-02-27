@@ -72,6 +72,9 @@ doneEdit "Done"
 
 undo "Undo"
 
+diffHighlightsOn "Turn change highlights on"
+diffHighlightsOff "Turn change highlights off"
+
 galleryLabel "Gallery:"
 galleryArchiveLabel "Archive:"
 
