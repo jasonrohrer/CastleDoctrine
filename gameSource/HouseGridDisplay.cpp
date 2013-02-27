@@ -777,27 +777,35 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
         // (ignore mobiles, count them separately below)
         if( ! newIsMobile &&
             ! newIsMandatory &&
-            oldID != newID 
-            ||
-            ( oldIsStuck && oldState != newState ) ) {
+            ( oldID != newID 
+              ||
+              ( oldIsStuck && oldState != newState ) ) ) {
             
             addToDiff( &diffList, newID );
 
             mHouseMapSpotsTouched[i] = true;
             }
-            
-        
+
+        // only ONE mobile here in old and new states
+        // either in base layer or mobile layer, but not both
+        int mobileIDThatWasHere = 0;
+        int mobileIDThatIsHereNow = 0;
+                
         // count base-layer mobiles in this cell
         if( isPropertySet( oldID, oldState, mobile ) &&
             ! oldIsStuck ) {
             
             addToDiff( &oldMobCount, oldID );
+
+            mobileIDThatWasHere = oldID;
             }
 
         if( isPropertySet( newID, newState, mobile ) &&
             ! newIsStuck ) {
             
             addToDiff( &newMobCount, newID );
+            
+            mobileIDThatIsHereNow = newID;
             }
 
         
@@ -806,12 +814,26 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
             ! oldMobIsStuck ) {
             
             addToDiff( &oldMobCount, oldMobID );
+
+            mobileIDThatWasHere = oldMobID;
             }
         if( newMobID != 0 && 
             ! newMobIsStuck ) {
             
             addToDiff( &newMobCount, newMobID );
+
+            mobileIDThatIsHereNow = newMobID;
             }
+
+        
+        if( mobileIDThatIsHereNow != 0 &&
+            mobileIDThatIsHereNow != mobileIDThatWasHere ) {
+            
+            // mobile placement (or move?)
+            // don't include in diff, but mark as touched
+            mHouseMapSpotsTouched[i] = true;
+            }
+
         }
 
     // now look for excess mobiles in new state, and add them to diff
@@ -840,6 +862,29 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
 
             diffList.push_back( rNew );
             }
+        
+        // only show rNew.placementCount touched spots in grid as
+        // touched (other touched spots beyond that are just moved, which
+        // we don't want to highlight, because hightlight should represent
+        // only what user is paying for).
+        // if rNew.placementCount is NEGATIVE or ZERO, 
+        // should show NONE of them as touched
+        int touchedMatchesFound = 0;
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            if( mHouseMapSpotsTouched[i] && 
+                mHouseMapIDs[ i ] == rNew.objectID ) {
+                
+                if( touchedMatchesFound < rNew.placementCount ) {
+                    // allow to remain touched
+                    }
+                else {
+                    // untouch all additional ones encountered
+                    mHouseMapSpotsTouched[i] = false;
+                    }
+                touchedMatchesFound++;
+                }
+            }
+            
         }
     
     
