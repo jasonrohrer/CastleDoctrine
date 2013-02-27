@@ -133,6 +133,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void toggleTouchedHighlights( char inOn );
         
         
+        char getMapStartedOutEmpty() {
+            return mMapStartedOutEmpty;
+            }
 
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
@@ -199,6 +202,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char mTouchedHighlightRed;
         char mTouchedHighlightOn;
 
+        char mMapStartedOutEmpty;
+        
 
         int mFullMapD;
 

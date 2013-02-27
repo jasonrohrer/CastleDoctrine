@@ -485,6 +485,30 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     checkExitPaths();
 
+    
+    mMapStartedOutEmpty = true;
+    
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        
+        if( mHouseMapMobileIDs[i] != 0 ) {
+            mMapStartedOutEmpty = false;
+            break;
+            }
+        
+        if( mHouseMapIDs[i] != 0
+            &&
+            ! isPropertySet( mHouseMapIDs[i], 
+                             mHouseMapCellStates[i], mandatory )
+            &&
+            ! isPropertySet( mHouseMapIDs[i], 
+                             mHouseMapCellStates[i], permanent ) ) {
+            
+            mMapStartedOutEmpty = false;
+            break;
+            }
+        }
+    
+
     for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
         mSpecialKeysHeldSteps[i] = 0;
         }
@@ -902,12 +926,14 @@ SimpleVector<GridDiffRecord> HouseGridDisplay::getEditDiff() {
 
 
 void HouseGridDisplay::toggleTouchedHighlights( char inOn ) {
+    char wasOn = mTouchedHighlightOn;
+    
     mTouchedHighlightOn = inOn;
 
-    if( mTouchedHighlightOn ) {
+    if( mTouchedHighlightOn && !wasOn ) {
         mTouchedHighlightFade = 1.0;
         }
-    else {
+    else if( ! mTouchedHighlightOn && wasOn ) {
         mTouchedHighlightFade = 0;
         }
     }

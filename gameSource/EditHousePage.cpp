@@ -156,6 +156,8 @@ void EditHousePage::setHouseMap( const char *inHouseMap ) {
     
     mChangesCost = 0;
     mDiffHighlightToggleButton.setVisible( false );
+
+    mMapStartedOutEmpty = mGridDisplay.getMapStartedOutEmpty();
     }
 
 
@@ -375,7 +377,8 @@ void EditHousePage::recomputeChangeCost() {
         
     mGridDisplay.setTouchedHighlightRed( mChangesCost > mLootValue );
 
-    mDiffHighlightToggleButton.setVisible( mChangesCost > 0 );
+    mDiffHighlightToggleButton.setVisible( !mMapStartedOutEmpty && 
+                                           mChangesCost > 0 );
     }
 
 
@@ -485,7 +488,8 @@ void EditHousePage::makeActive( char inFresh ) {
     checkIfDoneButtonVisible();
 
     mDiffHighlightToggleButton.setToggled( diffHighlightsOff );
-    mGridDisplay.toggleTouchedHighlights( ! diffHighlightsOff );
+    mGridDisplay.toggleTouchedHighlights( ! mMapStartedOutEmpty && 
+                                          ! diffHighlightsOff );
     }
         
 

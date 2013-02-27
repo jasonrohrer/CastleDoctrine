@@ -140,6 +140,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         char mMustSelfTest;
 
+        char mMapStartedOutEmpty;
+        
+
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
