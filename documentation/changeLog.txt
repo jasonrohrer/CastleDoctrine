@@ -1,3 +1,11 @@
+Version 3  ???
+
+--Fixed bug in game playback that could not handle extra recording argument 
+  (change highlights on/off flag).
+
+
+
+
 Version 2    2013-February-27    (private pre-alpha)
 
 --Added recording and playback of time() values in game recording system.  This

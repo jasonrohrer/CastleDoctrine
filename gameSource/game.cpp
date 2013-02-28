@@ -400,7 +400,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           &diffHighlightsOffSetting,
                           downloadCode,
                           userEmail );
-    if( numRead != 5 ) {
+    if( numRead != 6 ) {
         // no recorded game?
         }
     else {
