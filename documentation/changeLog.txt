@@ -8,6 +8,9 @@ Version 3  ???
   simultaneously being edited by that house's owner (thanks Jeremiah Reid, who 
   was spuriously timed out of his house 20 times). 
 
+--Fixed SQL query bug when searching house tables in web admin UI.
+
+
 
 
 Version 2    2013-February-27    (private pre-alpha)

@@ -4463,11 +4463,15 @@ function cd_showDataHouseList( $inTableName ) {
 
     $keywordClause = "";
     $searchDisplay = "";
+
+    $houseTable = "$tableNamePrefix"."$inTableName";
+    $usersTable = "$tableNamePrefix"."users";
+
     
     if( $search != "" ) {
         
 
-        $keywordClause = "WHERE ( user_id LIKE '%$search%' " .
+        $keywordClause = "WHERE ( $houseTable.user_id LIKE '%$search%' " .
             "OR character_name LIKE '%$search%' ".
             "OR loot_value LIKE '%$search%' ".
             "OR email LIKE '%$search%' OR ticket_id LIKE '%$search%' ) ";
@@ -4476,9 +4480,7 @@ function cd_showDataHouseList( $inTableName ) {
         }
     
 
-    $houseTable = "$tableNamePrefix"."$inTableName";
-    $usersTable = "$tableNamePrefix"."users";
-    
+
     
 
     // first, count results
