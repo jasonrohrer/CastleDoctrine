@@ -3,6 +3,10 @@ Version 3  ???
 --Fixed bug in game playback that could not handle extra recording argument 
   (change highlights on/off flag).
 
+--Fixed a server-side bug that was causing house pings to fail when a user was
+  editing their house after robbing a house, and the robbed house was
+  simultaneously being edited by that house's owner (thanks Jeremiah Reid, who 
+  was spuriously timed out of his house 20 times). 
 
 
 

@@ -2851,9 +2851,9 @@ function cd_pingHouse() {
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP ".
-        "WHERE ( user_id = $user_id OR robbing_user_id = $user_id ) ".
-        "AND blocked='0' ".
-        "AND ( rob_checkout = 1 OR edit_checkout = 1 );";
+        "WHERE (    ( user_id         = $user_id AND edit_checkout = 1 ) ".
+        "        OR ( robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
+        "AND blocked='0' );";
     
     $result = cd_queryDatabase( $query );
 
