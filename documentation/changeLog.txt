@@ -10,6 +10,10 @@ Version 3  ???
 
 --Fixed SQL query bug when searching house tables in web admin UI.
 
+--Dealt with houses-to-rob scarcity issue by keeping houses robbable after they
+  are successfully robbed the first time, as their money dwindles.  Before, a
+  house could only be robbed once before going back on the must-edit-again
+  queue. 
 
 
 

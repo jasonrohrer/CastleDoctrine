@@ -704,6 +704,9 @@ function cd_setupDatabase() {
             "gallery_contents LONGTEXT NOT NULL," .
             "music_seed INT NOT NULL," .
             // times edited since last successful robbery
+            // = 0 if never edited (and not robbable at all)
+            // > 0 if successfully edited and robbable
+            // < 0 if successfully robbed at least once and still robbable
             "edit_count INT NOT NULL," .
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
@@ -1214,7 +1217,7 @@ function cd_checkForFlush() {
         $query = "SELECT user_id, last_ping_time ".
             "FROM $tableNamePrefix"."houses ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
-            "AND edit_count > 0 " .
+            "AND edit_count != 0 " .
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
 
@@ -1236,7 +1239,7 @@ function cd_checkForFlush() {
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET rob_checkout = 0, edit_checkout = 0 ".
             "WHERE edit_checkout = 1 AND self_test_running = 0 ".
-            "AND edit_count > 0 " .
+            "AND edit_count != 0 " .
             "AND last_ping_time < ".
             "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' );";
 
@@ -1754,7 +1757,12 @@ function cd_startEditHouse() {
 
     $must_self_test = 0;
 
-    if( $edit_count == 0 ) {
+    if( $edit_count <= 0 ) {
+        // house never edited (0)
+        // or edited in past, but robbed since then (< 0)
+
+        // needs to be proven safe after this edit
+        
         $must_self_test = 1;
         }
         
@@ -2028,7 +2036,7 @@ function cd_endEditHouse() {
     
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
         "vault_contents, backpack_contents, gallery_contents, ".
-        "self_test_move_list, self_test_running ".
+        "self_test_move_list, self_test_running, rob_attempts, robber_deaths ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -2045,6 +2053,8 @@ function cd_endEditHouse() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     $edit_count = $row[ "edit_count" ];
+    $rob_attempts = $row[ "rob_attempts" ];
+    $robber_deaths = $row[ "robber_deaths" ];
     $self_test_running = $row[ "self_test_running" ];
     $old_self_test_move_list = $row[ "self_test_move_list" ];
     $loot_value = $row[ "loot_value" ];
@@ -2151,7 +2161,18 @@ function cd_endEditHouse() {
 
     if( $died != 2 || $self_test_running ) {
         // don't count purchases or sales or inventory transfer as edits
+        if( $edit_count < 0 ) {
+            // been robbed (negative edit count)
+
+            // now edited again, post-robbery, so it becomes positive again
+            $edit_count = - $edit_count;
+            }
+        
         $edit_count ++;
+
+        // reset these stats, because this is a fresh house configuration
+        $rob_attempts = 0;
+        $robber_deaths = 0;
         }
 
     
@@ -2824,7 +2845,8 @@ function cd_endEditHouse() {
         "edit_count='$edit_count', ".
         "self_test_move_list='$self_test_move_list', ".
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
-        "wife_present='$wife_present' ".
+        "wife_present='$wife_present', ".
+        "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths' ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -2853,7 +2875,7 @@ function cd_pingHouse() {
         "last_ping_time = CURRENT_TIMESTAMP ".
         "WHERE (    ( user_id         = $user_id AND edit_checkout = 1 ) ".
         "        OR ( robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
-        "AND blocked='0' );";
+        "AND blocked='0';";
     
     $result = cd_queryDatabase( $query );
 
@@ -2973,7 +2995,7 @@ function cd_listHouses() {
         "ON houses.robbing_user_id = robbers.user_id ".
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
-        "AND houses.edit_count > 0 ".
+        "AND houses.edit_count != 0 ".
         "$searchClause ".
         "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $limit;";
@@ -3407,7 +3429,11 @@ function cd_endRobHouse() {
         // use new house map
 
         // permanent robbery result, has not been edited since
-        $edit_count = 0;
+        if( $edit_count > 0 ) {
+            // edit count flips negative to mark house as robbed and needing
+            // self-test after next edit
+            $edit_count = - $edit_count;
+            }
         
         
         $vaultMoney = $house_money - $wife_money;
@@ -3502,14 +3528,6 @@ function cd_endRobHouse() {
             $house_gallery_contents = "#";
             }
         
-        
-
-        // clear rob stats now, because house loot is gone
-        // rob stats will build up again if loot ever replentished
-        // rob stats indicate how hard the current configuraiton is,
-        // not the full history of the house
-        $rob_attempts = 0;
-        $robber_deaths = 0;
         }
 
     
@@ -3556,6 +3574,9 @@ function cd_endRobHouse() {
         if( $wife_killed ) {
             $wife_present = 0;
             }
+
+        $value_estimate = cd_computeValueEstimate( $house_money,
+                                                   $house_vault_contents );
         
         // update main table with changes, post-robbery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
@@ -3566,7 +3587,8 @@ function cd_endRobHouse() {
             "loot_value = $house_money,  ".
             "wife_present = $wife_present,  ".
             "vault_contents = '$house_vault_contents', ".
-            "gallery_contents = '$house_gallery_contents' ".
+            "gallery_contents = '$house_gallery_contents', ".
+            "value_estimate = '$value_estimate' ".
             "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
         cd_queryDatabase( $query );
         }
