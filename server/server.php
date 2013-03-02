@@ -3522,7 +3522,7 @@ function cd_endRobHouse() {
         // some (or all) loot taken
         $house_money -= $amountTaken;
 
-        if( $success ) {
+        if( $success == 1 ) {
             // reached vault, stole everything there too    
             $house_vault_contents = "#";
             $house_gallery_contents = "#";

@@ -15,6 +15,9 @@ Version 3  ???
   house could only be robbed once before going back on the must-edit-again
   queue. 
 
+--Fixed server bug that caused paintings to disappear from circulation when 
+  family members killed but vault not reached.
+
 
 
 Version 2    2013-February-27    (private pre-alpha)
