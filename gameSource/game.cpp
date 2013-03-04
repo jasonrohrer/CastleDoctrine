@@ -1154,7 +1154,8 @@ void drawFrame( char inUpdate ) {
                 char *sellList = editHousePage->getSellList();
                 char *priceList = editHousePage->getPriceList();
                 
-                if( editHousePage->houseMapChanged() ) {
+                if( editHousePage->houseMapChanged() &&
+                    ! editHousePage->getDead() ) {
                     // force player to test own house first
                     
                     selfHouseTestPage->setWifeName( wifeName );
@@ -1189,9 +1190,12 @@ void drawFrame( char inUpdate ) {
                     selfHouseTestPage->startSelfTest();
                     }
                 else {
-                    // not changed, check it right in
+                    // not changed (or suicide, even if changed), 
+                    // check it right in
+
                     // check for suicide (which can only happen on edit screen
-                    // if house not changed)
+                    // if house not edited, but can happen if self test forced,
+                    // in which case we skip the self test)
                     if( editHousePage->getDead() ) {
                         checkinHousePage->setDied( 1 );
                         }

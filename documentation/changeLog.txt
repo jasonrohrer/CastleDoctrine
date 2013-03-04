@@ -23,6 +23,8 @@ Version 3  ???
 
 --Fixed bug that allowed walking over electrified floors post-robbery.
 
+--Fixed suicide button misbehavior when self-test forced post-robbery.
+
 
 
 Version 2    2013-February-27    (private pre-alpha)
