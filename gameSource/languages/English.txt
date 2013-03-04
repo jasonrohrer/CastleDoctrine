@@ -208,6 +208,7 @@ replayDescription "Security Tape:  %s robbed##%s for $%d"
 
 step "Step"
 play "Play"
+faster "Faster"
 stop "Stop"
 restart "Restart"
 

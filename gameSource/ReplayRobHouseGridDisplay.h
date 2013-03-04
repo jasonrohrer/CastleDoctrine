@@ -65,6 +65,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
 
         
         TextButton mStepButton;
+        TextButton mFasterButton;
         TextButton mPlayButton;
         TextButton mStopButton;
         TextButton mRestartButton;
@@ -72,6 +73,8 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         TextButton mVisibilityButton;
 
         char mPlaying;
+        int mSpeedFactor;
+        
         int mStepsUntilNextPlayStep;
 
         char mVisibilityToggle;

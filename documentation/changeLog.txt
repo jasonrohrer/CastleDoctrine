@@ -29,6 +29,10 @@ Version 3  ???
 
 --Backpack now resets properly when Restart button hit in robbery replay.
 
+--Added Faster button for robbery replays.
+
+
+
 
 
 Version 2    2013-February-27    (private pre-alpha)

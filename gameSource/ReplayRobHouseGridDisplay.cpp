@@ -12,7 +12,7 @@ extern Font *mainFont;
 extern double frameRateFactor;
 
 
-#define STEP_DELAY (int)( 30 * frameRateFactor )
+#define STEP_DELAY (int)( 32 * frameRateFactor )
 
 #define BUTTON_X -8
 
@@ -22,6 +22,8 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
         : RobHouseGridDisplay( inX, inY ),
           mStepButton( mainFont, BUTTON_X, -5, 
                        translate( "step" ) ),
+          mFasterButton( mainFont, BUTTON_X, -5, 
+                         translate( "faster" ) ),
           mPlayButton( mainFont, BUTTON_X, -3.5, 
                        translate( "play" ) ),
           mStopButton( mainFont, BUTTON_X, -2, 
@@ -31,6 +33,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mVisibilityButton( mainFont, BUTTON_X, 5, 
                              translate( "toggleVisibility" ) ),
           mPlaying( false ),
+          mSpeedFactor( 1 ),
           mStepsUntilNextPlayStep( 0 ),
           mVisibilityToggle( false ),
           mJustRestarted( false ),
@@ -39,16 +42,19 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mOriginalMoveList( NULL ) {
 
     mStopButton.setVisible( false );
+    mFasterButton.setVisible( false );
     
     addComponent( &mStepButton );
     addComponent( &mPlayButton );
     addComponent( &mStopButton );
+    addComponent( &mFasterButton );
     addComponent( &mRestartButton );
     addComponent( &mVisibilityButton );
     
     mStepButton.addActionListener( this );
     mPlayButton.addActionListener( this );
     mStopButton.addActionListener( this );
+    mFasterButton.addActionListener( this );
     mRestartButton.addActionListener( this );
     mVisibilityButton.addActionListener( this );
     
@@ -102,6 +108,7 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     mStepButton.setVisible( true );
     mPlayButton.setVisible( true );
     mStopButton.setVisible( false );
+    mFasterButton.setVisible( false );
     mRestartButton.setVisible( false );
 
     hideRobber( false );
@@ -137,7 +144,7 @@ void ReplayRobHouseGridDisplay::step() {
         if( mStepsUntilNextPlayStep == 0 ) {
             takeStep();
             
-            mStepsUntilNextPlayStep = STEP_DELAY;
+            mStepsUntilNextPlayStep = STEP_DELAY / mSpeedFactor;
             }
         }
     
@@ -236,6 +243,7 @@ void ReplayRobHouseGridDisplay::takeStep() {
         mStepButton.setVisible( false );
         mPlayButton.setVisible( false );
         mStopButton.setVisible( false );
+        mFasterButton.setVisible( false );
         }
     }
 
@@ -268,15 +276,27 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mPlayButton ) {
         takeStep();
         mPlaying = true;
-        mStepsUntilNextPlayStep = STEP_DELAY;     
+        mSpeedFactor = 1;
+        mStepsUntilNextPlayStep = STEP_DELAY / mSpeedFactor;     
 
         mStopButton.setVisible( true );
+        mFasterButton.setVisible( true );
         mPlayButton.setVisible( false );
         mStepButton.setVisible( false );
        }
+    else if( inTarget == &mFasterButton ) {
+
+        if( STEP_DELAY / mSpeedFactor >= 2 ) {
+            mSpeedFactor *= 2;
+            }
+        if( STEP_DELAY / mSpeedFactor < 2 ) {
+            mFasterButton.setVisible( false );
+            }
+        }
     else if( inTarget == &mStopButton ) {
         mPlaying = false;
         mStopButton.setVisible( false );
+        mFasterButton.setVisible( false );
         mPlayButton.setVisible( true );
         mStepButton.setVisible( true );
         }
@@ -298,6 +318,8 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
 
         mRestartButton.setVisible( false );
         mStopButton.setVisible( false );
+        mFasterButton.setVisible( false );
+
         mPlayButton.setVisible( true );
         mStepButton.setVisible( true );
         mPlaying = false;
