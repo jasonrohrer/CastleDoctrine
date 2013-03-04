@@ -18,7 +18,10 @@ Version 3  ???
 --Fixed server bug that caused paintings to disappear from circulation when 
   family members killed but vault not reached.
 
---Server prevents a dual-client setup from keeping robber's own house checked out for edit during robbery and other non-edit actions.
+--Server prevents a dual-client setup from keeping robber's own house checked 
+  out for edit during robbery and other non-edit actions.
+
+--Fixed bug that allowed walking over electrified floors post-robbery.
 
 
 

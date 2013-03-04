@@ -2669,11 +2669,15 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
     
     
     int newRobberIndex = newY * mFullMapD + newX;
+    int newRobberSubIndex = fullToSub( newRobberIndex );
     
     if( newRobberIndex != mRobberIndex &&
-        ! isSubMapPropertySet( fullToSub( newRobberIndex ), blocking ) ) {
+        ! isSubMapPropertySet( newRobberSubIndex, blocking ) &&
+        ! ( mRobberState == 0 && 
+            isSubMapPropertySet( newRobberSubIndex, deadly ) ) ) {
         
-        // did not hit wall, can actually move here
+        // did not hit wall (or deadly object, which also block in edit mode), 
+        // can actually move here
         moveRobber( newRobberIndex );
         mLastPlacedObject = 0;
         
