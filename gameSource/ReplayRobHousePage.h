@@ -49,6 +49,8 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
         TextButton mDoneButton;
         SpriteToggleButton mMusicToggleButton;
 
+        char *mPackSlotsString;
+        
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
 
         

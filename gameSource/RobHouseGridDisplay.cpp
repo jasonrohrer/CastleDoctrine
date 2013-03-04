@@ -245,7 +245,7 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
 
 
 
-void RobHouseGridDisplay::stopUsingTool( int inToolID ) {
+void RobHouseGridDisplay::stopUsingTool() {
     mCurrentTool = -1;
 
     SimpleVector<int> emptyVector;
@@ -742,7 +742,7 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
     // tool use triggers a step
     applyTransitionsAndProcess();
     
-    stopUsingTool( mCurrentTool );
+    stopUsingTool();
     mToolJustUsed = true;
     }
 
@@ -842,7 +842,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
     if( mCurrentTool != -1 ) {
         // turn tool off when robber moves
-        stopUsingTool( mCurrentTool );
+        stopUsingTool();
         mToolJustUsed = false;
         }
     

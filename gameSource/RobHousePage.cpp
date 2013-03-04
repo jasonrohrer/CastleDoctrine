@@ -247,28 +247,20 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         // check backpack slots
         for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
             if( inTarget == mPackSlots[i] ) {
-                
+
+                mGridDisplay.stopUsingTool();
+
                 char oldOn = mPackSlots[i]->getRingOn();
                 
                 // turn all other slots off first (only one ring at a time)
                 for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
-                    
-                    if( mPackSlots[j]->getRingOn() ) {
-                        mGridDisplay.stopUsingTool( 
-                            mPackSlots[j]->getObject() );
-                        }
-                    
                     mPackSlots[j]->setRingOn( false );
                     }
                 
                 if( mPackSlots[i]->getObject() != -1 ) {
                     mPackSlots[i]->setRingOn( !oldOn );
 
-                    if( oldOn ) {
-                        mGridDisplay.stopUsingTool( 
-                            mPackSlots[i]->getObject() );
-                        }
-                    else {
+                    if( !oldOn ) {
                         mGridDisplay.startUsingTool( 
                             mPackSlots[i]->getObject() );
                         }

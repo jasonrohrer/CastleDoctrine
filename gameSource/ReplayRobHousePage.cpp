@@ -28,6 +28,7 @@ ReplayRobHousePage::ReplayRobHousePage()
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", 8, -3, 1/16.0 ),
+          mPackSlotsString( NULL ),
           mDescription( NULL ) {
 
     addComponent( &mDoneButton );
@@ -77,6 +78,9 @@ ReplayRobHousePage::ReplayRobHousePage()
         
 ReplayRobHousePage::~ReplayRobHousePage() {
     
+    if( mPackSlotsString != NULL ) {
+        delete [] mPackSlotsString;
+        }
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
@@ -109,7 +113,12 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
                                 inLog.victimName,
                                 inLog.lootValue );
 
-    backpackSlotsFromString( inLog.backpackContents, mPackSlots );
+    if( mPackSlotsString != NULL ) {
+        delete [] mPackSlotsString;
+        }
+    mPackSlotsString = stringDuplicate( inLog.backpackContents );
+    
+    backpackSlotsFromString( mPackSlotsString, mPackSlots );
     }
 
 
@@ -131,9 +140,17 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
         SettingsManager::setSetting( "musicOff", musicOff );
         }
     else if( inTarget == &mGridDisplay ) {
-        if( mGridDisplay.getSuccess() ) {
-            mDone = true;
-            clearNotes();
+        if( mGridDisplay.getJustRestarted() ) {
+            // grid resets itself, but we control backpack slots
+
+            // all rings off (cancel any tool use in-progress during restart)
+            for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                if( mPackSlots[j]->getRingOn() ) {
+                    mPackSlots[j]->setRingOn( false );
+                    }
+                }
+            // restore original tool list
+            backpackSlotsFromString( mPackSlotsString, mPackSlots );
             }
         else {
             int pickedID = mGridDisplay.getToolIDJustPicked();

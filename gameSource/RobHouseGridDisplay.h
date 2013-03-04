@@ -39,7 +39,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char *getMoveList();
         
         void startUsingTool( int inToolID );
-        void stopUsingTool( int inToolID );
+        void stopUsingTool();
         
         // can check whether a tool has been used since the last
         // call to getToolJustUsed

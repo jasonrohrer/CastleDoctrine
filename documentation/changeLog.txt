@@ -27,6 +27,9 @@ Version 3  ???
 
 --'Leave <-' message now pops in instantly if gallery is empty.
 
+--Backpack now resets properly when Restart button hit in robbery replay.
+
+
 
 Version 2    2013-February-27    (private pre-alpha)
 

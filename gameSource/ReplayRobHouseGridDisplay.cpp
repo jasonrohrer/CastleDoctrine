@@ -33,6 +33,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mPlaying( false ),
           mStepsUntilNextPlayStep( 0 ),
           mVisibilityToggle( false ),
+          mJustRestarted( false ),
           mToolIDJustPicked( -1 ),
           mOriginalWifeMoney( 0 ),
           mOriginalMoveList( NULL ) {
@@ -104,6 +105,16 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     mRestartButton.setVisible( false );
 
     hideRobber( false );
+    }
+
+
+
+
+char ReplayRobHouseGridDisplay::getJustRestarted() {
+    char temp = mJustRestarted;
+    mJustRestarted = false;
+    
+    return temp;
     }
 
 
@@ -283,11 +294,15 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         
         RobHouseGridDisplay::setWifeMoney( mOriginalWifeMoney );
         
+        stopUsingTool();
+
         mRestartButton.setVisible( false );
         mStopButton.setVisible( false );
         mPlayButton.setVisible( true );
         mStepButton.setVisible( true );
         mPlaying = false;
+        mJustRestarted = true;
+        fireActionPerformed( this );
         }
     else if( inTarget == &mVisibilityButton ) {
         mVisibilityToggle = ! mVisibilityToggle;

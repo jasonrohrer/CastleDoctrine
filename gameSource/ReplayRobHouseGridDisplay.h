@@ -9,6 +9,8 @@
 
 
 // grid that supports replaying a move list
+// fires actionPerformed when replay is restarted to beginning, 
+// or tool picked/used
 class ReplayRobHouseGridDisplay : public RobHouseGridDisplay, 
                                   public ActionListener {
     
@@ -26,7 +28,11 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         // list as a whitespace-free string
         // destroyed by caller
         void setMoveList( char *inMoveList );
-
+        
+        // returns true once if just restarted
+        // called to check why fireActionPerformed happed
+        char getJustRestarted();
+        
 
         // can check whether a tool has been picked since the last
         // call to getToolIDJustPicked
@@ -69,6 +75,8 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         int mStepsUntilNextPlayStep;
 
         char mVisibilityToggle;
+        
+        char mJustRestarted;
         
         int mToolIDJustPicked;
 
