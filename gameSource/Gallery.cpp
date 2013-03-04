@@ -260,6 +260,26 @@ void Gallery::instantFadeOut( char inShouldFade ) {
 
 
 char Gallery::isVisible() {
+    char noneVisible = true;
+    
+    for( int i=0; i<NUM_GALLERY_SLOTS; i++ ) {
+        if( mGallerySlots[i]->isVisible() ) {
+            noneVisible = false;
+            break;
+            }
+        }
+    
+    if( mGalleryArchive.isVisible() ) {
+        noneVisible = false;
+        }
+
+    if( noneVisible ) {
+        return false;
+        }
+    
+
+    // if slots are visible, but gallery faded out, still counts as not visible
+
     if( mFade == 0 ) {
         // faded out, and not about to fade in
         return ! mShouldFade;

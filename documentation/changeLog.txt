@@ -25,6 +25,7 @@ Version 3  ???
 
 --Fixed suicide button misbehavior when self-test forced post-robbery.
 
+--'Leave <-' message now pops in instantly if gallery is empty.
 
 
 Version 2    2013-February-27    (private pre-alpha)
