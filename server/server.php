@@ -2966,6 +2966,11 @@ function cd_listHouses() {
     $user_id = cd_getUserID();
 
 
+    // can't keep house checked out for robbery (with second client)
+    // while browsing houses.
+    cd_forceEndHouseEdit( $user_id );
+    
+
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
@@ -3031,6 +3036,22 @@ function cd_listHouses() {
 
 
 
+// force user to stop editing their own house
+// Assumed to be called after cd_processStaleCheckouts,
+// so user isn't in the middle of a self test
+// This call does nothing but check the house back in.
+function cd_forceEndHouseEdit( $user_id ) {
+    global $tableNamePrefix;
+
+    $query = "UPDATE $tableNamePrefix"."houses ".
+        "SET edit_checkout = 0 ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+    }
+
+
+
 function cd_startRobHouse() {
     global $tableNamePrefix;
 
@@ -3047,6 +3068,11 @@ function cd_startRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
     cd_processStaleCheckouts( $user_id );
+
+    
+    // Avoid cheating through double-client edit checkouts during robbery
+    cd_forceEndHouseEdit( $user_id );
+    
     
     // get user's backpack contents
     $query = "SELECT backpack_contents ".
@@ -3632,6 +3658,13 @@ function cd_listLoggedRobberies() {
         }
 
     $user_id = cd_getUserID();
+
+
+    // can't keep house checked out for robbery (with second client)
+    // while browsing replay logs.
+    cd_forceEndHouseEdit( $user_id );
+
+    
     $admin = cd_isAdmin( $user_id );
 
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
@@ -3720,6 +3753,13 @@ function cd_getRobberyLog() {
 
 
     $user_id = cd_getUserID();
+
+    // can't keep house checked out for robbery (with second client)
+    // while fetching a log to watch.
+    cd_forceEndHouseEdit( $user_id );
+
+    
+    
     $admin = cd_isAdmin( $user_id );
     
 
