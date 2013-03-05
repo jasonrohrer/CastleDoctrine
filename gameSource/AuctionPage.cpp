@@ -250,11 +250,19 @@ void AuctionPage::actionPerformed( GUIComponent *inTarget ) {
                     char *quotedDescription = 
                         autoSprintf( "\"%s\"", objectDescription );
                     
-
+                    
 
                     char *tipString = autoSprintf( 
                         translate( "buyButtonTip" ),
-                        quotedDescription, mAuctionPrices[i] );
+                        quotedDescription, mAuctionPrices[i] );;
+
+                    if( strlen( tipString ) > 58 ) {    
+                        delete [] tipString;
+                        
+                        tipString = autoSprintf( 
+                            translate( "shortBuyButtonTip" ),
+                            quotedDescription  );
+                        }
                     
                     delete [] quotedDescription;
 

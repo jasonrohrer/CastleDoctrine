@@ -44,6 +44,9 @@ Version 3  ???
 
 --Better wording on house self-test page (reach your own vault).
 
+--Fixed long painting buy button tool tips that hung off edge of screen.
+
+
 
 
 Version 2    2013-February-27    (private pre-alpha)
