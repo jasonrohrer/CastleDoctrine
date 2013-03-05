@@ -31,7 +31,8 @@ Version 3  ???
 
 --Added Faster button for robbery replays.
 
-
+--Server now saves your changed gallery ordering even if you haven't modified
+  your house otherwise (thanks Jeremiah Reid).
 
 
 

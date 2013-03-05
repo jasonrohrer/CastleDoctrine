@@ -2128,6 +2128,40 @@ function cd_endEditHouse() {
         $numPurchases = 0;
         }
 
+
+
+    // make sure gallery contains no unexpected items
+    if( $old_gallery_contents != "#" ) {
+
+        if( $gallery_contents == "#" ) {
+            cd_log( "House check-in with ".
+                        " unexpected empty gallery denied" );
+            cd_transactionDeny();
+            return;
+            }
+        
+        $oldGalleryArray = preg_split( "/#/", $old_gallery_contents );
+        $newGalleryArray = preg_split( "/#/", $gallery_contents );
+
+        foreach( $newGalleryArray as $item ) {    
+            if( ! in_array( $item, $oldGalleryArray ) ) {
+                cd_log( "House check-in with ".
+                        " extra gallery items denied" );
+                cd_transactionDeny();
+                return;
+                }
+            }
+        }
+    else if( $gallery_contents != "#" ) {
+        cd_log( "House check-in with ".
+                " extra gallery items denied" );
+        cd_transactionDeny();
+        return;
+        }
+
+
+    
+
     // died == 2 if no self-test necessary (no changes to house map)
     if( $died == 2 && $numSold == 0 && $numPurchases == 0 &&
         $old_backpack_contents == $backpack_contents &&
@@ -2141,10 +2175,13 @@ function cd_endEditHouse() {
 
         // (case where user visited house without changing anything)
 
+        // Maybe gallery order changed, so update that, too
+        
         // don't update the edit count either
 
         $query = "UPDATE $tableNamePrefix"."houses ".
-            "SET rob_checkout = 0, edit_checkout = 0, self_test_running = 0 ".
+            "SET rob_checkout = 0, edit_checkout = 0, self_test_running = 0, ".
+            "gallery_contents = '$gallery_contents' ".
             "WHERE user_id = '$user_id';";
 
         cd_queryDatabase( $query );
@@ -2603,35 +2640,6 @@ function cd_endEditHouse() {
         }
 
     
-    // also, make sure gallery contains no unexpected items
-
-    if( $old_gallery_contents != "#" ) {
-
-        if( $gallery_contents == "#" ) {
-            cd_log( "House check-in with ".
-                        " unexpected empty gallery denied" );
-            cd_transactionDeny();
-            return;
-            }
-        
-        $oldGalleryArray = preg_split( "/#/", $old_gallery_contents );
-        $newGalleryArray = preg_split( "/#/", $gallery_contents );
-
-        foreach( $newGalleryArray as $item ) {    
-            if( ! in_array( $item, $oldGalleryArray ) ) {
-                cd_log( "House check-in with ".
-                        " extra gallery items denied" );
-                cd_transactionDeny();
-                return;
-                }
-            }
-        }
-    else if( $gallery_contents != "#" ) {
-        cd_log( "House check-in with ".
-                " extra gallery items denied" );
-        cd_transactionDeny();
-        return;
-        }
     
 
     $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
