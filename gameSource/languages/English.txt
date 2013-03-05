@@ -127,7 +127,7 @@ houseCheckInFailed "House check in failed."
 nameSearch "Name Search:"
 filter "Filter"
 startRobHouse "Rob House"
-listRobberyReplays "View Security Tapes"
+listRobberyReplays "View Your Security Tapes"
 startProofReplay "View House Self-Test"
 
 emptyList "None found."

@@ -37,6 +37,11 @@ Version 3  ???
 --Ending a security tape now takes you back to security tape menu instead of 
   main menu (thanks Jeremiah Reid).
 
+--Changed wording to 'View YOUR security tapes' to avoid confusion (some people
+  pick a house from the to-rob list and try to click that tape button).
+
+
+
 
 Version 2    2013-February-27    (private pre-alpha)
 
