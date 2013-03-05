@@ -34,6 +34,8 @@ Version 3  ???
 --Server now saves your changed gallery ordering even if you haven't modified
   your house otherwise (thanks Jeremiah Reid).
 
+--Ending a security tape now takes you back to security tape menu instead of 
+  main menu (thanks Jeremiah Reid).
 
 
 Version 2    2013-February-27    (private pre-alpha)

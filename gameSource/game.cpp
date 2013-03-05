@@ -1652,7 +1652,7 @@ void drawFrame( char inUpdate ) {
                 // nothing to check in (just a read-only replay)
 
                 // back to menu right away
-                currentGamePage = menuPage;
+                currentGamePage = robberyReplayMenuPage;
                 currentGamePage->base_makeActive( true );
                 }
             }
