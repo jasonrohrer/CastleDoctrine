@@ -321,6 +321,11 @@ void RobHousePage::draw( doublePair inViewCenter,
     if( mDescription != NULL ) {
         doublePair labelPos = { 0, 6.75 };
         
+        if( strstr( mDescription, "##" ) != NULL ) {
+            // two lines, move up a bit
+            labelPos.y = 7;
+            }
+
         drawMessage( mDescription, labelPos );
         }
 

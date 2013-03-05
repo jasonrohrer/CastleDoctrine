@@ -99,7 +99,7 @@ buyModeTip "Switch to buying tools"
 
 
 
-selfTestDescription "Prove that your house is fair:"
+selfTestDescription "Prove that your house is fair:##(Reach your own vault.  Be careful.)"
 
 
 auctionDescription "Currently running auctions:"
@@ -144,7 +144,7 @@ startTileDescription "Welcome Mat"
 wifeHolding "%s (carrying $%d)"
 
 
-robDescription "Robbing %s house"
+robDescription "Robbing %s house:"
 
 robBackpack "Backpack:"
 

@@ -42,6 +42,7 @@ Version 3  ???
 
 --Better wording of family exit warning (Family needs empty path to exit).
 
+--Better wording on house self-test page (reach your own vault).
 
 
 
