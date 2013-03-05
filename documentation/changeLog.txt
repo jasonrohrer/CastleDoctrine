@@ -40,6 +40,8 @@ Version 3  ???
 --Changed wording to 'View YOUR security tapes' to avoid confusion (some people
   pick a house from the to-rob list and try to click that tape button).
 
+--Better wording of family exit warning (Family needs empty path to exit).
+
 
 
 

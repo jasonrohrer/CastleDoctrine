@@ -513,6 +513,8 @@ void EditHousePage::draw( doublePair inViewCenter,
         // explanation for why Done button hidden
 
         doublePair buttonPos = mDoneButton.getPosition();
+        
+        buttonPos.y += 0.5;
 
         drawMessage( "familyExitMessage", buttonPos, true );
         }

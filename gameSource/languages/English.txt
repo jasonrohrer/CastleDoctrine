@@ -80,7 +80,8 @@ galleryArchiveLabel "Archive:"
 
 editBalance "Balance:"
 
-familyExitMessage "Family##blocked in."
+familyExitMessage2 "No empty##family##exit path."
+familyExitMessage  "Family needs##empty path##to exit."
 
 
 
