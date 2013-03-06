@@ -25,14 +25,13 @@ extern int userID;
 extern int musicOff;
 
 
-RobHousePage::RobHousePage( const char *inDoneButtonKey ) 
+RobHousePage::RobHousePage() 
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 8, -4, translate( inDoneButtonKey ) ),
+          mDoneButton( mainFont, 8, -4, translate( "suicide" ) ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
-          mDoneButtonKey( inDoneButtonKey ),
           mDescription( NULL ),
           mDeathMessage( NULL ) {
 
@@ -44,7 +43,7 @@ RobHousePage::RobHousePage( const char *inDoneButtonKey )
     mGallery.setAllowEdit( false );
     
 
-    mDoneButton.setMouseOverTip( "" );
+    mDoneButton.setMouseOverTip( translate( "suicideTip" ) );
     mDoneButton.addActionListener( this );
     mGridDisplay.addActionListener( this );
     mMusicToggleButton.addActionListener( this );
@@ -241,6 +240,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                         mGridDisplay.getDeathSourceState() ) );
             
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
+            mDoneButton.setToolTip( "" );
             }
         }
     else {
@@ -291,7 +291,8 @@ void RobHousePage::makeActive( char inFresh ) {
     mDone = false;
 
     // back to default button text
-    mDoneButton.setLabelText( translate( mDoneButtonKey ) );
+    mDoneButton.setLabelText( translate( "suicide" ) );
+    mDoneButton.setMouseOverTip( translate( "suicideTip" ) );
 
     // no tool tip
     setToolTip( NULL );

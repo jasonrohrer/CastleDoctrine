@@ -149,7 +149,9 @@ robDescription "Robbing %s house:"
 
 robBackpack "Backpack:"
 
-doneRob "Suicide"
+suicide "Suicide"
+suicideTip "Lose everything and start over"
+
 
 doneRobTest "Give Up"
 

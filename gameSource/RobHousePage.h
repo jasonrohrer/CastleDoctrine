@@ -23,7 +23,7 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         
     public:
         
-        RobHousePage( const char *inDoneButtonKey = "doneRob" );
+        RobHousePage();
         
         virtual ~RobHousePage();
         
@@ -106,8 +106,6 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         int mMusicSeed;
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
-
-        const char *mDoneButtonKey;
         
         char mDone;
 

@@ -34,7 +34,7 @@ EditHousePage::EditHousePage()
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
-          mSuicideButton( mainFont, 8, -0.5, translate( "doneRob" ) ),
+          mSuicideButton( mainFont, 8, -0.5, translate( "suicide" ) ),
           mDiffHighlightToggleButton( "diffHighlightsOn.tga", 
                                       "diffHighlightsOff.tga", 
                                       8, -1.75, 1/16.0 ),
@@ -59,6 +59,8 @@ EditHousePage::EditHousePage()
     mUndoButton.setMouseOverTip( "" );
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
     mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );
+
+    mSuicideButton.setMouseOverTip( translate( "suicideTip" ) );
 
     mDoneButton.addActionListener( this );
     mSuicideButton.addActionListener( this );

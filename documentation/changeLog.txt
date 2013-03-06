@@ -48,6 +48,8 @@ Version 3  ???
 
 --Fixed door/window orientation bug in north/south hallways.
 
+--Tool tip to explain the gravity of suicide.
+
 
 
 
