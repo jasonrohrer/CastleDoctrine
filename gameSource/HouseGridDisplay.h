@@ -109,8 +109,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         int getLastPlacedObject();
         
-        char didLastActionChangeDifff() {
+        char didLastActionChangeDiff() {
             return mLastActionChangedDiff;
+            }
+
+        char wasLastActionPlayerMotion() {
+            return mLastActionPlayerMotion;
             }
 
 
@@ -329,6 +333,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char mAllowPlacement;
         int mLastPlacedObject;
         char mLastActionChangedDiff;
+        char mLastActionPlayerMotion;
         
 
         SimpleVector<GridChangeRecord> mEditHistory;

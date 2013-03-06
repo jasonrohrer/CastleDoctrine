@@ -393,13 +393,13 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
 
         mUndoButton.setVisible( mGridDisplay.canUndo() );
         
-        if( cost != -1 ) {
+        if( cost != -1 && ! mGridDisplay.wasLastActionPlayerMotion() ) {
             mObjectPicker.useSelectedObject();
 
             checkIfPlacementAllowed();
             }
 
-        if( mGridDisplay.didLastActionChangeDifff() ) {    
+        if( mGridDisplay.didLastActionChangeDiff() ) {    
             recomputeChangeCost();
             }
         

@@ -78,6 +78,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
           mLastActionChangedDiff( false ),
+          mLastActionPlayerMotion( false ),
           mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
           mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ),
           mToolTargetPickedFullIndex( -1 ) {
@@ -2332,6 +2333,7 @@ void HouseGridDisplay::placeMandatory( int inFullIndex, int inIndex ) {
     copySubCellBack( inIndex );
 
     mLastActionChangedDiff = false;
+    mLastActionPlayerMotion = false;
     fireActionPerformed( this );
     }
 
@@ -2424,6 +2426,7 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                     copySubCellBack( index );
                     
                     mLastActionChangedDiff = true;
+                    mLastActionPlayerMotion = false;
                     fireActionPerformed( this );
                     }
                 }
@@ -2447,6 +2450,7 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
                 copySubCellBack( index );
                 
                 mLastActionChangedDiff = true;
+                mLastActionPlayerMotion = false;
                 fireActionPerformed( this );
                 }
             
@@ -2514,6 +2518,7 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
         copySubCellBack( index );
         
         mLastActionChangedDiff = false;
+        mLastActionPlayerMotion = false;
         fireActionPerformed( this );
         }
     else if( fullIndex != mStartIndex ) {
@@ -2552,6 +2557,7 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                     copySubCellBack( index );
                     
                     mLastActionChangedDiff = true;
+                    mLastActionPlayerMotion = false;
                     fireActionPerformed( this );
                     }
                 }
@@ -2576,6 +2582,7 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
                 copySubCellBack( index );
                 
                 mLastActionChangedDiff = true;
+                mLastActionPlayerMotion = false;
                 fireActionPerformed( this );
                 }
             }
@@ -2713,6 +2720,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         mLastPlacedObject = 0;
         
         mLastActionChangedDiff = false;
+        mLastActionPlayerMotion = true;
         fireActionPerformed( this );
         }
     

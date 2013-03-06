@@ -53,6 +53,8 @@ Version 3  ???
 --Clicking object picker now brings up grid picker, in addition to clicking
   grid button (thanks David Pittman).
 
+--Moving around no longer bumps object picker to top of stack (thanks Malcom 
+  McCrimmon).
 
 
 
