@@ -50,6 +50,9 @@ Version 3  ???
 
 --Tool tip to explain the gravity of suicide.
 
+--Clicking object picker now brings up grid picker, in addition to clicking
+  grid button (thanks David Pittman).
+
 
 
 

@@ -523,6 +523,11 @@ void HouseObjectPicker::pointerUp( float inX, float inY ) {
             mHover = false;
             }
         }
+    else if( isInside( inX, inY ) ) {
+        // click means show grid view (two ways to show grid view)
+        mShouldShowGridView = true;
+        fireActionPerformed( this );
+        }
     }
 
 
