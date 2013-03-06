@@ -1170,8 +1170,9 @@ int HouseGridDisplay::getTileNeighbor( int inFullIndex, int inNeighbor ) {
 
 
 
-int HouseGridDisplay::getTileNeighborStructural( int inFullIndex, 
-                                                 int inNeighbor ) {
+int HouseGridDisplay::getTileNeighborHasProperty( int inFullIndex, 
+                                                  int inNeighbor,
+                                                  propertyID inProperty ) {
     int fullY = inFullIndex / mFullMapD;
     int fullX = inFullIndex % mFullMapD;
     
@@ -1195,7 +1196,7 @@ int HouseGridDisplay::getTileNeighborStructural( int inFullIndex,
 
     return isPropertySet( mHouseMapIDs[ nIndex ],
                           mHouseMapCellStates[ nIndex ], 
-                          structural );
+                          inProperty );
     }
 
 
@@ -1246,7 +1247,7 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
         int oneBlockedIndex = 0;
 
         for( int n=0; n<4; n++ ) {
-            if( getTileNeighborStructural( inFullIndex, n ) ) {
+            if( getTileNeighborHasProperty( inFullIndex, n, structural ) ) {
                 numBlockedNeighbors ++;
                         
                 neighborsBlocked[n] = true;
@@ -1344,29 +1345,59 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
 
         }
     else if( numOrientations == 2 ) {
+        
+        // double-walls trump other structural features
+        if( getTileNeighborHasProperty( inFullIndex, 0, wall ) && 
+            getTileNeighborHasProperty( inFullIndex, 2, wall ) ) {
+            // walls on top and bottom
                 
-        if( getTileNeighborStructural( inFullIndex, 0 ) && 
-            getTileNeighborStructural( inFullIndex, 2 ) ) {
+            // vertical orientation
+            orientationIndex = 0;
+            }
+        else if( getTileNeighborHasProperty( inFullIndex, 1, wall ) && 
+                 getTileNeighborHasProperty( inFullIndex, 3, wall ) ) {
+            /// walls on left and right
+            // horizontal 
+            orientationIndex = 1;
+            }
+        else if( getTileNeighborHasProperty( inFullIndex, 0, wall ) || 
+                 getTileNeighborHasProperty( inFullIndex, 2, wall ) ) {
+            // top OR bottom wall
+            
+            // vertical orientation
+            orientationIndex = 0;
+            }
+        else if( getTileNeighborHasProperty( inFullIndex, 1, wall ) || 
+                 getTileNeighborHasProperty( inFullIndex, 3, wall ) ) {
+            /// wall on left OR right
+            // horizontal 
+            orientationIndex = 1;
+            }
+
+        // no double walls on either pair of opposite sides
+        // revert to reacting to any neighboring structural features
+        else if( getTileNeighborHasProperty( inFullIndex, 0, structural ) && 
+            getTileNeighborHasProperty( inFullIndex, 2, structural ) ) {
             // blocked on top and bottom
                 
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborStructural( inFullIndex, 1 ) && 
-                 getTileNeighborStructural( inFullIndex, 3 ) ) {
+        else if( getTileNeighborHasProperty( inFullIndex, 1, structural ) && 
+                 getTileNeighborHasProperty( inFullIndex, 3, structural ) ) {
             /// blocked on left and right
             // horizontal 
             orientationIndex = 1;
             }
-        else if( getTileNeighborStructural( inFullIndex, 0 ) || 
-                 getTileNeighborStructural( inFullIndex, 2 ) ) {
+        else if( getTileNeighborHasProperty( inFullIndex, 0, structural ) || 
+                 getTileNeighborHasProperty( inFullIndex, 2, structural ) ) {
             // top OR bottom block
             
             // vertical orientation
             orientationIndex = 0;
             }
-        else if( getTileNeighborStructural( inFullIndex, 1 ) || 
-                 getTileNeighborStructural( inFullIndex, 3 ) ) {
+        else if( getTileNeighborHasProperty( inFullIndex, 1, structural ) || 
+                 getTileNeighborHasProperty( inFullIndex, 3, structural ) ) {
             /// blocked on left OR right
             // horizontal 
             orientationIndex = 1;

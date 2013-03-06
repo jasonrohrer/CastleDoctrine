@@ -46,6 +46,8 @@ Version 3  ???
 
 --Fixed long painting buy button tool tips that hung off edge of screen.
 
+--Fixed door/window orientation bug in north/south hallways.
+
 
 
 

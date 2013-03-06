@@ -57,6 +57,7 @@ int getObjectID( const char *inName );
     F(shadowMaking), \
     F(underLayerShaded), \
     F(structural), \
+    F(wall), \
     F(deadly), \
     F(stuck), \
     F(powered), \
