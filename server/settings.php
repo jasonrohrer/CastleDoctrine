@@ -349,5 +349,13 @@ $playerStartMoney = 2000;
 
 
 
+// how often absent (house not checked out for edit) player and wife get paid
+$payInterval = "0 1:00:0.000";
+
+$playerPayAmount = 100;
+$wifePayAmount = 200;
+
+
+
 
 ?>

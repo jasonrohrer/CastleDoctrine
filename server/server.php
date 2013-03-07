@@ -726,6 +726,7 @@ function cd_setupDatabase() {
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
+            "last_pay_check_time DATETIME NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -1296,6 +1297,28 @@ function cd_checkForFlush() {
             }
 
 
+        // now pay anyone who needs paying
+
+        global $payInterval, $playerPayAmount, $wifePayAmount;
+        
+        $query = "UPDATE $tableNamePrefix"."houses ".
+            "SET ".
+            "loot_value = ".
+            "    loot_value + $playerPayAmount + ".
+            "    wife_present * $wifePayAmount, ".
+            "last_pay_check_time = CURRENT_TIMESTAMP ".
+            "WHERE edit_checkout = 0 AND self_test_running = 0 ".
+            "AND last_pay_check_time < ".
+            "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
+        
+        
+        $result = cd_queryDatabase( $query );
+
+        $playersPaid = mysql_affected_rows();
+
+        cd_log( "Flush paid $playersPaid players." );
+
+
         
         // set new flush time
 
@@ -1680,6 +1703,7 @@ function cd_startEditHouse() {
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
+        "last_pay_check_time = CURRENT_TIMESTAMP, ".
         "loot_value = '$loot_value', value_estimate = '$value_estimate', ".
         "vault_contents = '$vault_contents', ".
         "gallery_contents = '$gallery_contents', ".
@@ -2858,7 +2882,8 @@ function cd_endEditHouse() {
         "self_test_move_list='$self_test_move_list', ".
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
         "wife_present='$wife_present', ".
-        "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths' ".
+        "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths', ".
+        "last_pay_check_time = CURRENT_TIMESTAMP ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -2918,7 +2943,9 @@ function cd_startSelfTest() {
     // automatically ignore blocked users and houses not checked out
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "last_ping_time = CURRENT_TIMESTAMP, self_test_running = 1 ".
+        "last_ping_time = CURRENT_TIMESTAMP, ".
+        "last_pay_check_time = CURRENT_TIMESTAMP, ".
+        "self_test_running = 1 ".
         "WHERE user_id = $user_id ".
         "AND blocked='0' ".
         "AND edit_checkout = 1 AND self_test_running = 0;";
@@ -2949,7 +2976,9 @@ function cd_endSelfTest() {
     // automatically ignore blocked users and houses not checked out
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "last_ping_time = CURRENT_TIMESTAMP, self_test_running = 0 ".
+        "last_ping_time = CURRENT_TIMESTAMP, ".
+        "last_pay_check_time = CURRENT_TIMESTAMP, ".
+        "self_test_running = 0 ".
         "WHERE user_id = $user_id ".
         "AND blocked='0' ".
         "AND edit_checkout = 1 AND self_test_running = 1;";
@@ -4449,7 +4478,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
-            "CURRENT_TIMESTAMP, 0 );";
+            "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0 );";
 
         // bypass our default error handling here so that
         // we can react to duplicate errors
