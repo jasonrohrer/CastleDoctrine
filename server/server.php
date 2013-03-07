@@ -1306,6 +1306,9 @@ function cd_checkForFlush() {
             "loot_value = ".
             "    loot_value + $playerPayAmount + ".
             "    wife_present * $wifePayAmount, ".
+            "value_estimate = ".
+            "    value_estimate + $playerPayAmount + ".
+            "    wife_present * $wifePayAmount, ".
             "last_pay_check_time = CURRENT_TIMESTAMP ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
             "AND last_pay_check_time < ".
