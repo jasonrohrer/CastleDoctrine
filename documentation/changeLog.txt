@@ -59,7 +59,7 @@ Version 3  ???
 --Server now only archives robbery logs for dead owners 1 day, and living
   owners 5 days.
 
---Player earns $100 and wife earns $200 for each hour that player spends away 
+--Player earns $14 and wife earns $28 for each hour that player spends away 
   from house.
 
 
