@@ -1099,6 +1099,7 @@ function cd_checkForFlush() {
     $flushInterval = "0 0:02:0.000";
     $staleTimeout = "0 0:05:0.000";
     $staleLogTimeout = "5 0:00:0.000";
+    $staleLogTimeoutDeadOwners = "1 0:00:0.000";
     // for testing:
     //$flushInterval = "0 0:00:30.000";
     //$staleTimeout = "0 0:01:0.000";
@@ -1270,9 +1271,12 @@ function cd_checkForFlush() {
         // check for stale robbery logs
         $query = "DELETE ".
             "FROM $tableNamePrefix"."robbery_logs ".
-            "WHERE owner_now_dead = 1 ".
-            "AND rob_time < ".
-            "SUBTIME( CURRENT_TIMESTAMP, '$staleLogTimeout' );";
+            "WHERE ".
+            "( owner_now_dead = 1 AND rob_time < ".
+            "  SUBTIME( CURRENT_TIMESTAMP, '$staleLogTimeoutDeadOwners' ) ) ".
+            "OR ".
+            "( owner_now_dead = 0 AND rob_time < ".
+            "  SUBTIME( CURRENT_TIMESTAMP, '$staleLogTimeout' ) );";
 
         $result = cd_queryDatabase( $query );
 

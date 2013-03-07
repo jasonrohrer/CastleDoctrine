@@ -56,6 +56,8 @@ Version 3  ???
 --Moving around no longer bumps object picker to top of stack (thanks Malcom 
   McCrimmon).
 
+--Server now only archives robbery logs for dead owners 1 day, and living
+  owners 5 days.
 
 
 Version 2    2013-February-27    (private pre-alpha)
