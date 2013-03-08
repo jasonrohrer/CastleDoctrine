@@ -3,10 +3,10 @@
 
 
 global $cd_version;
-$cd_version = "2";
+$cd_version = "3";
 
 global $cd_minClientVersion;
-$cd_minClientVersion = "2";
+$cd_minClientVersion = "3";
 
 
 // edit settings.php to change server' settings
@@ -1690,7 +1690,7 @@ function cd_startEditHouse() {
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
 
-    $payment_cout = $row[ "payment_count" ];
+    $payment_count = $row[ "payment_count" ];
     $you_paid_total = $row[ "you_paid_total" ];
     $wife_paid_total = $row[ "wife_paid_total" ];
     
@@ -1836,6 +1836,12 @@ function cd_startEditHouse() {
     echo $son_name;
     echo "\n";
     echo $daughter_name;
+    echo "\n";
+    echo $payment_count;
+    echo "\n";
+    echo $you_paid_total;
+    echo "\n";
+    echo $wife_paid_total;
     echo "\nOK";
     }
 

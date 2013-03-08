@@ -1,4 +1,4 @@
-int versionNumber = 2;
+int versionNumber = 3;
 
 
 
@@ -47,6 +47,7 @@ CustomRandomSource randSource;
 
 #include "LoginPage.h"
 #include "CheckoutHousePage.h"
+#include "PaymentReportPage.h"
 #include "EditHousePage.h"
 #include "LoadBackpackPage.h"
 #include "PickerGridPage.h"
@@ -81,6 +82,7 @@ GamePage *currentGamePage = NULL;
 
 LoginPage *loginPage;
 CheckoutHousePage *checkoutHousePage;
+PaymentReportPage *paymentReportPage;
 EditHousePage *editHousePage;
 LoadBackpackPage *loadBackpackPage;
 PickerGridPage *objectPickerGridPage;
@@ -465,6 +467,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     loginPage = new LoginPage();
     checkoutHousePage = new CheckoutHousePage();
+    paymentReportPage = new PaymentReportPage();
     editHousePage = new EditHousePage();
     loadBackpackPage = new LoadBackpackPage();
     objectPickerGridPage = new PickerGridPage( false );
@@ -522,6 +525,7 @@ void freeFrameDrawer() {
     currentGamePage = NULL;
     delete loginPage;
     delete checkoutHousePage;
+    delete paymentReportPage;
     delete editHousePage;
     delete loadBackpackPage;
     delete objectPickerGridPage;
@@ -1002,13 +1006,35 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             }
-        else if( currentGamePage == checkoutHousePage ) {
+        else if( currentGamePage == checkoutHousePage || 
+                 currentGamePage == paymentReportPage ) {
+            // same code to handle either checkoutHousePage OR
+            // paymentReportPage (which sometimes comes immediately between
+            //  checkoutHousePage and editHousePage )
+
+            char *wifeName = checkoutHousePage->getWifeName();
+
             if( checkoutHousePage->getReturnToMenu() ) {
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
-            else {
-                char *wifeName = checkoutHousePage->getWifeName();
+            else if( currentGamePage == checkoutHousePage &&
+                     wifeName != NULL &&
+                     checkoutHousePage->getPaymentCount() > 0 &&
+                     ( checkoutHousePage->getYouPaidTotal() > 0 || 
+                       checkoutHousePage->getWifePaidTotal() > 0 ) ) {
+                
+                paymentReportPage->setPayments( 
+                    wifeName,
+                    checkoutHousePage->getPaymentCount(),
+                    checkoutHousePage->getYouPaidTotal(),
+                    checkoutHousePage->getWifePaidTotal() );
+
+                currentGamePage = paymentReportPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else if( currentGamePage == checkoutHousePage ||
+                     paymentReportPage->getDone() ) {
                 char *sonName = checkoutHousePage->getSonName();
                 char *daughterName = checkoutHousePage->getDaughterName();
 
@@ -1049,7 +1075,6 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setSellList( "#" );
                     
 
-                    delete [] wifeName;
                     delete [] sonName;
                     delete [] daughterName;
                     delete [] houseMap;
@@ -1061,10 +1086,7 @@ void drawFrame( char inUpdate ) {
                     currentGamePage = editHousePage;
                     currentGamePage->base_makeActive( true );
                     }
-                else {
-                    if( wifeName != NULL ) {
-                        delete [] wifeName;
-                        }
+                else {                    
                     if( sonName != NULL ) {
                         delete [] sonName;
                         }
@@ -1087,6 +1109,10 @@ void drawFrame( char inUpdate ) {
                         delete [] priceList;
                         }
                     }
+                }
+
+            if( wifeName != NULL ) {
+                delete [] wifeName;
                 }
             }
         else if( currentGamePage == editHousePage ) {

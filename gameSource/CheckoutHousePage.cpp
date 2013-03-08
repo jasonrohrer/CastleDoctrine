@@ -27,6 +27,9 @@ CheckoutHousePage::CheckoutHousePage()
           mWifeName( NULL ),
           mSonName( NULL ),
           mDaughterName( NULL ),
+          mPaymentCount( 0 ),
+          mYouPaidTotal( 0 ),
+          mWifePaidTotal( 0 ),
           mHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
@@ -107,6 +110,21 @@ char *CheckoutHousePage::getDaughterName() {
         return stringDuplicate( mDaughterName );
         }
     }
+
+
+int CheckoutHousePage::getPaymentCount() {
+    return mPaymentCount;
+    }
+
+int CheckoutHousePage::getYouPaidTotal() {
+    return mYouPaidTotal;
+    }
+
+int CheckoutHousePage::getWifePaidTotal() {
+    return mWifePaidTotal;
+    }
+
+
 
 
 
@@ -225,9 +243,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 12
+                    if( lines->size() != 15
                         ||
-                        strcmp( *( lines->getElement( 11 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 14 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -266,11 +284,24 @@ void CheckoutHousePage::step() {
                         mSonName = *( lines->getElement( 9 ) );
                         mDaughterName = *( lines->getElement( 10 ) );
 
+                        mPaymentCount = 0;
+                        sscanf( *( lines->getElement( 11 ) ),
+                                "%d", &mPaymentCount );
+                        mYouPaidTotal = 0;
+                        sscanf( *( lines->getElement( 12 ) ),
+                                "%d", &mYouPaidTotal );
+                        mWifePaidTotal = 0;
+                        sscanf( *( lines->getElement( 13 ) ),
+                                "%d", &mWifePaidTotal );
+
 
                         delete [] *( lines->getElement( 5 ) );
                         delete [] *( lines->getElement( 6 ) );
                         delete [] *( lines->getElement( 7 ) );
                         delete [] *( lines->getElement( 11 ) );
+                        delete [] *( lines->getElement( 12 ) );
+                        delete [] *( lines->getElement( 13 ) );
+                        delete [] *( lines->getElement( 14 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Vault = %s\n", mVaultContents );

@@ -41,6 +41,18 @@ returnHome "Return to Your House"
 
 
 
+
+okay "Okay"
+
+
+workReport "While you were away working for %d hour:"
+workReportPlural "While you were away working for %d hours:"
+
+youEarnReport "You earned $%d"
+wifeEarnReport "%s earned $%d"
+
+
+
 editDescription "Work on your house:"
 
 loadBackpackDescription "Load your backpack:"
@@ -159,6 +171,7 @@ doneRobDead "Accept"
 
 
 doneStale "Okay"
+
 
 
 leave "Leave"

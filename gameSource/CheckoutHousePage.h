@@ -24,7 +24,12 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         virtual char *getSonName();
         virtual char *getDaughterName();
 
-
+        virtual int getPaymentCount();
+        virtual int getYouPaidTotal();
+        virtual int getWifePaidTotal();
+        
+        
+        
         // destroyed by caller if not NULL
         virtual char *getHouseMap();
 
@@ -61,6 +66,10 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         char *mSonName;
         char *mDaughterName;
         
+        int mPaymentCount;
+        int mYouPaidTotal;
+        int mWifePaidTotal;
+
         char *mHouseMap;
         char *mVaultContents;
         char *mBackpackContents;

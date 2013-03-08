@@ -75,6 +75,9 @@ music_seed
 wife_name
 son_name
 daughter_name
+payment_count
+you_paid_total
+wife_paid_total
 OK
 
 Where:

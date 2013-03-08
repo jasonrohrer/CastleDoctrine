@@ -65,7 +65,7 @@ seededMusic.cpp \
 SpriteToggleButton.cpp \
 serialWebRequests.cpp \
 balance.cpp \
-
+PaymentReportPage.cpp \
 
 
 GAME_GRAPHICS = \
