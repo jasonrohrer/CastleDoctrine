@@ -300,13 +300,13 @@ void clearWebRequestSerial( int inHandle ) {
             clearWebRequest( r->activeHandle );
             
             if( r->method != NULL ) {
-                delete r->method;
+                delete [] r->method;
                 }
             if( r->url != NULL ) {
-                delete r->url;
+                delete [] r->url;
                 }
             if( r->body != NULL ) {
-                delete r->body;
+                delete [] r->body;
                 }
             
             serialRecords.deleteElement( i );

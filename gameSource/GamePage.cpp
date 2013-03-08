@@ -365,7 +365,7 @@ void GamePage::pointerMove( float inX, float inY ) {
 
                 mResponseWarningTipShowing = true;
 
-                delete tipString;
+                delete [] tipString;
                 }
             }
         else {
