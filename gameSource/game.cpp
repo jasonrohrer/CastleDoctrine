@@ -134,6 +134,12 @@ double frameRateFactor = 1;
 char firstDrawFrameCalled = false;
 
 
+char upKey = 'w';
+char leftKey = 'a';
+char downKey = 's';
+char rightKey = 'd';
+
+
 
 
 const char *getWindowTitle() {
@@ -859,17 +865,7 @@ void deleteCharFromUserTypedMessage() {
 
 
 
-void drawFrame( char inUpdate ) {
-    
-
-    // disable keyboard mapping while paused and on login page
-    if( isPaused() || currentGamePage == loginPage ) {
-        toggleKeyMapping( false );
-        }
-    else {
-        toggleKeyMapping( true );
-        }
-    
+void drawFrame( char inUpdate ) {    
 
 
     if( !inUpdate ) {
@@ -978,10 +974,10 @@ void drawFrame( char inUpdate ) {
                 strcmp( moveKeyMapping, "wasd" ) != 0 ) {
                 // different assignment
 
-                mapKey( moveKeyMapping[0], 'w' );
-                mapKey( moveKeyMapping[1], 'a' );
-                mapKey( moveKeyMapping[2], 's' );
-                mapKey( moveKeyMapping[3], 'd' );
+                upKey = moveKeyMapping[0];
+                leftKey = moveKeyMapping[1];
+                downKey = moveKeyMapping[2];
+                rightKey = moveKeyMapping[3];
                 }
             delete [] moveKeyMapping;
             }

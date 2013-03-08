@@ -64,6 +64,8 @@ Version 3  ???
 
 --Server now has a shutdown mode to block player requests during maintenance.
 
+--Fixed so that remapping WASD keys doesn't interfer with typing for searches.
+
 
 
 

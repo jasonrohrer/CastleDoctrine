@@ -12,6 +12,7 @@
 
 
 #include <math.h>
+#include <ctype.h>
 
 
 #include "houseObjects.h"
@@ -2593,64 +2594,48 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
 
 
 
+extern char upKey;
+extern char leftKey;
+extern char downKey;
+extern char rightKey;
+
+
 
 void HouseGridDisplay::keyDown( unsigned char inASCII ) {    
-    switch( inASCII ) {
-        case 'w':
-        case 'W':
-        case 'i':
-        case 'I':
-            specialKeyDown( MG_KEY_UP );
-            break;
-        case 'a':
-        case 'A':
-        case 'j':
-        case 'J':
-            specialKeyDown( MG_KEY_LEFT );
-            break;
-        case 's':
-        case 'S':
-        case 'k':
-        case 'K':
-            specialKeyDown( MG_KEY_DOWN );
-            break;
-        case 'd':
-        case 'D':
-        case 'l':
-        case 'L':
-            specialKeyDown( MG_KEY_RIGHT );
-            break;
+
+    unsigned char lowerCase = tolower( inASCII );
+    
+    if( lowerCase == upKey ) {
+        specialKeyDown( MG_KEY_UP );
+        }
+    else if( lowerCase == leftKey ) {
+        specialKeyDown( MG_KEY_LEFT );
+        }
+    else if( lowerCase == downKey ) {
+        specialKeyDown( MG_KEY_DOWN );
+        }
+    else if( lowerCase == rightKey ) {
+        specialKeyDown( MG_KEY_RIGHT );
         }
     }
 
 
 
 void HouseGridDisplay::keyUp( unsigned char inASCII ) {    
-    switch( inASCII ) {
-        case 'w':
-        case 'W':
-        case 'i':
-        case 'I':
-            specialKeyUp( MG_KEY_UP );
-            break;
-        case 'a':
-        case 'A':
-        case 'j':
-        case 'J':
-            specialKeyUp( MG_KEY_LEFT );
-            break;
-        case 's':
-        case 'S':
-        case 'k':
-        case 'K':
-            specialKeyUp( MG_KEY_DOWN );
-            break;
-        case 'd':
-        case 'D':
-        case 'l':
-        case 'L':
-            specialKeyUp( MG_KEY_RIGHT );
-            break;
+
+    unsigned char lowerCase = tolower( inASCII );
+
+    if( lowerCase == upKey ) {
+        specialKeyUp( MG_KEY_UP );
+        }
+    else if( lowerCase == leftKey ) {
+        specialKeyUp( MG_KEY_LEFT );
+        }
+    else if( lowerCase == downKey ) {
+        specialKeyUp( MG_KEY_DOWN );
+        }
+    else if( lowerCase == rightKey ) {
+        specialKeyUp( MG_KEY_RIGHT );
         }
     }
 

@@ -15,7 +15,7 @@ Press ESC to pause the game and view a menu screen.
 
 The mouse is used for almost all actions in the game, except for:
 
-Moving your character:   Arrow keys, W A S D keys, or I J K L keys.
+Moving your character:   Arrow keys or W A S D keys.
 
 
 If the movement keys are not comfortable on your keyboard, edit 
