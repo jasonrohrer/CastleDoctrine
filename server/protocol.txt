@@ -4,6 +4,11 @@ All returns are whitespace-delimited.
 
 Most calls can return 'DENIED' on failure
 
+Some calls can return 'SHUTDOWN' when the server has been switched into
+shutdown mode.  After this, subsequent calls to server may be unsafe in terms
+of houses being lost, etc.  Client should stop immediately (and a client that
+gets a SHUTDOWN response on startup should stop and tell user to try again
+later).
 
 
 

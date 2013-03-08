@@ -33,6 +33,8 @@ loginFailed "Login Failed"
 outOfDateClient "Please download the latest version."
 
 
+serverShutdownMessage "The server has been shut down for maintenance.##Please try again later."
+
 
 houseBeingRobbed "Your house is currently being robbed.##You can't work on it now."
 returnMenu "Menu"

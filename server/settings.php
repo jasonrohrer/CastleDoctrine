@@ -358,4 +358,14 @@ $wifePayAmount = 28;
 
 
 
+// server shutdown mode
+// causes server to respond with SHUTDOWN to most requests
+// (still allows houses to be checked back in).
+// Use this to weed people off of the server before installing updates, doing
+// maintenance, etc.
+
+$shutdownMode = 0;
+
+
+
 ?>

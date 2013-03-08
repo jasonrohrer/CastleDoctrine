@@ -62,6 +62,9 @@ Version 3  ???
 --Player earns $14 and wife earns $28 for each hour that player spends away 
   from house.
 
+--Server now has a shutdown mode to block player requests during maintenance.
+
+
 
 
 Version 2    2013-February-27    (private pre-alpha)

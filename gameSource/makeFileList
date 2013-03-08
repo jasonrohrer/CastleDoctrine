@@ -17,6 +17,7 @@ PageComponent.cpp \
 GamePage.cpp \
 message.cpp \
 LoginPage.cpp \
+ServerShutdownPage.cpp \
 TextField.cpp \
 Button.cpp \
 TextButton.cpp \

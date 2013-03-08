@@ -26,3 +26,8 @@ char *getWebResultSerial( int inHandle );
 
 // does not wait for request to finish before ending it
 void clearWebRequestSerial( int inHandle );
+
+
+
+// true if server shut down and client should stop immediately
+char getServerShutdown();

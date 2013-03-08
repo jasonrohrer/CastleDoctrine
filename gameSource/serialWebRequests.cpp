@@ -16,6 +16,10 @@ typedef struct SerialWebRecord {
 static SimpleVector<SerialWebRecord> serialRecords;
 
 
+static char serverShutdown = false;
+
+
+
 
 int startWebRequestSerial( const char *inMethod, const char *inURL,
                            const char *inBody ) {
@@ -33,6 +37,22 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
     
     return r.handle;
     }
+
+
+
+void checkForServerShutdown( SerialWebRecord *inR ) {
+    char *result = getWebResult( inR->handle );
+
+    if( result != NULL ) {
+        
+        if( strstr( result, "SHUTDOWN" ) != NULL ) {
+            serverShutdown = true;
+            }
+
+        delete [] result;
+        }
+    }
+
 
 
 
@@ -54,6 +74,18 @@ int stepWebRequestSerial( int inHandle ) {
             if( stepResult != 0 ) {
                 // not still processing (done or hit error)
                 r->done = true;
+
+                if( stepResult == 1 ) {
+                    checkForServerShutdown( r );
+                    
+                    if( serverShutdown ) {
+                        // block client's normal response to this
+                        // request, by reporting that it's still in
+                        // progress, so that client shutdown behavior
+                        // can take over
+                        return 0;
+                        }
+                    }
                 }
 
             return stepResult;
@@ -68,6 +100,18 @@ int stepWebRequestSerial( int inHandle ) {
                 if( stepResult != 0 ) {
                     // not still processing (done or hit error)
                     r->done = true;
+                    
+                    if( stepResult == 1 ) {
+                        checkForServerShutdown( r );
+                        
+                        if( serverShutdown ) {
+                            // block client's normal response to this
+                            // request, by reporting that it's still in
+                            // progress, so that client shutdown behavior
+                            // can take over
+                            return 0;
+                            }
+                        }
                     }
                 
                 // OUR request not done yet, because we're still stepping
@@ -111,3 +155,10 @@ void clearWebRequestSerial( int inHandle ) {
     
     // else not found in queue?
     }
+
+
+
+char getServerShutdown() {
+    return serverShutdown;
+    }
+

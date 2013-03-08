@@ -46,6 +46,7 @@ CustomRandomSource randSource;
 
 
 #include "LoginPage.h"
+#include "ServerShutdownPage.h"
 #include "CheckoutHousePage.h"
 #include "PaymentReportPage.h"
 #include "EditHousePage.h"
@@ -75,12 +76,15 @@ CustomRandomSource randSource;
 
 #include "seededMusic.h"
 
+#include "serialWebRequests.h"
+
 
 
 GamePage *currentGamePage = NULL;
 
 
 LoginPage *loginPage;
+ServerShutdownPage *serverShutdownPage;
 CheckoutHousePage *checkoutHousePage;
 PaymentReportPage *paymentReportPage;
 EditHousePage *editHousePage;
@@ -466,6 +470,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     loginPage = new LoginPage();
+    serverShutdownPage = new ServerShutdownPage();
     checkoutHousePage = new CheckoutHousePage();
     paymentReportPage = new PaymentReportPage();
     editHousePage = new EditHousePage();
@@ -524,6 +529,7 @@ void freeFrameDrawer() {
 
     currentGamePage = NULL;
     delete loginPage;
+    delete serverShutdownPage;
     delete checkoutHousePage;
     delete paymentReportPage;
     delete editHousePage;
@@ -995,6 +1001,13 @@ void drawFrame( char inUpdate ) {
         wasPaused = false;
         }
     
+    
+    if( getServerShutdown() ) {
+        currentGamePage = serverShutdownPage;
+        currentGamePage->base_makeActive( true );
+        }
+    
+
     if( currentGamePage != NULL ) {
         
         currentGamePage->base_step();

@@ -87,7 +87,7 @@ cd_connectToDatabase();
 
 
 // testing:
-//sleep( 5 );
+//sleep( 1 );
 
 
 // general processing whenver server.php is accessed directly
@@ -130,7 +130,23 @@ if( false ) {
     die();
     }
 
-if( $action == "version" ) {
+
+global $shutdownMode;
+
+
+if( $shutdownMode &&
+    ( $action == "check_user" ||
+      $action == "check_hmac" ||
+      $action == "start_edit_house" ||
+      $action == "list_houses" ||
+      $action == "start_rob_house" ||
+      $action == "list_logged_robberies" ||
+      $action == "get_robbery_log" ||
+      $action == "get_self_test_log" ) ) {
+
+    echo "SHUTDOWN";
+    }
+else if( $action == "version" ) {
     global $cd_version;
     echo "$cd_version";
     }
