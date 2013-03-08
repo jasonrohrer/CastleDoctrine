@@ -41,6 +41,7 @@ RobPickList::RobPickList( double inX, double inY,
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
           mRobberyLog( inRobberyLog ),
+          mHover( false ),
           mUpButton( "up.tga", 8, 1, 1/16.0 ),
           mDownButton( "down.tga", 8, -1, 1/16.0 ),
           mSearchField( mainFontFixed, mainFont, 
@@ -610,10 +611,17 @@ void RobPickList::pointerUp( float inX, float inY ) {
             
         r->selected = true;
         setTip( r );
-
+        mHover = true;
+        
         fireActionPerformed( this );
         return;
         }
+    else if( mHover ) {
+        // just hovered out
+        setToolTip( NULL );
+        mHover = false;
+        }
+
     }
 
 
@@ -624,7 +632,13 @@ void RobPickList::pointerMove( float inX, float inY ) {
     HouseRecord *r = getHitRecord( inX, inY );
     
     if( r != NULL ) {
+        mHover = true;
         setTip( r );
+        }
+    else if( mHover ) {
+        // just hovered out
+        setToolTip( NULL );
+        mHover = false;
         }
     }
 

@@ -69,6 +69,7 @@ Version 3  ???
 --Game client times out requests to server after 10 seconds and retries them
   instead of giving up.
 
+--Fixed house pick lists so that tool tips don't linger when mouse leaves.
 
 
 

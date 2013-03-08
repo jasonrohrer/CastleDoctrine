@@ -97,6 +97,8 @@ class RobPickList : public PageComponent, public ActionListener,
         SimpleVector<HouseRecord> mHouseList;
 
         void clearHouseList();
+
+        char mHover;
         
         
         SpriteButton mUpButton;
