@@ -727,6 +727,9 @@ function cd_setupDatabase() {
             "robber_deaths INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "last_pay_check_time DATETIME NOT NULL,".
+            "payment_count INT NOT NULL,".
+            "you_paid_total INT NOT NULL,".
+            "wife_paid_total INT NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -1309,7 +1312,11 @@ function cd_checkForFlush() {
             "value_estimate = ".
             "    value_estimate + $playerPayAmount + ".
             "    wife_present * $wifePayAmount, ".
-            "last_pay_check_time = CURRENT_TIMESTAMP ".
+            "last_pay_check_time = CURRENT_TIMESTAMP, ".
+            "payment_count = payment_count + 1, ".
+            "you_paid_total = you_paid_total + $playerPayAmount, ".
+            "wife_paid_total = ".
+            "    wife_paid_total + wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
             "AND last_pay_check_time < ".
             "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
@@ -1655,7 +1662,9 @@ function cd_startEditHouse() {
         "loot_value, ".
         "carried_loot_value, carried_vault_contents, ".
         "carried_gallery_contents, ".
-        "edit_count, music_seed FROM $tableNamePrefix"."houses ".
+        "edit_count, music_seed, ".
+        "payment_count, you_paid_total, wife_paid_total ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
 
@@ -1681,6 +1690,11 @@ function cd_startEditHouse() {
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
 
+    $payment_cout = $row[ "payment_count" ];
+    $you_paid_total = $row[ "you_paid_total" ];
+    $wife_paid_total = $row[ "wife_paid_total" ];
+    
+    
     
     $carried_loot_value = $row[ "carried_loot_value" ];
     $carried_vault_contents = $row[ "carried_vault_contents" ];
@@ -1712,7 +1726,9 @@ function cd_startEditHouse() {
         "gallery_contents = '$gallery_contents', ".
         "carried_loot_value = 0, ".
         "carried_vault_contents = '#', ".
-        "carried_gallery_contents = '#' ".
+        "carried_gallery_contents = '#', ".
+        // reset payment counts
+        "payment_count = 0, you_paid_total = 0, wife_paid_total = 0 ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
 
@@ -4481,7 +4497,9 @@ function cd_newHouseForUser( $user_id ) {
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
-            "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0 );";
+            "CURRENT_TIMESTAMP, ".
+            "CURRENT_TIMESTAMP, 0, 0, 0, ".
+            "0 );";
 
         // bypass our default error handling here so that
         // we can react to duplicate errors
