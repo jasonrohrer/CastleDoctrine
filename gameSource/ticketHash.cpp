@@ -48,3 +48,64 @@ char *getTicketHash() {
     return result;
     }
 
+
+
+char *replaceTicketHash( char *inString ) {
+    const char *keyA = "sequence_number=";
+    const char *keyB = "ticket_hmac=";
+    
+    if( inString == NULL ) {
+        return NULL;
+        }
+    else if( strstr( inString, keyA ) != NULL &&
+             strstr( inString, keyB ) != NULL ) {
+        
+        // present
+
+        char *copy = stringDuplicate( inString );
+        
+        char *startPointerA = strstr( copy, keyA );
+        char *startPointerB = strstr( copy, keyB );
+ 
+        char *hmacStart = &( startPointerB[ strlen( keyB ) ] );
+        
+        
+        int i = 0;
+        while( hmacStart[i] != '\0' &&
+               ( ( hmacStart[i] >= '0' && 
+                   hmacStart[i] <= '9' )
+                 || 
+                 ( hmacStart[i] >= 'A' &&
+                   hmacStart[i] <= 'F' ) ) ) {
+            i++;
+            }
+        
+        // truncate here, after end of hmac
+        hmacStart[i] = '\0';
+        
+        
+        // now startPointerA points to the full hash
+        
+        char *newHash = getTicketHash();
+
+        char found;
+        
+        char *newHashInPlace = replaceOnce( inString, startPointerA,
+                                            newHash,
+                                            &found );
+
+        delete [] newHash;
+        delete [] copy;
+        delete [] inString;
+
+        return newHashInPlace;
+        }
+    else {
+        // no hash present
+        char *result = stringDuplicate( inString );
+        delete [] inString;
+        return result;
+        }
+    }
+
+        

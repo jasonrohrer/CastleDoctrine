@@ -3,13 +3,42 @@
 
 #include "minorGems/game/game.h"
 #include "minorGems/util/SimpleVector.h"
+#include "minorGems/util/stringUtils.h"
+
+#include "ticketHash.h"
+
+
+
+extern int webRetrySeconds;
+
+static int nextHandle = 0;
 
 
 typedef struct SerialWebRecord {
+        // for finding request externally
         int handle;
         
-        char done;
+        // handle for the active web request
+        int activeHandle;
+        
 
+        char done;
+        
+        // false until first step done
+        // don't start timing until we're actually running the request
+        // (don't want to retry a request early because slow requests were
+        //  queued in front of it).
+        char started;
+        
+        time_t startTime;
+        
+        int retryCount;
+
+        // save for retry
+        char *method;
+        char *url;
+        char *body;
+        
         } SerialWebRecord;
         
 
@@ -27,13 +56,36 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
 
     SerialWebRecord r;
 
-    r.handle = startWebRequest( inMethod, inURL, inBody );
-
-    r.done = false;
+    r.method = NULL;
+    r.url = NULL;
+    r.body = NULL;
     
+
+    if( inMethod != NULL ) {
+        r.method = stringDuplicate( inMethod );
+        }
+    if( inURL != NULL ) {
+        r.url = stringDuplicate( inURL );
+        }
+    if( inBody != NULL ) {
+        r.body = stringDuplicate( inBody );
+        }
+        
+
+    r.activeHandle = startWebRequest( r.method, r.url, r.body );
+    
+    r.handle = nextHandle;
+    nextHandle ++;
+    
+    r.done = false;
+
+    r.started = false;
+    
+    r.retryCount = 0;
+
     serialRecords.push_back( r );
 
-    printf( "Starting web request %d\n", r.handle );
+    printf( "Starting web request %d\n", r.activeHandle );
     
     return r.handle;
     }
@@ -41,7 +93,7 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
 
 
 void checkForServerShutdown( SerialWebRecord *inR ) {
-    char *result = getWebResult( inR->handle );
+    char *result = getWebResult( inR->activeHandle );
 
     if( result != NULL ) {
         
@@ -51,6 +103,26 @@ void checkForServerShutdown( SerialWebRecord *inR ) {
 
         delete [] result;
         }
+    }
+
+
+static void checkForRequestRetry( SerialWebRecord *r ) {
+    time_t timePassed = game_time( NULL ) - r->startTime;
+
+    if( timePassed > webRetrySeconds ) {
+        // start a fresh request
+
+        clearWebRequest( r->activeHandle );
+
+        r->url = replaceTicketHash( r->url );
+        r->body = replaceTicketHash( r->body );
+
+        r->activeHandle = startWebRequest( r->method, r->url, r->body );
+
+        r->startTime = game_time( NULL );
+        r->retryCount++;
+        }
+    
     }
 
 
@@ -68,8 +140,14 @@ int stepWebRequestSerial( int inHandle ) {
         SerialWebRecord *r = serialRecords.getElement( i );
         
         if( r->handle == inHandle ) {
+            
+            if( ! r->started ) {                
+                r->startTime = game_time( NULL );
+                r->started = true;
+                }            
+
             // found our request, just step it and return
-            int stepResult = stepWebRequest( inHandle );
+            int stepResult = stepWebRequest( r->activeHandle );
 
             if( stepResult != 0 ) {
                 // not still processing (done or hit error)
@@ -87,6 +165,10 @@ int stepWebRequestSerial( int inHandle ) {
                         }
                     }
                 }
+            else {
+                checkForRequestRetry( r );
+                }
+            
 
             return stepResult;
             }
@@ -95,7 +177,13 @@ int stepWebRequestSerial( int inHandle ) {
             
             // is it a request that needs stepping?
             if( ! r->done ) {
-                int stepResult = stepWebRequest( r->handle );
+                
+                if( ! r->started ) {                
+                    r->startTime = game_time( NULL );
+                    r->started = true;
+                    }
+
+                int stepResult = stepWebRequest( r->activeHandle );
 
                 if( stepResult != 0 ) {
                     // not still processing (done or hit error)
@@ -112,6 +200,9 @@ int stepWebRequestSerial( int inHandle ) {
                             return 0;
                             }
                         }
+                    }
+                else {
+                    checkForRequestRetry( r );
                     }
                 
                 // OUR request not done yet, because we're still stepping
@@ -131,8 +222,54 @@ int stepWebRequestSerial( int inHandle ) {
 
 
 char *getWebResultSerial( int inHandle ) {
-    // don't need to deal with queue for this one
-    return getWebResult( inHandle );
+    int numRecords = serialRecords.size();
+
+    for( int i=0; i<numRecords; i++ ) {
+        
+        SerialWebRecord *r = serialRecords.getElement( i );
+        
+        if( r->handle == inHandle ) {
+            return getWebResult( r->activeHandle );
+            }
+        }
+    
+    return NULL;
+    }
+
+
+
+
+int getWebRequestRetryStatus( int inHandle ) {
+    int numRecords = serialRecords.size();
+    
+    for( int i=0; i<numRecords; i++ ) {
+        
+        SerialWebRecord *r = serialRecords.getElement( i );
+        
+        if( r->handle == inHandle ) {
+            
+            if( ! r->started ) {
+                return 0;
+                }
+
+            if( r->retryCount < 1 ) {
+                
+                time_t timePassed = game_time( NULL ) - r->startTime;
+                if( timePassed < webRetrySeconds / 2 ) {
+                    return 0;
+                    }
+                else {
+                    return 1;
+                    }
+                }
+            else {
+                return 1 + r->retryCount;
+                }
+            }
+        }
+
+    // not found?
+    return 0;
     }
 
 
@@ -147,8 +284,19 @@ void clearWebRequestSerial( int inHandle ) {
         SerialWebRecord *r = serialRecords.getElement( i );
         
         if( r->handle == inHandle ) {
+            clearWebRequest( r->activeHandle );
+            
+            if( r->method != NULL ) {
+                delete r->method;
+                }
+            if( r->url != NULL ) {
+                delete r->url;
+                }
+            if( r->body != NULL ) {
+                delete r->body;
+                }
+            
             serialRecords.deleteElement( i );
-            clearWebRequest( inHandle );
             return;
             }
         }

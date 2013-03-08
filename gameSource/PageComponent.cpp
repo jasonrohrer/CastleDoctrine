@@ -233,7 +233,17 @@ void PageComponent::addComponent( PageComponent *inComponent ){
 
 
 void PageComponent::setWaiting( char inWaiting ) {
+    // pass up chain (stops at GamePage)
     if( mParent != NULL ) {
         mParent->setWaiting( inWaiting );
+        }
+    }
+
+
+
+void PageComponent::setWaitingWebRequest( char inWebRequest ) {
+    // pass up chain (stops at GamePage)
+    if( mParent != NULL ) {
+        mParent->setWaitingWebRequest( inWebRequest );
         }
     }

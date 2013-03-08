@@ -2,22 +2,30 @@
 
 #include "message.h"
 
+#include "serialWebRequests.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/game/game.h"
 
 
 
 int GamePage::sPageCount = 0;
 
 SpriteHandle GamePage::sWaitingSprites[3] = { NULL, NULL, NULL };
+SpriteHandle GamePage::sResponseWarningSprite = NULL;
+
 int GamePage::sCurrentWaitingSprite = 0;
 int GamePage::sLastWaitingSprite = -1;
 int GamePage::sWaitingSpriteDirection = 1;
 double GamePage::sCurrentWaitingSpriteFade = 0;
 
+char GamePage::sResponseWarningShowing = false;
+doublePair GamePage::sResponseWarningPosition = { 0, 0 };
+
+
 double GamePage::sWaitingFade = 0;
 char GamePage::sWaiting = false;
-
+int GamePage::sWaitingWebRequest = -1;
 
 
 GamePage::GamePage()
@@ -33,6 +41,8 @@ GamePage::GamePage()
         sWaitingSprites[0] = loadSprite( "loading.tga", true );
         sWaitingSprites[1] = loadSprite( "loading2.tga", true );
         sWaitingSprites[2] = loadSprite( "loading3.tga", true );
+
+        sResponseWarningSprite = loadSprite( "responseWarning.tga", true );
         }
     sPageCount++;
     }
@@ -56,10 +66,12 @@ GamePage::~GamePage() {
         freeSprite( sWaitingSprites[0] );
         freeSprite( sWaitingSprites[1] );
         freeSprite( sWaitingSprites[2] );
+        freeSprite( sResponseWarningSprite );
         
         sWaitingSprites[0] = NULL;
         sWaitingSprites[1] = NULL;
         sWaitingSprites[2] = NULL;
+        sResponseWarningSprite = NULL;
         }
     }
 
@@ -156,8 +168,32 @@ void GamePage::base_draw( doublePair inViewCenter,
     if( sWaitingFade > 0 ) {
         
         doublePair spritePos = { 9.25, 7 };
+        
+        float r = 1;
+        float g = 1;
+        float b = 1;
 
-        setDrawColor( 1, 1, 1, 
+        char showWarningIcon = false;
+        
+        if( sWaiting && sWaitingWebRequest != -1 ) {
+            
+            switch( getWebRequestRetryStatus( sWaitingWebRequest ) ) {
+                case 0:
+                    break;
+                case 1:
+                    g = 1;
+                    b = 0;
+                    break;
+                default:
+                    g = 0;
+                    b = 0;
+                    showWarningIcon = true;
+                    break;
+                }
+            }
+        
+
+        setDrawColor( r, g, b, 
                       sWaitingFade * sCurrentWaitingSpriteFade );
 
         drawSprite( sWaitingSprites[sCurrentWaitingSprite], 
@@ -165,11 +201,22 @@ void GamePage::base_draw( doublePair inViewCenter,
 
         if( sLastWaitingSprite != -1 ) {
             
-            setDrawColor( 1, 1, 1, 
+            setDrawColor( r, g, b, 
                           sWaitingFade * ( 1 - sCurrentWaitingSpriteFade ) );
             
             drawSprite( sWaitingSprites[sLastWaitingSprite], 
                         spritePos, 1/16.0 );
+            }
+
+
+        if( showWarningIcon ) {
+            spritePos.y -= 0.5;
+            
+            setDrawColor( r, g, b, sWaitingFade );
+            
+            drawSprite( sResponseWarningSprite, spritePos, 1/16.0 );
+            sResponseWarningShowing = true;
+            sResponseWarningPosition = spritePos;
             }
         }
     
@@ -281,6 +328,42 @@ void GamePage::base_makeNotActive(){
 void GamePage::setWaiting( char inWaiting ) {
     sWaiting = inWaiting;
     }
+
+
+
+void GamePage::setWaitingWebRequest( int inWebRequest ) {
+    sWaitingWebRequest = inWebRequest;
+    }
+
+
+
+
+void GamePage::pointerMove( float inX, float inY ) {
+    if( sResponseWarningShowing ) {
+        
+        if( fabs( inX - sResponseWarningPosition.x ) < 0.375 &&
+            fabs( inY - sResponseWarningPosition.y ) < 0.375 ) {
+            
+            int status = getWebRequestRetryStatus( sWaitingWebRequest );
+            
+            if( status >= 2 ) {
+                
+
+                char *tipString =
+                    autoSprintf( translate( "responseWarning" ),
+                                 status - 1 );
+                
+            
+                setToolTip( tipString );
+                delete tipString;
+                }
+            }
+        else {
+            setToolTip( NULL );
+            }
+        }
+    }
+
     
 
 

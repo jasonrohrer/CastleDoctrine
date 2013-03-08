@@ -83,6 +83,7 @@ graphics/bidMarker.tga \
 graphics/loading.tga \
 graphics/loading2.tga \
 graphics/loading3.tga \
+graphics/responseWarning.tga \
 graphics/musicOn.tga \
 graphics/musicOff.tga \
 graphics/diffHighlightsOn.tga \

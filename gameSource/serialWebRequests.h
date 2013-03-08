@@ -24,6 +24,14 @@ int stepWebRequestSerial( int inHandle );
 char *getWebResultSerial( int inHandle );
 
 
+
+// 0 if running as normal
+// 1 if seems slow (half of retry time passed)
+// 2+ if retrying (where getWebResultSerial() - 1 is the retry count so far).
+int getWebRequestRetryStatus( int inHandle );
+
+
+
 // does not wait for request to finish before ending it
 void clearWebRequestSerial( int inHandle );
 

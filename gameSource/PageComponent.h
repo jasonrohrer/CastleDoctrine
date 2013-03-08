@@ -131,6 +131,7 @@ class PageComponent : public GUIComponent {
         // displayed.
         // inWaiting is true if waiting, false if done waiting.
         virtual void setWaiting( char inWaiting );
+        virtual void setWaitingWebRequest( char inWebRequest );
         
 
 

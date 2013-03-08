@@ -70,15 +70,14 @@ class GamePage : public PageComponent {
             };
 
 
-        // default implementations do nothing
-        // sub classes implement whichever they need
-        virtual void pointerMove( float inX, float inY ) {
-            };
+        virtual void pointerMove( float inX, float inY );
+        
 
         virtual void pointerDown( float inX, float inY ) {
             };
 
         virtual void pointerDrag( float inX, float inY ) {
+            pointerMove( inX, inY );
             };
 
         virtual void pointerUp( float inX, float inY ) {
@@ -98,8 +97,8 @@ class GamePage : public PageComponent {
         
 
         // override this from PageComponent to show waiting status
-        virtual void setWaiting( char inWaiting );
-
+        virtual void setWaiting( char inWaiting );        
+        virtual void setWaitingWebRequest( int inWebRequest );
 
         
         GamePage();
@@ -117,15 +116,21 @@ class GamePage : public PageComponent {
         static int sPageCount;
 
         static SpriteHandle sWaitingSprites[3];
+        static SpriteHandle sResponseWarningSprite;
+        
         static int sCurrentWaitingSprite;
         static int sLastWaitingSprite;
         static int sWaitingSpriteDirection;
         static double sCurrentWaitingSpriteFade;
         
+        static char sResponseWarningShowing;
+        static doublePair sResponseWarningPosition;
         
-
         static double sWaitingFade;
         static char sWaiting;
+
+        // -1 if not waiting on a web request
+        static int sWaitingWebRequest;
     };
 
 

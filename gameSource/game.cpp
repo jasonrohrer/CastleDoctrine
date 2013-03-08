@@ -127,6 +127,8 @@ float mouseSpeed;
 int musicOff;
 int diffHighlightsOff;
 
+int webRetrySeconds;
+
 
 double frameRateFactor = 1;
 
@@ -212,11 +214,11 @@ static int stepsBetweenDeleteRepeat;
 
 static const char *customDataFormatWriteString = 
     "version%d_mouseSpeed%f_musicOff%d_"
-    "diffHighlightsOff%d_downloadCode%s_email%s";
+    "diffHighlightsOff%d_webRetrySeconds%d_downloadCode%s_email%s";
 
 static const char *customDataFormatReadString = 
     "version%d_mouseSpeed%f_musicOff%d_"
-    "diffHighlightsOff%d_downloadCode%10s_email%99s";
+    "diffHighlightsOff%d_webRetrySeconds%d_downloadCode%10s_email%99s";
 
 
 char *getCustomRecordedGameData() {    
@@ -227,6 +229,8 @@ char *getCustomRecordedGameData() {
         SettingsManager::getIntSetting( "musicOff", 0 );
     int diffHighlightsOffSetting = 
         SettingsManager::getIntSetting( "diffHighlightsOff", 0 );
+    int webRetrySecondsSetting = 
+        SettingsManager::getIntSetting( "webRetrySeconds", 10 );
     
     char *email =
         SettingsManager::getStringSetting( "email" );
@@ -268,7 +272,7 @@ char *getCustomRecordedGameData() {
     char * result = autoSprintf(
         customDataFormatWriteString,
         versionNumber, mouseSpeedSetting, musicOffSetting,
-        diffHighlightsOffSetting, code, email );
+        diffHighlightsOffSetting, webRetrySecondsSetting, code, email );
 
     delete [] email;
     delete [] code;
@@ -398,6 +402,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     int musicOffSetting = 0;
     int diffHighlightsOffSetting = 0;
+    int webRetrySecondsSetting = 10;
 
     userEmail = new char[100];
     downloadCode = new char[11];
@@ -410,9 +415,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           &mouseSpeedSetting, 
                           &musicOffSetting,
                           &diffHighlightsOffSetting,
+                          &webRetrySecondsSetting,
                           downloadCode,
                           userEmail );
-    if( numRead != 6 ) {
+    if( numRead != 7 ) {
         // no recorded game?
         }
     else {
@@ -458,7 +464,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     musicOff = musicOffSetting;
     diffHighlightsOff = diffHighlightsOffSetting;
-    
+    webRetrySeconds = webRetrySecondsSetting;
+
     reflectorURL = SettingsManager::getStringSetting( "reflectorURL" );
 
     if( reflectorURL == NULL ) {
