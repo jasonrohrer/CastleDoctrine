@@ -71,6 +71,9 @@ Version 3  ???
 
 --Fixed house pick lists so that tool tips don't linger when mouse leaves.
 
+--Removed down arrow when house pick list has a full page of results but no
+  additional pages ((thanks Jeremiah Reid).
+
 
 
 Version 2    2013-February-27    (private pre-alpha)

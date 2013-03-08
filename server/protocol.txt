@@ -282,10 +282,13 @@ user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 ....
+more_pages
 OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
+
+more_pages is 1 if there are more pages and 0 of there are not
 
 Note:
 Lists only robbable houses.
@@ -408,10 +411,13 @@ log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
 ....
+more_pages
 OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
+
+more_pages is 1 if there are more pages and 0 of there are not
 
 Note:
 Lists only logged successful robberies, where last_robber_name is the name

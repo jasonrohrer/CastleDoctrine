@@ -85,7 +85,8 @@ class RobPickList : public PageComponent, public ActionListener,
 
         GamePage *mParentPage;
 
-
+        int mArePagesLeft;
+        
         int mCurrentSkip;
         
         int mWebRequest;

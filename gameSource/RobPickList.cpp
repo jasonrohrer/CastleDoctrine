@@ -37,6 +37,7 @@ RobPickList::RobPickList( double inX, double inY,
                           GamePage *inParentPage )
         : PageComponent( inX, inY ),
           mParentPage( inParentPage ),
+          mArePagesLeft( 0 ),
           mCurrentSkip( 0 ),
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
@@ -282,7 +283,8 @@ void RobPickList::step() {
                     char badParse = false;
 
                     // last line should be OK
-                    for( int i=0; i<lines->size() - 1; i++ ) {
+                    // second-to-last should be more_pages flat
+                    for( int i=0; i<lines->size() - 2; i++ ) {
                         char *line = *( lines->getElement( i ) );
                         
                         int numParts;
@@ -335,7 +337,7 @@ void RobPickList::step() {
                         delete [] line;
                         }
                     
-                    if( lines->size() > 0 ) {
+                    if( lines->size() > 1 ) {
                         
                         char *line = 
                             *( lines->getElement( lines->size() -1  ) );
@@ -345,11 +347,27 @@ void RobPickList::step() {
                             }
                         
                         delete [] line;
+
+                        line = 
+                            *( lines->getElement( lines->size() - 2  ) );
+                    
+                        int numRead = 
+                            sscanf( line, "%d", &( mArePagesLeft ) );
+                        if( numRead != 1 ) {
+                            badParse = true;
+                            }
+                        
+                        delete [] line;
                         }
                     else {
                         // list could be empty, but it still must have OK
                         // at the end
                         badParse = true;
+
+                        for( int i=0; i<lines->size(); i++ ) {
+                            char *line = *( lines->getElement( i ) );
+                            delete [] line;
+                            }
                         }
                     
                     
@@ -388,7 +406,8 @@ void RobPickList::step() {
         if( !foundNew ) {
             // all have been drawn now
             
-            if( mHouseList.size() < linesPerPage ) {
+            if( mHouseList.size() < linesPerPage || 
+                mArePagesLeft == 0 ) {
                 // on last page of list
                 mDownButton.setVisible( false );
                 }

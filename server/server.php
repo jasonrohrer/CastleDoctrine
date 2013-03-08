@@ -3072,6 +3072,10 @@ function cd_listHouses() {
     // (maps each robbing_user_id to the corresponding character_name
     //  by joining the houses table to itself)
     $tableName = $tableNamePrefix ."houses";
+
+    // get one extra, beyond requested limit, to detect presence
+    // of additional pages beyond limit    
+    $query_limit = $limit + 1;
     
     $query = "SELECT houses.user_id, houses.character_name, ".
         "houses.value_estimate, houses.rob_attempts, houses.robber_deaths, ".
@@ -3085,14 +3089,14 @@ function cd_listHouses() {
         "AND houses.edit_count != 0 ".
         "$searchClause ".
         "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
-        "LIMIT $skip, $limit;";
+        "LIMIT $skip, $query_limit;";
 
     $result = cd_queryDatabase( $query );
 
     $numRows = mysql_numrows( $result );
 
 
-    for( $i=0; $i<$numRows; $i++ ) {
+    for( $i=0; $i < $numRows && $i < $limit; $i++ ) {
         $house_user_id = mysql_result( $result, $i, "user_id" );
         $character_name = mysql_result( $result, $i, "character_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
@@ -3112,6 +3116,13 @@ function cd_listHouses() {
         
         echo "$house_user_id#$character_name#$robber_name".
             "#$value_estimate#$rob_attempts#$robber_deaths\n";
+        }
+    
+    if( $numRows > $limit ) {
+        echo "1\n";
+        }
+    else {
+        echo "0\n";
         }
     echo "OK";
     }
@@ -3785,6 +3796,10 @@ function cd_listLoggedRobberies() {
 
     
     $tableName = $tableNamePrefix ."robbery_logs";
+
+    // get one extra, beyond requested limit, to detect presence
+    // of additional pages beyond limit    
+    $query_limit = $limit + 1;
     
     $query = "SELECT user_id, house_user_id, ".
         "log_id, victim_name, robber_name, ".
@@ -3792,14 +3807,14 @@ function cd_listLoggedRobberies() {
         "FROM $tableName ".
         "$whereClause ".
         "ORDER BY rob_time DESC ".
-        "LIMIT $skip, $limit;";
+        "LIMIT $skip, $query_limit;";
 
     $result = cd_queryDatabase( $query );
 
     $numRows = mysql_numrows( $result );
 
 
-    for( $i=0; $i<$numRows; $i++ ) {
+    for( $i=0; $i < $numRows && $i < $limit; $i++ ) {
         $robber_id = mysql_result( $result, $i, "user_id" );
         $victim_id = mysql_result( $result, $i, "house_user_id" );
 
@@ -3820,6 +3835,13 @@ function cd_listLoggedRobberies() {
         
         echo "$log_id#$victim_name#$robber_name".
             "#$value_estimate#$rob_attempts#$robber_deaths\n";
+        }
+
+    if( $numRows > $limit ) {
+        echo "1\n";
+        }
+    else {
+        echo "0\n";
         }
     echo "OK";
     }
