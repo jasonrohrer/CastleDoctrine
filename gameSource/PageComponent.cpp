@@ -238,12 +238,3 @@ void PageComponent::setWaiting( char inWaiting ) {
         mParent->setWaiting( inWaiting );
         }
     }
-
-
-
-void PageComponent::setWaitingWebRequest( char inWebRequest ) {
-    // pass up chain (stops at GamePage)
-    if( mParent != NULL ) {
-        mParent->setWaitingWebRequest( inWebRequest );
-        }
-    }

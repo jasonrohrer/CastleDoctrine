@@ -14,6 +14,11 @@ extern int webRetrySeconds;
 static int nextHandle = 0;
 
 
+// can be used externally to follow current request
+int currentActiveSerialWebRequest = -1;
+
+
+
 typedef struct SerialWebRecord {
         // for finding request externally
         int handle;
@@ -144,6 +149,8 @@ int stepWebRequestSerial( int inHandle ) {
             if( ! r->started ) {                
                 r->startTime = game_time( NULL );
                 r->started = true;
+                
+                currentActiveSerialWebRequest = r->handle;
                 }            
 
             // found our request, just step it and return
@@ -152,7 +159,9 @@ int stepWebRequestSerial( int inHandle ) {
             if( stepResult != 0 ) {
                 // not still processing (done or hit error)
                 r->done = true;
-
+                
+                currentActiveSerialWebRequest = -1;
+                
                 if( stepResult == 1 ) {
                     checkForServerShutdown( r );
                     
@@ -181,6 +190,8 @@ int stepWebRequestSerial( int inHandle ) {
                 if( ! r->started ) {                
                     r->startTime = game_time( NULL );
                     r->started = true;
+                    
+                    currentActiveSerialWebRequest = r->handle;
                     }
 
                 int stepResult = stepWebRequest( r->activeHandle );
@@ -189,6 +200,8 @@ int stepWebRequestSerial( int inHandle ) {
                     // not still processing (done or hit error)
                     r->done = true;
                     
+                    currentActiveSerialWebRequest = -1;
+
                     if( stepResult == 1 ) {
                         checkForServerShutdown( r );
                         

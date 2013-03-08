@@ -25,7 +25,11 @@ doublePair GamePage::sResponseWarningPosition = { 0, 0 };
 
 double GamePage::sWaitingFade = 0;
 char GamePage::sWaiting = false;
-int GamePage::sWaitingWebRequest = -1;
+
+
+
+extern int currentActiveSerialWebRequest;
+
 
 
 GamePage::GamePage()
@@ -35,7 +39,8 @@ GamePage::GamePage()
           mStatusMessage( NULL ),
           mTip( NULL ),
           mLastTip( NULL ),
-          mLastTipFade( 1 ) {
+          mLastTipFade( 1 ),
+          mResponseWarningTipShowing( false ) {
 
     if( sWaitingSprites[0] == NULL ) {
         sWaitingSprites[0] = loadSprite( "loading.tga", true );
@@ -131,6 +136,8 @@ void GamePage::setToolTip( const char *inTip ) {
     else {
         mTip = NULL;
         }
+
+    mResponseWarningTipShowing = false;
     }
 
 
@@ -175,13 +182,14 @@ void GamePage::base_draw( doublePair inViewCenter,
 
         char showWarningIcon = false;
         
-        if( sWaiting && sWaitingWebRequest != -1 ) {
+        if( sWaiting && currentActiveSerialWebRequest != -1 ) {
             
-            switch( getWebRequestRetryStatus( sWaitingWebRequest ) ) {
+            switch( getWebRequestRetryStatus( 
+                        currentActiveSerialWebRequest ) ) {
                 case 0:
                     break;
                 case 1:
-                    g = 1;
+                    g = 0.4666;
                     b = 0;
                     break;
                 default:
@@ -327,24 +335,23 @@ void GamePage::base_makeNotActive(){
 
 void GamePage::setWaiting( char inWaiting ) {
     sWaiting = inWaiting;
-    }
 
-
-
-void GamePage::setWaitingWebRequest( int inWebRequest ) {
-    sWaitingWebRequest = inWebRequest;
+    if( sWaiting == false && mResponseWarningTipShowing ) {
+        setToolTip( NULL );
+        }
     }
 
 
 
 
 void GamePage::pointerMove( float inX, float inY ) {
-    if( sResponseWarningShowing ) {
+    if( sResponseWarningShowing && currentActiveSerialWebRequest != -1 ) {
         
         if( fabs( inX - sResponseWarningPosition.x ) < 0.375 &&
             fabs( inY - sResponseWarningPosition.y ) < 0.375 ) {
             
-            int status = getWebRequestRetryStatus( sWaitingWebRequest );
+            int status = 
+                getWebRequestRetryStatus( currentActiveSerialWebRequest );
             
             if( status >= 2 ) {
                 
@@ -355,11 +362,15 @@ void GamePage::pointerMove( float inX, float inY ) {
                 
             
                 setToolTip( tipString );
+
+                mResponseWarningTipShowing = true;
+
                 delete tipString;
                 }
             }
         else {
             setToolTip( NULL );
+            mResponseWarningTipShowing = false;
             }
         }
     }

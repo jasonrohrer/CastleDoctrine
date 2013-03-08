@@ -66,6 +66,9 @@ Version 3  ???
 
 --Fixed so that remapping WASD keys doesn't interfer with typing for searches.
 
+--Game client times out requests to server after 10 seconds and retries them
+  instead of giving up.
+
 
 
 

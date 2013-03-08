@@ -97,9 +97,7 @@ class GamePage : public PageComponent {
         
 
         // override this from PageComponent to show waiting status
-        virtual void setWaiting( char inWaiting );        
-        virtual void setWaitingWebRequest( int inWebRequest );
-
+        virtual void setWaiting( char inWaiting );
         
         GamePage();
         
@@ -125,12 +123,11 @@ class GamePage : public PageComponent {
         
         static char sResponseWarningShowing;
         static doublePair sResponseWarningPosition;
+
+        char mResponseWarningTipShowing;
         
         static double sWaitingFade;
         static char sWaiting;
-
-        // -1 if not waiting on a web request
-        static int sWaitingWebRequest;
     };
 
 

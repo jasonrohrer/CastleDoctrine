@@ -563,7 +563,6 @@ void AuctionPage::refreshPrices() {
     delete [] actionString;
 
     setWaiting( true );
-    setWaitingWebRequest( mWebRequest );
     }
 
 
