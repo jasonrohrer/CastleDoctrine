@@ -39,10 +39,28 @@ trapdoor:2 # chihuahua:2 => 20
 trapdoor:2 # cat:2 => 20
 trapdoor:2 # player:2 => 20
 
-trapdoor:2 # pitbull:2 => 20
-trapdoor:2 # chihuahua:2 => 20
-trapdoor:2 # cat:2 => 20
-trapdoor:2 # player:2 => 20
+trapdoor:3 # pitbull:2 => 23
+trapdoor:3 # chihuahua:2 => 23
+trapdoor:3 # cat:2 => 23
+
+trapdoor:3 # pitbull:20 => 23
+trapdoor:3 # chihuahua:20 => 23
+trapdoor:3 # cat:20 => 23
+
+trapdoor:3 # pitbull:24 => 23
+
+trapdoor:4 # pitbull:20 => 24
+trapdoor:4 # chihuahua:2 => 20
+trapdoor:4 # cat:2 => 20
+
+trapdoor:4 # pitbull:23 => 24
+trapdoor:4 # chihuahua:23 => 20
+trapdoor:4 # cat:23 => 20
+
+
+ladder # trapdoor:1 => 3
+ladder # trapdoor:2 => 4
+
 
 
 
@@ -81,6 +99,11 @@ noPower   #   power_door:2   =>  1
 power   #   trapdoor:1   =>  2
 
 noPower   #   trapdoor:2   =>  1
+
+
+power   #   trapdoor:3   =>  4
+
+noPower   #   trapdoor:4   =>  3
 
 
 
