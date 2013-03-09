@@ -23,10 +23,10 @@ floor_electric:2 # cat => 3
 floor_electric:2 # player => 3
 
 
-pit # pitbull => 2
-pit # chihuahua => 2
-pit # cat => 2
-pit # player => 2
+pit:1 # pitbull => 2
+pit:1 # chihuahua => 2
+pit:1 # cat => 2
+pit:1 # player => 2
 
 
 trapdoor:1 # pitbull => 2
@@ -42,6 +42,10 @@ trapdoor:2 # player:2 => 20
 trapdoor:3 # pitbull:2 => 23
 trapdoor:3 # chihuahua:2 => 23
 trapdoor:3 # cat:2 => 23
+
+pit:3 # pitbull:2 => 23
+pit:3 # chihuahua:2 => 23
+pit:3 # cat:2 => 23
 
 trapdoor:3 # pitbull:20 => 23
 trapdoor:3 # chihuahua:20 => 23
@@ -61,6 +65,7 @@ trapdoor:4 # cat:23 => 20
 ladder # trapdoor:1 => 3
 ladder # trapdoor:2 => 4
 
+ladder # pit:1 => 3
 
 
 
