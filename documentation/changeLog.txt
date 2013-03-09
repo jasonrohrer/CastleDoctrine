@@ -77,7 +77,7 @@ Version 3  ???
 --Water wakes sleeping animals.  Sleeping animals can be killed.  Bricks wake
   sleeping pit bulls.  Bricks kill chihuahuas and cats.
 
---Ladder tool to cross trapdoor.
+--Ladder tool to cross trapdoors and pits.
 
 
 
