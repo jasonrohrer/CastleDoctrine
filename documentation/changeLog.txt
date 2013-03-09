@@ -1,4 +1,4 @@
-Version 3  ???
+Version 3   2013-March-8
 
 --Fixed bug in game playback that could not handle extra recording argument 
   (change highlights on/off flag).
