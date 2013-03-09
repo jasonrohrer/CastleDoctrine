@@ -79,6 +79,10 @@ Version 3  ???
 
 --Ladder tool to cross trapdoors and pits.
 
+--Fixed stickiness of voltage detectors applied to wires and fixed a stickiness
+  bug with pit bulls fallen inside a closed trapdoor.
+
+
 
 
 
