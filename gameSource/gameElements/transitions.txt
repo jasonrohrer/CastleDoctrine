@@ -133,7 +133,20 @@ gun  # cat:1 => 5
 druggedMeat  # pitbull:1 => 6
 druggedMeat  # chihuahua:1 => 6
 
-player # pitbull:6 => 4
+gun  # pitbull:6   => 5
+gun  # chihuahua:6 => 5
+
+brick # pitbull:6   => 1
+brick # chihuahua:6 => 7
+
+water # pitbull:6   => 1
+water # chihuahua:6 => 1
+
+crowbar # pitbull:6   => 7
+crowbar # chihuahua:6 => 7
+
+
+player # pitbull:6   => 4
 player # chihuahua:6 => 1
 
 
@@ -162,6 +175,9 @@ water # floor_electric:2 => 3
 crowbar  # pitbull:1 => 7
 crowbar  # chihuahua:1 => 7
 crowbar  # cat:1 => 7
+
+brick  # chihuahua:1 => 7
+brick  # cat:1 => 7
 
 
 

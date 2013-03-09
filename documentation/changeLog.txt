@@ -74,6 +74,10 @@ Version 3  ???
 --Removed down arrow when house pick list has a full page of results but no
   additional pages ((thanks Jeremiah Reid).
 
+--Water wakes sleeping animals.  Sleeping animals can be killed.  Bricks wake
+  sleeping pit bulls.  Bricks kill chihuahuas and cats.
+
+
 
 
 Version 2    2013-February-27    (private pre-alpha)
