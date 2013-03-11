@@ -23,6 +23,11 @@ class GamePage : public PageComponent {
 
         char isStatusShowing();
         
+
+        // overrides default tip position
+        // tip defaults to bottom of screen
+        void setTipPosition( char inTop );
+        
         
         // override these from PageComponent to actually SHOW
         // the tool tip, instead of passing it further up the parent chain
@@ -110,6 +115,8 @@ class GamePage : public PageComponent {
         char *mTip;
         char *mLastTip;
         double mLastTipFade;
+        
+        char mTipAtTopOfScreen;
 
         static int sPageCount;
 

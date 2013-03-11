@@ -40,6 +40,7 @@ GamePage::GamePage()
           mTip( NULL ),
           mLastTip( NULL ),
           mLastTipFade( 1 ),
+          mTipAtTopOfScreen( false ),
           mResponseWarningTipShowing( false ) {
 
     if( sWaitingSprites[0] == NULL ) {
@@ -142,6 +143,12 @@ void GamePage::setToolTip( const char *inTip ) {
 
 
 
+void GamePage::setTipPosition( char inTop ) {
+    mTipAtTopOfScreen = inTop;
+    }
+
+
+
 
 void GamePage::base_draw( doublePair inViewCenter, 
                           double inViewSize ){
@@ -161,15 +168,18 @@ void GamePage::base_draw( doublePair inViewCenter,
         }
 
 
+    doublePair tipPosition = { 0, -7 };
+
+    if( mTipAtTopOfScreen ) {
+        tipPosition.y *= -1;
+        }
+    
+
     if( mTip != NULL ) {
-        doublePair labelPos = { 0, -7 };
-        
-        drawMessage( mTip, labelPos );
+        drawMessage( mTip, tipPosition );
         }
     else if( mLastTip != NULL && mLastTipFade > 0 ) {
-        doublePair labelPos = { 0, -7 };
-        
-        drawMessage( mLastTip, labelPos, false, mLastTipFade );
+        drawMessage( mLastTip, tipPosition, false, mLastTipFade );
         }
     
     if( sWaitingFade > 0 ) {

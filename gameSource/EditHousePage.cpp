@@ -55,7 +55,6 @@ EditHousePage::EditHousePage()
     
 
     mDoneButton.setMouseOverTip( "" );
-    mSuicideButton.setMouseOverTip( "" );
     mUndoButton.setMouseOverTip( "" );
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
     mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );

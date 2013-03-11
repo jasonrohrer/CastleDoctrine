@@ -1,3 +1,10 @@
+Version 4   2013-March-?
+
+--Added an on-screen button for typing '@' symbol on non-US keyboards.
+
+
+
+
 Version 3   2013-March-8
 
 --Fixed bug in game playback that could not handle extra recording argument 

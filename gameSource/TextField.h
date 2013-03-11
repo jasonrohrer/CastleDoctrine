@@ -34,6 +34,9 @@ class TextField : public PageComponent, public ActionListenerList {
         // destroyed by caller
         char *getText();
         
+        // at current cursor position
+        void insertCharacter( unsigned char inASCII );
+
 
         virtual void setActive( char inActive );
         virtual char isActive();

@@ -485,6 +485,28 @@ unsigned char TextField::processCharacter( unsigned char inASCII ) {
 
 
 
+void TextField::insertCharacter( unsigned char inASCII ) {
+    
+    // add to it
+    char *oldText = mText;
+    
+    char *preCursor = stringDuplicate( mText );
+    preCursor[ mCursorPosition ] = '\0';
+    char *postCursor = &( mText[ mCursorPosition ] );
+    
+    mText = autoSprintf( "%s%c%s", 
+                         preCursor, inASCII, postCursor );
+    
+    delete [] preCursor;
+    
+    delete [] oldText;
+    
+    mCursorPosition++;
+    }
+
+
+
+
 void TextField::keyDown( unsigned char inASCII ) {
     if( !mFocused ) {
         return;
@@ -525,21 +547,7 @@ void TextField::keyDown( unsigned char inASCII ) {
 
         if( processedChar != 0 ) {
             
-            // add to it
-            char *oldText = mText;
-        
-            char *preCursor = stringDuplicate( mText );
-            preCursor[ mCursorPosition ] = '\0';
-            char *postCursor = &( mText[ mCursorPosition ] );
-            
-            mText = autoSprintf( "%s%c%s", 
-                                 preCursor, processedChar, postCursor );
-            
-            delete [] preCursor;
-            
-            delete [] oldText;
-            
-            mCursorPosition++;
+            insertCharacter( processedChar );
             }
         
         mHoldDeleteSteps = -1;

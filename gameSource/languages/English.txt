@@ -22,6 +22,8 @@ downloadCode "Download Code:"
 
 paste "Paste"
 
+atSignTip "Insert an '@' sign (to help non-US keyboards)"
+
 
 loginButton "Login"
 

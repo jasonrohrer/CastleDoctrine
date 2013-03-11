@@ -49,6 +49,7 @@ LoginPage::LoginPage()
                         translate( "downloadCode" ),
                         // allow only ticket code characters
                         "23456789ABCDEFGHJKLMNPQRSTUVWXYZ-" ),
+          mAtSignButton( mainFont, 6, 1, "@" ),
           mPasteButton( mainFont, 6, -1, translate( "paste" ), 'v', 'V' ),
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
           mHaveServerURL( false ),
@@ -62,12 +63,19 @@ LoginPage::LoginPage()
     minRequestSteps = (int)( 60 / frameRateFactor );
     
     addComponent( &mLoginButton );
+    addComponent( &mAtSignButton );
     addComponent( &mPasteButton );
     addComponent( &mEmailField );
     addComponent( &mTicketField );
     
     mLoginButton.addActionListener( this );
+    mAtSignButton.addActionListener( this );
     mPasteButton.addActionListener( this );
+    
+    mAtSignButton.setMouseOverTip( translate( "atSignTip" ) );
+    
+    // to dodge quit message
+    setTipPosition( true );
     }
 
           
@@ -90,6 +98,7 @@ char LoginPage::getLoginDone() {
 void LoginPage::step() {
     mPasteButton.setVisible( isClipboardSupported() &&
                              mTicketField.isFocused() );
+    mAtSignButton.setVisible( mEmailField.isFocused() );
         
     if( mWebRequest != -1 ) {
         mRequestSteps ++;
@@ -442,6 +451,9 @@ void LoginPage::startLogin( char inFreshLogin ) {
 void LoginPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mLoginButton ) {
         startLogin();
+        }
+    else if( inTarget == &mAtSignButton ) {
+        mEmailField.insertCharacter( '@' );
         }
     else if( inTarget == &mPasteButton ) {
         char *clipboardText = getClipboardText();

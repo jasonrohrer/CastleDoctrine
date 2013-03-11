@@ -46,6 +46,8 @@ class LoginPage : public GamePage, public ActionListener {
 
         TextField *mFields[2];
 
+        TextButton mAtSignButton;
+
         KeyEquivalentTextButton mPasteButton;
         
         TextButton mLoginButton;
