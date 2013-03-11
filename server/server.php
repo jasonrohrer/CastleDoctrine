@@ -3,10 +3,10 @@
 
 
 global $cd_version;
-$cd_version = "3";
+$cd_version = "4";
 
 global $cd_minClientVersion;
-$cd_minClientVersion = "3";
+$cd_minClientVersion = "4";
 
 
 // edit settings.php to change server' settings
