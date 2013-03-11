@@ -4,6 +4,10 @@ Version 4   2013-March-?
 
 --House proving screen now explains that you can't use tools.
 
+--Changed living family members to jump back to original positions pos-robbery
+  (thanks Thibaut Girka).
+
+
 
 
 Version 3   2013-March-8

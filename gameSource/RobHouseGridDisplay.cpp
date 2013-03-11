@@ -1035,43 +1035,37 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
 
         int progress = *( mFamilyExitPathProgress.getElement( i ) );
 
-        char standingOnMat = false;
-        
-        if( status == 1 && progress == pathLength - 1 ) {
-            standingOnMat = true;
+        GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+
+
+        if( status != 0 ) {
+            // still alive
+
+            // move back to their starting positions
+
+            if( status == 1 ) {
+                // alive and in house
+                // remove them from where they are in house
+                
+                int oldIndex = posToIndex( path[progress] );
+                mHouseMapIDs[ oldIndex ] = 0;
+                mHouseMapCellStates[ oldIndex ] = 1;
+                }
+            // otherwise, left house
             
-            // remove from mat
-            mHouseMapIDs[ mStartIndex ] = 0;
-            mHouseMapCellStates[ mStartIndex ] = 1;
-            }
-        
-
-
-        if( status == 2 
-            || 
-            standingOnMat ) {
-            // escaped safely!
-            // OR
-            // still alive and standing on mat
-
-            // move back into empty spot in house
-            // closest possible spot near door, following exit path back
-
             
-        
-            GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+            // start at their starting positions
+            int pathSpot = 0;
 
-            // start one step away from door
-            int pathSpot = pathLength - 2;
+            // look for spot that's unblocked for them to stand, as
+            // close to starting position along path as possible
             
-            // pathSpot might be 0, which is okay if path is too short
-            // catch that case below
-
             char found = false;
-
-            while( pathSpot > 0 ) {
+            
+            // don't consider door mat as possible spot for them
+            while( pathSpot < pathLength - 1 ) {
                 int newIndex = posToIndex( path[pathSpot] );
-    
+                
                 if( mHouseMapIDs[ newIndex ] == 0 ) {
                     
                     found = true;
@@ -1080,7 +1074,7 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
                     mHouseMapCellStates[ newIndex ] = 1;
                     break;
                     }
-                pathSpot--;
+                pathSpot++;
                 }
             
             if( !found ) {
@@ -1130,7 +1124,7 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
             // in that case (house is so full that there's no room
             // for this family member), well... family member leaves for good!
             }
-                
+
         }
     
     }
