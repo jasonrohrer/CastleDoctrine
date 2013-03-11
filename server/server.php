@@ -215,6 +215,9 @@ else if( $action == "show_data" ) {
 else if( $action == "show_prices" ) {
     cd_showPrices();
     }
+else if( $action == "show_object_report" ) {
+    cd_showObjectReport();
+    }
 else if( $action == "show_detail" ) {
     cd_showDetail();
     }
@@ -4662,7 +4665,7 @@ function cd_showDataHouseList( $inTableName ) {
     
              
     $query = "SELECT $houseTable.user_id, character_name, ".
-        "loot_value, edit_checkout, ".
+        "loot_value, value_estimate, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
         "robber_deaths, last_ping_time, ".
         "$houseTable.blocked ".
@@ -4720,6 +4723,7 @@ function cd_showDataHouseList( $inTableName ) {
     echo "<td>Blocked?</td>\n";
     echo "<td>".orderLink( "character_name", "Character Name" )."</td>\n";
     echo "<td>".orderLink( "loot_value", "Loot Value" )."</td>\n";
+    echo "<td>".orderLink( "value_estimate", "Value Est." )."</td>\n";
     echo "<td>".orderLink( "rob_attempts", "Rob Attempts" )."</td>\n";
     echo "<td>".orderLink( "robber_deaths", "Deaths" )."</td>\n";
     echo "<td>Checkout?</td>\n";
@@ -4733,6 +4737,7 @@ function cd_showDataHouseList( $inTableName ) {
         $user_id = mysql_result( $result, $i, "user_id" );
         $character_name = mysql_result( $result, $i, "character_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
+        $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $edit_checkout = mysql_result( $result, $i, "edit_checkout" );
         $self_test_running = mysql_result( $result, $i, "self_test_running" );
         $rob_checkout = mysql_result( $result, $i, "rob_checkout" );
@@ -4786,6 +4791,7 @@ function cd_showDataHouseList( $inTableName ) {
         echo "<td align=right>$blocked [$block_toggle]</td>\n";
         echo "<td>$character_name</td>\n";
         echo "<td>$loot_value</td>\n";
+        echo "<td>$value_estimate</td>\n";
         echo "<td>$rob_attempts</td>\n";
         echo "<td>$robber_deaths</td>\n";
         echo "<td>$checkout</td>\n";
@@ -4860,7 +4866,8 @@ function cd_showData() {
     
     // form for searching houses
 ?>
-        <hr>
+        <hr><table border=0 width = 100%><tr>
+             <td>
             <FORM ACTION="server.php" METHOD="post">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
     <INPUT TYPE="hidden" NAME="order_by" VALUE="<?php echo $order_by;?>">
@@ -4868,6 +4875,16 @@ function cd_showData() {
              VALUE="<?php echo $search;?>">
     <INPUT TYPE="Submit" VALUE="Search">
     </FORM>
+             </td>
+             <td>
+<FORM ACTION="server.php" METHOD="post">
+    <INPUT TYPE="hidden" NAME="action" VALUE="show_object_report">
+    <INPUT TYPE="text" MAXLENGTH=10 SIZE=10 NAME="limit"
+             VALUE="0">
+             <INPUT TYPE="Submit" VALUE="Object Report"><br>(0 for no limit)
+    </FORM>
+             </td>
+             </tr></table>
         <hr>
 <?php
 
@@ -5085,6 +5102,176 @@ function cd_showPrices() {
         }
     */
     }
+
+
+
+function cd_printOccurrenceTable( $inOccurrenceArray, $numHousesInReport ) {
+    global $tableNamePrefix;
+    
+    asort( $inOccurrenceArray );
+
+    echo "<table border=1>";
+    echo "<tr><td><b>ID</b></td><td><b>Name</b></td>".
+        "<td><b>Price</b></td><td><b>Num. Houses Containing<b></td>".
+        "<td></td></tr>";
+    
+        
+    foreach( $inOccurrenceArray as $id => $count ) {
+        $query = "SELECT note, price ".
+            "FROM $tableNamePrefix"."prices ".
+            "WHERE object_id = $id;";
+        
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+        
+        $price = 0;
+        $name = "";
+
+        if( $numRows == 1 ) {
+            $price = mysql_result( $result, 0, "price" );
+            $name = mysql_result( $result, 0, "note" );
+            }
+        
+        if( $price > 0 ) {
+            echo "<tr><td>$id</td><td>$name</td>".
+                "<td align=right>\$$price</td><td align=right>$count</td><td>";
+
+            $numGraphPips = floor( ($count * 20 ) / $numHousesInReport );
+
+            for( $i=0; $i<$numGraphPips; $i++ ) {
+                echo "*";
+                }
+            echo "</td></tr>\n";
+            }
+        }
+    
+    echo "</table>";
+
+    }
+
+
+
+function cd_showObjectReport() {
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_object_report" );
+
+    cd_generateHeader();
+
+    $limit = cd_requestFilter( "limit", "/\d+/", 0 );
+
+    $limitClause = "";
+
+    if( $limit > 0 ) {
+        $limitClause = "LIMIT $limit";
+        }
+    
+    
+    $query = "SELECT house_map, backpack_contents, vault_contents ".
+        "FROM $tableNamePrefix"."houses ".
+        "ORDER BY value_estimate DESC ".
+        "$limitClause;";
+
+    $result = cd_queryDatabase( $query );
+    
+    $numHousesInReport = mysql_numrows( $result );
+
+
+    // table for the whole thing, to put two tables side-by-side
+
+    echo "<table border=0 width=100%><tr>";
+    echo "<td align=center>";
+    echo "Objects:<br>";
+
+    $objectOccurrenceCount = array();
+    
+    
+    for( $i=0; $i<$numHousesInReport; $i++ ) {
+
+        $houseContains = array();
+        
+        $house_map = mysql_result( $result, $i, "house_map" );
+
+        $houseArray = preg_split( "/#/", $house_map );
+
+        foreach( $houseArray as $cell ) {
+            $cellObjects = preg_split( "/,/", $cell );
+        
+            foreach( $cellObjects as $object ) {
+                $objectParts = preg_split( "/:/", $object );
+
+                $id = $objectParts[0];
+
+                $houseContains[$id] = 1;
+                }
+            }
+
+        foreach( $houseContains as $id => $flag ) {
+            if( array_key_exists( $id, $objectOccurrenceCount ) ) {
+                $objectOccurrenceCount[ $id ] ++;
+                }
+            else {
+                $objectOccurrenceCount[ $id ] = 1;
+                }
+            }
+        }
+
+
+    cd_printOccurrenceTable( $objectOccurrenceCount, $numHousesInReport );
+
+
+    echo "</td><td align=center>";
+    echo "Tools:<br>";
+
+
+    $toolOccurrenceCount = array();
+    
+    
+    for( $i=0; $i<$numHousesInReport; $i++ ) {
+
+        $houseContains = array();
+        
+        $backpack_contents = mysql_result( $result, $i, "backpack_contents" );
+        $vault_contents = mysql_result( $result, $i, "vault_contents" );
+
+        $totalContents = cd_idQuantityUnion( $vault_contents,
+                                             $backpack_contents );
+        if( $totalContents != "#" ) {
+            
+            $items = preg_split( "/#/", $totalContents );
+            
+            foreach( $items as $item ) {
+                $itemParts = preg_split( "/:/", $item );
+                
+                $id = $itemParts[0];
+                
+                $houseContains[$id] = 1;
+                }
+            }
+        
+
+        foreach( $houseContains as $id => $flag ) {
+            if( array_key_exists( $id, $toolOccurrenceCount ) ) {
+                $toolOccurrenceCount[ $id ] ++;
+                }
+            else {
+                $toolOccurrenceCount[ $id ] = 1;
+                }
+            }
+        }
+
+
+    cd_printOccurrenceTable( $toolOccurrenceCount, $numHousesInReport );
+
+    
+
+
+    echo "</td></tr></table>";
+
+    }
+
 
 
 

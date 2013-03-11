@@ -7,6 +7,8 @@ Version 4   2013-March-?
 --Changed living family members to jump back to original positions pos-robbery
   (thanks Thibaut Girka).
 
+--Added tool and object occurrence reports to admin view.
+
 
 
 
