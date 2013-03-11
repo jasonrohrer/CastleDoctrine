@@ -2,6 +2,7 @@ Version 4   2013-March-?
 
 --Added an on-screen button for typing '@' symbol on non-US keyboards.
 
+--House proving screen now explains that you can't use tools.
 
 
 
