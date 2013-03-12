@@ -1,10 +1,19 @@
+Version 5   2013-March-11
+
+--Ridiculous.  Forgot to update client version number from 3 to 4 in last
+  release, so the v4 server rejects it.  To avoid confusion for people who
+  downloaded the bad v4 client, the new client is v5 (with no other changes).
+
+
+
+
 Version 4   2013-March-11
 
 --Added an on-screen button for typing '@' symbol on non-US keyboards.
 
 --House proving screen now explains that you can't use tools.
 
---Changed living family members to jump back to original positions pos-robbery
+--Changed living family members to jump back to original positions post-robbery
   (thanks Thibaut Girka).
 
 --Added tool and object occurrence reports to admin view.
