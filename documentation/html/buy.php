@@ -39,7 +39,7 @@ function showPayLinks( $inSimple ) {
       <font size=5>Available now for $8</font><br>
       <font size=4 color=#ff0000>(50% off final price during alpha)</font><br><br>
       
-      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket?referrer=<?php echo $referrer;?>">
+      <a href="https://sites.fastspring.com/jasonrohrer/instant/thecastledoctrine?referrer=<?php echo $referrer;?>">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
       if( !$inSimple ) {
 
