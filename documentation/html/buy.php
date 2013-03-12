@@ -75,7 +75,7 @@ a massively-multiplayer game of burglary and home defense by
 <br>
 
 <font size=5>
-"A powerful, memorable game."</font> --Alex Meer, RPS [<a href="http://www.rockpapershotgun.com/2013/03/07/castle-doctrine-preview-2/">1</a>] [<a href="http://www.rockpapershotgun.com/2013/03/08/the-castle-doctrine/">2</a>] 
+"A powerful, memorable game."</font> --Alec Meer, RPS [<a href="http://www.rockpapershotgun.com/2013/03/07/castle-doctrine-preview-2/">1</a>] [<a href="http://www.rockpapershotgun.com/2013/03/08/the-castle-doctrine/">2</a>] 
 <br>
 <br>
 
