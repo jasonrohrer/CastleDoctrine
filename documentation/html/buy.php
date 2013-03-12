@@ -133,6 +133,7 @@ You can take a look at the <a href="requirements.php">system requirements</a>.
 <br>
 <br>
 
+[<a href="credits.php">Credits</a>]
 
 
 
