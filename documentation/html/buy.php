@@ -81,8 +81,13 @@ a massively-multiplayer game of burglary and home defense by
 
 <br>
 <br>
-<table border=0 width=75% cellpadding=5><tr><td bgcolor="#222222">
-<font size=5>It's 1991, and things are bad.</font> You're a guy with a wife, two kids, and a house.... [<a href="details.php">more</a>]</td></tr></table>
+<table border=0 width=60% cellpadding=5><tr><td bgcolor="#222222">
+
+<table border=0 cellpadding=5><tr><td><a href="details.php"><img src="detailImages/family.png" width=168 height=154 border=0></a></td><td valign=top>
+<font size=5>It's 1991, and things are bad.</font> You're a guy with a wife, two kids, and a house.... <br><br>
+[<a href="details.php">Learn more</a>]
+</td></tr></table>
+</td></tr></table>
 <br>
 <br>
 
