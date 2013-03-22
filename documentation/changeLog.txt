@@ -1,3 +1,11 @@
+Version 6
+
+--Added extra logging to server to track down name collision and house deletion
+  issues.
+
+
+
+
 Version 5   2013-March-11
 
 --Ridiculous.  Forgot to update client version number from 3 to 4 in last

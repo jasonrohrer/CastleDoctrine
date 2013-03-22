@@ -1651,6 +1651,10 @@ function cd_processStaleCheckouts( $user_id ) {
 
         // force kill them
 
+        cd_log( "User $user_id had $staleRobberyCount stale robberies, ".
+                "$staleShadowRobberyCount stale shadow robberies, and ".
+                "$staleSelfTestCount stale self tests, force killing them." );
+        
         cd_newHouseForUser( $user_id );
         }
     }
@@ -4574,13 +4578,24 @@ function cd_newHouseForUser( $user_id ) {
         else {
             $errorNumber = mysql_errno();
 
-            cd_log( "Name collision for $character_name?  ".
-                    "Error: $errorNumber" );
 
             if( $errorNumber != 1062 ) {
                 cd_fatalError(
                     "Database query failed:<BR>$query<BR><BR>" .
                     mysql_error() );
+                }
+            else {
+                $errorMessage = mysql_error();
+                
+                cd_log( "Name collision for $character_name?  ".
+                        "Error: [$errorNumber] $errorMessage " );
+                
+                cd_log( "Trying to delete $user_id's house record again" );
+                
+                $query = "delete from $tableNamePrefix"."houses ".
+                    "WHERE user_id = $user_id;";
+                
+                cd_queryDatabase( $query );
                 }
             }
         }
