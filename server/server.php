@@ -4138,6 +4138,7 @@ function cd_buyAuction() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
+        cd_log( "Auction purchase failed, house not checked out for edit\n" );
         cd_transactionDeny();
         return;
         }
@@ -4145,6 +4146,7 @@ function cd_buyAuction() {
     $old_balance = mysql_result( $result, 0, "loot_value" );
 
     if( $old_balance < $price ) {
+        cd_log( "Auction purchase failed, not enough money\n" );
         cd_transactionDeny();
         return;
         }
