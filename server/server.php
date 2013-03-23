@@ -4207,7 +4207,7 @@ function cd_transactionDeny( $inLogDetails = true ) {
 
     if( $inLogDetails ) {
         // log it
-        $postdata = file_get_contents("php://input");
+        $postdata = http_get_request_body();
 
         cd_log( "Transaction denied with the following post data:  ".
                 "$postdata" );
