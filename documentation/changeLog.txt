@@ -3,6 +3,8 @@ Version 6
 --Added extra logging to server to track down name collision and house deletion
   issues.
 
+--Extra server logging for all denied transactions.
+
 
 
 

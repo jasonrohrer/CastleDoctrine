@@ -2122,6 +2122,8 @@ function cd_endEditHouse() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
+        cd_log( "House check-in failed to find ".
+                "checked out house for $user_id" );
         cd_transactionDeny();
         return;
         }
@@ -3201,7 +3203,9 @@ function cd_startRobHouse() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
-        cd_transactionDeny();
+        // don't log this, because it happens a lot (when someone else
+        // snatches the house first)
+        cd_transactionDeny( false );
         return;
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
@@ -4109,7 +4113,9 @@ function cd_buyAuction() {
     $numRows = mysql_numrows( $result );
 
     if( $numRows < 1 ) {
-        cd_transactionDeny();
+        // don't log it, because this happens when two people buy at
+        // the same time
+        cd_transactionDeny( false );
         return;
         }
 
@@ -4197,7 +4203,18 @@ function cd_buyAuction() {
 
 
 // utility function for stuff common to all denied user transactions
-function cd_transactionDeny() {
+function cd_transactionDeny( $inLogDetails = true ) {
+
+    if( $inLogDetails ) {
+        // log it
+        $postdata = file_get_contents("php://input");
+
+        cd_log( "Transaction denied with the following post data:  ".
+                "$postdata" );
+        }
+    
+    
+    
     echo "DENIED";
     
     cd_queryDatabase( "COMMIT;" );
