@@ -1696,7 +1696,8 @@ function cd_startEditHouse() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
-        cd_transactionDeny();
+        // don't log, because this happens when your house is being robbed 
+        cd_transactionDeny( false );
         return;
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
@@ -4207,10 +4208,23 @@ function cd_transactionDeny( $inLogDetails = true ) {
 
     if( $inLogDetails ) {
         // log it
-        $postdata = http_get_request_body();
+        $postBody = file_get_contents( 'php://input' );
+        $getString = $_SERVER[ 'QUERY_STRING' ];
 
-        cd_log( "Transaction denied with the following post data:  ".
-                "$postdata" );
+        $requestData = $postBody;
+        
+        if( $getString != "" ) {
+
+            if( $requestData != "" ) {
+                $requestData = $getString . "\n" . $requestData;
+                }
+            else {
+                $requestData = $getString;
+                }
+            }
+        
+        cd_log( "Transaction denied with the following get/post data:  ".
+                "$requestData" );
         }
     
     
