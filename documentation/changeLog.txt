@@ -5,6 +5,9 @@ Version 6
 
 --Extra server logging for all denied transactions.
 
+--Fixed main server install to properly use InnoDB table engine to fix 
+  concurrency issues (my web server had InnoDB disabled before).
+
 
 
 
