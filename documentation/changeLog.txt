@@ -8,6 +8,9 @@ Version 6
 --Fixed main server install to properly use InnoDB table engine to fix 
   concurrency issues (my web server had InnoDB disabled before).
 
+--Fixed order of row locks in server to avoid deadlock when two players are
+  robbing each other.
+
 
 
 

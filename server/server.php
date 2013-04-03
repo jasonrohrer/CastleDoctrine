@@ -1604,7 +1604,7 @@ function cd_processStaleCheckouts( $user_id ) {
 
         $query = "SELECT user_id, gallery_contents ".
             "FROM $tableNamePrefix"."houses_owner_died ".
-            "WHERE robbing_user_id = '$user_id' FOR UPDATE;";
+            "WHERE robbing_user_id = '$user_id';";
 
         $result = cd_queryDatabase( $query );
         
@@ -1671,10 +1671,10 @@ function cd_startEditHouse() {
     $user_id = cd_getUserID();
 
     
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
-
     cd_processStaleCheckouts( $user_id );
+
     
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );    
     
     // automatically ignore blocked users and houses already checked
     // out for robbery
@@ -3167,14 +3167,17 @@ function cd_startRobHouse() {
     $to_rob_user_id = cd_requestFilter( "to_rob_user_id", "/\d+/" );
     $to_rob_character_name =
         cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
-    
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
+    
     cd_processStaleCheckouts( $user_id );
 
     
     // Avoid cheating through double-client edit checkouts during robbery
     cd_forceEndHouseEdit( $user_id );
+
+
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
     
     
     // get user's backpack contents
