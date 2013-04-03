@@ -3374,8 +3374,29 @@ function cd_endRobHouse() {
         cd_transactionDeny();
         return;
         }
+
     
-        
+    // update backpack here, and commit, to avoid deadlock where we have
+    // one row locked (our house row) and try to lock another (victim house
+    // row).  If we're being counter-robbed at the same time, and check-in
+    // happens at the same time, this is a deadlock.
+
+    // Backpack update might not be consistent here (because house check-in
+    // might fail below), but that's okay (user spends items even if check-in
+    // fails, and this is better than a deadlock
+
+    // update contents of backpack (checked to be okay above)
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "backpack_contents = '$backpack_contents'".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+
+    cd_queryDatabase( "COMMIT;" );
+
+
+
+    // now check victim house back in as a second transaction
     
     
     // automatically ignore blocked users and houses already checked
@@ -3431,11 +3452,6 @@ function cd_endRobHouse() {
 
 
 
-    // update contents of backpack (checked to be okay above)
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "backpack_contents = '$backpack_contents'".
-        "WHERE user_id = $user_id;";
-    cd_queryDatabase( $query );
 
 
 
