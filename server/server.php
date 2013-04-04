@@ -685,6 +685,7 @@ function cd_setupDatabase() {
             "ticket_id VARCHAR(255) NOT NULL," .
             "email VARCHAR(255) NOT NULL," .
             "character_name_history LONGTEXT NOT NULL,".
+            "last_robbed_owner_id INT NOT NULL,".
             "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
             "last_price_list_number INT NOT NULL," .
@@ -1496,6 +1497,7 @@ function cd_checkUser() {
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
             "(ticket_id, email, character_name_history, ".
+            " 0, ".
             " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
@@ -3242,6 +3244,12 @@ function cd_startRobHouse() {
         "WHERE user_id = $to_rob_user_id;";
     cd_queryDatabase( $query );
 
+    $query = "UPDATE $tableNamePrefix"."users SET ".
+        "last_robbed_owner_id = '$to_rob_user_id' ".
+        "WHERE user_id = $user_id;";
+
+    cd_queryDatabase( $query );
+    
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
@@ -3395,8 +3403,27 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
 
 
+    
 
     // now check victim house back in as a second transaction
+
+    // find out what house user is robbing
+    $query = "SELECT last_robbed_owner_id ".
+        "FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id' AND blocked='0';";
+
+    
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows != 1 ) {
+        cd_log( "Robbery end with robbing user not found denied" );
+        cd_transactionDeny();
+        }
+    
+    $last_robbed_owner_id = mysql_result( $result, 0, "last_robbed_owner_id" );
+
     
     
     // automatically ignore blocked users and houses already checked
@@ -3410,7 +3437,8 @@ function cd_endRobHouse() {
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, edit_count ".
         "FROM $tableNamePrefix"."houses ".
-        "WHERE robbing_user_id = '$user_id' AND blocked='0' ".
+        "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "robbing_user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 1 AND edit_checkout = 0 ".
         "FOR UPDATE;";
 

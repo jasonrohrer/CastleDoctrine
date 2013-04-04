@@ -11,6 +11,9 @@ Version 6
 --Fixed order of row locks in server to avoid deadlock when two players are
   robbing each other.
 
+--Improved speed of InnoDB table access by using indexed columns in WHERE
+  clauses for high-volume queries (this also prevents entire table from being
+  locked).
 
 
 
