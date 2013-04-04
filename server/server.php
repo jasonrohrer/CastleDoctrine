@@ -1569,13 +1569,48 @@ function cd_checkHmac() {
     }
 
 
+
+function cd_getLastOwnerRobbedByUser( $user_id ) {
+    global $tableNamePrefix;
+    
+    $query = "SELECT last_robbed_owner_id ".
+        "FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id' AND blocked='0';";
+
+    
+    $result = cd_queryDatabase( $query );
+
+    $last_robbed_owner_id = 0;
+    
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows == 1 ) {
+        $last_robbed_owner_id =
+            mysql_result( $result, 0, "last_robbed_owner_id" );
+        }
+
+    return $last_robbed_owner_id;
+    }
+
+
+
+
+
 function cd_processStaleCheckouts( $user_id ) {
     global $tableNamePrefix;
 
 
-    // first find all stale robberies
+    // first find stale robbery
+
+
+    
+    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+    
+
+    
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
-        "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
+        "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
     $staleRobberyCount = mysql_result( $result, 0, 0 );
@@ -1587,7 +1622,8 @@ function cd_processStaleCheckouts( $user_id ) {
         // house
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "rob_checkout = 0, robber_deaths = robber_deaths + 1 ".
-            "WHERE robbing_user_id = '$user_id';";
+            "WHERE user_id = '$last_robbed_owner_id' AND ".
+            "robbing_user_id = '$user_id';";
         cd_queryDatabase( $query );
         }
 
@@ -1596,7 +1632,8 @@ function cd_processStaleCheckouts( $user_id ) {
     // next find all stale robberies in shadow table (for houses
     // where owner died)
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses_owner_died ".
-        "WHERE rob_checkout = 1 AND robbing_user_id = '$user_id';";
+        "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
     $staleShadowRobberyCount = mysql_result( $result, 0, 0 );
@@ -1604,21 +1641,21 @@ function cd_processStaleCheckouts( $user_id ) {
     if( $staleShadowRobberyCount ) {
         // clear all the robberies themselves
 
-        $query = "SELECT user_id, gallery_contents ".
+        $query = "SELECT gallery_contents ".
             "FROM $tableNamePrefix"."houses_owner_died ".
-            "WHERE robbing_user_id = '$user_id';";
+            "WHERE user_id = '$last_robbed_owner_id' AND ".
+            "robbing_user_id = '$user_id';";
 
         $result = cd_queryDatabase( $query );
         
         $row = mysql_fetch_array( $result, MYSQL_ASSOC );
         
         $gallery_contents = $row[ "gallery_contents" ];
-        $owner_id = $row[ "user_id" ];
-
+        $owner_id = $last_robbed_owner_id;
         
         // remove this house from the shadow table
         $query = "DELETE FROM $tableNamePrefix"."houses_owner_died WHERE ".
-            " robbing_user_id = $user_id;";
+            " user_id = $owner_id AND robbing_user_id = $user_id;";
         cd_queryDatabase( $query );
 
         
@@ -3408,22 +3445,9 @@ function cd_endRobHouse() {
     // now check victim house back in as a second transaction
 
     // find out what house user is robbing
-    $query = "SELECT last_robbed_owner_id ".
-        "FROM $tableNamePrefix"."users ".
-        "WHERE user_id = '$user_id' AND blocked='0';";
-
-    
-    $result = cd_queryDatabase( $query );
-
-    $numRows = mysql_numrows( $result );
-    
-    if( $numRows != 1 ) {
-        cd_log( "Robbery end with robbing user not found denied" );
-        cd_transactionDeny();
-        }
-    
-    $last_robbed_owner_id = mysql_result( $result, 0, "last_robbed_owner_id" );
-
+    // thus, select query below uses user_id (index column) in WHERE clause
+    // preventing entire table from locking
+    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
     
     
     // automatically ignore blocked users and houses already checked
@@ -3767,7 +3791,8 @@ function cd_endRobHouse() {
             "vault_contents = '$house_vault_contents', ".
             "gallery_contents = '$house_gallery_contents', ".
             "value_estimate = '$value_estimate' ".
-            "WHERE robbing_user_id = $user_id AND rob_checkout = 1;";
+            "WHERE user_id = '$last_robbed_owner_id' AND ".
+            "robbing_user_id = $user_id AND rob_checkout = 1;";
         cd_queryDatabase( $query );
         }
     else {
