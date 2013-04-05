@@ -2998,10 +2998,14 @@ function cd_pingHouse() {
     
     // automatically ignore blocked users and houses not checked out
 
+    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+    
+
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP ".
         "WHERE (    ( user_id         = $user_id AND edit_checkout = 1 ) ".
-        "        OR ( robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
+        "        OR ( user_id = $last_robbed_owner_id AND ".
+        "             robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
         "AND blocked='0';";
     
     $result = cd_queryDatabase( $query );
