@@ -4765,7 +4765,9 @@ function cd_showDataHouseList( $inTableName ) {
         $keywordClause = "WHERE ( $houseTable.user_id LIKE '%$search%' " .
             "OR character_name LIKE '%$search%' ".
             "OR loot_value LIKE '%$search%' ".
-            "OR email LIKE '%$search%' OR ticket_id LIKE '%$search%' ) ";
+            "OR email LIKE '%$search%' ".
+            "OR character_name_history LIKE '%$search%' ".
+            "OR ticket_id LIKE '%$search%' ) ";
 
         $searchDisplay = " matching <b>$search</b>";
         }

@@ -15,6 +15,7 @@ Version 6
   clauses for high-volume queries (this also prevents entire table from being
   locked).
 
+--Web admin view support for search on player name history.
 
 
 Version 5   2013-March-11
