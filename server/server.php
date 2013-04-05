@@ -1497,11 +1497,11 @@ function cd_checkUser() {
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
             "(ticket_id, email, character_name_history, ".
-            " 0, ".
+            " last_robbed_owner_id, ".
             " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', '$email', '', 0, 0, 0, 0 );";
+            " '$ticket_id', '$email', '', 0, 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
