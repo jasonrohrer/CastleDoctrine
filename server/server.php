@@ -3444,6 +3444,12 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
 
 
+
+    // keep track of DB update queries that need to be done
+    // outside of the main commit block to avoid deadlocks while
+    // we have the target house row locked
+    $pendingDatabaseUpdateQueries = array();
+
     
 
     // now check victim house back in as a second transaction
@@ -3546,11 +3552,12 @@ function cd_endRobHouse() {
 
     
     // grab past scouting stats here, for inclusion in robbery log
+    // don't lock it (because this user is the only one who touches this
+    // row anyway), and locking it can lead to a deadlock.
     $query = "SELECT count, last_scout_time ".
         "FROM $tableNamePrefix"."scouting_counts ".
         "WHERE robbing_user_id = '$user_id' ".
-        "AND house_user_id = '$victim_id'".
-        "FOR UPDATE;";
+        "AND house_user_id = '$victim_id';";
 
     $result = cd_queryDatabase( $query );
 
@@ -3689,7 +3696,7 @@ function cd_endRobHouse() {
             "carried_vault_contents = '$carried_vault_contents', ".
             "carried_gallery_contents = '$carried_gallery_contents' ".
             "WHERE user_id = $user_id;";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
 
 
         // log robbery
@@ -3759,7 +3766,7 @@ function cd_endRobHouse() {
             "last_scout_time = CURRENT_TIMESTAMP ".
             "WHERE robbing_user_id = '$user_id' ".
             "AND house_user_id = '$victim_id';";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
         }
     else {
         // first scouting trip
@@ -3768,7 +3775,7 @@ function cd_endRobHouse() {
             "( robbing_user_id, house_user_id, count, last_scout_time ) ".
             "VALUES( '$user_id', '$victim_id', ".
             "        '$scouting_count', CURRENT_TIMESTAMP );";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
         }
     
 
@@ -3806,12 +3813,12 @@ function cd_endRobHouse() {
         // simply remove this house from the shadow table
         $query = "DELETE FROM $tableNamePrefix"."houses_owner_died WHERE ".
             " robbing_user_id = $user_id;";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
 
         // clear scouting counts for every robber, since house gone
         $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
             " house_user_id = $victim_id;";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
 
         
         // return any remaining gallery stuff to auction house
@@ -3822,6 +3829,14 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    
+    // now execute all pending database updates after lock for
+    // target house row has been released
+    foreach( $pendingDatabaseUpdateQueries as $query ) {
+        cd_queryDatabase( $query );
+        }
+
+    
     echo "$amountTaken\n";
     echo "$stuffTaken\n";
     echo "$galleryStuffTaken\n";
