@@ -1,0 +1,4 @@
+Adding an index column to log table.
+
+
+alter table castleServer_log add column log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT first;

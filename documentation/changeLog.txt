@@ -17,6 +17,10 @@ Version 6
 
 --Web admin view support for search on player name history.
 
+--Paging display for log entries, and stack traces in log for fatal errors.
+
+
+
 
 Version 5   2013-March-11
 

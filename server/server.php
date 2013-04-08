@@ -658,6 +658,7 @@ function cd_setupDatabase() {
 
         $query =
             "CREATE TABLE $tableName(" .
+            "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, ".
             "entry TEXT NOT NULL, ".
             "entry_time DATETIME NOT NULL );";
 
@@ -1054,33 +1055,81 @@ function cd_setupDatabase() {
 function cd_showLog() {
     cd_checkPassword( "show_log" );
 
-     echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
+    echo "[<a href=\"server.php?action=show_data" .
+        "\">Main</a>]<br><br><br>";
+
+    $entriesPerPage = 1000;
+    
+    $skip = cd_requestFilter( "skip", "/\d+/", 0 );
+
     
     global $tableNamePrefix;
 
+
+    // first, count results
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."log;";
+
+    $result = cd_queryDatabase( $query );
+    $totalEntries = mysql_result( $result, 0, 0 );
+
+
+    
     $query = "SELECT entry, entry_time FROM $tableNamePrefix"."log ".
-        "ORDER BY entry_time DESC;";
+        "ORDER BY log_id DESC LIMIT $skip, $entriesPerPage;";
     $result = cd_queryDatabase( $query );
 
     $numRows = mysql_numrows( $result );
 
 
 
-    echo "<a href=\"server.php?action=clear_log\">".
-        "Clear log</a>";
+    $startSkip = $skip + 1;
+    
+    $endSkip = $startSkip + $entriesPerPage - 1;
+
+    if( $endSkip > $totalEntries ) {
+        $endSkip = $totalEntries;
+        }
+
+    
+
+    
+    echo "$totalEntries Log entries".
+        " (showing $startSkip - $endSkip):<br>\n";
+
+    
+    $nextSkip = $skip + $entriesPerPage;
+
+    $prevSkip = $skip - $entriesPerPage;
+
+    if( $skip > 0 && $prevSkip < 0 ) {
+        $prevSkip = 0;
+        }
+    
+    if( $prevSkip >= 0 ) {
+        echo "[<a href=\"server.php?action=show_log" .
+            "&skip=$prevSkip\">".
+            "Previous Page</a>] ";
+        }
+    if( $nextSkip < $totalEntries ) {
+        echo "[<a href=\"server.php?action=show_log" .
+            "&skip=$nextSkip\">".
+            "Next Page</a>]";
+        }
+    
         
     echo "<hr>";
-        
-    echo "$numRows log entries:<br><br><br>\n";
-        
 
+        
+    
     for( $i=0; $i<$numRows; $i++ ) {
         $time = mysql_result( $result, $i, "entry_time" );
         $entry = mysql_result( $result, $i, "entry" );
 
-        echo "<b>$time</b>:<br>$entry<hr>\n";
+        echo "<b>$time</b>:<br><pre>$entry</pre><hr>\n";
         }
+
+    echo "<br><br><hr><a href=\"server.php?action=clear_log\">".
+        "Clear log</a>";
     }
 
 
@@ -1122,8 +1171,8 @@ function cd_checkForFlush() {
 
     $flushInterval = "0 0:02:0.000";
     $staleTimeout = "0 0:05:0.000";
-    $staleLogTimeout = "5 0:00:0.000";
-    $staleLogTimeoutDeadOwners = "1 0:00:0.000";
+    $staleLogTimeout = "10 0:00:0.000";
+    $staleLogTimeoutDeadOwners = "5 0:00:0.000";
     // for testing:
     //$flushInterval = "0 0:00:30.000";
     //$staleTimeout = "0 0:01:0.000";
@@ -5887,8 +5936,8 @@ function cd_log( $message ) {
 
         $slashedMessage = mysql_real_escape_string( $message );
         
-        $query = "INSERT INTO $tableNamePrefix"."log VALUES ( " .
-            "'$slashedMessage', CURRENT_TIMESTAMP );";
+        $query = "INSERT INTO $tableNamePrefix"."log( entry, entry_time ) ".
+            "VALUES( '$slashedMessage', CURRENT_TIMESTAMP );";
         $result = cd_queryDatabase( $query );
         }
     }
@@ -5908,8 +5957,8 @@ function cd_fatalError( $message ) {
     
     //include_once( "error.php" );
 
-    // for now, just print error message
-    $logMessage = "Fatal error:  $message";
+    // print error message, with backtrace, and log it.
+    $logMessage = "Fatal error:  $message\n" . cd_getBacktrace();
     
     echo( $logMessage );
 
@@ -5931,6 +5980,28 @@ function cd_operationError( $message ) {
     echo( "ERROR:  $message" );
     die();
     }
+
+
+
+// found here:
+// http://www.php.net/manual/en/function.debug-print-backtrace.php
+function cd_getBacktrace() {
+    ob_start();
+    debug_print_backtrace();
+    $trace = ob_get_contents();
+    ob_end_clean();
+
+    // Remove first item from backtrace as it's this function which
+    // is redundant.
+    $trace =
+        preg_replace( '/^#0\s+' . __FUNCTION__ . "[^\n]*\n/", '', $trace, 1 );
+    
+    // Renumber backtrace items.
+    $trace = preg_replace( '/^#(\d+)/me', '\'#\' . ($1 - 1)', $trace );
+    
+    return $trace;
+    }
+
 
 
 
