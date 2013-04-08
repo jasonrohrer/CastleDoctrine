@@ -3797,9 +3797,6 @@ function cd_endRobHouse() {
         // drops backpack in this house's vault
         $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
                                                     $backpack_contents );
-        
-        // starts over as new character, house destroyed
-        cd_newHouseForUser( $user_id );
         }
 
 
@@ -3884,6 +3881,13 @@ function cd_endRobHouse() {
     foreach( $pendingDatabaseUpdateQueries as $query ) {
         cd_queryDatabase( $query );
         }
+
+
+    if( $success == 0 ) {                
+        // starts over as new character, house destroyed
+        cd_newHouseForUser( $user_id );
+        }
+    
 
     
     echo "$amountTaken\n";
@@ -4580,6 +4584,10 @@ function cd_newHouseForUser( $user_id ) {
 
     $numRows = mysql_numrows( $result );
 
+
+    $needToClearScoutingCounts = false;
+    
+    
     if( $numRows > 0 ) {
 
         // user had a house (past life)
@@ -4606,10 +4614,7 @@ function cd_newHouseForUser( $user_id ) {
         else {
 
             // clear scouting counts for every robber, since house gone
-            $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
-                " house_user_id = $user_id;";
-            cd_queryDatabase( $query );
-
+            $needToClearScoutingCounts = true;
             
             // return gallery items to auciton house
             $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
@@ -4777,6 +4782,15 @@ function cd_newHouseForUser( $user_id ) {
     
     
     cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
+
+
+    // do this after house table row lock released, to avoid deadlocks
+    if( $needToClearScoutingCounts ) {    
+        $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
+            " house_user_id = $user_id;";
+        cd_queryDatabase( $query );
+        }
+    
     }
 
 
