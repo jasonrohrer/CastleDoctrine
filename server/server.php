@@ -5018,11 +5018,15 @@ function cd_formatBytes( $inNumBytes ) {
     if( $inNumBytes <= 1024 ) {
         $sizeString = "$inNumBytes B";
         }
-    else if( $inNumBytes > 1024 ) {
+    else if( $inNumBytes <= 1024 * 1024 ) {
         $sizeString = sprintf( "%.2f KiB", $inNumBytes / 1024 );
         }
-    else if( $inNumBytes > 1024 * 1024 ) {
+    else if( $inNumBytes <= 1024 * 1024 * 1024) {
         $sizeString = sprintf( "%.2f MiB", $inNumBytes / ( 1024 * 1024 ) );
+        }
+    else if( $inNumBytes <= 1024 * 1024 * 1024 * 1024 ) {
+        $sizeString = sprintf( "%.2f GiB",
+                               $inNumBytes / ( 1024 * 1024 * 1024 ) );
         }
     return $sizeString;
     }

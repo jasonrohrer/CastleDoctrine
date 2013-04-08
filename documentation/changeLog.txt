@@ -19,6 +19,7 @@ Version 6
 
 --Paging display for log entries, and stack traces in log for fatal errors.
 
+--Fixed MiB and GiB formatting in database size report.
 
 
 
