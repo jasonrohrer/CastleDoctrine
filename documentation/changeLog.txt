@@ -21,6 +21,9 @@ Version 6
 
 --Fixed MiB and GiB formatting in database size report.
 
+--Fixed server bug that caused start of self-test to fail after house checkin
+  failed once for whatever reason (thanks Tom Loughlin).
+
 
 
 Version 5   2013-March-11

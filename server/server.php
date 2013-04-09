@@ -1745,6 +1745,17 @@ function cd_processStaleCheckouts( $user_id ) {
         
         cd_newHouseForUser( $user_id );
         }
+    else {
+        // at least end their current editing session
+
+        // (don't need to do this if we're force killing them)
+        $query = "UPDATE $tableNamePrefix"."houses ".
+            "SET edit_checkout = 0 ".
+            "WHERE user_id = '$user_id';";
+
+        $result = cd_queryDatabase( $query );
+        }
+    
     }
 
 
@@ -3152,7 +3163,7 @@ function cd_listHouses() {
 
     // can't keep house checked out for robbery (with second client)
     // while browsing houses.
-    cd_forceEndHouseEdit( $user_id );
+    cd_processStaleCheckouts( $user_id );
     
 
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
@@ -3231,21 +3242,6 @@ function cd_listHouses() {
 
 
 
-// force user to stop editing their own house
-// Assumed to be called after cd_processStaleCheckouts,
-// so user isn't in the middle of a self test
-// This call does nothing but check the house back in.
-function cd_forceEndHouseEdit( $user_id ) {
-    global $tableNamePrefix;
-
-    $query = "UPDATE $tableNamePrefix"."houses ".
-        "SET edit_checkout = 0 ".
-        "WHERE user_id = '$user_id';";
-
-    $result = cd_queryDatabase( $query );
-    }
-
-
 
 function cd_startRobHouse() {
     global $tableNamePrefix;
@@ -3262,10 +3258,6 @@ function cd_startRobHouse() {
 
     
     cd_processStaleCheckouts( $user_id );
-
-    
-    // Avoid cheating through double-client edit checkouts during robbery
-    cd_forceEndHouseEdit( $user_id );
 
 
     
@@ -3911,7 +3903,7 @@ function cd_listLoggedRobberies() {
 
     // can't keep house checked out for robbery (with second client)
     // while browsing replay logs.
-    cd_forceEndHouseEdit( $user_id );
+    cd_processStaleCheckouts( $user_id );
 
     
     $admin = cd_isAdmin( $user_id );
@@ -4016,7 +4008,7 @@ function cd_getRobberyLog() {
 
     // can't keep house checked out for robbery (with second client)
     // while fetching a log to watch.
-    cd_forceEndHouseEdit( $user_id );
+    cd_processStaleCheckouts( $user_id );
 
     
     
