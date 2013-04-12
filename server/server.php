@@ -3094,7 +3094,11 @@ function cd_startSelfTest() {
     $user_id = cd_getUserID();
 
     
-    // automatically ignore blocked users and houses not checked out
+    // automatically ignore blocked users and houses not checked ou
+
+    // don't worry about cases where self-test already ended.
+    // this may be a retried request if the client's first request
+    // has timed out, so we may already have ended it.
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP, ".
@@ -3102,10 +3106,9 @@ function cd_startSelfTest() {
         "self_test_running = 1 ".
         "WHERE user_id = $user_id ".
         "AND blocked='0' ".
-        "AND edit_checkout = 1 AND self_test_running = 0;";
+        "AND edit_checkout = 1;";
     
     $result = cd_queryDatabase( $query );
-
     
     if( mysql_affected_rows() == 1 ) {
         echo "OK";
@@ -3129,13 +3132,17 @@ function cd_endSelfTest() {
     
     // automatically ignore blocked users and houses not checked out
 
+    // don't worry about cases where self-test already ended.
+    // this may be a retried request if the client's first request
+    // has timed out, so we may already have ended it.
+
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP, ".
         "last_pay_check_time = CURRENT_TIMESTAMP, ".
         "self_test_running = 0 ".
         "WHERE user_id = $user_id ".
         "AND blocked='0' ".
-        "AND edit_checkout = 1 AND self_test_running = 1;";
+        "AND edit_checkout = 1;";
     
     $result = cd_queryDatabase( $query );
 

@@ -24,6 +24,9 @@ Version 6
 --Fixed server bug that caused start of self-test to fail after house checkin
   failed once for whatever reason (thanks Tom Loughlin).
 
+--Made start/end_self_test more lenient on server (not sending FAILED in cases
+  that are likely caused by timeouts and client retries).
+
 
 
 Version 5   2013-March-11
