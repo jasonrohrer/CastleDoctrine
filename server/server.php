@@ -3094,11 +3094,11 @@ function cd_startSelfTest() {
     $user_id = cd_getUserID();
 
     
-    // automatically ignore blocked users and houses not checked ou
+    // automatically ignore blocked users and houses not checked out
 
-    // don't worry about cases where self-test already ended.
+    // don't worry about cases where self-test already started.
     // this may be a retried request if the client's first request
-    // has timed out, so we may already have ended it.
+    // has timed out, so we may already have starteded it.
 
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "last_ping_time = CURRENT_TIMESTAMP, ".
