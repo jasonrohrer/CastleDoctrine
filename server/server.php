@@ -1645,7 +1645,7 @@ function cd_getLastOwnerRobbedByUser( $user_id ) {
 
 
 
-function cd_processStaleCheckouts( $user_id ) {
+function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
     global $tableNamePrefix;
 
 
@@ -1659,6 +1659,7 @@ function cd_processStaleCheckouts( $user_id ) {
     
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "user_id != '$house_id_to_skip' AND ".
         "rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
@@ -1682,6 +1683,7 @@ function cd_processStaleCheckouts( $user_id ) {
     // where owner died)
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses_owner_died ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "user_id != '$house_id_to_skip' AND ".
         "rob_checkout = 1 AND robbing_user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
@@ -3272,8 +3274,12 @@ function cd_startRobHouse() {
     $to_rob_character_name =
         cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
 
-    
-    cd_processStaleCheckouts( $user_id );
+
+    // Don't count existing robbery of to_rob_user_id as stale,
+    // because we could be experiencing a client retry where the first
+    // startRobHouse call already completed, and we don't want to kill
+    // the player mistakenly.
+    cd_processStaleCheckouts( $user_id, $to_rob_user_id );
 
 
     
@@ -3292,14 +3298,19 @@ function cd_startRobHouse() {
     
     
     // automatically ignore blocked users and houses already checked
-    // out for robbery
+    // out for robbery by another player
+
+    // ALLOW same user to re-checkout a house for robbery, even if it's
+    // currently checked out by that user, to allow for client request
+    // retries (in cases where first request actually goes through server-side)
     
     $query = "SELECT wife_name, son_name, daughter_name, ".
         "house_map, gallery_contents, ".
         "character_name, rob_attempts, music_seed, wife_present, loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
-        "AND edit_checkout = 0 AND rob_checkout = 0 ".
+        "AND edit_checkout = 0 AND ".
+        "( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
