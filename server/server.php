@@ -723,6 +723,7 @@ function cd_setupDatabase() {
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
             "gallery_contents LONGTEXT NOT NULL," .
+            "last_auction_price INT NOT NULL," .
             "music_seed INT NOT NULL," .
             // times edited since last successful robbery
             // = 0 if never edited (and not robbable at all)
@@ -4266,6 +4267,44 @@ function cd_buyAuction() {
     $auctionTable = $tableNamePrefix ."auction";
     $houseTable = $tableNamePrefix ."houses";
 
+
+    // first, this could be a retried request to buy, and the user may
+    // already own this item
+    // In this case, return the normal purchase response, using the
+    // last price stored in this user's row.
+    $query = "SELECT gallery_contents, last_auction_price ".
+        "FROM $houseTable ".
+        "WHERE user_id = '$user_id' AND blocked='0' ".
+        "AND edit_checkout = 1;";
+
+    $result = cd_queryDatabase( $query );
+    
+    $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
+
+    if( $gallery_contents != "#" ) {
+
+        $galleryArray = preg_split( "/#/", $gallery_contents );
+
+        foreach( $galleryArray as $galleryID ) {
+
+            if( $galleryID == $object_id ) {
+                // player already owns this item
+
+                $price = mysql_result( $result, 0, "last_auction_price" );
+
+                echo "$price\n";
+                echo "OK";
+                return;
+                }
+            }
+        }
+
+
+    
+    // else do real, transactional purchase logic
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+
     // make sure it's there, and check it's current price
     $query = "SELECT start_price, ".
         "TIMESTAMPDIFF( SECOND, start_time, CURRENT_TIMESTAMP ) ".
@@ -4335,7 +4374,8 @@ function cd_buyAuction() {
 
     $query = "UPDATE $houseTable SET ".
         "loot_value = '$new_balance', ".
-        "gallery_contents = '$new_gallery_contents' ".
+        "gallery_contents = '$new_gallery_contents', ".
+        "last_auction_price = '$price' ".
         "WHERE user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
@@ -4740,7 +4780,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$wife_name', '$son_name', '$daughter_name', ".
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "'$music_seed', ".
+            "0, '$music_seed', ".
             "0, '#', '$playerStartMoney', '$playerStartMoney', 1, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
