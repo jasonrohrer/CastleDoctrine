@@ -2224,7 +2224,16 @@ function cd_endEditHouse() {
     if( $numRows < 1 ) {
         cd_log( "House check-in failed to find ".
                 "checked out house for $user_id" );
-        cd_transactionDeny();
+
+        // In this case, we're most likely experiencing the client's retry
+        // and the house was already checked in by the first attempt.
+        // In that case, don't scare the client user with DENIED,
+        // because the house is checked in and everything is okay, actually
+
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
+        
+        echo "OK";
         return;
         }
     
