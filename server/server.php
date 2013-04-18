@@ -1194,6 +1194,21 @@ function cd_checkForFlush() {
 
         // last flush time is old
 
+        // update it now, to unlock that row and let other requests
+        // go through
+
+        // note that if flushes start taking longer than $flushInterval
+        // this will become a problem
+
+        $query = "UPDATE $tableName SET " .
+            "last_flush_time = CURRENT_TIMESTAMP;";
+    
+        $result = cd_queryDatabase( $query );
+
+        cd_queryDatabase( "COMMIT;" );
+
+        
+
         global $tableNamePrefix;
 
 
@@ -1223,6 +1238,10 @@ function cd_checkForFlush() {
 
         $totalFlushCount = $numRows;
 
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+        
 
         // repeat for owner-died shadow table
         // for each robber who quit game mid-robbery, clear robbery checkout
@@ -1249,6 +1268,9 @@ function cd_checkForFlush() {
 
         $totalFlushCount += $numRows;
 
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
 
 
         
@@ -1280,6 +1302,10 @@ function cd_checkForFlush() {
             }
 
         $totalFlushCount += $numRows;
+
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
 
         
         
@@ -1323,6 +1349,11 @@ function cd_checkForFlush() {
 
         $totalFlushCount += mysql_affected_rows();
 
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
         cd_log( "Flush operation checked back in $totalFlushCount ".
                 "stale houses (in-edit: $staleEditIDList; ".
                 "in-test: $staleSelfTestIDList; ".
@@ -1357,6 +1388,12 @@ function cd_checkForFlush() {
 
         $staleLogsRemoved = mysql_affected_rows();
 
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
         cd_log( "Flush removed $staleLogsRemoved stale robbery logs." );
 
         if( $enableLog ) {
@@ -1401,12 +1438,6 @@ function cd_checkForFlush() {
 
 
         
-        // set new flush time
-
-        $query = "UPDATE $tableName SET " .
-            "last_flush_time = CURRENT_TIMESTAMP;";
-    
-        $result = cd_queryDatabase( $query );
 
     
         }

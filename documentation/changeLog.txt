@@ -32,6 +32,9 @@ Version 6
 --Fixed server so that money gained from selling tools can be used to buy
   paintings without checking in the house first (thanks Samuel Walz).
 
+--Improved server flush routine to release locks throughout (so that other
+  client requests are not blocked as much during a flush).
+
 
 
 Version 5   2013-March-11
