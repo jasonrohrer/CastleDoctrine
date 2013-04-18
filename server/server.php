@@ -4415,7 +4415,8 @@ function cd_buyAuction() {
 
     // make sure user has enough balance in house, and house checked out
 
-    $query = "SELECT gallery_contents, loot_value ".
+    $query = "SELECT gallery_contents, loot_value, ".
+        "vault_contents, backpack_contents ".
         "FROM $houseTable ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND edit_checkout = 1 FOR UPDATE;";
@@ -4433,12 +4434,33 @@ function cd_buyAuction() {
     $old_balance = mysql_result( $result, 0, "loot_value" );
 
     if( $old_balance < $price ) {
-        cd_log( "Auction purchase failed, not enough money\n" );
-        cd_transactionDeny();
-        return;
-        }
+        // not enough money.
+        // check if resellable items might be making up the difference
+        $vault_contents = mysql_result( $result, 0, "vault_contents" );
+        $backpack_contents = mysql_result( $result, 0, "backpack_contents" );
 
-    // user has enough money!
+        $totalContents = cd_idQuantityUnion( $vault_contents,
+                                             $backpack_contents );
+
+        $itemResaleValue =
+            cd_idQuantityToResaleValue( $totalContents, cd_getPriceArray() );
+
+    
+        if( $old_balance + $itemResaleValue < $price ) {
+            cd_log( "Auction purchase failed, ".
+                    "not enough money or resellable items\n" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+    
+    // User has enough money (perhaps with extra from resellable items).
+    // Note that new_balance may be negative here, if user's last checked
+    // in house had not enough money by resellable items to make up the
+    // difference.  In this case, the user is essentially promising that
+    // they have sold those items, and that it will be reflected in check-in,
+    // or else their check in will fail due to a negative result balance
+    // (this negative balance is temporary until checkin fixes it).
     $new_balance = $old_balance - $price;
 
     $old_gallery_contents = mysql_result( $result, 0, "gallery_contents" );

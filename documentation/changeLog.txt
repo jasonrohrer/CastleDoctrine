@@ -29,6 +29,9 @@ Version 6
 
 --Made other calls on server more tolerant of client retries.
 
+--Fixed server so that money gained from selling tools can be used to buy
+  paintings without checking in the house first (thanks Samuel Walz).
+
 
 
 Version 5   2013-March-11
