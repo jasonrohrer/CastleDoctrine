@@ -687,6 +687,7 @@ function cd_setupDatabase() {
             "email VARCHAR(255) NOT NULL," .
             "character_name_history LONGTEXT NOT NULL,".
             "last_robbed_owner_id INT NOT NULL,".
+            "last_robbery_response LONGTEXT NOT NULL,".
             "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
             "last_price_list_number INT NOT NULL," .
@@ -1547,11 +1548,11 @@ function cd_checkUser() {
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
             "(ticket_id, email, character_name_history, ".
-            " last_robbed_owner_id, ".
+            " last_robbed_owner_id, last_robbery_response, ".
             " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', '$email', '', 0, 0, 0, 0, 0 );";
+            " '$ticket_id', '$email', '', 0, '', 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -3400,6 +3401,86 @@ function cd_endRobHouse() {
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
+
+
+    
+    // First, make sure that this robber has SOME house checked out.
+    // Note that this is not totally safe, because requests from the
+    // same user could be interleaved here, since we are NOT locking on
+    // this check to avoid deadlocks when updating the backpack below.
+    // Thus, two requests could get through this check in parallel,
+    // only to fail (or cause weird behavior, like double-backpack spending),
+    // below.  However, we have to do this check here to avoid double-backpack
+    // spending whenever we can.  Otherwise, if we just count on other failures
+    // to detect client retries, we will likely have double-backpack spending
+    // very frequently (because the duplicate backpack operation won't fail
+    // every time).
+
+    // MOST of the time, requests from the same user won't be getting processed
+    // in parallel.
+    
+    // find out what house user is robbing
+    // thus, various select queries below uses user_id (index column) in
+    // WHERE clause preventing entire table from locking
+    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+
+
+
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$last_robbed_owner_id' AND ".
+        "robbing_user_id = '$user_id' AND blocked='0' ".
+        "AND rob_checkout = 1 AND edit_checkout = 0;";
+
+    $result = cd_queryDatabase( $query );
+
+    $checkoutCount = mysql_result( $result, 0, 0 );
+        
+    if( $checkoutCount < 1 ) {
+        // not found in main table
+        
+        // check owner_died table, in case house was flushed while
+        // we were robbing it
+        $mainTableName = "$tableNamePrefix"."houses";
+        $shadowTableName = "$tableNamePrefix"."houses_owner_died";
+
+        // point same query at shadow table
+        $query = preg_replace( "/$mainTableName/", "$shadowTableName",
+                               $query );
+
+        $result = cd_queryDatabase( $query );
+
+        $checkoutCount = mysql_result( $result, 0, 0 );
+
+        if( $checkoutCount < 1 ) {
+            // no rob-checked-out houses found for this user anywhere.
+
+            // assume this is a client retry for a checkin that already
+            // happened
+
+            $query = "SELECT last_robbery_response FROM ".
+                "$tableNamePrefix"."users ".
+                "WHERE user_id = $user_id;";
+            $result = cd_queryDatabase( $query );
+
+            $last_robbery_response =
+                mysql_result( $result, 0, "last_robbery_response" );
+
+            if( $last_robbery_response != "" ) {
+                echo $last_robbery_response;
+                return;
+                }
+            else {
+                cd_log( "Robbery end failed for robber $user_id, ".
+                        "failed to find target house in main or shadow ".
+                        "house tables, and no cached robbery response found" );
+
+                cd_transactionDeny();
+                return;
+                }
+            }
+        }
+
+    
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
@@ -3523,10 +3604,7 @@ function cd_endRobHouse() {
 
     // now check victim house back in as a second transaction
 
-    // find out what house user is robbing
-    // thus, select query below uses user_id (index column) in WHERE clause
-    // preventing entire table from locking
-    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+
     
     
     // automatically ignore blocked users and houses already checked
@@ -3909,11 +3987,18 @@ function cd_endRobHouse() {
         }
     
 
+    $response = 
+        "$amountTaken\n" .
+        "$stuffTaken\n" .
+        "$galleryStuffTaken\n" . 
+        "OK";
+
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET last_robbery_response = '$response' WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
     
-    echo "$amountTaken\n";
-    echo "$stuffTaken\n";
-    echo "$galleryStuffTaken\n";
-    echo "OK";
+    
+    echo $response;
     }
 
 
