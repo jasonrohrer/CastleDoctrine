@@ -99,9 +99,15 @@ cd_connectToDatabase();
 $action = cd_requestFilter( "action", "/[A-Z_]+/i" );
 
 
-if( $action != "" && $action != "cd_setup" ) {
+global $flushDuringClientCalls;
+
+if( $flushDuringClientCalls &&
+    $action != "" &&
+    $action != "cd_setup" &&
+    $action != "check_for_flush" ) {
     // don't check for flush if we may be executing initial database setup
     // (flush breaks in that case)
+    // also not if we are manually checking for flush, which happens below
     cd_checkForFlush();
     }
 
@@ -208,6 +214,10 @@ else if( $action == "check_space_used" ) {
 else if( $action == "count_users" ) {
     $userCount = cd_countUsers();
     echo $userCount;
+    }
+else if( $action == "check_for_flush" ) {
+    cd_checkForFlush();
+    echo "OK";
     }
 else if( $action == "show_data" ) {
     cd_showData();

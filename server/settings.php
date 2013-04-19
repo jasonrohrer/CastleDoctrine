@@ -94,6 +94,16 @@ $accessPasswords = array( "6616d4211911cc5aa4d30adcf5af54c2814b6508",
 
 
 
+// Default behavior is NOT to depend on a cron job to call check_for_flush
+// periodically.  With default config, some unlucky client call triggers the
+// flush and waits for it to finish before that client is served.
+// Better behavior can be had by disabling this and manually calling
+// check_for_flush with cron.
+// (Flush removes stale house checkouts, etc.)
+$flushDuringClientCalls = true;
+
+
+
 
 // prices that are loaded when database is first setup
 // they can be changed manually later from the admin page

@@ -35,6 +35,10 @@ Version 6
 --Improved server flush routine to release locks throughout (so that other
   client requests are not blocked as much during a flush).
 
+--Added support for calling server flush from a cron job instead of
+  front-loading it onto client requests.
+
+
 
 
 Version 5   2013-March-11

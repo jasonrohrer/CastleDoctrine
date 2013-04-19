@@ -113,6 +113,14 @@ G. Log in.  No users should have houses showing up yet, but they will soon.
    the web-based admin view (unless you give them a password).
 
 
+8. (Optional but recommended).  Edit checkForFlush.sh to point to your server.
+   Set up a cron job that calls this script on a regular interval.
+   Suggested interval:  every minute.  Edit settings.php for your game server
+   and set $flushDuringClientCalls to false.  This will remove the load for
+   server flushes from client calls, reducing the maximum response time for
+   a client.
+
+
 
 
 Why is this game server split into three parts?

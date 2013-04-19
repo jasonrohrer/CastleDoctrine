@@ -551,3 +551,23 @@ userCount
 
 Where:
 userCount = number of users on server
+
+
+
+
+
+=== Call:
+server.php?action=check_for_flush
+
+Returns:
+OK
+
+Manually checks if a flush is overdue and runs one if it is.
+Can be called from a cron job.
+
+Note:
+Flush removes stale house checkouts, etc.
+
+check_for_flush will happen automatically at the beginning of all client calls
+(thus being triggered without cron, but slowing down the unlucky client call
+that triggers the flus) if configured that way in settings.php
