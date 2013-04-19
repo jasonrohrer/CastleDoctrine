@@ -15,6 +15,7 @@ APP_NAME = CastleDoctrineHeadless
 
 LAYER_SOURCE = \
 headlessGamePlatform.cpp \
+robberySimulator.cpp \
 game.cpp \
 PageComponent.cpp \
 GamePage.cpp \

@@ -2,14 +2,29 @@
 
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
+#include "minorGems/network/SocketServer.h"
 
 
 #include "minorGems/game/game.h"
 
 
+
+#define END_REQUEST "[END_REQUEST]"
+#define END_RESPONSE "[END_RESPONSE]"
+
+
 static int w = 640;
 static int h = 480;
 
+
+
+static char *readFullRequest( Socket *inSock );
+
+
+
+
+#include "robberySimulator.h"
 
 int main() {
     
@@ -22,15 +37,150 @@ int main() {
     
     delete [] customData;
     
+
+    initSimulator();
     
-    for( int i=0; i<100; i++ ) {
-        printf( "Drawing frame %d\n", i );
-        drawFrame( true );
+    int port = 
+        SettingsManager::getIntSetting( "simulatorServerPort", 5077 );
+
+    char *password = 
+        SettingsManager::getStringSetting( "simulatorServerPassword" );
+    
+    if( password == NULL ) {
+        password = stringDuplicate( "secret" );
         }
+    
+
+    
+    SocketServer server( port, 256 );
+
+    char quit = false;
+    
+    while( !quit ) {
+        printf( "Waiting for connection on port %d, password = '%s'\n", 
+                port, password );
+
+        Socket *sock = server.acceptConnection();
+        
+        if( sock != NULL ) {
+            printf( "Got connection\n" );
+
+            char *request = readFullRequest( sock );
+            
+            char *response = NULL;
+
+            if( strstr( request, "quit" ) == request ) {
+                // starts with quit
+                
+                if( strstr( request, password ) != NULL ) {
+                    quit = true;
+                    
+                    response = stringDuplicate( "OK" );
+                    }
+                else {
+                    response = stringDuplicate( "FAILED" );
+                    }
+                }
+            else if( strstr( request, "check_alive" ) == request ) {
+                response = stringDuplicate( "OK" );
+                }
+            else if( strstr( request, "simulate_robbery" ) == request ) {
+                response = simulateRobbery( request );
+                }
+            
+
+            delete [] request;
+            
+            sock->send( (unsigned char *)response, strlen( response ), 
+                        true, false );
+            
+            delete [] response;
 
 
+            sock->send( (unsigned char *)"\n", strlen( "\n" ), 
+                        true, false );
+
+
+            sock->send( (unsigned char *)END_RESPONSE, strlen( END_RESPONSE ), 
+                        true, false );
+
+
+            sock->sendFlushBeforeClose( 3000 );
+            
+            delete sock;
+            }
+        }
+    
+    delete [] password;
+    
+    freeSimulator();
+    
     freeDrawString();
     freeFrameDrawer();
+    }
+
+
+
+static char checkForEndMarker( char *inString ) {
+    if( strstr( inString, END_REQUEST ) != NULL ) {
+        return true;
+        }
+    return false;
+    }
+
+
+
+
+#define READ_SIZE  5000
+
+static char readBuffer[ READ_SIZE + 1 ];
+
+
+// reads full request up to [END_REQUEST]
+// returns result WITHOUT [END_REQUEST] marker at end
+// returns NULL on failure
+static char *readFullRequest( Socket *inSock ) {
+    
+    char *readSoFar = stringDuplicate( "" );
+
+    char error = false;
+    
+    while( !checkForEndMarker( readSoFar ) && ! error ) {
+        
+        int numRead = inSock->receive( (unsigned char *)readBuffer, 
+                                       READ_SIZE, 0 );
+    
+        if( numRead >= 0 ) {
+            readBuffer[ numRead ] = '\0';
+            
+            char *newReadSoFar = concatonate( readSoFar, readBuffer );
+            
+            delete [] readSoFar;
+            
+            readSoFar = newReadSoFar;
+            }
+        else if( numRead != -2 ) {
+            // not timeout, real error
+            error = true;
+            }
+        }
+    
+    if( error ) {
+        return NULL;
+        }
+    
+
+    char found;
+    char *message = replaceOnce( readSoFar, END_REQUEST,
+                                 "", &found);
+
+    delete [] readSoFar;
+
+    char *trimmedMessage = trimWhitespace( message );
+    
+    delete [] message;
+
+    return trimmedMessage;
     }
 
 
