@@ -21,7 +21,7 @@ char *simulateRobbery( const char *inRobberyData ) {
 
     SimpleVector<char *> *tokens = tokenizeString( inRobberyData );
     
-    if( tokens->size() != 9  ) {
+    if( tokens->size() != 8 ) {
         
         for( int i=0; i<tokens->size(); i++ ) {
             delete [] *( tokens->getElement( i ) );

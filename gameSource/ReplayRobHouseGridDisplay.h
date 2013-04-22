@@ -91,6 +91,11 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
 
         void takeStep();
         
+
+        SimpleVector<char *> mReplayMoveList;
+
+        void clearReplayMoveList();
+
         // for restart
         int mOriginalWifeMoney;
         char *mOriginalMoveList;

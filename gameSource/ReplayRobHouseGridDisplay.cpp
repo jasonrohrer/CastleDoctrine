@@ -69,6 +69,16 @@ ReplayRobHouseGridDisplay::~ReplayRobHouseGridDisplay() {
     if( mOriginalMoveList != NULL ) {
         delete [] mOriginalMoveList;
         }
+
+    clearReplayMoveList();
+    }
+
+
+void ReplayRobHouseGridDisplay::clearReplayMoveList() {
+    for( int i=0; i<mReplayMoveList.size(); i++ ) {
+        delete [] *( mReplayMoveList.getElement( i ) );
+        }
+    mReplayMoveList.deleteAll();
     }
 
 
@@ -81,7 +91,7 @@ void ReplayRobHouseGridDisplay::setWifeMoney( int inMoney ) {
 
 
 void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
-    clearMoveList();
+    clearReplayMoveList();
 
     char *oldList = mOriginalMoveList;
     mOriginalMoveList = stringDuplicate( inMoveList );
@@ -96,7 +106,7 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
         int numMoves;
         char **moves = split( inMoveList, "#", &numMoves );
 
-        mMoveList.appendArray( moves, numMoves );
+        mReplayMoveList.appendArray( moves, numMoves );
     
         delete [] moves;
         }
@@ -170,9 +180,9 @@ void ReplayRobHouseGridDisplay::step() {
 
 void ReplayRobHouseGridDisplay::takeStep() {
     mRestartButton.setVisible( true );
-    if( mMoveList.size() > 0 ) {
+    if( mReplayMoveList.size() > 0 ) {
         
-        char *move = *( mMoveList.getElement( 0 ) );
+        char *move = *( mReplayMoveList.getElement( 0 ) );
         
         char shouldDeleteMove = true;
 
@@ -181,24 +191,9 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 // player movement to new index
                 int newIndex;
                 sscanf( move, "m%d", &newIndex );
-
-                // DON'T call RobHouseGridDisplay's moveRobber, 
-                // because it detects success condition and fires an event,
-                // which we don't want to do during replay
-                HouseGridDisplay::moveRobber( newIndex );
-
-                // robber stepped onto wife after killing her, taking
-                // her money
-                if( getWifeKilled() ) {
-                    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
-                                       0, wife ) ) {
-                        RobHouseGridDisplay::setWifeMoney( 0 );
-                        }
-                    }
-
-                shouldDeleteMove = true;
                 
-                applyTransitionsAndProcess();
+                moveRobber( newIndex );
+                shouldDeleteMove = true;
                 }
             else if( move[0] == 't' ) {
                 int toolID, targetIndex;
@@ -245,14 +240,14 @@ void ReplayRobHouseGridDisplay::takeStep() {
             }
 
         if( shouldDeleteMove ) {
-            mMoveList.deleteElement( 0 );
+            mReplayMoveList.deleteElement( 0 );
             
             delete [] move;
             }
         
         }
 
-    if( mMoveList.size() == 0 ) {
+    if( mReplayMoveList.size() == 0 ) {
         // auto stop, no more steps allowed
         mPlaying =  false;
         
