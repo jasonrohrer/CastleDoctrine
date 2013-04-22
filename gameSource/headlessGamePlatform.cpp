@@ -4,6 +4,7 @@
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/util/SettingsManager.h"
 #include "minorGems/network/SocketServer.h"
+#include "minorGems/system/Time.h"
 
 
 #include "minorGems/game/game.h"
@@ -85,7 +86,14 @@ int main() {
                 response = stringDuplicate( "OK" );
                 }
             else if( strstr( request, "simulate_robbery" ) == request ) {
+                double startTime = Time::getCurrentTime();
+                
                 response = simulateRobbery( request );
+                printf( "Simulation took %f seconds\n",
+                        Time::getCurrentTime() - startTime );
+                }
+            else {
+                response = stringDuplicate( "FAILED" );
                 }
             
 

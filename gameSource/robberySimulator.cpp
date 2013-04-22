@@ -92,7 +92,7 @@ end_house_map
                                   "%d\n"
                                   "%d\n"
                                   "%s\n"
-                                  "%s\n",
+                                  "%s",
                                   replayCheckerDisplay->getSuccess(),
                                   replayCheckerDisplay->getWifeKilled(),
                                   replayCheckerDisplay->getWifeRobbed(),
