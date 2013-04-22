@@ -92,7 +92,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         void takeStep();
         
         // for restart
-        char mOriginalWifeMoney;
+        int mOriginalWifeMoney;
         char *mOriginalMoveList;
     };
 

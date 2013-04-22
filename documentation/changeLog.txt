@@ -38,6 +38,8 @@ Version 6
 --Added support for calling server flush from a cron job instead of
   front-loading it onto client requests.
 
+--Fixed bug in wife money tracking after security tape restart.
+
 
 
 
