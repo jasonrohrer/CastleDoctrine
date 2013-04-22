@@ -68,52 +68,56 @@ int main() {
 
             char *request = readFullRequest( sock );
             
-            char *response = NULL;
+            if( request != NULL ) {
 
-            if( strstr( request, "quit" ) == request ) {
-                // starts with quit
+                char *response = NULL;
+
+                if( strstr( request, "quit" ) == request ) {
+                    // starts with quit
                 
-                if( strstr( request, password ) != NULL ) {
-                    quit = true;
+                    if( strstr( request, password ) != NULL ) {
+                        quit = true;
                     
+                        response = stringDuplicate( "OK" );
+                        }
+                    else {
+                        response = stringDuplicate( "FAILED" );
+                        }
+                    }
+                else if( strstr( request, "check_alive" ) == request ) {
                     response = stringDuplicate( "OK" );
+                    }
+                else if( strstr( request, "simulate_robbery" ) == request ) {
+                    double startTime = Time::getCurrentTime();
+                
+                    response = simulateRobbery( request );
+                    printf( "Simulation took %f seconds\n",
+                            Time::getCurrentTime() - startTime );
                     }
                 else {
                     response = stringDuplicate( "FAILED" );
                     }
-                }
-            else if( strstr( request, "check_alive" ) == request ) {
-                response = stringDuplicate( "OK" );
-                }
-            else if( strstr( request, "simulate_robbery" ) == request ) {
-                double startTime = Time::getCurrentTime();
-                
-                response = simulateRobbery( request );
-                printf( "Simulation took %f seconds\n",
-                        Time::getCurrentTime() - startTime );
-                }
-            else {
-                response = stringDuplicate( "FAILED" );
-                }
             
 
-            delete [] request;
+                delete [] request;
             
-            sock->send( (unsigned char *)response, strlen( response ), 
-                        true, false );
+                sock->send( (unsigned char *)response, strlen( response ), 
+                            true, false );
             
-            delete [] response;
+                delete [] response;
 
 
-            sock->send( (unsigned char *)"\n", strlen( "\n" ), 
-                        true, false );
+                sock->send( (unsigned char *)"\n", strlen( "\n" ), 
+                            true, false );
 
 
-            sock->send( (unsigned char *)END_RESPONSE, strlen( END_RESPONSE ), 
-                        true, false );
+                sock->send( (unsigned char *)END_RESPONSE, 
+                            strlen( END_RESPONSE ), 
+                            true, false );
 
 
-            sock->sendFlushBeforeClose( 3000 );
+                sock->sendFlushBeforeClose( 3000 );
+                }
             
             delete sock;
             }
