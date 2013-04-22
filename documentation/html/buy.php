@@ -8,6 +8,8 @@ header('Pragma: no-cache');
 error_reporting( E_ALL );
 
 
+global $pathToRoot;
+
 $pathToRoot = "";
 
 include( "header.php" );

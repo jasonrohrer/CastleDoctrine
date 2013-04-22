@@ -1,4 +1,8 @@
 <?php
+
+
+global $pathToRoot;
+
 $pathToRoot = "";
 include( "header.php" ); ?>
 

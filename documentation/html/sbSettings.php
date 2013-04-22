@@ -1,6 +1,7 @@
 <?php
 
 // for header.php to work
+global $pathToRoot;
 $pathToRoot = "";
 
 
