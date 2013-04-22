@@ -135,6 +135,22 @@ int ReplayRobHouseGridDisplay::getToolIDJustPicked() {
 
 
 
+
+void ReplayRobHouseGridDisplay::playAtFullSpeed() {
+    mPlaying = true;
+
+    mSpeedFactor = STEP_DELAY;
+    mStepsUntilNextPlayStep = STEP_DELAY / mSpeedFactor; 
+
+    mStopButton.setVisible( true );
+    mFasterButton.setVisible( false );
+    mPlayButton.setVisible( false );
+    mStepButton.setVisible( false );
+    }
+
+
+
+
 void ReplayRobHouseGridDisplay::step() {
     RobHouseGridDisplay::step();
     

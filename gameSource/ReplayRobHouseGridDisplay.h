@@ -40,6 +40,12 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         int getToolIDJustPicked();
         
 
+        // for automated robbery simulation
+        // switch to fastest playback speed (one move per step() ) and
+        // initiate play
+        virtual void playAtFullSpeed();
+        
+
         virtual void step();
 
 
