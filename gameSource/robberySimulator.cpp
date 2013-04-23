@@ -1,4 +1,5 @@
 #include "ReplayRobHouseGridDisplay.h"
+#include "inventory.h"
 
 #include "minorGems/util/stringUtils.h"
 
@@ -45,7 +46,8 @@ daughter_name
     
     replayCheckerDisplay->setHouseMap( *( tokens->getElement(1) ) );
 
-    char *backpack = stringDuplicate( *( tokens->getElement(2) ) );
+    SimpleVector<QuantityRecord> backpackSlots;    
+    fromString( *( tokens->getElement(2) ), &backpackSlots );
     
     
     replayCheckerDisplay->setMoveList( *( tokens->getElement(3) ) );
@@ -58,20 +60,43 @@ daughter_name
     replayCheckerDisplay->setWifeName( *( tokens->getElement(5) ) );
     replayCheckerDisplay->setSonName( *( tokens->getElement(6) ) );
     replayCheckerDisplay->setDaughterName( *( tokens->getElement(7) ) );
-        
-    // FIXME:  parse backpack contents
+
+
+
                           
     for( int i=0; i<tokens->size(); i++ ) {
         delete [] *( tokens->getElement( i ) );
         }
+    delete tokens;
+    
 
     replayCheckerDisplay->playAtFullSpeed();
     
 
+    // FIXME:  need to check for move list running out without conclusion
+
+    char moveListIncorrect = false;
+    
     while( !replayCheckerDisplay->getDead() && 
            replayCheckerDisplay->getSuccess() == 0 ) {
         
         replayCheckerDisplay->step();
+
+
+        if( replayCheckerDisplay->getToolJustUsed() ) {
+            
+            int pickedID = replayCheckerDisplay->getToolIDJustPicked();
+            
+            if( pickedID != -1 ) {
+                char toolAllowed = subtractFromQuantity( &backpackSlots,
+                                                         pickedID );
+
+                if( !toolAllowed ) {
+                    moveListIncorrect = true;
+                    break;
+                    }
+                }
+            }
         }
     
     
@@ -85,24 +110,36 @@ end_backpack_contents
 end_house_map
     */
     
-    char *endHouseMap = replayCheckerDisplay->getHouseMap();
-    
-    char *response = autoSprintf( "%d\n"
-                                  "%d\n"
-                                  "%d\n"
-                                  "%d\n"
-                                  "%s\n"
-                                  "%s",
-                                  replayCheckerDisplay->getSuccess(),
-                                  replayCheckerDisplay->getWifeKilled(),
-                                  replayCheckerDisplay->getWifeRobbed(),
-                                  replayCheckerDisplay->getAnyFamilyKilled(),
-                                  backpack,
-                                  endHouseMap );
+    char *response;
+
+    if( !moveListIncorrect ) {
+        
+        char *endBackpack = toString( &backpackSlots );
 
 
-    delete [] backpack;
-    delete [] endHouseMap;
+        char *endHouseMap = replayCheckerDisplay->getHouseMap();
+        
+        response = 
+            autoSprintf( "%d\n"
+                         "%d\n"
+                         "%d\n"
+                         "%d\n"
+                         "%s\n"
+                         "%s",
+                         replayCheckerDisplay->getSuccess(),
+                         replayCheckerDisplay->getWifeKilled(),
+                         replayCheckerDisplay->getWifeRobbed(),
+                         replayCheckerDisplay->getAnyFamilyKilled(),
+                         endBackpack,
+                         endHouseMap );
+
+
+        delete [] endBackpack;
+        delete [] endHouseMap;
+        }
+    else {
+        response = stringDuplicate( "FAILED" );
+        }
 
     return response;
     }

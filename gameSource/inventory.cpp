@@ -90,7 +90,7 @@ void addToQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
 
 
 
-void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties, 
+char subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties, 
                            int inSubtractObjectID, int inSubtraction ) {
     
     for( int j=0; j<inOldQuanties->size(); j++ ) {
@@ -102,9 +102,10 @@ void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
             if( r->quantity == 0 ) {
                 inOldQuanties->deleteElement( j );
                 }
-            break;
+            return true;
             }
         }
+    return false;
     }
 
 

@@ -46,9 +46,10 @@ void addToQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
                     int inAddObjectID,
                     int inAddition = 1 );
 
-// subtracts 1 (default from an existing quantity record for inAddObjectID, 
-// if found
-void subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
+// subtracts 1 (default) from an existing quantity record for 
+// inSubtractObjectID, if found
+// returns true if found
+char subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
                            int inSubtractObjectID,
                            int inSubtraction = 1 );
 
