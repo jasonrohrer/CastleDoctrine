@@ -1,5 +1,5 @@
 
-for i in {1..10}
+for i in {1..1}
 do
     cat testRequest.txt | telnet localhost 5077
 done

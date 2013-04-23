@@ -327,6 +327,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void drawTiles( char inBeneathShadowsOnly );
         
 
+        char mSkipShadowComputation;
+        
         void recomputeWallShadows();
 
         

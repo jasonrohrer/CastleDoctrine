@@ -34,6 +34,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
                              translate( "toggleVisibility" ) ),
           mPlaying( false ),
           mSpeedFactor( 1 ),
+          mFullSpeed( false ),
           mStepsUntilNextPlayStep( 0 ),
           mVisibilityToggle( false ),
           mJustRestarted( false ),
@@ -114,7 +115,9 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
 
     // prepare for new playback
     mPlaying =  false;
-        
+    mFullSpeed = false;
+    mSkipShadowComputation = false;
+    
     mStepButton.setVisible( true );
     mPlayButton.setVisible( true );
     mStopButton.setVisible( false );
@@ -148,6 +151,8 @@ int ReplayRobHouseGridDisplay::getToolIDJustPicked() {
 
 void ReplayRobHouseGridDisplay::playAtFullSpeed() {
     mPlaying = true;
+    mFullSpeed = true;
+    mSkipShadowComputation = true;
 
     mSpeedFactor = STEP_DELAY;
     mStepsUntilNextPlayStep = STEP_DELAY / mSpeedFactor; 
@@ -346,6 +351,9 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
 
 
 void ReplayRobHouseGridDisplay::recomputeVisibility() {
+    if( mFullSpeed ) {
+        return;
+        }
     
     if( mVisibilityToggle ) {    
         // all visible during playback

@@ -76,6 +76,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mAllFamilyObjectsHaveExitPath( false ),
           mPointerInside( false ),
           mWallShadowSprite( NULL ),
+          mSkipShadowComputation( false ),
           mAllowPlacement( true ),
           mLastPlacedObject( 0 ),
           mLastActionChangedDiff( false ),
@@ -2900,6 +2901,11 @@ void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
 
 
 void HouseGridDisplay::recomputeWallShadows() {
+    if( mSkipShadowComputation ) {
+        return;
+        }
+
+
     if( mWallShadowSprite != NULL ) {
         freeSprite( mWallShadowSprite );
         mWallShadowSprite = NULL;

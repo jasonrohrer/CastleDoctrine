@@ -43,6 +43,7 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         // for automated robbery simulation
         // switch to fastest playback speed (one move per step() ) and
         // initiate play
+        // AND disable visibility computations
         virtual void playAtFullSpeed();
         
 
@@ -80,6 +81,9 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
 
         char mPlaying;
         int mSpeedFactor;
+        
+        char mFullSpeed;
+        
         
         int mStepsUntilNextPlayStep;
 

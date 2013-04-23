@@ -77,7 +77,17 @@ static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = {
     "powerNorth",
     "noPowerNorth",
     };
-                                              
+
+
+enum triggerID {
+	trigger_player = 10000,
+    trigger_mobile,
+    trigger_noMobile,
+    trigger_power,
+    trigger_noPower,
+    trigger_powerNorth,
+    trigger_noPowerNorth
+    };                                              
     
 
 // built-in trigger IDs start at 10000
@@ -568,14 +578,14 @@ static char applyPowerTransitions( int *inMapIDs,
         if( powerMap[i]  ) {
             // this cell is powered
             r = 
-                &( triggerRecords[ getTriggerID( (char*)"power" ) ] );
+                &( triggerRecords[ trigger_power ] );
             
             applicableTriggers.push_back( r );
             }
         else {            
             // this cell itself isn't powered
             r = 
-                &( triggerRecords[ getTriggerID( (char*)"noPower" ) ] );
+                &( triggerRecords[ trigger_noPower ] );
             
             applicableTriggers.push_back( r );
             }
@@ -596,18 +606,20 @@ static char applyPowerTransitions( int *inMapIDs,
         
         if( powerNorth ) {
             r = 
-                &( triggerRecords[ getTriggerID( (char*)"powerNorth" ) ] );
+                &( triggerRecords[ trigger_powerNorth ] );
             applicableTriggers.push_back( r );
             }
         else {
             r = 
-                &( triggerRecords[ getTriggerID( (char*)"noPowerNorth" ) ] );
+                &( triggerRecords[ trigger_noPowerNorth ] );
             
             applicableTriggers.push_back( r );
             }
         
         
-        for( int a=0; a<applicableTriggers.size(); a++ ) {
+        int numTriggers = applicableTriggers.size();
+        
+        for( int a=0; a<numTriggers; a++ ) {
             TransitionTriggerRecord *r = 
                 *( applicableTriggers.getElement( a ) );
         
@@ -674,7 +686,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     // mobiles move.
     if( inMapIDs[ inRobberIndex ] != 0 ) {
         TransitionTriggerRecord *r = 
-            &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+            &( triggerRecords[ trigger_player ] );
         
         int playerOnID = inMapIDs[ inRobberIndex ];
         int playerOnState = inMapStates[ inRobberIndex ];
@@ -898,7 +910,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 
 
     TransitionTriggerRecord *r = 
-            &( triggerRecords[ getTriggerID( (char*)"mobile" ) ] );
+            &( triggerRecords[ trigger_mobile ] );
 
     
     for( int j=0; j<mobileIndices.size(); j++ ) {
@@ -932,7 +944,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     
 
     // handle transitions triggered by lack of mobile presense
-    r = &( triggerRecords[ getTriggerID( (char*)"noMobile" ) ] );
+    r = &( triggerRecords[ trigger_noMobile ] );
     
     for( int i=0; i<numCells; i++ ) {
         if( inMapMobileIDs[i] == 0 && inRobberIndex != i ) {
@@ -962,7 +974,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 
     if( inMapMobileIDs[ inRobberIndex ] != 0 ) {
         
-        r = &( triggerRecords[ getTriggerID( (char*)"player" ) ] );
+        r = &( triggerRecords[ trigger_player ] );
 
 
         int playerOnMobID = inMapMobileIDs[ inRobberIndex ];

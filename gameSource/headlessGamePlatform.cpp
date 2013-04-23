@@ -90,9 +90,18 @@ int main() {
                 else if( strstr( request, "simulate_robbery" ) == request ) {
                     double startTime = Time::getCurrentTime();
                 
+                    int numRepeats = 200;
+                    for( int i=0; i<numRepeats; i++ ) {
+                        printf( "%d\n", i );
+                        response = simulateRobbery( request );
+                        delete response;
+                        }
+                    double netTime = Time::getCurrentTime() - startTime;
+                    printf( "Simulation %d took %f seconds (%f each)\n",
+                            numRepeats, netTime, 
+                            netTime / numRepeats );
+                    
                     response = simulateRobbery( request );
-                    printf( "Simulation took %f seconds\n",
-                            Time::getCurrentTime() - startTime );
                     }
                 else {
                     response = stringDuplicate( "FAILED" );
