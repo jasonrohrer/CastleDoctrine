@@ -734,10 +734,16 @@ char RobHouseGridDisplay::getAboutToLeave() {
 
 void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
     
-    applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
-                         mHouseMapMobileIDs, mHouseMapMobileCellStates,
-                         mFullMapD, mFullMapD,
-                         mCurrentTool, inTargetFullIndex );
+    if( mToolTargetFullIndices.getElementIndex( inTargetFullIndex ) != -1 ) {
+        // this is an allowed target spot for this tool
+        
+        // otherwise, just ignore the tool use
+
+        applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
+                             mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                             mFullMapD, mFullMapD,
+                             mCurrentTool, inTargetFullIndex );
+        }
     
     // tool use triggers a step
     applyTransitionsAndProcess();
