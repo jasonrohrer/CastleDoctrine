@@ -3776,6 +3776,69 @@ function cd_endRobHouse() {
     $daughter_name = $row[ "daughter_name" ];
 
 
+    // wife carries half money, if she's there
+    $wife_money = (int)( $house_money / 2 );
+    if( !$wife_present ) {
+        $wife_money = 0;
+        }
+
+
+
+    
+    global $checkRobberiesWithHeadlessClient;
+
+    if( $checkRobberiesWithHeadlessClient ) {
+
+        $sim_success;
+        $sim_wife_killed;
+        $sim_wife_robbed;
+        $sim_any_family_killed;
+        $sim_end_backpack_contents;
+        $sim_end_house_map;
+        
+        
+        $simResult =
+            cd_simulateRobbery( $old_house_map,
+                                $old_backpack_contents,
+                                $move_list,
+                                $wife_money,
+                                    
+                                &$sim_success,
+                                &$sim_wife_killed,
+                                &$sim_wife_robbed,
+                                &$sim_any_family_killed,
+                                &$sim_end_backpack_contents,
+                                &$sim_end_house_map );
+
+        if( $simResult == 0 ) {       
+            cd_log( "Robbery end with failed robbery simulation".
+                    " denied" );
+            cd_transactionDeny();
+            return;
+            }
+        else if( $simResult == 1 ) {
+            // sim finished
+
+            if( $sim_success != $success ||
+                $sim_wife_killed != $wife_killed ||
+                $sim_wife_robbed != $wife_robbed ||
+                $sim_any_family_killed != $any_family_killed ||
+                $sim_end_backpack_contents != $backpack_contents ||
+                $sim_end_house_map != $house_map ) {
+                
+                cd_log( "Robbery end with submitted results that don't".
+                        " match simulation results denied" );
+                cd_transactionDeny();
+                return;
+                }
+            }            
+        // else sim result is 2 (connect failed), so we know
+        // nothing about it's validity... allow it through
+        }
+
+
+    
+    
 
     
     // grab past scouting stats here, for inclusion in robbery log
@@ -3804,11 +3867,7 @@ function cd_endRobHouse() {
     
     $loadout = $old_backpack_contents;
 
-    // wife carries half money, if she's there
-    $wife_money = (int)( $house_money / 2 );
-    if( !$wife_present ) {
-        $wife_money = 0;
-        }
+
     
     
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
@@ -4633,6 +4692,7 @@ function cd_simulateRobbery( $house_map,
                 "[END_REQUEST]";
             
             fwrite( $socketFile, $request );
+            fflush( $socketFile );
             
             $endResponseSeen = false;
 

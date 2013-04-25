@@ -243,6 +243,7 @@ void ReplayRobHouseGridDisplay::takeStep() {
                     }
                 }
             else if( move[0] == 'L' ) {
+                robberTriedToLeave();
                 hideRobber( true );
                 shouldDeleteMove = true;
                 }
