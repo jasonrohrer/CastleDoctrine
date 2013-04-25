@@ -165,6 +165,14 @@ void ReplayRobHouseGridDisplay::playAtFullSpeed() {
 
 
 
+char ReplayRobHouseGridDisplay::getMoveListExhausted() {
+    if( mReplayMoveList.size() == 0 ) {
+        return true;
+        }
+    return false;
+    }
+
+
 
 void ReplayRobHouseGridDisplay::step() {
     RobHouseGridDisplay::step();

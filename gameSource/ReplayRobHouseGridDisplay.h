@@ -46,6 +46,8 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
         // AND disable visibility computations
         virtual void playAtFullSpeed();
         
+        virtual char getMoveListExhausted();
+        
 
         virtual void step();
 

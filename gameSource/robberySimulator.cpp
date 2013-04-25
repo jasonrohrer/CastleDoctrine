@@ -78,7 +78,8 @@ daughter_name
     char moveListIncorrect = false;
     
     while( !replayCheckerDisplay->getDead() && 
-           replayCheckerDisplay->getSuccess() == 0 ) {
+           replayCheckerDisplay->getSuccess() == 0 &&
+           ! replayCheckerDisplay->getMoveListExhausted() ) {
         
         replayCheckerDisplay->step();
 
@@ -97,6 +98,14 @@ daughter_name
                     }
                 }
             }
+        }
+    
+
+    if( !replayCheckerDisplay->getDead() && 
+        replayCheckerDisplay->getSuccess() == 0 ) {
+        // move list ran out before robbery ended properly!
+        
+        return stringDuplicate( "FAILED" );
         }
     
     
