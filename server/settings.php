@@ -104,6 +104,19 @@ $flushDuringClientCalls = true;
 
 
 
+// Default behavior is NOT to depend on a compiled, headless client for
+// robbery simulation (cheat-blocking).  If you leave this disabled, many
+// cheats (walking through walls, etc.) will be allowed through.  You can
+// still manually detect these by watching security tapes.
+$checkRobberiesWithHeadlessClient = true;
+
+// If enabled, list the ports that headless clients are running on here.
+// Server will pick one at random for each request (or try other ones
+// after one fails).
+$headlessClientPorts = array( 5077, 5078 );
+
+
+
 
 // prices that are loaded when database is first setup
 // they can be changed manually later from the admin page

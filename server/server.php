@@ -3074,6 +3074,45 @@ function cd_endEditHouse() {
 
         $self_test_move_list = $old_self_test_move_list;
         }
+    else {
+        global $checkRobberiesWithHeadlessClient;
+
+        if( $checkRobberiesWithHeadlessClient ) {
+            $simResult =
+                cd_simulateRobbery( $house_map,
+                                    "#",
+                                    $self_test_move_list,
+                                    0,
+                                    
+                                    &$success,
+                                    &$wife_killed,
+                                    &$wife_robbed,
+                                    &$any_family_killed,
+                                    &$end_backpack_contents,
+                                    &$end_house_map );
+
+            if( $simResult == 0 ) {
+                
+                cd_log( "House check-in with failed self-test simulation".
+                        " denied" );
+                cd_transactionDeny();
+                return;
+                }
+            else if( $simResult == 1 ) {
+                // sim finished
+
+                if( $success != 1 ) {
+                    // but player didn't reach vault in sim
+                    cd_log( "House check-in with self-test simulation".
+                        " that doesn't reach vault denied" );
+                    cd_transactionDeny();
+                    return;
+                    }
+                }            
+            // else sim result is 2 (connect failed), so we know
+            // nothing about it's validity... allow it through
+            }
+        }
     
     
     
@@ -4539,6 +4578,113 @@ function cd_buyAuction() {
 
     echo "$price\n";
     echo "OK";
+    }
+
+
+
+
+
+// passes robbery details to headless client to simulate it
+// returns:
+// 1 if sim succeeded
+// 0 if sim failed
+// 2 if failed to connect to headless client simulator
+function cd_simulateRobbery( $house_map,
+                             $backpack_contents,
+                             $move_list,
+                             $wife_money,
+                             
+                             &$success,
+                             &$wife_killed,
+                             &$wife_robbed,
+                             &$any_family_killed,
+                             &$end_backpack_contents,
+                             &$end_house_map ) {
+
+    global $headlessClientPorts;
+
+    $simDone = false;
+    
+    while( count( $headlessClientPorts ) > 0 ) {
+        $pick = array_rand( $headlessClientPorts );
+        
+        $port = $headlessClientPorts[ $pick ];
+
+        unset( $headlessClientPorts[ $pick ] );
+        
+
+        $errno;
+        $errstr;
+
+        // 1 second timeout before trying a different client
+        $socketFile = @stream_socket_client( "tcp://localhost:$port",
+                                             $errno, $errstr, 1 );
+
+        if( $socketFile ) {
+
+            stream_set_blocking( $socketFile, 0 );
+
+            $request =
+                "simulate_robbery\n".
+                "$house_map\n".
+                "$backpack_contents\n".
+                "$move_list\n".
+                "$wife_money\n".
+                "[END_REQUEST]";
+            
+            fwrite( $socketFile, $request );
+            
+            $endResponseSeen = false;
+
+            $response = "";
+            
+            while( !$endResponseSeen && !feof( $socketFile ) ) {
+
+                $read = fgets( $socketFile );
+
+                if( $read !== false ) {
+
+                    $response = $response . $read;
+                    }
+
+                if( strstr( $response, "[END_RESPONSE]" ) ) {
+                    $endResponseSeen = true;
+                    }
+                }
+
+            fclose( $socketFile );
+
+            if( $endResponseSeen ) {
+                // parse it
+                
+                $responseParts = preg_split( "/\s+/", $response );
+
+                if( count( $responseParts ) == 7 ) {
+                    
+                    $success = $responseParts[0];
+                    
+                    $wife_killed = $responseParts[1];
+                    $wife_robbed = $responseParts[2];
+                    $any_family_killed = $responseParts[3];
+                    $end_backpack_contents = $responseParts[4];
+                    $end_house_map = $responseParts[5];
+                    
+                    return 1;
+                    }
+                else {
+                    // FAILED response from server
+                    return 0;
+                    }
+                }            
+            }
+
+        // if we get here, we weren't able to connect or get a response
+        // from this headless client
+        // repeat again with a different one
+        }
+
+    // tried all of them, connected to none
+    return 2;
     }
 
 

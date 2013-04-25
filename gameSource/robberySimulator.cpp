@@ -22,7 +22,7 @@ char *simulateRobbery( const char *inRobberyData ) {
 
     SimpleVector<char *> *tokens = tokenizeString( inRobberyData );
     
-    if( tokens->size() != 8 ) {
+    if( tokens->size() != 5 ) {
         
         for( int i=0; i<tokens->size(); i++ ) {
             delete [] *( tokens->getElement( i ) );
@@ -39,9 +39,6 @@ houseMap
 backpack_contents
 moveList
 wife_money
-wife_name
-son_name
-daughter_name
     */
     
     replayCheckerDisplay->setHouseMap( *( tokens->getElement(1) ) );
@@ -57,9 +54,9 @@ daughter_name
     
     replayCheckerDisplay->setWifeMoney( wifeMoney );
     
-    replayCheckerDisplay->setWifeName( *( tokens->getElement(5) ) );
-    replayCheckerDisplay->setSonName( *( tokens->getElement(6) ) );
-    replayCheckerDisplay->setDaughterName( *( tokens->getElement(7) ) );
+    replayCheckerDisplay->setWifeName( "SimWife" );
+    replayCheckerDisplay->setSonName( "SimSon" );
+    replayCheckerDisplay->setDaughterName( "SimDaughter" );
 
 
 
