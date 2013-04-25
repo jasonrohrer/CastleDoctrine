@@ -40,6 +40,7 @@ Version 6
 
 --Fixed bug in wife money tracking after security tape restart.
 
+--Fixed server-side blocking of tool use in self-test move list.
 
 
 

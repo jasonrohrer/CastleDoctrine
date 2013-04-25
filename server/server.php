@@ -2316,7 +2316,7 @@ function cd_endEditHouse() {
     // aren't allowed
     // also, no valid self test ends with L (leaving house)
     $self_test_move_list =
-        cd_requestFilter( "self_test_move_list", "/[m0-9#S]+/" );
+        cd_requestFilter( "self_test_move_list", "/[m0-9#S]+/", "#" );
 
     
     $died = cd_requestFilter( "died", "/[012]/" );
