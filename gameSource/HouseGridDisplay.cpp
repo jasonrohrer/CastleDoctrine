@@ -2721,7 +2721,16 @@ void HouseGridDisplay::specialKeyUp( int inKeyCode ) {
 
 
 void HouseGridDisplay::moveRobber( int inNewIndex ) {
+    int newRobberSubIndex = fullToSub( inNewIndex );
+
+    if( isSubMapPropertySet( newRobberSubIndex, blocking ) ) {
+        // check for blocking here too so that moveRobber can be used
+        // blindly by subclasses
+        return;
+        }
     
+    
+
     if( mRobberIndex != inNewIndex ) {
         
         int oldX = mRobberIndex % mFullMapD;
@@ -2733,6 +2742,22 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
         
         int dY = newY - oldY;
         
+        if( ( dX != 0 && dY != 0 )
+            ||
+            dX > 1 
+            ||
+            dX < -1
+            ||
+            dY > 1
+            ||
+            dY < -1 ) {
+            
+            // block moves that jump more than one space
+            return;
+            }
+        
+
+
         if( dX != 0 ) {
             if( dX == 1 ) {
                 mRobberOrientation = 1;
