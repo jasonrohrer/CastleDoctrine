@@ -137,17 +137,23 @@ A. Inside the source folder:
 
 B. If the build ran correctly, CastleDoctrineHeadless should be created.
 
-C. Edit settings/simulatorServerPort.ini and settings/simulatorServerPassword.ini
+C. Then run:
 
-D. (Optional):  Make several copies of the CastleDoctrine folder, and set
+   ./makeHeadlessGameFolder.sh
+
+D. Copy the resulting headlessFolder wherever you want.
+
+E. Edit settings/simulatorServerPort.ini and settings/simulatorServerPassword.ini
+
+F. (Optional):  Make several copies of the headlessGame folder, and set
    different simulatorServerPorts in each one so that you can run multiple
    headless clients for redundancy.
 
-E. Launch each headless client as a daemon with a command like:
+G. Launch each headless client as a daemon with a command like:
 
    nohup ./CastleDoctrineHeadless > headlessLog.txt 2>&1 &
 
-F. Edit settings.php to enable $checkRobberiesWithHeadlessClient, and set the
+H. Edit settings.php to enable $checkRobberiesWithHeadlessClient, and set the
    port number(s) for the client(s) in $headlessClientPorts.
 
 
