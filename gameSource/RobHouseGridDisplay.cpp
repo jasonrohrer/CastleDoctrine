@@ -197,7 +197,7 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
                             
                             if( subIndexNew != -1 ) {
                                 
-                                if( mTileVisbleMap[ subIndexNew ] ) {
+                                if( mTileVisibleMap[ subIndexNew ] ) {
                                     hitSquares.push_back( indexNew );
                                     }
                                 }
@@ -267,6 +267,8 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mSuccess = 0;
     mDead = false;
 
+    stopUsingTool();
+    
     clearMoveList();
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
@@ -763,7 +765,7 @@ void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
     // don't show tool tips for invisible tiles (shrouded)
     // or during blackout after robber hits goal
     if( overIndex != -1 && 
-        mTileVisbleMap[ overIndex ] 
+        mTileVisibleMap[ overIndex ] 
         &&
         mRobberIndex != mGoalIndex ) {
 
@@ -943,7 +945,7 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
 void RobHouseGridDisplay::recomputeVisibility() {
 
     // clear
-    memset( mTileVisbleMap, 0, HOUSE_D * HOUSE_D );
+    memset( mTileVisibleMap, 0, HOUSE_D * HOUSE_D );
 
 
     int robSubIndex = fullToSub( mRobberIndex );
@@ -1017,7 +1019,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 // at least one sub-area of tile is visible
                 int visTileIndex = getTileIndex( visPos.x, visPos.y );
                 
-                mTileVisbleMap[ visTileIndex ] = true;
+                mTileVisibleMap[ visTileIndex ] = true;
                 }
 
             i++;

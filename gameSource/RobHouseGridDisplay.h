@@ -96,7 +96,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         // for each tile, true if (even partly) visible
         // false if completely invisible
-        char mTileVisbleMap[ HOUSE_D * HOUSE_D ];
+        char mTileVisibleMap[ HOUSE_D * HOUSE_D ];
 
 
         SimpleVector<char *> mMoveList;
