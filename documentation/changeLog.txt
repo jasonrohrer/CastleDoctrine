@@ -42,6 +42,11 @@ Version 6
 
 --Fixed server-side blocking of tool use in self-test move list.
 
+--Fixed bug in tool targets lingering in next robbery if tool use canceled by 
+  walking out the door or current robbery.
+
+--Fixed bug in replay with visibility shroud off that showed extra tool targets.
+
 
 
 Version 5   2013-March-11

@@ -161,6 +161,24 @@ void ReplayRobHouseGridDisplay::playAtFullSpeed() {
     mFasterButton.setVisible( false );
     mPlayButton.setVisible( false );
     mStepButton.setVisible( false );
+
+    // hack:  make whole view area visible, always, to allow
+    // all tool targetting without recomputing visibility each step
+    // (speeds up steps by a factor of 4 or more).
+    //
+    // Note that this will mistakenly allow extra tool targetting (around
+    // corners to reachable areas that aren't actually visible), which may allow
+    // an innocuous kind of cheat (shooting something around a corner that is
+    // not visible).  But it's worth it to gain the speed up here
+    int i = 0;
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            
+            mTileVisibleMap[i] = true;
+            
+            i++;
+            }
+        }
     }
 
 
@@ -361,11 +379,17 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
 
 void ReplayRobHouseGridDisplay::recomputeVisibility() {
     if( mFullSpeed ) {
+        // skip recomputing visiblity entirely when simulating at full speed
+        // hack is to let entire screen area be visible.
         return;
         }
+
+    RobHouseGridDisplay::recomputeVisibility();
     
     if( mVisibilityToggle ) {    
         // all visible during playback
+        // though keep mTileVisbleMap set to true visibility for proper
+        // tool target selection.
 
         int i = 0;
         for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
@@ -376,19 +400,6 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
                 i++;
                 }
             }
-        
-        i = 0;
-        for( int y=0; y<HOUSE_D; y++ ) {
-            for( int x=0; x<HOUSE_D; x++ ) {
-
-                mTileVisbleMap[i] = true;
-
-                i++;
-                }
-            }
-        }
-    else {
-        RobHouseGridDisplay::recomputeVisibility();
         }
     
     }
