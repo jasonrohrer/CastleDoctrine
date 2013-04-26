@@ -108,7 +108,7 @@ $flushDuringClientCalls = true;
 // robbery simulation (cheat-blocking).  If you leave this disabled, many
 // cheats (walking through walls, etc.) will be allowed through.  You can
 // still manually detect these by watching security tapes.
-$checkRobberiesWithHeadlessClient = true;
+$checkRobberiesWithHeadlessClient = false;
 
 // If enabled, list the ports that headless clients are running on here.
 // Server will pick one at random for each request (or try other ones

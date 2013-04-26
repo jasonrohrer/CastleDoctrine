@@ -81,7 +81,7 @@ G. Assuming that all is well, your game server should be ready for you to
 
    http://myserver/server/
 
-G. Log in.  No users should have houses showing up yet, but they will soon.
+H. Log in.  No users should have houses showing up yet, but they will soon.
 
 
 
@@ -119,6 +119,37 @@ G. Log in.  No users should have houses showing up yet, but they will soon.
    and set $flushDuringClientCalls to false.  This will remove the load for
    server flushes from client calls, reducing the maximum response time for
    a client.
+
+
+
+9. (Optional but highly recommended).  The server-side cheat prevention uses a
+   server-side headless game client to simulate player-submitted robberies and
+   check them for validity.  Using this feature requires that you be able to
+   compile and run C programs on your server.  Extract the source archive on
+   your server and then:
+
+A. Inside the source folder:
+
+   cd CastleDoctrine
+   ./configure
+   cd gameSource
+   ./makeHeadlessGame.sh
+
+B. If the build ran correctly, CastleDoctrineHeadless should be created.
+
+C. Edit settings/simulatorServerPort.ini and settings/simulatorServerPassword.ini
+
+D. (Optional):  Make several copies of the CastleDoctrine folder, and set
+   different simulatorServerPorts in each one so that you can run multiple
+   headless clients for redundancy.
+
+E. Launch each headless client as a daemon with a command like:
+
+   nohup ./CastleDoctrineHeadless > headlessLog.txt 2>&1 &
+
+F. Edit settings.php to enable $checkRobberiesWithHeadlessClient, and set the
+   port number(s) for the client(s) in $headlessClientPorts.
+
 
 
 
