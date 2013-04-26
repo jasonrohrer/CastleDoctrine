@@ -267,6 +267,7 @@ void ReplayRobHouseGridDisplay::takeStep() {
                 }
             else if( move[0] == 'S' ) {
                 mRobberState = 99;
+                mDead = true;
                 shouldDeleteMove = true;
                 }
             }
