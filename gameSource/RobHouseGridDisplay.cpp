@@ -268,6 +268,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mDead = false;
 
     stopUsingTool();
+    mToolJustUsed = false;
     
     clearMoveList();
 
@@ -739,12 +740,13 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
     if( mToolTargetFullIndices.getElementIndex( inTargetFullIndex ) != -1 ) {
         // this is an allowed target spot for this tool
         
-        // otherwise, just ignore the tool use
-
         applyToolTransition( mHouseMapIDs, mHouseMapCellStates, 
                              mHouseMapMobileIDs, mHouseMapMobileCellStates,
                              mFullMapD, mFullMapD,
                              mCurrentTool, inTargetFullIndex );
+        }
+    else {
+        mForbiddenMoveHappened = true;
         }
     
     // tool use triggers a step

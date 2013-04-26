@@ -70,8 +70,6 @@ wife_money
     replayCheckerDisplay->playAtFullSpeed();
     
 
-    // FIXME:  need to check for move list running out without conclusion
-
     char moveListIncorrect = false;
     
     while( !replayCheckerDisplay->getDead() && 
@@ -80,6 +78,10 @@ wife_money
         
         replayCheckerDisplay->step();
 
+        if( replayCheckerDisplay->didForbiddenMoveHappen() ) {
+            moveListIncorrect = true;
+            break;
+            }
 
         if( replayCheckerDisplay->getToolJustUsed() ) {
             
@@ -100,7 +102,7 @@ wife_money
 
     if( !replayCheckerDisplay->getDead() && 
         replayCheckerDisplay->getSuccess() == 0 ) {
-        // move list ran out before robbery ended properly!
+        // move list ran out or was incorrect before robbery ended properly!
         
         return stringDuplicate( "FAILED" );
         }

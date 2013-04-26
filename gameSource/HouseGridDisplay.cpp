@@ -83,7 +83,8 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mLastActionPlayerMotion( false ),
           mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
           mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ),
-          mToolTargetPickedFullIndex( -1 ) {
+          mToolTargetPickedFullIndex( -1 ),
+          mForbiddenMoveHappened( false ) {
 
 
     if( !sNoiseTileBankPopulated ) {
@@ -511,6 +512,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
             }
         }
     
+    mForbiddenMoveHappened = false;
 
     for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
         mSpecialKeysHeldSteps[i] = 0;
@@ -1020,6 +1022,12 @@ char HouseGridDisplay::areMandatoriesPlaced() {
 
 char HouseGridDisplay::doAllFamilyObjectsHaveExitPath() {
     return mAllFamilyObjectsHaveExitPath;
+    }
+
+
+
+char HouseGridDisplay::didForbiddenMoveHappen() {
+    return mForbiddenMoveHappened;
     }
 
 
@@ -2726,6 +2734,7 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
     if( isSubMapPropertySet( newRobberSubIndex, blocking ) ) {
         // check for blocking here too so that moveRobber can be used
         // blindly by subclasses
+        mForbiddenMoveHappened = true;
         return;
         }
     

@@ -103,6 +103,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         char doAllFamilyObjectsHaveExitPath();
         
+        char didForbiddenMoveHappen();
+        
 
         // disable placement... for example, if out of money
         void allowPlacement( char inAllow );
@@ -387,6 +389,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         int mToolTargetPickedFullIndex;
         
+        int mForbiddenMoveHappened;
+
 
         char mAllowMoveKeyHold;
         int mSpecialKeysHeldSteps[MG_KEY_LAST_CODE + 1];
