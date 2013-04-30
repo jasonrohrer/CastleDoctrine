@@ -3484,38 +3484,49 @@ function cd_endRobHouse() {
 
 
     
-    // First, make sure that this robber has SOME house checked out.
-    // Note that this is not totally safe, because requests from the
-    // same user could be interleaved here, since we are NOT locking on
-    // this check to avoid deadlocks when updating the backpack below.
-    // Thus, two requests could get through this check in parallel,
-    // only to fail (or cause weird behavior, like double-backpack spending),
-    // below.  However, we have to do this check here to avoid double-backpack
-    // spending whenever we can.  Otherwise, if we just count on other failures
-    // to detect client retries, we will likely have double-backpack spending
-    // very frequently (because the duplicate backpack operation won't fail
-    // every time).
-
-    // MOST of the time, requests from the same user won't be getting processed
-    // in parallel.
     
     // find out what house user is robbing
     // thus, various select queries below uses user_id (index column) in
     // WHERE clause preventing entire table from locking
     $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
 
+    
+    
+    cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
 
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+    
+
+    // keep track of DB update queries that need to be done
+    // outside of the main commit block to avoid deadlocks while
+    // we have the target house row locked
+    $pendingDatabaseUpdateQueries = array();
+
+    
+
+    
+    
+    // automatically ignore blocked users and houses already checked
+    // out for robbery
+    
+    $ownerDied = 0;
+    
+    $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
+        "house_map, user_id, character_name, ".
+        "wife_name, son_name, daughter_name, ".
+        "loot_value, vault_contents, gallery_contents, ".
+        "rob_attempts, robber_deaths, edit_count ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
         "robbing_user_id = '$user_id' AND blocked='0' ".
-        "AND rob_checkout = 1 AND edit_checkout = 0;";
+        "AND rob_checkout = 1 AND edit_checkout = 0 ".
+        "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
 
-    $checkoutCount = mysql_result( $result, 0, 0 );
-        
-    if( $checkoutCount < 1 ) {
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
         // not found in main table
         
         // check owner_died table, in case house was flushed while
@@ -3528,11 +3539,11 @@ function cd_endRobHouse() {
                                $query );
 
         $result = cd_queryDatabase( $query );
+        
+        $numRows = mysql_numrows( $result );
 
-        $checkoutCount = mysql_result( $result, 0, 0 );
-
-        if( $checkoutCount < 1 ) {
-            // no rob-checked-out houses found for this user anywhere.
+        if( $numRows < 1 ) {
+            // not found in main table OR shadow table
 
             // assume this is a client retry for a checkin that already
             // happened
@@ -3558,20 +3569,29 @@ function cd_endRobHouse() {
                 return;
                 }
             }
+        else {
+            $ownerDied = 1;
+            }
         }
-
-    
-    
-    cd_queryDatabase( "SET AUTOCOMMIT=0" );
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
 
     
-    $query = "SELECT backpack_contents, vault_contents, gallery_contents, ".
+    // Now that we have target house locked (and it is checked out for
+    // robbery by this user), do backpack change calculation
+    // thus, we don't risk doing this twice, even in the case
+    // of retried checkin attempts.
+
+    
+    // Get these without locking, because user is only one to update
+    // these ever (they only update their own)
+    // And we can't lock it while target house is locked (deadlock potential).
+    $query = "SELECT backpack_contents, ".
         "carried_loot_value, carried_vault_contents, ".
         "carried_gallery_contents ". 
         "FROM $tableNamePrefix"."houses ".
-        "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
+        "WHERE user_id = '$user_id' AND blocked='0';";
 
     $result = cd_queryDatabase( $query );
 
@@ -3655,92 +3675,14 @@ function cd_endRobHouse() {
         }
 
     
-    // update backpack here, and commit, to avoid deadlock where we have
-    // one row locked (our house row) and try to lock another (victim house
-    // row).  If we're being counter-robbed at the same time, and check-in
-    // happens at the same time, this is a deadlock.
-
-    // Backpack update might not be consistent here (because house check-in
-    // might fail below), but that's okay (user spends items even if check-in
-    // fails, and this is better than a deadlock
 
     // update contents of backpack (checked to be okay above)
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "backpack_contents = '$backpack_contents'".
         "WHERE user_id = $user_id;";
-    cd_queryDatabase( $query );
 
-
-    cd_queryDatabase( "COMMIT;" );
-
-
-
-    // keep track of DB update queries that need to be done
-    // outside of the main commit block to avoid deadlocks while
-    // we have the target house row locked
-    $pendingDatabaseUpdateQueries = array();
-
-    
-
-    // now check victim house back in as a second transaction
-
-
-    
-    
-    // automatically ignore blocked users and houses already checked
-    // out for robbery
-    
-    $ownerDied = 0;
-    
-    $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
-        "house_map, user_id, character_name, ".
-        "wife_name, son_name, daughter_name, ".
-        "loot_value, vault_contents, gallery_contents, ".
-        "rob_attempts, robber_deaths, edit_count ".
-        "FROM $tableNamePrefix"."houses ".
-        "WHERE user_id = '$last_robbed_owner_id' AND ".
-        "robbing_user_id = '$user_id' AND blocked='0' ".
-        "AND rob_checkout = 1 AND edit_checkout = 0 ".
-        "FOR UPDATE;";
-
-    $result = cd_queryDatabase( $query );
-
-    $numRows = mysql_numrows( $result );
-    
-    if( $numRows < 1 ) {
-        // not found in main table
-        
-        // check owner_died table, in case house was flushed while
-        // we were robbing it
-        $mainTableName = "$tableNamePrefix"."houses";
-        $shadowTableName = "$tableNamePrefix"."houses_owner_died";
-
-        // point same query at shadow table
-        $query = preg_replace( "/$mainTableName/", "$shadowTableName",
-                               $query );
-
-        $result = cd_queryDatabase( $query );
-        
-        $numRows = mysql_numrows( $result );
-
-        if( $numRows < 1 ) {
-            // not found in main table OR shadow table
-            
-            cd_log( "Robbery end failed for robber $user_id, ".
-                "failed to find target house in main or shadow house tables" );
-
-            cd_transactionDeny();
-            return;
-            }
-        else {
-            $ownerDied = 1;
-            }
-        }
-    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
-
-
-
-
+    // but don't actually run the update yet (avoid deadlock)
+    $pendingDatabaseUpdateQueries[] = $query;
 
 
 
@@ -4108,6 +4050,24 @@ function cd_endRobHouse() {
         // (this will be an empty return if robbery successful)
         cd_returnGalleryContents( $house_gallery_contents );
         }
+
+
+    // store cached response here, before unlocking row
+    // thus, a client retry can't fall through to the point where it looks
+    // at the cached response before the cached response has been saved
+    // (the retry will block at the target-house lock until the cached
+    //  response save happens).
+    $response = 
+        "$amountTaken\n" .
+        "$stuffTaken\n" .
+        "$galleryStuffTaken\n" . 
+        "OK";
+
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET last_robbery_response = '$response' WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+    
+
     
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
@@ -4126,15 +4086,6 @@ function cd_endRobHouse() {
         }
     
 
-    $response = 
-        "$amountTaken\n" .
-        "$stuffTaken\n" .
-        "$galleryStuffTaken\n" . 
-        "OK";
-
-    $query = "UPDATE $tableNamePrefix"."users ".
-        "SET last_robbery_response = '$response' WHERE user_id = $user_id;";
-    cd_queryDatabase( $query );
     
     
     echo $response;

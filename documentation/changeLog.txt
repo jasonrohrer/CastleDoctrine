@@ -49,6 +49,8 @@ Version 6
 (Changes up to here comprised headless client for v5, installed server-side 
  for robbery verificationon April 26, 2013.)
 
+--Fixed another inconsistency in behavior of the server during robbery-end if
+  client is retrying the request (thanks Jeremy Oertel).
 
 
 
