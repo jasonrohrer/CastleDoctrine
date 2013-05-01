@@ -219,11 +219,29 @@ void freeTools() {
 
 
 
-static toolRecord *getToolRecord( int inObjectID ) {
+char getToolInRange( int inObjectID ) {
+    if( inObjectID < 0 || inObjectID >= idSpaceSize ) {
+        return false;
+        }
 
     int index = idToIndexMap[inObjectID];
 
-    return tools.getElement( index );
+    if( index == -1 ) {
+        return false;
+        }
+    return true;
+    }
+
+
+
+static toolRecord *getToolRecord( int inObjectID ) {
+    
+    if( getToolInRange( inObjectID ) ) {
+        return tools.getElement( idToIndexMap[inObjectID] );
+        }
+    else {
+        return tools.getElement( 0 );
+        }
     }
 
 

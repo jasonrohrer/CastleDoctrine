@@ -11,6 +11,10 @@ void initTools();
 void freeTools();
 
 
+// false for bad tool IDs
+char getToolInRange( int inObjectID );
+
+
 SpriteHandle getToolSprite( int inObjectID );
 
 int getToolReach( int inObjectID );

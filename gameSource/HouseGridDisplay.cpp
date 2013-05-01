@@ -2731,7 +2731,8 @@ void HouseGridDisplay::specialKeyUp( int inKeyCode ) {
 void HouseGridDisplay::moveRobber( int inNewIndex ) {
     int newRobberSubIndex = fullToSub( inNewIndex );
 
-    if( isSubMapPropertySet( newRobberSubIndex, blocking ) ) {
+    if( newRobberSubIndex == -1 ||
+        isSubMapPropertySet( newRobberSubIndex, blocking ) ) {
         // check for blocking here too so that moveRobber can be used
         // blindly by subclasses
         mForbiddenMoveHappened = true;

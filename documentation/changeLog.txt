@@ -52,6 +52,7 @@ Version 6
 --Fixed another inconsistency in behavior of the server during robbery-end if
   client is retrying the request (thanks Jeremy Oertel).
 
+--Fixed crashes in headless client when move list contains invalid values.
 
 
 

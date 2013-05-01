@@ -151,6 +151,11 @@ char *RobHouseGridDisplay::getMoveList() {
 
 
 void RobHouseGridDisplay::startUsingTool( int inToolID ) {
+    if( ! getToolInRange( inToolID ) ) {
+        mForbiddenMoveHappened = true;
+        return;
+        }
+
     mCurrentTool = inToolID;
 
     if( mCurrentTool != -1 ) {
