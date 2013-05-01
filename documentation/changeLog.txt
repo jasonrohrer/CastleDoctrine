@@ -1,4 +1,4 @@
-Version 6
+Version 5_serverFixes
 
 --Added extra logging to server to track down name collision and house deletion
   issues.
@@ -53,6 +53,10 @@ Version 6
   client is retrying the request (thanks Jeremy Oertel).
 
 --Fixed crashes in headless client when move list contains invalid values.
+
+--Blocked salary accumulation in houses that have never been edited (if player
+  quits after dying but before editing house).
+
 
 
 
