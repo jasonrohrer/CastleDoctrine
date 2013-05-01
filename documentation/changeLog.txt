@@ -1,4 +1,4 @@
-Version 5_serverFixes
+Version 5_serverFixes   2013-May-1
 
 --Added extra logging to server to track down name collision and house deletion
   issues.
@@ -45,7 +45,9 @@ Version 5_serverFixes
 --Fixed bug in tool targets lingering in next robbery if tool use canceled by 
   walking out the door or current robbery.
 
---Fixed bug in replay with visibility shroud off that showed extra tool targets.
+--Fixed bug in replay with visibility shroud off that showed extra tool 
+  targets.
+
 (Changes up to here comprised headless client for v5, installed server-side 
  for robbery verificationon April 26, 2013.)
 
