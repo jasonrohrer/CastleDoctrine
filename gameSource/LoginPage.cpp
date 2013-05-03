@@ -196,6 +196,16 @@ void LoginPage::step() {
                         if( strstr( result, "DENIED" ) != NULL ) {
                             mStatusError = true;
                             mStatusMessageKey = "loginFailed";
+
+                            // get new server URL from reflector,
+                            // because email address might change on
+                            // second-try login.
+                            if( serverURL != NULL ) {
+                                delete [] serverURL;
+                                serverURL = NULL;
+                                }
+                            mHaveServerURL = false;
+
                             acceptInput();
                             mLoginButton.setVisible( true );
                             }
@@ -335,6 +345,16 @@ void LoginPage::step() {
                             mStatusMessageKey = "loginFailed";
                             // reset entire process
                             userID = -1;
+                            
+                            // get new server URL from reflector,
+                            // because email address might change on
+                            // second-try login.
+                            if( serverURL != NULL ) {
+                                delete [] serverURL;
+                                serverURL = NULL;
+                                }
+                            mHaveServerURL = false;
+
                             acceptInput();
                             mLoginButton.setVisible( true );
                             }

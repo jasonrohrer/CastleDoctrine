@@ -10,6 +10,10 @@ Version 6
 
 --Fixed so that suicide on doorstep (first move) shows up on tape.
 
+--After login fails, client now re-asks reflector for server URL, in case user
+  types different email second time that should bounce them to a different
+  server (thanks Martijn van der Ven).
+
 
 
 
