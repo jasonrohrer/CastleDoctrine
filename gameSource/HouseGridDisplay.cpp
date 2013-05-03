@@ -2229,15 +2229,14 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 stringDuplicate( translate( "startTileDescription" ) );
             }
         else {                
+            int id = mHouseSubMapIDs[ mHighlightIndex ];
+            int state = mHouseSubMapCellStates[ mHighlightIndex ];
+
             nonMobileDescription = 
                 stringDuplicate( 
-                    getObjectDescription( 
-                        mHouseSubMapIDs[ mHighlightIndex ],
-                        mHouseSubMapCellStates[ mHighlightIndex ] ) );
-
-
-            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
-                               wife ) ) {
+                    getObjectDescription( id, state ) );
+            
+            if( isPropertySet( id, state, wife ) ) {
 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mWifeName );
@@ -2245,8 +2244,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 delete [] nonMobileDescription;
                 nonMobileDescription = nameInserted;
                 }
-            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
-                               son ) ) {
+            if( isPropertySet( id, state, son ) ) {
                 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mSonName );
@@ -2254,8 +2252,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 delete [] nonMobileDescription;
                 nonMobileDescription = nameInserted;
                 }
-            if( isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
-                               daughter ) ) {
+            if( isPropertySet( id, state, daughter ) ) {
 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mDaughterName );
@@ -2267,8 +2264,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
 
 
             if( mWifeMoney > 0 && 
-                isPropertySet( mHouseMapIDs[fullI], mHouseMapCellStates[fullI],
-                               wife ) ) {
+                isPropertySet( id, state, wife ) ) {
 
                 char *fullDescription =
                     autoSprintf( translate( "wifeHolding" ), 

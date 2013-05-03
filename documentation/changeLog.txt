@@ -14,6 +14,8 @@ Version 6
   types different email second time that should bounce them to a different
   server (thanks Martijn van der Ven).
 
+--Fixed bug that caused %s to replace family names after death (thanks Stan
+  Volchenok).
 
 
 
