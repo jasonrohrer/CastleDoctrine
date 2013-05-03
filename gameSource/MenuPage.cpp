@@ -117,7 +117,7 @@ void MenuPage::makeActive( char inFresh ) {
         return;
         }
     
-    mPickList.refreshList();
+    mPickList.refreshList( true, true );
     
     mStartEditHouse = false;
     mStartRobHouse = false;

@@ -96,7 +96,7 @@ void RobberyReplayMenuPage::makeActive( char inFresh ) {
         return;
         }
     
-    mPickList.refreshList();
+    mPickList.refreshList( true, true );
     
     mReturnToMenu = false;
     mStartReplay = false;

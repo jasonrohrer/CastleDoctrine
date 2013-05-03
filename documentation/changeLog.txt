@@ -3,6 +3,11 @@ Version 6
 --Fixed so that tools with reach cannot be used through unbroken windows
   (thanks Buddy Gorven).
 
+--Changed house menus to remember page position and search string (so you
+  don't have to scroll through the high-value houses over and over to get to
+  your houses of interest).  Less clicking, less server load (thanks Michael 
+  Weber).
+
 
 
 

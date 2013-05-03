@@ -358,6 +358,14 @@ void RobPickList::step() {
                             }
                         
                         delete [] line;
+
+                        if( mHouseList.size() == 0 && mCurrentSkip > 0 ) {
+                            // displayed list empty
+                            
+                            // there might be more results pages up
+                            // auto jump
+                            actionPerformed( &mUpButton );
+                            }
                         }
                     else {
                         // list could be empty, but it still must have OK
