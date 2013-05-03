@@ -8,6 +8,7 @@ Version 6
   your houses of interest).  Less clicking, less server load (thanks Michael 
   Weber).
 
+--Fixed so that suicide on doorstep (first move) shows up on tape.
 
 
 

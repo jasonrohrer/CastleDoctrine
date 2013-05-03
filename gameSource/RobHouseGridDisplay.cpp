@@ -130,14 +130,16 @@ char RobHouseGridDisplay::getAnyFamilyKilled() {
 
 
 char *RobHouseGridDisplay::getMoveList() {
-    if( mMoveList.size() == 0 ) {
-        return stringDuplicate( "#" );
-        }
-    
     if( mSuccess == 0 && ! mDead ) {
         // must have committed suicide
         mMoveList.push_back( stringDuplicate( "S" ) );
         }
+
+    if( mMoveList.size() == 0 ) {
+        return stringDuplicate( "#" );
+        }
+    
+
 
     char **moveArray = mMoveList.getElementArray();
     
