@@ -52,7 +52,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         virtual void makeActive( char inFresh );
 
     protected:
-
+        void clearDataMembers();
+        
         int mWebRequest;
         
         char *mWifeName;

@@ -40,35 +40,56 @@ RobCheckoutHousePage::RobCheckoutHousePage()
     }
 
 
+void RobCheckoutHousePage::clearDataMembers() {
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    mWifeName = NULL;
+    
+    if( mSonName != NULL ) {
+        delete [] mSonName;
+        }
+    mSonName = NULL;
+    
+    if( mDaughterName != NULL ) {
+        delete [] mDaughterName;
+        }
+    mDaughterName = NULL;
+    
+    if( mOwnerName != NULL ) {
+        delete [] mOwnerName;
+        }
+    mOwnerName = NULL;
+    
+    if( mHouseMap != NULL ) {
+        delete [] mHouseMap;
+        }
+    mHouseMap = NULL;
+    
+    if( mBackpackContents != NULL ) {
+        delete [] mBackpackContents;
+        }
+    mBackpackContents = NULL;
+    
+    if( mGalleryContents != NULL ) {
+        delete [] mGalleryContents;
+        }
+    mGalleryContents = NULL;
+    
+    }
+
+
         
 RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequestSerial( mWebRequest );
         }
-    if( mWifeName != NULL ) {
-        delete [] mWifeName;
-        }
-    if( mSonName != NULL ) {
-        delete [] mSonName;
-        }
-    if( mDaughterName != NULL ) {
-        delete [] mDaughterName;
-        }
-    if( mOwnerName != NULL ) {
-        delete [] mOwnerName;
-        }
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
-    if( mBackpackContents != NULL ) {
-        delete [] mBackpackContents;
-        }
-    if( mGalleryContents != NULL ) {
-        delete [] mGalleryContents;
-        }
+    clearDataMembers();
+
     if( mToRobCharacterName != NULL ) {
         delete [] mToRobCharacterName;
         }
+    mToRobCharacterName = NULL;
     }
 
 
@@ -293,16 +314,8 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         return;
         }
 
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
-    mHouseMap = NULL;
-
-    if( mOwnerName != NULL ) {
-        delete [] mOwnerName;
-        }
-    mOwnerName = NULL;
-    
+    clearDataMembers();
+        
     char *ticketHash = getTicketHash();
 
     char *fullRequestURL = autoSprintf( 

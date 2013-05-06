@@ -17,6 +17,9 @@ Version 6
 --Fixed bug that caused %s to replace family names after death (thanks Stan
   Volchenok).
 
+--Fixed memory leak in robbery checkout.
+
+
 
 
 Version 5_serverFixes   2013-May-1
