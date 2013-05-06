@@ -19,6 +19,11 @@ Version 6
 
 --Fixed memory leak in robbery checkout.
 
+--Fixed wife path return behavior after child death (she used to return to the
+  point from which she started searching for her dead child, and now she
+  returns to her original location).
+
+
 
 
 

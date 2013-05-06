@@ -401,14 +401,34 @@ void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
                                        &fullPath );
             
                 if( found && numStepsToGoal != 0 ) {
+                    
+                    // splice with beginning of old path
+
+                    int newPathLength = progress + numStepsToGoal;
+                    
+                    GridPos *newPath = 
+                        new GridPos[ newPathLength ];
+                    
+                    memcpy( newPath, path, 
+                            ( progress + 1 ) * sizeof( GridPos ) );
+                    
+                    memcpy( &( newPath[ progress + 1 ] ),
+                            &( fullPath[ 1 ] ),
+                            ( numStepsToGoal - 1 ) * sizeof( GridPos ) );
+                    
+
+
                     delete [] *( mFamilyExitPaths.getElement( i ) );
-                    *( mFamilyExitPaths.getElement( i ) ) = fullPath;
+                    delete [] fullPath;
+                    
+                    *( mFamilyExitPaths.getElement( i ) ) = newPath;
                     
                     *( mFamilyExitPathLengths.getElement( i ) ) = 
-                        numStepsToGoal;
+                        newPathLength;
 
-                    // new path, new progress
-                    *( mFamilyExitPathProgress.getElement( i ) ) = 0;
+                    // new path, same progress along it (wife at
+                    // splice point)
+                    *( mFamilyExitPathProgress.getElement( i ) ) = progress;
                     }
                 else {
                     // no path found
