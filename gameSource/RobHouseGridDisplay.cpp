@@ -367,12 +367,11 @@ void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
         int progress = *( mFamilyExitPathProgress.getElement( i ) );
         
         GridPos *path = *( mFamilyExitPaths.getElement( i ) );
-        int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
         
         int status = *( mFamilyStatus.getElement( i ) );
         
-        // still in house, alive, and not blocked in
-        if( status == 1 && pathLength > 1 ) {
+        // still in house, alive
+        if( status == 1 ) {
             
             int oldIndex = posToIndex( path[progress] );
 
