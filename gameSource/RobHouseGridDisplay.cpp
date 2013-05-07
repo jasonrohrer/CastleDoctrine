@@ -367,11 +367,12 @@ void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
         int progress = *( mFamilyExitPathProgress.getElement( i ) );
         
         GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+        int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
         
         int status = *( mFamilyStatus.getElement( i ) );
         
-        // still in house, alive
-        if( status == 1 ) {
+        // still in house, alive, and not blocked in
+        if( status == 1 && pathLength > 1 ) {
             
             int oldIndex = posToIndex( path[progress] );
 
@@ -461,7 +462,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             int objectID = *( mFamilyObjects.getElement( i ) );
             
 
-            if( progress < pathLength - 1 ) {
+            if( pathLength == 1 || progress < pathLength - 1 ) {
             
                 int oldIndex = posToIndex( path[progress] );
 
@@ -486,7 +487,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                         *( mFamilyStatus.getElement( i ) ) = 0;
                         }
                     }
-                else {
+                else if( progress < pathLength - 1 ) {
                     
 
                     progress ++;
@@ -520,7 +521,8 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                 // (escape during this step)
                 int oldIndex = posToIndex( path[progress] );
 
-                if( mHouseMapIDs[oldIndex] == objectID ) {
+                if( oldIndex == mStartIndex &&
+                    mHouseMapIDs[oldIndex] == objectID ) {
                     
                     mHouseMapIDs[oldIndex] = 0;
                     mHouseMapCellStates[oldIndex] = 1;
@@ -1113,7 +1115,7 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
         GridPos *path = *( mFamilyExitPaths.getElement( i ) );
 
 
-        if( status != 0 ) {
+        if( status != 0 && pathLength > 1 ) {
             // still alive
 
             // move back to their starting positions

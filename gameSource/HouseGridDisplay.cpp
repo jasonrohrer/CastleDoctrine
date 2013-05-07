@@ -959,24 +959,28 @@ char *HouseGridDisplay::getFamilyExitPaths() {
         GridPos *moveList = *( mFamilyExitPaths.getElement( i ) );
         int length = *( mFamilyExitPathLengths.getElement( i ) );
         
-        SimpleVector<char *> subListAccum;
+        if( length > 1 ) {
+            SimpleVector<char *> subListAccum;
         
-        for( int m=0; m<length; m++ ) {
-            char *posString = autoSprintf( "%d", posToIndex( moveList[m] ) );
+            for( int m=0; m<length; m++ ) {
+                char *posString = 
+                    autoSprintf( "%d", posToIndex( moveList[m] ) );
+                
+                subListAccum.push_back( posString );
+                }
+
+            char **subListStrings = subListAccum.getElementArray();
             
-            subListAccum.push_back( posString );
+            char *posList = join( subListStrings, length, "#" );
+            
+            for( int i=0; i<length; i++ ) {
+                delete [] subListStrings[i];
+                }
+            delete [] subListStrings;
+            
+            mainListAccum.push_back( posList );
             }
-
-        char **subListStrings = subListAccum.getElementArray();
-    
-        char *posList = join( subListStrings, length, "#" );
-
-        for( int i=0; i<length; i++ ) {
-            delete [] subListStrings[i];
-            }
-        delete [] subListStrings;
-
-        mainListAccum.push_back( posList );
+        
         }
 
 
@@ -3322,9 +3326,14 @@ void HouseGridDisplay::checkExitPaths() {
                 mFamilyExitPaths.push_back( fullPath );
                 mFamilyExitPathLengths.push_back( numStepsToGoal );
                 }
-            if( !found ) {
+            else {
+                fullPath = new GridPos[1];
+                fullPath[0] = startPos;
+
+                mFamilyExitPaths.push_back( fullPath );
+                mFamilyExitPathLengths.push_back( 1 );
+                
                 mAllFamilyObjectsHaveExitPath = false;
-                break;
                 }
             }
         }

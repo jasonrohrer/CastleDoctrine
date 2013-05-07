@@ -23,6 +23,9 @@ Version 6
   point from which she started searching for her dead child, and now she
   returns to her original location).
 
+--Fixed bug where family blocked in by other dead family members do not die
+  permanently.
+
 
 
 
