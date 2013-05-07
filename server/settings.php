@@ -132,6 +132,7 @@ $defaultPrices = array(
     array( 111, 100, 0, "Pit" ),
     array( 103, 200, 0, "Power Source" ),
     array( 102, 5, 0, "Wiring" ),
+    array( 120, 5, 0, "Vertical Wiring" ),
     array( 51, 20, 0, "Wired Wooden Wall" ),
     array( 101, 50, 0, "Pressure Toggle Switch (Starts Off)" ),
     array( 108, 50, 0, "Pressure Toggle Switch (Starts On)" ),
