@@ -81,15 +81,21 @@ noPower   #   wire:2   =>  1
 power     #   wire_vertical:1   =>  2
 noPower   #   wire_vertical:2   =>  1
 
+power     #   wire_horizontal:1   =>  2
+noPower   #   wire_horizontal:2   =>  1
+
 
 voltageDetector # wire:1 => 3
 voltageDetector # wire:2 => 4
 voltageDetector # wire_vertical:1 => 3
 voltageDetector # wire_vertical:2 => 4
+voltageDetector # wire_horizontal:1 => 3
+voltageDetector # wire_horizontal:2 => 4
 
 wireCutters # wire => 5
 wireCutters # wire_bridge => 2
 wireCutters # wire_vertical => 5
+wireCutters # wire_horizontal => 5
 
 
 power     #   wire:3   =>  4
@@ -97,6 +103,9 @@ noPower   #   wire:4   =>  3
 
 power     #   wire_vertical:3   =>  4
 noPower   #   wire_vertical:4   =>  3
+
+power     #   wire_horizontal:3   =>  4
+noPower   #   wire_horizontal:4   =>  3
 
 
 power     #   wall_wood_wired:1   =>  2
