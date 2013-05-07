@@ -394,7 +394,8 @@ static char *getMapStateChecksum( int *inMapStates, int inMapW, int inMapH ) {
 
 // returns power map with (inMapW * inMapH) cells
 static char *propagatePower(  int *inMapIDs, 
-                              int *inMapStates, int inMapW, int inMapH ) {
+                              int *inMapStates, int inMapW, int inMapH,
+                              char **outTopBottomPowerMap ) {
     
     int numCells = inMapW * inMapH;
 
@@ -544,7 +545,8 @@ static char *propagatePower(  int *inMapIDs,
         }
 
     delete [] leftRightPowerMap;
-    delete [] topBottomPowerMap;
+    
+    *outTopBottomPowerMap = topBottomPowerMap;
 
     return powerMap;
     }
@@ -557,7 +559,9 @@ static char applyPowerTransitions( int *inMapIDs,
                                    int *inMapStates, int inMapW, int inMapH ) {
     
     
-    char *powerMap = propagatePower( inMapIDs, inMapStates, inMapW, inMapH );
+    char *topBottomPowerMap;
+    char *powerMap = propagatePower( inMapIDs, inMapStates, inMapW, inMapH,
+                                     &topBottomPowerMap );
     
 
     int numCells = inMapW * inMapH;
@@ -599,7 +603,7 @@ static char applyPowerTransitions( int *inMapIDs,
         if( y < inMapH - 1 ) {
             // check above
             
-            if( powerMap[ i + inMapW ] ) {
+            if( topBottomPowerMap[ i + inMapW ] ) {
                 powerNorth = true;
                 }
             }
@@ -647,7 +651,8 @@ static char applyPowerTransitions( int *inMapIDs,
 
 
     delete [] powerMap;
-
+    delete [] topBottomPowerMap;
+    
     return transitionHappened;
     }
 

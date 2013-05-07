@@ -29,6 +29,8 @@ Version 6
 --Fixed serial number ordering during request retry when other, later requests
   are waiting in the request queue.
 
+--Fixed bug in left-right power propagation triggering voltage-triggered
+  switches immediately to the south.
 
 
 
