@@ -227,8 +227,6 @@ void CheckinHousePage::step() {
                                        serverURL, 
                                        actionString );
     
-        printf( "Starting web request %s %s\n", serverURL, actionString );
-
         delete [] actionString;
 
         mRequestStarted = true;

@@ -26,6 +26,9 @@ Version 6
 --Fixed bug where family blocked in by other dead family members do not die
   permanently.
 
+--Fixed serial number ordering during request retry when other, later requests
+  are waiting in the request queue.
+
 
 
 

@@ -229,8 +229,6 @@ void BuyAuctionPage::makeActive( char inFresh ) {
                                    serverURL, 
                                    actionString );
     
-    printf( "Starting web request %s %s\n", serverURL, actionString );
-
     delete [] actionString;
 
     mReturnToHome = false;

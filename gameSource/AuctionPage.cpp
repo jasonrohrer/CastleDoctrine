@@ -557,8 +557,6 @@ void AuctionPage::refreshPrices() {
     mWebRequest = startWebRequestSerial( "POST", 
                                    serverURL, 
                                    actionString );
-    printf( "Web POST action string = %s\n", actionString );
-
 
     delete [] actionString;
 

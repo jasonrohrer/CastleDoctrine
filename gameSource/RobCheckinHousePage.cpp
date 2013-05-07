@@ -349,8 +349,6 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     mWebRequest = startWebRequestSerial( "POST", 
                                    serverURL, 
                                    actionString );
-    
-    printf( "Starting web request %s %s\n", serverURL, actionString );
 
     delete [] actionString;
 

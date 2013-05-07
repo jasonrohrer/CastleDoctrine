@@ -151,8 +151,6 @@ void LiveHousePage::step() {
                                        fullRequestURL, 
                                        NULL );
         
-        printf( "Sending web request:  %s\n", fullRequestURL );
-        
         delete [] fullRequestURL;
         
         // counts as a ping
@@ -182,8 +180,6 @@ void LiveHousePage::step() {
                                                NULL );
                 
                 mCurrentRequestForStartTest = false;
-
-                printf( "Sending web request:  %s\n", fullRequestURL );
                 
                 delete [] fullRequestURL;
                 

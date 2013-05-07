@@ -77,7 +77,7 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
         }
         
 
-    r.activeHandle = startWebRequest( r.method, r.url, r.body );
+    r.activeHandle = -1;
     
     r.handle = nextHandle;
     nextHandle ++;
@@ -89,8 +89,6 @@ int startWebRequestSerial( const char *inMethod, const char *inURL,
     r.retryCount = 0;
 
     serialRecords.push_back( r );
-
-    printf( "Starting web request %d\n", r.activeHandle );
     
     return r.handle;
     }
@@ -117,15 +115,46 @@ static void checkForRequestRetry( SerialWebRecord *r ) {
     if( timePassed > webRetrySeconds ) {
         // start a fresh request
 
+        int oldActiveHandle = r->activeHandle;
+        
         clearWebRequest( r->activeHandle );
 
         r->url = replaceTicketHash( r->url );
         r->body = replaceTicketHash( r->body );
 
         r->activeHandle = startWebRequest( r->method, r->url, r->body );
-
+        printf( "\nRestarting web request %d as %d [%s %s %s]\n\n", 
+                oldActiveHandle, r->activeHandle, r->method, r->url, r->body );
+        
         r->startTime = game_time( NULL );
         r->retryCount++;
+
+
+        // also need to generate new serial numbers for all requests that
+        // come after this one, so they aren't out-of-sequence
+        int numRecords = serialRecords.size();
+    
+        int foundIndex = -1;
+        
+        for( int i=0; i<numRecords; i++ ) {
+            
+            SerialWebRecord *otherRecord = serialRecords.getElement( i );
+
+            if( otherRecord == r ) {
+                foundIndex = i;
+                break;
+                }
+            }
+
+        for( int i=foundIndex + 1; i<numRecords; i++ ) {
+            
+            SerialWebRecord *otherRecord = serialRecords.getElement( i );
+            
+            if( ! otherRecord->started ) {
+                otherRecord->url = replaceTicketHash( otherRecord->url );
+                otherRecord->body = replaceTicketHash( otherRecord->body );
+                }
+            }
         }
     
     }
@@ -146,7 +175,12 @@ int stepWebRequestSerial( int inHandle ) {
         
         if( r->handle == inHandle ) {
             
-            if( ! r->started ) {                
+            if( ! r->started ) {
+                r->activeHandle = 
+                    startWebRequest( r->method, r->url, r->body );
+                printf( "\nStarting web request %d [%s %s %s]\n\n", 
+                        r->activeHandle, r->method, r->url, r->body );
+                
                 r->startTime = game_time( NULL );
                 r->started = true;
                 
@@ -187,7 +221,12 @@ int stepWebRequestSerial( int inHandle ) {
             // is it a request that needs stepping?
             if( ! r->done ) {
                 
-                if( ! r->started ) {                
+                if( ! r->started ) {
+                    r->activeHandle = 
+                        startWebRequest( r->method, r->url, r->body );
+                    printf( "\nStarting web request %d [%s %s %s]\n\n", 
+                            r->activeHandle, r->method, r->url, r->body );
+
                     r->startTime = game_time( NULL );
                     r->started = true;
                     
@@ -241,7 +280,7 @@ char *getWebResultSerial( int inHandle ) {
         
         SerialWebRecord *r = serialRecords.getElement( i );
         
-        if( r->handle == inHandle ) {
+        if( r->handle == inHandle && r->activeHandle != -1 ) {
             return getWebResult( r->activeHandle );
             }
         }
@@ -297,7 +336,9 @@ void clearWebRequestSerial( int inHandle ) {
         SerialWebRecord *r = serialRecords.getElement( i );
         
         if( r->handle == inHandle ) {
-            clearWebRequest( r->activeHandle );
+            if( r->activeHandle != -1 ) {    
+                clearWebRequest( r->activeHandle );
+                }
             
             if( r->method != NULL ) {
                 delete [] r->method;

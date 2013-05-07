@@ -388,9 +388,6 @@ void CheckoutHousePage::makeActive( char inFresh ) {
                                    fullRequestURL, 
                                    NULL );
     
-    printf( "Starting web request with URL %s\n", 
-            fullRequestURL );
-
     delete [] fullRequestURL;
     
     mMenuButton.setVisible( false );

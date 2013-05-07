@@ -154,8 +154,6 @@ void RobPickList::refreshList( char inPreserveSearch,
                                    serverURL, 
                                    actionString );
     
-    printf( "Request = %s\n", actionString );
-    
     delete [] actionString;
 
     // nothing selected now (so selection might have changed)

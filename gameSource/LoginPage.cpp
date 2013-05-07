@@ -261,9 +261,6 @@ void LoginPage::step() {
                                                                fullRequestURL, 
                                                                NULL );
         
-                                printf( "Starting web request with URL %s\n", 
-                                        fullRequestURL );
-
                                 delete [] fullRequestURL;
                                 
                                 setWaiting( true );
@@ -455,8 +452,6 @@ void LoginPage::startLogin( char inFreshLogin ) {
     delete [] email;
 
     mWebRequest = startWebRequestSerial( "GET", fullRequestURL, NULL );
-        
-    printf( "Starting web request with URL %s\n", fullRequestURL );
 
     delete [] fullRequestURL;
 

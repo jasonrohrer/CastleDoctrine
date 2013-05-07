@@ -327,9 +327,6 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
     mWebRequest = startWebRequestSerial( "GET", 
                                    fullRequestURL, 
                                    NULL );
-    
-    printf( "Starting web request with URL %s\n", 
-            fullRequestURL );
 
     delete [] fullRequestURL;
     
