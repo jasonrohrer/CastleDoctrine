@@ -1436,7 +1436,7 @@ function cd_checkForFlush() {
             "wife_paid_total = ".
             "    wife_paid_total + wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
-            "AND edit_count != 0 ".
+            "AND edit_count > 0 ".
             "AND last_pay_check_time < ".
             "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
         

@@ -35,6 +35,8 @@ Version 6
 --Added new objects for horizontal-only and vertical-only wiring (thanks Gavin
   Delphia).
 
+--[Live server fix, May 8, 2013]  Experimenting with salaries on server only
+  being paid for houses that haven't been robbed since the last edit.
 
 
 
