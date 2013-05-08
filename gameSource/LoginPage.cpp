@@ -11,6 +11,9 @@
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/util/SettingsManager.h"
 
+#include "minorGems/network/web/URLUtils.h"
+
+
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
 
@@ -434,22 +437,25 @@ void LoginPage::startLogin( char inFreshLogin ) {
         
     char *email = mEmailField.getText();
 
+    char *encodedEmail = URLUtils::hexEncode( email );
+    delete [] email;
+
     char *fullRequestURL;
 
 
     if( !mHaveServerURL ) {
         fullRequestURL = autoSprintf( 
             "%s?action=reflect&email=%s",
-            reflectorURL, email );        
+            reflectorURL, encodedEmail );        
         }
     else {
 
         fullRequestURL = autoSprintf( 
             "%s?action=check_user&email=%s",
-            serverURL, email );
+            serverURL, encodedEmail );
         }
     
-    delete [] email;
+    delete [] encodedEmail;
 
     mWebRequest = startWebRequestSerial( "GET", fullRequestURL, NULL );
 

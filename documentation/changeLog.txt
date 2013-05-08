@@ -40,6 +40,8 @@ Version 6
 
 --Crowbar now can open a wooden door without stepping through it.
 
+--Fixed encoding of emails to support (vaild) emails that contain '+'.
+
 
 
 

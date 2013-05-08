@@ -1499,11 +1499,12 @@ function cd_checkUser() {
         }
     else {
         // check on ticket server
-
+        $encodedEmail = urlencode( $email );
+        
         $result = file_get_contents(
             "$ticketServerURL".
             "?action=get_ticket_id".
-            "&email=$email" );
+            "&email=$encodedEmail" );
 
         // Run a regexp filter to remove non-base-32 characters.
         $match = preg_match( "/[A-HJ-NP-Z2-9]+/", $result, $matches );
