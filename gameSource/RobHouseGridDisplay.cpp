@@ -542,7 +542,8 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                       mHouseMapMobileIDs, mHouseMapMobileCellStates,
                       mFullMapD, mFullMapD,
                       mRobberIndex,
-                      mLastRobberIndex );
+                      mLastRobberIndex,
+                      mStartIndex );
 
     copyAllIntoSubCells();
 

@@ -683,7 +683,8 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                                     int *inMapMobileStates,
                                     int inMapW, int inMapH,
                                     int inRobberIndex,
-                                    int inLastRobberIndex  ) {
+                                    int inLastRobberIndex,
+                                    int inStartIndex ) {
     
     
     // process transitions for house objects under player
@@ -863,7 +864,8 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
             int destI = destY * inMapW + destX;
             
             
-            if( inMapMobileIDs[destI] == 0 &&
+            if( destI != inStartIndex &&
+                inMapMobileIDs[destI] == 0 &&
                 ! isPropertySet( inMapIDs[destI], inMapStates[destI],
                                  blocking ) &&
                 ! isPropertySet( inMapIDs[destI], inMapStates[destI],
@@ -1019,13 +1021,15 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
                        int *inMapMobileIDs, int *inMapMobileStates,
                        int inMapW, int inMapH,
                        int inRobberIndex,
-                       int inLastRobberIndex ) {
+                       int inLastRobberIndex,
+                       int inStartIndex ) {
     
     if( !mobileObjectsFrozen ) {
         applyMobileTransitions( inMapIDs, inMapStates,
                                 inMapMobileIDs, inMapMobileStates,
                                 inMapW, inMapH, inRobberIndex,
-                                inLastRobberIndex );
+                                inLastRobberIndex,
+                                inStartIndex );
         }
     
     int numCells = inMapW * inMapH;

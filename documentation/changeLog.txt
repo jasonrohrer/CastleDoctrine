@@ -44,6 +44,9 @@ Version 6
 
 --Fixed so that tools can't be used after death.
 
+--Fixed so that animals can never step onto the welcome mat spot.
+
+
 
 
 
