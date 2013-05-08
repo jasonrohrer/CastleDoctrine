@@ -133,6 +133,7 @@ noPower   #   trapdoor:4   =>  3
 doorstop # power_door:1 => 4
 
 crowbar # power_door:2 => 5
+crowbar # door_push => 2
 
 
 power   #   floor_electric:1   =>  2
