@@ -42,6 +42,8 @@ Version 6
 
 --Fixed encoding of emails to support (vaild) emails that contain '+'.
 
+--Fixed so that tools can't be used after death.
+
 
 
 

@@ -243,7 +243,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             mDoneButton.setToolTip( "" );
             }
         }
-    else {
+    else if( ! mGridDisplay.getDead() ) {
         // check backpack slots
         for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
             if( inTarget == mPackSlots[i] ) {
