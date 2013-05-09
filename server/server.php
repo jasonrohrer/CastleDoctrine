@@ -741,6 +741,7 @@ function cd_setupDatabase() {
             // > 0 if successfully edited and robbable
             // < 0 if successfully robbed at least once and still robbable
             "edit_count INT NOT NULL," .
+            "self_test_house_map LONGTEXT NOT NULL," .
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
             // loot plus resale value of vault items, rounded
@@ -2259,7 +2260,8 @@ function cd_endEditHouse() {
     
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
         "vault_contents, backpack_contents, gallery_contents, ".
-        "self_test_move_list, self_test_running, rob_attempts, robber_deaths ".
+        "self_test_house_map, self_test_move_list, ".
+        "self_test_running, rob_attempts, robber_deaths ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -2290,6 +2292,7 @@ function cd_endEditHouse() {
     $rob_attempts = $row[ "rob_attempts" ];
     $robber_deaths = $row[ "robber_deaths" ];
     $self_test_running = $row[ "self_test_running" ];
+    $old_self_test_house_map = $row[ "self_test_house_map" ];
     $old_self_test_move_list = $row[ "self_test_move_list" ];
     $loot_value = $row[ "loot_value" ];
     $old_house_map = $row[ "house_map" ];
@@ -3063,7 +3066,8 @@ function cd_endEditHouse() {
     // purchases okay
     // all living family members have clear exit paths
     // accept it and check house back in with these changes
-
+    $self_test_house_map = $house_map;
+    
     if( $self_test_move_list == "#" ) {
         // NEVER put an empty self-test move list in place in the DB.
         // But an empty one can be submitted if the user didn't edit map
@@ -3074,6 +3078,7 @@ function cd_endEditHouse() {
         // (We check above to ensure that self-test is NOT empty if
         //  house edited.)
 
+        $self_test_house_map = $old_self_test_house_map;
         $self_test_move_list = $old_self_test_move_list;
         }
     else {
@@ -3124,6 +3129,7 @@ function cd_endEditHouse() {
         "backpack_contents='$backpack_contents', ".
         "gallery_contents='$gallery_contents', ".
         "edit_count='$edit_count', ".
+        "self_test_house_map='$self_test_house_map', ".
         "self_test_move_list='$self_test_move_list', ".
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
         "wife_present='$wife_present', ".
@@ -4307,7 +4313,7 @@ function cd_getSelfTestLog() {
     
     $query = "SELECT character_name, ".
         "wife_name, son_name, daughter_name, ".
-        "house_map, self_test_move_list, wife_present, ".
+        "self_test_house_map, self_test_move_list, wife_present, ".
         "loot_value, music_seed ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$house_owner_id';";
@@ -4330,7 +4336,7 @@ function cd_getSelfTestLog() {
         }
     
     echo $row[ "character_name" ] . "\n";
-    echo $row[ "house_map" ] . "\n";
+    echo $row[ "self_test_house_map" ] . "\n";
     echo $row[ "self_test_move_list" ] . "\n";
     echo $wife_money. "\n";
     echo $row[ "music_seed" ] . "\n";
@@ -5088,7 +5094,8 @@ function cd_newHouseForUser( $user_id ) {
             "'$house_map', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "0, '$music_seed', ".
-            "0, '#', '$playerStartMoney', '$playerStartMoney', 1, ".
+            "0, '$house_map', '#', ".
+            "'$playerStartMoney', '$playerStartMoney', 1, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
