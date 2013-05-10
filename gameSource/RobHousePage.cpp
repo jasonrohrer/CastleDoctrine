@@ -29,20 +29,12 @@ RobHousePage::RobHousePage()
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( "suicide" ) ),
-          mSuicideConfirmCheckbox( 9, -4, 1/16.0 ),
+          mSuicideConfirmCheckbox( 8, -4.875, 1/16.0 ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDescription( NULL ),
-          mDeathMessage( NULL ) {
-
-    doublePair doneButtonPos = mDoneButton.getPosition();
-    mSuicideConfirmCheckbox.setPosition( 
-        doneButtonPos.x + 
-        mDoneButton.getWidth() / 2 + 
-        mSuicideConfirmCheckbox.getWidth() / 2 + 1/16.0, 
-        -4 );
-    
+          mDeathMessage( NULL ) {    
 
     addComponent( &mDoneButton );
     addComponent( &mSuicideConfirmCheckbox );
@@ -195,8 +187,6 @@ void RobHousePage::setDescription( const char *inDescription ) {
 
 void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mSuicideConfirmCheckbox ) {
-        printf( "checkbox\n" );
-        
         if( mSuicideConfirmCheckbox.getToggled() ) {
             mDoneButton.setMouseOverTip( 
                 translate( "suicideTip" ) );

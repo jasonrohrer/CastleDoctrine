@@ -4,6 +4,7 @@
 #include "TextButton.h"
 #include "KeyEquivalentTextButton.h"
 #include "SpriteToggleButton.h"
+#include "CheckboxButton.h"
 
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
@@ -150,6 +151,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
         TextButton mSuicideButton;
+        CheckboxButton mSuicideConfirmCheckbox;
 
         SpriteToggleButton mDiffHighlightToggleButton;
         

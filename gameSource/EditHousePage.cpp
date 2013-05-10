@@ -35,6 +35,7 @@ EditHousePage::EditHousePage()
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
           mSuicideButton( mainFont, 8, -0.5, translate( "suicide" ) ),
+          mSuicideConfirmCheckbox( 8, -1.375, 1/16.0 ),
           mDiffHighlightToggleButton( "diffHighlightsOn.tga", 
                                       "diffHighlightsOff.tga", 
                                       8, -1.75, 1/16.0 ),
@@ -45,6 +46,7 @@ EditHousePage::EditHousePage()
 
     addComponent( &mDoneButton );
     addComponent( &mSuicideButton );
+    addComponent( &mSuicideConfirmCheckbox );
     addComponent( &mBackpackButton );
     addComponent( &mAuctionButton );
     addComponent( &mUndoButton );
@@ -59,10 +61,15 @@ EditHousePage::EditHousePage()
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
     mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );
 
-    mSuicideButton.setMouseOverTip( translate( "suicideTip" ) );
+    mSuicideButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
+    mSuicideConfirmCheckbox.setMouseOverTip( 
+        translate( "suicideConfirmTip" ) );
+    mSuicideConfirmCheckbox.setMouseOverTipB( 
+        translate( "suicideConfirmTip" ) );
 
     mDoneButton.addActionListener( this );
     mSuicideButton.addActionListener( this );
+    mSuicideConfirmCheckbox.addActionListener( this );
     mBackpackButton.addActionListener( this );
     mAuctionButton.addActionListener( this );
     mUndoButton.addActionListener( this );
@@ -300,6 +307,15 @@ void EditHousePage::checkIfPlacementAllowed() {
         ! mBlockSuicideButton &&
         ! mUndoButton.isVisible() &&
         mLootValue == 0 );
+
+    if( mSuicideButton.isVisible() ) {
+        mSuicideConfirmCheckbox.setVisible( true );
+        mSuicideConfirmCheckbox.setToggled( false );
+        mSuicideButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
+        }
+    else {
+        mSuicideConfirmCheckbox.setVisible( false );
+        }
     }
 
 
@@ -386,7 +402,17 @@ void EditHousePage::recomputeChangeCost() {
     
 
 void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
-    if( inTarget == &mGridDisplay ) {
+    if( inTarget == &mSuicideConfirmCheckbox ) {
+        if( mSuicideConfirmCheckbox.getToggled() ) {
+            mSuicideButton.setMouseOverTip( 
+                translate( "suicideTip" ) );
+            }
+        else {
+            mSuicideButton.setMouseOverTip( 
+                translate( "unconfirmedSuicideTip" ) );
+            }    
+        }
+    else if( inTarget == &mGridDisplay ) {
         int cost = 
             mObjectPicker.getPrice( mGridDisplay.getLastPlacedObject() );
 
@@ -434,6 +460,10 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
         mDone = true;
         }
     else if( inTarget == &mSuicideButton ) {
+        if( mSuicideConfirmCheckbox.isVisible() && 
+            ! mSuicideConfirmCheckbox.getToggled() ) {
+            return;
+            }
         mGridDisplay.resetToggledStates( 0 );
 
         mDead = true;
