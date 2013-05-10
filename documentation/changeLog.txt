@@ -48,6 +48,8 @@ Version 6
 
 --[Live server fix, May 9, 2013]  Now saves separate, pristine copy of house maps to go along with self-test move list, even after main house map has been changed by robbery.
 
+--Fixed bug in suicide tool tip lingering on Accept button after robber dies.
+
 
 
 

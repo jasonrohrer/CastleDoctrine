@@ -29,13 +29,23 @@ RobHousePage::RobHousePage()
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( "suicide" ) ),
+          mSuicideConfirmCheckbox( 9, -4, 1/16.0 ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDescription( NULL ),
           mDeathMessage( NULL ) {
 
+    doublePair doneButtonPos = mDoneButton.getPosition();
+    mSuicideConfirmCheckbox.setPosition( 
+        doneButtonPos.x + 
+        mDoneButton.getWidth() / 2 + 
+        mSuicideConfirmCheckbox.getWidth() / 2 + 1/16.0, 
+        -4 );
+    
+
     addComponent( &mDoneButton );
+    addComponent( &mSuicideConfirmCheckbox );
     addComponent( &mGallery );
     addComponent( &mGridDisplay );
     addComponent( &mMusicToggleButton );
@@ -43,8 +53,14 @@ RobHousePage::RobHousePage()
     mGallery.setAllowEdit( false );
     
 
-    mDoneButton.setMouseOverTip( translate( "suicideTip" ) );
+    mDoneButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
+    mSuicideConfirmCheckbox.setMouseOverTip( 
+        translate( "suicideConfirmTip" ) );
+    mSuicideConfirmCheckbox.setMouseOverTipB( 
+        translate( "suicideConfirmTip" ) );
+    
     mDoneButton.addActionListener( this );
+    mSuicideConfirmCheckbox.addActionListener( this );
     mGridDisplay.addActionListener( this );
     mMusicToggleButton.addActionListener( this );
 
@@ -178,7 +194,23 @@ void RobHousePage::setDescription( const char *inDescription ) {
 
 
 void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
-    if( inTarget == &mDoneButton ) {
+    if( inTarget == &mSuicideConfirmCheckbox ) {
+        printf( "checkbox\n" );
+        
+        if( mSuicideConfirmCheckbox.getToggled() ) {
+            mDoneButton.setMouseOverTip( 
+                translate( "suicideTip" ) );
+            }
+        else {
+            mDoneButton.setMouseOverTip( 
+                translate( "unconfirmedSuicideTip" ) );
+            }    
+        }
+    else if( inTarget == &mDoneButton ) {
+        if( mSuicideConfirmCheckbox.isVisible() && 
+            ! mSuicideConfirmCheckbox.getToggled() ) {
+            return;
+            }
         mDone = true;
         clearNotes();
         }
@@ -240,7 +272,8 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                         mGridDisplay.getDeathSourceState() ) );
             
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
-            mDoneButton.setToolTip( "" );
+            mDoneButton.setMouseOverTip( "" );
+            mSuicideConfirmCheckbox.setVisible( false );
             }
         }
     else if( ! mGridDisplay.getDead() ) {
@@ -275,7 +308,6 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         
         
         }
-    
     }
 
 
@@ -292,8 +324,10 @@ void RobHousePage::makeActive( char inFresh ) {
 
     // back to default button text
     mDoneButton.setLabelText( translate( "suicide" ) );
-    mDoneButton.setMouseOverTip( translate( "suicideTip" ) );
-
+    mDoneButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
+    mSuicideConfirmCheckbox.setVisible( true );
+    mSuicideConfirmCheckbox.setToggled( false );
+    
     // no tool tip
     setToolTip( NULL );
 

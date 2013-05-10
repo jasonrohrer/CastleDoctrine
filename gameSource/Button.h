@@ -32,6 +32,7 @@ class Button : public PageComponent, public ActionListenerList {
         virtual void setVisible( char inIsVible );
 
         
+        virtual double getWidth();
 
         
     protected:

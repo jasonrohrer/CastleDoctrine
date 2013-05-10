@@ -67,6 +67,8 @@ SpriteToggleButton.cpp \
 serialWebRequests.cpp \
 balance.cpp \
 PaymentReportPage.cpp \
+CheckboxButton.cpp \
+
 
 
 GAME_GRAPHICS = \
@@ -88,6 +90,8 @@ graphics/musicOn.tga \
 graphics/musicOff.tga \
 graphics/diffHighlightsOn.tga \
 graphics/diffHighlightsOff.tga \
+graphics/checkMark.tga \
+graphics/checkMarkOff.tga \
 
 
 

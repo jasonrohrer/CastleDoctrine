@@ -21,11 +21,7 @@ class PageComponent : public GUIComponent {
         
         virtual void setParent( PageComponent *inParent );
 
-        // default implementations pass tool tip up to parent
-
-
-        // inTip destroyed by caller
-        virtual void setToolTip( const char *inTip );
+        
         
         
         virtual void setVisible( char inIsVible ) {
@@ -83,6 +79,11 @@ class PageComponent : public GUIComponent {
         // add for default event handling
         void addComponent( PageComponent *inComponent );
 
+        // default implementations pass tool tip up to parent
+
+
+        // inTip destroyed by caller
+        virtual void setToolTip( const char *inTip );
 
         // clears hover or partially-pressed status
         virtual void clearState() {

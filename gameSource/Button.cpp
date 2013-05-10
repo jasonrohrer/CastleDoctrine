@@ -50,6 +50,12 @@ void Button::setVisible( char inIsVible ) {
 
 
 
+double Button::getWidth() {
+    return mWide;
+    }
+
+
+
 void Button::clearState() {
     mHover = false;
     mDragOver = false;

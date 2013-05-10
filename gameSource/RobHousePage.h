@@ -4,6 +4,7 @@
 #include "TextButton.h"
 
 #include "SpriteToggleButton.h"
+#include "CheckboxButton.h"
 
 
 #include "RobHouseGridDisplay.h"
@@ -98,8 +99,10 @@ class RobHousePage : public LiveHousePage, public ActionListener {
 
         RobHouseGridDisplay mGridDisplay;
         TextButton mDoneButton;
-        
+        CheckboxButton mSuicideConfirmCheckbox;
+
         SpriteToggleButton mMusicToggleButton;
+        
 
         Gallery mGallery;
         

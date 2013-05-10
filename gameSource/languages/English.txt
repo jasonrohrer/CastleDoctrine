@@ -167,6 +167,8 @@ robBackpack "Backpack:"
 
 suicide "Suicide"
 suicideTip "Lose everything and start over"
+unconfirmedSuicideTip "Click confirmation box first..."
+suicideConfirmTip "Confirm suicide"
 
 
 doneRobTest "Give Up"
