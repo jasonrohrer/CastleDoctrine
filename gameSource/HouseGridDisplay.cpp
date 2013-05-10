@@ -68,7 +68,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mDraggedAway( false ),
           mPointerDownObjectID( -1 ),
           mPlaceOnDrag( false ),
-          mTileRadius( 0.4375 ),
+          mTileRadius( TILE_RADIUS ),
           mStartIndex( -1 ),
           mGoalIndex( -1 ),
           mMandatoryNeedsPlacing( false ),
@@ -1091,20 +1091,17 @@ void HouseGridDisplay::step() {
 
 
 
+// profiler found:
+// pull these computations outside of the call
+static double indexOffset = HOUSE_D * TILE_RADIUS - TILE_RADIUS;
+static double indexScale = 1.0 / ( 2 * TILE_RADIUS );
+
+
 int HouseGridDisplay::getTileIndex( double inX, double inY ) {
 
-    double relX = inX;
-    double relY = inY;
+    int x = lrint( ( inX + indexOffset ) * indexScale );
     
-    int x = lrint(
-        ( relX + 
-          ( HOUSE_D * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
-        );
-    
-    int y = lrint( 
-        ( relY + 
-          ( HOUSE_D * mTileRadius - mTileRadius ) ) / ( 2 * mTileRadius )
-        );
+    int y = lrint( ( inY + indexOffset ) * indexScale );
     
     if( x >= 0 && x < HOUSE_D 
         &&

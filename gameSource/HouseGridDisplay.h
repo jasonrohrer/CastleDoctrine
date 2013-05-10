@@ -24,6 +24,7 @@
 
 #define HOUSE_D 13
 
+#define TILE_RADIUS 0.4375
 
 #define NUM_NOISE_TILES 100
 

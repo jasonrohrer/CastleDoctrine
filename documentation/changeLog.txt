@@ -54,6 +54,10 @@ Version 6
 
 --Added confirmation box for suicide button.
 
+--Changed family behavior to only head toward exit when they see the robber,
+  making it possible to build structures that actually protect them (since
+  robber can no longer just wait at the exit until the family comes out).
+
 
 
 

@@ -133,6 +133,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // 2 = escaped
         // 0 = killed in house
         SimpleVector<int> mFamilyStatus;
+
+        // starts false for all family members
+        // they don't move while false
+        // becomes true if they see robber
+        SimpleVector<char> mFamilySeenRobber;
         
         
         // at end of robbery, deal with family repositioning

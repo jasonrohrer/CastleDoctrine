@@ -71,7 +71,7 @@ SpriteToggleButton.cpp \
 serialWebRequests.cpp \
 balance.cpp \
 PaymentReportPage.cpp \
-CheckboxBox.cpp \
+CheckboxButton.cpp \
 
 
 

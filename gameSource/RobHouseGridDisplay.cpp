@@ -323,6 +323,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mFamilyExitPathProgress.deleteAll();
     mFamilyObjects.deleteAll();
     mFamilyStatus.deleteAll();
+    mFamilySeenRobber.deleteAll();
     
     int numPaths = mFamilyExitPaths.size();
     
@@ -336,6 +337,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         
         mFamilyObjects.push_back( mHouseMapIDs[ startIndex ] );
         mFamilyStatus.push_back( 1 );
+        mFamilySeenRobber.push_back( false );
         }
     
 
@@ -459,8 +461,27 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             GridPos *path = *( mFamilyExitPaths.getElement( i ) );
 
             int objectID = *( mFamilyObjects.getElement( i ) );
-            
 
+            char seenRobber = *( mFamilySeenRobber.getElement( i ) );
+            
+            if( !seenRobber ) {
+                
+                // check if seen this step
+                int status = *( mFamilyStatus.getElement( i ) );
+
+                if( status == 1 ) {
+                    int subIndex = fullToSub( posToIndex( path[progress] ) );
+                    
+                    if( subIndex != -1 && mTileVisibleMap[ subIndex ] ) {
+                        seenRobber = true;
+                        *( mFamilySeenRobber.getElement( i ) ) = seenRobber;
+                        }
+                    }
+                if( !seenRobber ) {
+                    continue;
+                    }
+                }
+            
             if( pathLength == 1 || progress < pathLength - 1 ) {
             
                 int oldIndex = posToIndex( path[progress] );
@@ -1059,12 +1080,18 @@ void RobHouseGridDisplay::recomputeVisibility() {
             char hit = false;
             
             // skip last few steps so that we show borders of visible walls
+
+
+            doublePair stepVector = mult( sub( visPos, robPos ), 
+                                          1.0 / numSteps );
+            double stepVectorX = stepVector.x;
+            double stepVectorY = stepVector.y;
+                            
+
+            // start at step 1, one stepVector length in
+            doublePair stepPos = add( robPos, stepVector );
+
             for( int j=1; j<numSteps - 1 && !hit; j++ ) {
-                double weight = j / (double)numSteps;
-                
-                doublePair stepPos = add( mult( visPos, weight ), 
-                                          mult( robPos, 1 - weight ) );
-                
                 int stepIndex = getTileIndex( stepPos.x, stepPos.y );
                 
                 // avoid self-blocking on first steps into self
@@ -1077,6 +1104,11 @@ void RobHouseGridDisplay::recomputeVisibility() {
                 else if( isSubMapPropertySet( stepIndex, visionBlocking ) ) {
                     hit = true;
                     }
+
+                // profiler found:
+                // don't call add() in inner loop here
+                stepPos.x += stepVectorX;
+                stepPos.y += stepVectorY;
                 }
             
             if( hit ) {
