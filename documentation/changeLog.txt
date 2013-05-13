@@ -62,7 +62,9 @@ Version 6
 
 --Name search filter now permits multiple words.
 
-
+--Improved view panning so that player is never closer than three grid squares
+  from the edge of the screen, while also making the view movement less jumpy
+  and more consistent.
 
 
 

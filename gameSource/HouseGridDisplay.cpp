@@ -2795,35 +2795,39 @@ void HouseGridDisplay::moveRobber( int inNewIndex ) {
         int xExtra = 0;
         int yExtra = 0;
 
-        if( robSubX > HOUSE_D - 3 ) {
+        if( robSubX > HOUSE_D - 4 ) {
             xExtra = robSubX - (HOUSE_D - robSubX);
             xExtra /= 2;
-
+            xExtra += 2;
+            
             if( xExtra + mSubMapOffsetX + HOUSE_D > mFullMapD ) {
                 xExtra = mFullMapD - ( mSubMapOffsetX + HOUSE_D );
                 }
             }
-        else if( robSubX < 2 ) {
+        else if( robSubX < 3 ) {
             xExtra = robSubX - (HOUSE_D - robSubX);
             xExtra /= 2;
-
+            xExtra -= 1;
+            
             if( xExtra + mSubMapOffsetX < 0 ) {
                 xExtra = -mSubMapOffsetX;
                 }        
             }
     
-        if( robSubY > HOUSE_D - 3 ) {
+        if( robSubY > HOUSE_D - 4 ) {
             yExtra = robSubY - (HOUSE_D - robSubY);
             yExtra /= 2;
-
+            yExtra += 2;
+            
             if( yExtra + mSubMapOffsetY + HOUSE_D > mFullMapD ) {
                 yExtra = mFullMapD - ( mSubMapOffsetY + HOUSE_D );
                 }        
             }
-        else if( robSubY < 2 ) {
+        else if( robSubY < 3 ) {
             yExtra = robSubY - (HOUSE_D - robSubY);
             yExtra /= 2;
-
+            yExtra -= 1;
+            
             if( yExtra + mSubMapOffsetY < 0 ) {
                 yExtra = -mSubMapOffsetY;
                 }        
