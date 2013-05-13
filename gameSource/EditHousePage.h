@@ -89,6 +89,11 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char houseMapChanged();
         
 
+        char shouldJumpToTapes() {
+            return mJumpToTapes;
+            }
+        
+
         char getDone() {
             return mDone;
             }
@@ -150,6 +155,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         TextButton mBackpackButton;
         TextButton mAuctionButton;
         KeyEquivalentTextButton mUndoButton;
+        TextButton mJumpToTapesButton;
         TextButton mSuicideButton;
         CheckboxButton mSuicideConfirmCheckbox;
 
@@ -165,6 +171,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         Gallery mGallery;
         
+        char mJumpToTapes;
         char mDone;
         char mDead;
         char mShowLoadBackpack;

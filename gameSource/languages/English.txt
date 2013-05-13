@@ -86,6 +86,11 @@ pickerDescription "Pick one:"
 
 doneEdit "Done"
 
+jumpToTapes "Tapes"
+jumpToTapesTip "View your security tapes"
+
+
+
 undo "Undo"
 
 diffHighlightsOn "Turn change highlights on"

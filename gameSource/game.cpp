@@ -1136,6 +1136,13 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = staleHousePage;
                 currentGamePage->base_makeActive( true );
                 }
+            else if( editHousePage->shouldJumpToTapes() ) {
+                // abandon edit and jump right to tape list
+                currentGamePage = robberyReplayMenuPage;
+                // return to editing house after
+                robberyReplayMenuPage->setEditHouseOnDone( true );
+                currentGamePage->base_makeActive( true );
+                }
             else if( editHousePage->showLoadBackpack() ) {
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
@@ -1495,6 +1502,8 @@ void drawFrame( char inUpdate ) {
                 }
             if( menuPage->getShowReplayList() ) {
                 currentGamePage = robberyReplayMenuPage;
+                // return to menu after
+                robberyReplayMenuPage->setEditHouseOnDone( false );
                 currentGamePage->base_makeActive( true );
                 }
             else if( menuPage->getStartSelfTestReplay() ) {
@@ -1651,6 +1660,10 @@ void drawFrame( char inUpdate ) {
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
+            else if( robberyReplayMenuPage->getStartEditHouse() ) {
+                currentGamePage = checkoutHousePage;
+                currentGamePage->base_makeActive( true );
+                }
             else if( robberyReplayMenuPage->getStartReplay() ) {
                 int id = robberyReplayMenuPage->getLogID();
                 
@@ -1693,7 +1706,7 @@ void drawFrame( char inUpdate ) {
             if( replayRobHousePage->getDone() ) {
                 // nothing to check in (just a read-only replay)
 
-                // back to menu right away
+                // back to list of replays
                 currentGamePage = robberyReplayMenuPage;
                 currentGamePage->base_makeActive( true );
                 }

@@ -66,6 +66,9 @@ Version 6
   from the edge of the screen, while also making the view movement less jumpy
   and more consistent.
 
+--You can now watch security tapes before re-editing and testing your house
+  after your house has been robbed.
+
 
 
 

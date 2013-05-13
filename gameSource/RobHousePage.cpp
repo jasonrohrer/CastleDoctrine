@@ -29,7 +29,7 @@ RobHousePage::RobHousePage()
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -4, translate( "suicide" ) ),
-          mSuicideConfirmCheckbox( 8, -4.875, 1/16.0 ),
+          mSuicideConfirmCheckbox( 8, -3.125, 1/16.0 ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),

@@ -34,17 +34,20 @@ EditHousePage::EditHousePage()
           mBackpackButton( mainFont, 8, -3, translate( "loadBackpack" ) ),
           mAuctionButton( mainFont, -8, -5, translate( "openAuctionList" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
+          mJumpToTapesButton( mainFont, 8, -1.75, translate( "jumpToTapes" ) ),
           mSuicideButton( mainFont, 8, -0.5, translate( "suicide" ) ),
-          mSuicideConfirmCheckbox( 8, -1.375, 1/16.0 ),
+          mSuicideConfirmCheckbox( 8, .375, 1/16.0 ),
           mDiffHighlightToggleButton( "diffHighlightsOn.tga", 
                                       "diffHighlightsOff.tga", 
                                       8, -1.75, 1/16.0 ),
           mBlockSuicideButton( false ),
           mGallery( mainFont, -8, 0 ),
+          mJumpToTapes( false ),
           mDone( false ),
           mDead( false ) {
 
     addComponent( &mDoneButton );
+    addComponent( &mJumpToTapesButton );
     addComponent( &mSuicideButton );
     addComponent( &mSuicideConfirmCheckbox );
     addComponent( &mBackpackButton );
@@ -61,6 +64,8 @@ EditHousePage::EditHousePage()
     mBackpackButton.setMouseOverTip( translate( "loadBackpackTip" ) );
     mAuctionButton.setMouseOverTip( translate( "openAuctionListTip" ) );
 
+    mJumpToTapesButton.setMouseOverTip( translate( "jumpToTapesTip" ) );
+    
     mSuicideButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
     mSuicideConfirmCheckbox.setMouseOverTip( 
         translate( "suicideConfirmTip" ) );
@@ -68,6 +73,8 @@ EditHousePage::EditHousePage()
         translate( "suicideConfirmTip" ) );
 
     mDoneButton.addActionListener( this );
+    
+    mJumpToTapesButton.addActionListener( this );
     mSuicideButton.addActionListener( this );
     mSuicideConfirmCheckbox.addActionListener( this );
     mBackpackButton.addActionListener( this );
@@ -316,6 +323,10 @@ void EditHousePage::checkIfPlacementAllowed() {
     else {
         mSuicideConfirmCheckbox.setVisible( false );
         }
+
+    // can jump to tapes as long as no editing done yet (so nothing will be
+    // lost when we abandon the house edit)
+    mJumpToTapesButton.setVisible( ! mUndoButton.isVisible() );
     }
 
 
@@ -445,6 +456,9 @@ void EditHousePage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mAuctionButton ) {
         mShowAuctions = true;
         }
+    else if( inTarget == &mJumpToTapesButton ) {
+        mJumpToTapes = true;
+        }
     else if( inTarget == &mDoneButton ) {
         
         // Reset any states
@@ -510,6 +524,7 @@ void EditHousePage::makeActive( char inFresh ) {
         return;
         }
     
+    mJumpToTapes = false;
     mDone = false;
     mDead = false;
     mShowLoadBackpack = false;

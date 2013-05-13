@@ -21,8 +21,14 @@ class RobberyReplayMenuPage : public GamePage, public ActionListener {
         virtual ~RobberyReplayMenuPage();
 
 
+        // set to true to toggle returning to house editing after done
+        virtual void setEditHouseOnDone( char inEdit );
+        
+
+        
         virtual char getReturnToMenu();
         virtual char getStartReplay();
+        virtual char getStartEditHouse();
 
         virtual int getLogID();
         
@@ -45,10 +51,12 @@ class RobberyReplayMenuPage : public GamePage, public ActionListener {
         TextButton mMenuButton;
         TextButton mReplayButton;
         
+        TextButton mEditHouseButton;
         
 
         char mReturnToMenu;
         char mStartReplay;
+        char mStartEditHouse;
         
     };
 
