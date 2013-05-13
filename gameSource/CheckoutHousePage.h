@@ -27,6 +27,8 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         virtual int getPaymentCount();
         virtual int getYouPaidTotal();
         virtual int getWifePaidTotal();
+
+        virtual int getNumberOfTapes();
         
         
         
@@ -69,6 +71,7 @@ class CheckoutHousePage : public GamePage, public ActionListener {
         int mPaymentCount;
         int mYouPaidTotal;
         int mWifePaidTotal;
+        int mNumberOfTapes;
 
         char *mHouseMap;
         char *mVaultContents;

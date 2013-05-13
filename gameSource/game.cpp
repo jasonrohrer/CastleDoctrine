@@ -1063,6 +1063,7 @@ void drawFrame( char inUpdate ) {
                 char *priceList = checkoutHousePage->getPriceList();
                 int lootValue = checkoutHousePage->getLootValue();
                 char mustSelfTest = checkoutHousePage->getMustSelfTest();
+                int numberOfTapes = checkoutHousePage->getNumberOfTapes();
                 
                 if( wifeName != NULL && 
                     sonName != NULL && 
@@ -1082,6 +1083,7 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setBackpackContents( backpackContents );
                     editHousePage->setGalleryContents( galleryContents );
                     editHousePage->setPriceList( priceList );
+                    editHousePage->setNumberOfTapes( numberOfTapes );
                     editHousePage->setLootValue( lootValue );
                     editHousePage->setMustSelfTest( mustSelfTest );
                     

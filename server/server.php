@@ -1826,7 +1826,7 @@ function cd_startEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT wife_name, son_name, daughter_name, ".
+    $query = "SELECT character_name, wife_name, son_name, daughter_name, ".
         "house_map, vault_contents, backpack_contents, ".
         "gallery_contents, ".
         "loot_value, ".
@@ -1848,6 +1848,8 @@ function cd_startEditHouse() {
         return;
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+    
+    $character_name = $row[ "character_name" ];
 
     $wife_name = $row[ "wife_name" ];
     $son_name = $row[ "son_name" ];
@@ -1935,6 +1937,17 @@ function cd_startEditHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
+
+    // now count tapes 
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."robbery_logs ".
+        " WHERE house_user_id = '$user_id' AND ".
+        " victim_name = '$character_name';";
+
+    $result = cd_queryDatabase( $query );
+    $number_of_tapes = mysql_result( $result, 0, 0 );
+
+    
+
     $query = "SELECT object_id, price, in_gallery ".
         "FROM $tableNamePrefix"."prices ORDER BY order_number;";
 
@@ -2013,6 +2026,8 @@ function cd_startEditHouse() {
     echo $you_paid_total;
     echo "\n";
     echo $wife_paid_total;
+    echo "\n";
+    echo $number_of_tapes;
     echo "\nOK";
     }
 

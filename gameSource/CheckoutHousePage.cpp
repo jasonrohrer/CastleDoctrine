@@ -30,6 +30,7 @@ CheckoutHousePage::CheckoutHousePage()
           mPaymentCount( 0 ),
           mYouPaidTotal( 0 ),
           mWifePaidTotal( 0 ),
+          mNumberOfTapes( 0 ),
           mHouseMap( NULL ),
           mVaultContents( NULL ),
           mBackpackContents( NULL ),
@@ -122,6 +123,10 @@ int CheckoutHousePage::getYouPaidTotal() {
 
 int CheckoutHousePage::getWifePaidTotal() {
     return mWifePaidTotal;
+    }
+
+int CheckoutHousePage::getNumberOfTapes() {
+    return mNumberOfTapes;
     }
 
 
@@ -243,9 +248,9 @@ void CheckoutHousePage::step() {
                     SimpleVector<char *> *lines = 
                         tokenizeString( result );
                     
-                    if( lines->size() != 15
+                    if( lines->size() != 16
                         ||
-                        strcmp( *( lines->getElement( 14 ) ), "OK" ) != 0 ) {
+                        strcmp( *( lines->getElement( 15 ) ), "OK" ) != 0 ) {
 
                         setStatus( "err_badServerResponse", true );
                         mMenuButton.setVisible( true );
@@ -293,6 +298,10 @@ void CheckoutHousePage::step() {
                         mWifePaidTotal = 0;
                         sscanf( *( lines->getElement( 13 ) ),
                                 "%d", &mWifePaidTotal );
+                        
+                        mNumberOfTapes = 0;
+                        sscanf( *( lines->getElement( 14 ) ),
+                                "%d", &mNumberOfTapes );
 
 
                         delete [] *( lines->getElement( 5 ) );
@@ -302,6 +311,7 @@ void CheckoutHousePage::step() {
                         delete [] *( lines->getElement( 12 ) );
                         delete [] *( lines->getElement( 13 ) );
                         delete [] *( lines->getElement( 14 ) );
+                        delete [] *( lines->getElement( 15 ) );
                         
                         printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Vault = %s\n", mVaultContents );

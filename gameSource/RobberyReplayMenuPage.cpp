@@ -90,7 +90,7 @@ void RobberyReplayMenuPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mMenuButton ) {
         mReturnToMenu = true;
         }
-    else if( inTarget = &mEditHouseButton ) {
+    else if( inTarget == &mEditHouseButton ) {
         mStartEditHouse = true;
         }
     else if( inTarget == &mPickList ) {

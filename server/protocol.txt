@@ -83,6 +83,7 @@ daughter_name
 payment_count
 you_paid_total
 wife_paid_total
+number_of_tapes
 OK
 
 Where:
@@ -147,6 +148,11 @@ must_self_test = 1 if player must test house before submitting it, or
                  0 otherwise
 
 music_seed = integer used to seed music generator for this house's song
+
+
+And:
+
+number_of_tapes = the number of security tapes available for this house
 
 
 

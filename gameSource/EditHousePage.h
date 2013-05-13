@@ -54,6 +54,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         char *getGalleryContents();
 
 
+        // Must be called before setLootValue
+        void setNumberOfTapes( int inNumber );
+        
+
         // destroyed by caller
         char *getEditList();
         char *getFamilyExitPaths();
@@ -171,6 +175,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         Gallery mGallery;
         
+        int mNumberOfTapes;
         char mJumpToTapes;
         char mDone;
         char mDead;

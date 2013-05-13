@@ -42,6 +42,7 @@ EditHousePage::EditHousePage()
                                       8, -1.75, 1/16.0 ),
           mBlockSuicideButton( false ),
           mGallery( mainFont, -8, 0 ),
+          mNumberOfTapes( 0 ),
           mJumpToTapes( false ),
           mDone( false ),
           mDead( false ) {
@@ -219,6 +220,10 @@ void EditHousePage::setGalleryContents( const char *inGalleryContents ) {
     }
 
 
+void EditHousePage::setNumberOfTapes( int inNumber ) {
+    mNumberOfTapes = inNumber;
+    }
+
 
 char *EditHousePage::getGalleryContents() {
     return mGallery.getGalleryContents();
@@ -326,7 +331,8 @@ void EditHousePage::checkIfPlacementAllowed() {
 
     // can jump to tapes as long as no editing done yet (so nothing will be
     // lost when we abandon the house edit)
-    mJumpToTapesButton.setVisible( ! mUndoButton.isVisible() );
+    mJumpToTapesButton.setVisible( mNumberOfTapes > 0 &&
+                                   ! mUndoButton.isVisible() );
     }
 
 
