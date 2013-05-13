@@ -3277,11 +3277,13 @@ function cd_listHouses() {
     $skip = cd_requestFilter( "skip", "/\d+/", 0 );
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
-    $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
+    $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
 
     $searchClause = "";
 
     if( $name_search != "" ) {
+        $name_search = preg_replace( "/ /", "%", $name_search );
+        
         $searchClause = "AND houses.character_name LIKE '%$name_search%' ";
         }
     

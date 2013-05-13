@@ -273,7 +273,7 @@ and user_id is the robber in the case of a house being robbed.
 server.php?action=list_houses&user_id=[id number]
                              &skip=[number]
                              &limit=[number]
-							 &name_search=[single word]
+                             &name_search=[any+number+of+words]
                              &sequence_number=[number]
                              &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
@@ -287,6 +287,9 @@ OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
+
+name_search contains a single word or multiple words concatonated with "+"
+("+" is URL-encoding of " ")
 
 more_pages is 1 if there are more pages and 0 of there are not
 

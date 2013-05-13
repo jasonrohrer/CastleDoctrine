@@ -60,6 +60,8 @@ Version 6
 
 --Added indicator light house object.
 
+--Name search filter now permits multiple words.
+
 
 
 

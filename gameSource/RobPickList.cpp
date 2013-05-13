@@ -51,10 +51,11 @@ RobPickList::RobPickList( double inX, double inY,
                         false,
                         translate( "nameSearch" ),
                         "abcdefghijklmnopqrstuvwxyz"
-                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                        " " ),
           mFilterButton( mainFont, 4, 4,
                          translate( "filter" ) ),
-          mAppliedSearchWord( stringDuplicate( "" ) ) {
+          mAppliedSearchWords( stringDuplicate( "" ) ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
@@ -79,7 +80,7 @@ RobPickList::~RobPickList() {
         }
     clearHouseList();
 
-    delete [] mAppliedSearchWord;
+    delete [] mAppliedSearchWords;
     }
 
 
@@ -99,9 +100,14 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         refreshList( true, true );
         }
     else if( inTarget == &mFilterButton || inTarget == &mSearchField ) {
-        delete [] mAppliedSearchWord;
+        delete [] mAppliedSearchWords;
 
-        mAppliedSearchWord = mSearchField.getText();
+        char *separateWords = mSearchField.getText();
+
+        char found;
+        mAppliedSearchWords = replaceAll( separateWords, " ", "+", &found );
+        
+        delete [] separateWords;
 
         refreshList( true, false );
         }
@@ -123,9 +129,9 @@ void RobPickList::refreshList( char inPreserveSearch,
     mSearchField.focus();
 
     if( ! inPreserveSearch ) {
-        delete [] mAppliedSearchWord;
-        mAppliedSearchWord = stringDuplicate( "" );
-        mSearchField.setText( mAppliedSearchWord );
+        delete [] mAppliedSearchWords;
+        mAppliedSearchWords = stringDuplicate( "" );
+        mSearchField.setText( mAppliedSearchWords );
         }
     
     if( ! inPreservePosition ) {
@@ -145,7 +151,7 @@ void RobPickList::refreshList( char inPreserveSearch,
     char *actionString = autoSprintf( 
         "action=%s&skip=%d&limit=%d&name_search=%s&user_id=%d"
         "&%s",
-        action, mCurrentSkip, linesPerPage, mAppliedSearchWord, 
+        action, mCurrentSkip, linesPerPage, mAppliedSearchWords, 
         userID, ticketHash );
     delete [] ticketHash;
             
