@@ -58,6 +58,8 @@ Version 6
   making it possible to build structures that actually protect them (since
   robber can no longer just wait at the exit until the family comes out).
 
+--Added indicator light house object.
+
 
 
 

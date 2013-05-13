@@ -141,6 +141,11 @@ power   #   floor_electric:1   =>  2
 noPower   #   floor_electric:2   =>  1
 
 
+power   #   indicator_light:1   =>  2
+
+noPower   #   indicator_light:2   =>  1
+
+
 
 
 powerNorth   #   power_relay:1   =>  2
