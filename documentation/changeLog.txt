@@ -69,6 +69,9 @@ Version 6
 --You can now watch security tapes before re-editing and testing your house
   after your house has been robbed.
 
+--Added tool tip explaining keyboard shortcut for Undo (Ctrl-Z).
+
+
 
 
 

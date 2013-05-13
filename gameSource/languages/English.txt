@@ -92,6 +92,7 @@ jumpToTapesTip "View your security tapes"
 
 
 undo "Undo"
+undoTip "Undo (Ctrl-Z)"
 
 diffHighlightsOn "Turn change highlights on"
 diffHighlightsOff "Turn change highlights off"
