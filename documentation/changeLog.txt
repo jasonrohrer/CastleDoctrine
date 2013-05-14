@@ -73,6 +73,8 @@ Version 6
 
 --Control-click acts as "eyedropper" to select tile under mouse for placement.
 
+--Further improved wording on house self-test screen.
+
 
 
 

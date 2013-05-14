@@ -121,7 +121,7 @@ buyModeTip "Switch to buying tools"
 
 
 
-selfTestDescription "Prove that your house is fair:##(Reach your own vault with no tools.  Be careful.)"
+selfTestDescription "Prove that you're not locked out by your own security:##(Reach your vault with no tools.  Be careful...)"
 
 
 auctionDescription "Currently running auctions:"
