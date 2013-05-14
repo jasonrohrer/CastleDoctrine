@@ -56,6 +56,9 @@ youEarnReport "You earned $%d"
 wifeEarnReport "%s earned $%d"
 
 
+blueprintDescription "Blueprints for %s house:"
+
+
 
 editDescription "Work on your house:"
 
@@ -71,6 +74,7 @@ loadBackpackTip "Load your backpack before leaving"
 
 backpackUndoTip "Undo purchase of %s"
 backpackSellUndoTip "Undo sale of %s"
+backpackMultipleSellUndoTip "Undo sale of %d %s"
 
 openAuctionList "Auctions"
 
@@ -111,13 +115,20 @@ buyTip "Buy %s for backpack"
 backpackSlotTip "Move %s to vault"
 vaultSlotTip "Move %s to backpack"
 sellSlotTip "Sell %s for $%d" 
+sellHalfSlotTip "Sell %d %s for $%d" 
 
 
 sellMode "Sell Mode"
+sellHalf "Sell Half"
+sellOne  "Sell One"
+
 buyMode "Buy Mode"
 
 sellModeTip "Switch to selling tools"
 buyModeTip "Switch to buying tools"
+
+sellHalfTip "Switch to selling half of the items in a slot"
+sellOneTip "Switch to selling one item at a time"
 
 
 

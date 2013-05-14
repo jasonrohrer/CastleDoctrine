@@ -75,6 +75,8 @@ Version 6
 
 --Further improved wording on house self-test screen.
 
+--Mode for selling multiple items (half of items in slot with one click).
+
 
 
 

@@ -22,7 +22,8 @@ class InventorySlotButton : public SpriteButton {
         // 0 for no transfer on click
         // 1 for transfer to vault
         // 2 for transfer to backpack
-        // 3 for selling item
+        // 3 for selling one item
+        // 4 for selling half of items
         //
         // defaults to 0
         virtual void setTransferStatus( int inStatus );
@@ -72,6 +73,10 @@ class InventorySlotButton : public SpriteButton {
         
         // override this from Button to draw ring
         virtual void draw();
+
+
+        void setHalfSellTip();
+        
     };
 
 

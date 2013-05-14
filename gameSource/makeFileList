@@ -68,6 +68,8 @@ serialWebRequests.cpp \
 balance.cpp \
 PaymentReportPage.cpp \
 CheckboxButton.cpp \
+BlueprintHouseGridDisplay.cpp \
+ViewBlueprintPage.cpp \
 
 
 

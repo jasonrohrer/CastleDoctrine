@@ -13,6 +13,7 @@ typedef struct toolRecord {
         char *name;
         
         char *description;
+        char *descriptionPlural;
         
         SpriteHandle sprite;
 
@@ -71,6 +72,7 @@ void initTools() {
             
             r.name = f->getFileName();
             r.description = NULL;
+            r.descriptionPlural = NULL;
             r.sprite = NULL;
             
             File *infoFile = f->getChildFile( "info.txt" );
@@ -79,6 +81,14 @@ void initTools() {
                                            &( r.id ), &( r.description ) );
             delete infoFile;
 
+            if( completeRecord ) {
+                
+                File *pluralFile = f->getChildFile( "plural.txt" );
+            
+                completeRecord = readPluralFile( pluralFile, 
+                                                 &( r.descriptionPlural ) );
+                delete pluralFile;
+                }
 
 
             if( completeRecord ) {
@@ -171,6 +181,9 @@ void initTools() {
                 if( r.description != NULL ) {
                     delete [] r.description;
                     }
+                if( r.descriptionPlural != NULL ) {
+                    delete [] r.descriptionPlural;
+                    }
                 if( r.sprite != NULL ) {
                     freeSprite( r.sprite );
                     }
@@ -204,6 +217,7 @@ void freeTools() {
         
         delete [] r.name;
         delete [] r.description;
+        delete [] r.descriptionPlural;
         
         freeSprite( r.sprite );
         }
@@ -265,6 +279,11 @@ const char *getToolName( int inObjectID ) {
 
 const char *getToolDescription( int inObjectID  ) {
     return getToolRecord( inObjectID )->description;
+    }
+
+
+const char *getToolDescriptionPlural( int inObjectID  ) {
+    return getToolRecord( inObjectID )->descriptionPlural;
     }
 
 

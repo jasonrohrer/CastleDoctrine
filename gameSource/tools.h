@@ -20,12 +20,14 @@ SpriteHandle getToolSprite( int inObjectID );
 int getToolReach( int inObjectID );
 
 
-// gets the internal name of a tool, example:  "saw"
+// gets the internal name of a tool, examples:  "saw" or "water"
 const char *getToolName( int inObjectID );
 
 
-// gets the human-readable description, example:  "Carpentry Saw"
+// gets the human-readable description, example:  "Carpentry Saw" or "Water"
 const char *getToolDescription( int inObjectID  );
+// examples:  "Capentry Saws" or "Bottles of Water"
+const char *getToolDescriptionPlural( int inObjectID  );
 
 
 // returns -1 on failure

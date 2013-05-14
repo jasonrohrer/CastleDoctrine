@@ -83,10 +83,14 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         int mLootValue;
         
         char mSellMode;
-
+        char mSellHalfMode;
+        
         HouseObjectPicker mToolPicker;
         TextButton mDoneButton;
         TextButton mSellModeButton;
+        TextButton mSellHalfButton;
+        TextButton mSellOneButton;
+
         TextButton mBuyModeButton;
         KeyEquivalentTextButton mUndoButton;
         
@@ -104,9 +108,9 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         SimpleVector<QuantityRecord> mSellRecords;
         
         // for undo
-        // positive IDs here represent purchases
-        // negative IDs represent sales
-        SimpleVector<int> mPurchaseHistory;
+        // positive quanties here represent purchases
+        // negative quantities represent sales
+        SimpleVector<QuantityRecord> mPurchaseHistory;
         
 
         void checkBuyButtonStatus();

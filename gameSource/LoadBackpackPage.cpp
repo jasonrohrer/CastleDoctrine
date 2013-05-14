@@ -21,9 +21,12 @@ extern Font *mainFont;
 
 LoadBackpackPage::LoadBackpackPage() 
         : mSellMode( false ),
+          mSellHalfMode( false ),
           mToolPicker( 8, 5, true ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
           mSellModeButton( mainFont, 8, -3, translate( "sellMode" ) ),
+          mSellHalfButton( mainFont, 5, -4, translate( "sellHalf" ) ),
+          mSellOneButton( mainFont, 5, -5, translate( "sellOne" ) ),
           mBuyModeButton( mainFont, 8, -2, translate( "buyMode" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
           mBuyButton( "left.tga", 5, 5, 1 / 16.0 ),
@@ -35,9 +38,15 @@ LoadBackpackPage::LoadBackpackPage()
     addComponent( &mBuyButton );
 
     addComponent( &mSellModeButton );
+    addComponent( &mSellHalfButton );
+    addComponent( &mSellOneButton );
+
     addComponent( &mBuyModeButton );
     
     mSellModeButton.setMouseOverTip( translate( "sellModeTip" ) );
+    mSellHalfButton.setMouseOverTip( translate( "sellHalfTip" ) );
+    mSellOneButton.setMouseOverTip( translate( "sellOneTip" ) );
+    
     mBuyModeButton.setMouseOverTip( translate( "buyModeTip" ) );
     
 
@@ -48,6 +57,9 @@ LoadBackpackPage::LoadBackpackPage()
     mUndoButton.setVisible( false );
     
     mSellModeButton.addActionListener( this );
+    mSellHalfButton.addActionListener( this );
+    mSellOneButton.addActionListener( this );
+
     mBuyModeButton.addActionListener( this );
     mBuyModeButton.setVisible( false );
 
@@ -257,22 +269,32 @@ void LoadBackpackPage::checkUndoStatus() {
     else {
         mUndoButton.setVisible( true );
         
-        int lastBuy = 
+        QuantityRecord lastTrans = 
             *( mPurchaseHistory.getElement( mPurchaseHistory.size() - 1 ) );
-        
-        const char *tipKey = "backpackUndoTip";
-        
-        if( lastBuy < 0 ) {
-            // last buy was a sell
-            
-            // convert negative ID into a valid, positive ID
-            lastBuy = -lastBuy;
 
-            tipKey = "backpackSellUndoTip";
-            }
         
-        char *tip = autoSprintf( translate( tipKey ),
-                                 getToolDescription( lastBuy ) );
+        char *tip;
+        
+        if( lastTrans.quantity < -1 ) {
+            // sell multiple
+            tip = 
+                autoSprintf( translate( "backpackMultipleSellUndoTip" ), 
+                             - lastTrans.quantity,
+                             getToolDescriptionPlural( lastTrans.objectID ) );
+            }
+        else {
+            // sell or buy single
+            const char *tipKey = "backpackUndoTip";
+
+            if( lastTrans.quantity < 0 ) {
+                // last buy was a sell
+                
+                tipKey = "backpackSellUndoTip";
+                }
+            
+            tip = autoSprintf( translate( tipKey ), 
+                               getToolDescription( lastTrans.objectID ) );
+            }
         
         mUndoButton.setMouseOverTip( tip );
         delete [] tip;
@@ -285,12 +307,21 @@ void LoadBackpackPage::checkSellModeStatus() {
     mSellModeButton.setVisible( !mSellMode );
     mBuyModeButton.setVisible( mSellMode );
     
+    mSellHalfButton.setVisible( mSellMode && !mSellHalfMode );
+    mSellOneButton.setVisible( mSellMode && mSellHalfMode );
+
     int packTransferMode = 1;
     int vaultTransferMode = 2;
     
     if( mSellMode ) {
-        packTransferMode = 3;
-        vaultTransferMode = 3;
+        if( mSellHalfMode ) {
+            packTransferMode = 4;
+            vaultTransferMode = 4;
+            }
+        else {
+            packTransferMode = 3;
+            vaultTransferMode = 3;
+            }
         }
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         mPackSlots[i]->setTransferStatus( packTransferMode );
@@ -333,28 +364,29 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mUndoButton ) {
         if( mPurchaseHistory.size() > 0 ) {
             // undo last one
-            int idToUnbuy = 
+            QuantityRecord lastTransaction = 
                 *( mPurchaseHistory.getElement( 
                        mPurchaseHistory.size() - 1 ) );
             mPurchaseHistory.deleteElement( mPurchaseHistory.size() - 1 );
 
-            if( idToUnbuy < 0 ) {
-                // undoing a sale instead (negative ID number)
+            if( lastTransaction.quantity < 0 ) {
+                // undoing a sale instead
+                int id = lastTransaction.objectID;
+                // might be multiple quantity sold at once
+                int quantity = - lastTransaction.quantity;
                 
-                int idToUnsell = -idToUnbuy;
-                
-                subtractFromQuantity( &mSellRecords, idToUnsell );
-            
-                mLootValue -= mToolPicker.getSellBackPrice( idToUnsell );
+                subtractFromQuantity( &mSellRecords, id, quantity );
+                            
+                mLootValue -= quantity * mToolPicker.getSellBackPrice( id );
 
                 // stick undone sales back in vault
                 char found = false;
                 
                 // slot already contains these items?
                 for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
-                    if( mVaultSlots[i]->getObject() == idToUnsell ) {
+                    if( mVaultSlots[i]->getObject() == id ) {
                         mVaultSlots[i]->setQuantity( 
-                            mVaultSlots[i]->getQuantity() + 1 );
+                            mVaultSlots[i]->getQuantity() + quantity );
                         found = true;
                         break;
                         }
@@ -363,9 +395,10 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                     // stick in an empty slot
                     for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
                         if( mVaultSlots[i]->getObject() == -1 ) {
-                            mVaultSlots[i]->setObject( idToUnsell );
+                            mVaultSlots[i]->setObject( id );
+                            mVaultSlots[i]->setQuantity( quantity );
                             mVaultSlots[i]->setSellPrice( 
-                                mToolPicker.getSellBackPrice( idToUnsell ) );
+                                mToolPicker.getSellBackPrice( id ) );
                             found = true;
                             break;
                             }
@@ -373,7 +406,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                     }       
                 }
             else {
-                // undoing a purchase
+                // undoing a purchase (always made one at a time)
+                int idToUnbuy = lastTransaction.objectID;
                 subtractFromQuantity( &mPurchaseRecords, idToUnbuy );
             
                 mLootValue += mToolPicker.getPrice( idToUnbuy );
@@ -422,7 +456,9 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 mToolPicker.useSelectedObject();
 
                 addToQuantity( &mPurchaseRecords, selectedObject );
-                mPurchaseHistory.push_back( selectedObject );
+
+                QuantityRecord historyRecord = { selectedObject, 1 };
+                mPurchaseHistory.push_back( historyRecord );
                 
                 checkUndoStatus();
 
@@ -437,8 +473,17 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         mSellMode = true;
         checkSellModeStatus();
         }
+    else if( inTarget == &mSellHalfButton ) {
+        mSellHalfMode = true;
+        checkSellModeStatus();
+        }
+    else if( inTarget == &mSellOneButton ) {
+        mSellHalfMode = false;
+        checkSellModeStatus();
+        }
     else if( inTarget == &mBuyModeButton ) {
         mSellMode = false;
+        mSellHalfMode = false;
         checkSellModeStatus();
         }
     else {
@@ -461,7 +506,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                         mLootValue += mToolPicker.getSellBackPrice( id );
                         
                         addToQuantity( &mSellRecords, id );
-                        mPurchaseHistory.push_back( -id );
+                        QuantityRecord historyRecord = { id, -1 };
+                        mPurchaseHistory.push_back( historyRecord );
                         
                         checkUndoStatus();
                         }
@@ -511,13 +557,29 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                         actionHappened();
                         
                         if( mSellMode ) {
-                            mVaultSlots[i]->setQuantity( 
-                                    mVaultSlots[i]->getQuantity() - 1 );
+                            int quantitySold = 1;
                             
-                            mLootValue += mToolPicker.getSellBackPrice( id );
+                            if( mSellHalfMode ) {
+                                quantitySold = 
+                                    mVaultSlots[i]->getQuantity() / 2;
+                                }
+                            if( quantitySold < 1 ) {
+                                quantitySold = 1;
+                                }
+                            
+
+                            mVaultSlots[i]->setQuantity( 
+                                mVaultSlots[i]->getQuantity()
+                                - quantitySold );
+                            
+                            mLootValue += 
+                                quantitySold * 
+                                mToolPicker.getSellBackPrice( id );
                         
-                            addToQuantity( &mSellRecords, id );
-                            mPurchaseHistory.push_back( -id );
+                            addToQuantity( &mSellRecords, id, quantitySold );
+                            QuantityRecord historyRecord = { id, 
+                                                             -quantitySold };
+                            mPurchaseHistory.push_back( historyRecord );
                         
                             checkUndoStatus();
                             }
@@ -571,6 +633,8 @@ void LoadBackpackPage::makeActive( char inFresh ) {
     mDone = false;
     mShowGridToolPicker = false;
     mSellMode = false;
+    mSellHalfMode = false;
+
     checkSellModeStatus();
     }
         

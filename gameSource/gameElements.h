@@ -11,3 +11,12 @@
 //                caller) should be returned.
 // Returns true on success
 char readInfoFile( File *inFile, int *outID, char **outDescription );
+
+
+
+// Parses plural.txt file
+//
+// outDescriptionPlural is pointer to where newly allocated string 
+//                (destroyed by caller) should be returned.
+// Returns true on success
+char readPluralFile( File *inFile, char **outDescriptionPlural );
