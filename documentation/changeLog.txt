@@ -71,6 +71,7 @@ Version 6
 
 --Added tool tip explaining keyboard shortcut for Undo (Ctrl-Z).
 
+--Control-click acts as "eyedropper" to select tile under mouse for placement.
 
 
 

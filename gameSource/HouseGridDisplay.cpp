@@ -2489,6 +2489,31 @@ void HouseGridDisplay::pointerDown( float inX, float inY ) {
     printf( "pointer down at full index %d (%d,%d)\n", fullIndex,
             index % HOUSE_D, index / HOUSE_D );
     
+
+    
+    if( isCommandKeyDown() ) {
+        // CTRL-click
+        // "eyedropper" the tile under the mouse
+        int nonMobile = mHouseMapIDs[ fullIndex ];
+        int mobile = mHouseMapMobileIDs[ fullIndex ];
+        
+        if( mobile != 0 ) {
+            mPicker->setSelectedObject( mobile );
+            }
+        else if( 
+            !isPropertySet( nonMobile,
+                            mHouseMapCellStates[ fullIndex ], 
+                            mandatory ) ) {
+            mPicker->setSelectedObject( nonMobile );
+            }
+        else {
+            mPicker->setSelectedObject( 0 );
+            }
+
+        return;
+        }
+    
+
     if( fullIndex == mRobberIndex ) {
         // don't allow clicks on current robber position
         return;

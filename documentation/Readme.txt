@@ -15,7 +15,9 @@ Press ESC to pause the game and view a menu screen.
 
 The mouse is used for almost all actions in the game, except for:
 
-Moving your character:   Arrow keys or W A S D keys.
+1)  Moving your character:   Arrow keys or W A S D keys.
+
+2)  Selecting tile under mouse for placement (eyedropper):   Control-click
 
 
 If the movement keys are not comfortable on your keyboard, edit 
