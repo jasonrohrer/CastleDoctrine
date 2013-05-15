@@ -20,7 +20,6 @@ class BlueprintHouseGridDisplay : public HouseGridDisplay {
 
         // override movement to pan around the map
         virtual void specialKeyDown( int inKeyCode );
-        virtual void specialKeyUp( int inKeyCode );
         
     };
 
