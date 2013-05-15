@@ -1903,24 +1903,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( mPicker != NULL ) {
                     highlightPick = mPicker->getSelectedObject();
                     }
-                else {
-                    
-                    char highlightAboveShadows = 
-                        isPropertySet( highlightPick, 0, structural ) ||
-                        isPropertySet( highlightPick, 0, shadowMaking );
-
-                    if( ( highlightAboveShadows && inBeneathShadowsOnly ) 
-                        ||
-                        ( ! highlightAboveShadows && 
-                          ! inBeneathShadowsOnly ) ) {
-                    
-                        // only draw each highlight once 
-                        // (along with other objects
-                        //  that share its shadow-casting status)
-                    
-                        highlightPick = -1;
-                        }
-                    }
                 }
 
 
