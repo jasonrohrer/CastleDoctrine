@@ -64,6 +64,8 @@ CustomRandomSource randSource;
 #include "FetchSelfTestReplayPage.h"
 #include "ReplayRobHousePage.h"
 #include "StaleHousePage.h"
+#include "FetchBlueprintPage.h"
+#include "ViewBlueprintPage.h"
 
 
 #include "houseObjects.h"
@@ -77,6 +79,8 @@ CustomRandomSource randSource;
 #include "seededMusic.h"
 
 #include "serialWebRequests.h"
+
+#include "nameProcessing.h"
 
 
 
@@ -105,6 +109,8 @@ FetchSelfTestReplayPage *fetchSelfTestReplayPage;
 ReplayRobHousePage *replayRobHousePage;
 StaleHousePage *staleHousePage;
 StaleHousePage *staleHouseDeadPage;
+FetchBlueprintPage *fetchBlueprintPage;
+ViewBlueprintPage *viewBlueprintPage;
 
 
 // position of view in world
@@ -507,7 +513,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     replayRobHousePage = new ReplayRobHousePage();
     staleHousePage = new StaleHousePage( false );
     staleHouseDeadPage = new StaleHousePage( true );
-
+    fetchBlueprintPage = new FetchBlueprintPage();
+    viewBlueprintPage = new ViewBlueprintPage();
+    
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );
@@ -563,7 +571,9 @@ void freeFrameDrawer() {
     delete replayRobHousePage;
     delete staleHousePage;
     delete staleHouseDeadPage;
-
+    delete fetchBlueprintPage;
+    delete viewBlueprintPage;
+    
 
     freeHouseObjects();
     freeHouseTransitions();
@@ -1532,6 +1542,19 @@ void drawFrame( char inUpdate ) {
                     currentGamePage->base_makeActive( true );
                     }
                 }
+            else if( menuPage->getViewBlueprint() ) {
+                HouseRecord *r = menuPage->getSelectedHouse();
+                
+                if( r != NULL ) {
+                    currentGamePage = fetchBlueprintPage;
+                    
+                    fetchBlueprintPage->setToRobUserID( r->uniqueID );
+                    fetchBlueprintPage->setToRobCharacterName( 
+                        r->rawCharacterName );
+                    
+                    currentGamePage->base_makeActive( true );
+                    }
+                }
             }
         else if( currentGamePage == robCheckoutHousePage ) {
             if( robCheckoutHousePage->getReturnToMenu() ) {
@@ -1577,18 +1600,7 @@ void drawFrame( char inUpdate ) {
 
                     char *ownerName = robCheckoutHousePage->getOwnerName();
                     
-                    // handle names that end with "s" properly
-                    char *ownerNamePossessive;
-
-                    if( ownerName[ strlen( ownerName ) - 1 ] == 's' ) {
-                        ownerNamePossessive = 
-                            autoSprintf( "%s'", ownerName );
-                        }
-                    else {
-                        ownerNamePossessive = 
-                            autoSprintf( "%s's", ownerName );
-                        }
-                    delete [] ownerName;
+                    char *ownerNamePossessive = makePossessive( ownerName );
 
                     char *description = 
                         autoSprintf( translate( "robDescription" ),
@@ -1713,6 +1725,47 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             }
+        else if( currentGamePage == fetchBlueprintPage ) {
+            if( fetchBlueprintPage->getReturnToMenu() ) {
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            else {
+                char *houseMap = fetchBlueprintPage->getHouseMap();
+                
+                if( houseMap != NULL ) {
+
+                    viewBlueprintPage->setHouseMap( houseMap );
+                    delete [] houseMap;
+
+
+                    char *ownerName = fetchBlueprintPage->getOwnerName();
+                    
+                    char *ownerNamePossessive = makePossessive( ownerName );
+
+                    char *description = 
+                        autoSprintf( translate( "blueprintDescription" ),
+                                     ownerNamePossessive );
+
+                    delete [] ownerNamePossessive;
+
+
+                    viewBlueprintPage->setDescription( description );
+                    delete [] description;
+
+                    currentGamePage = viewBlueprintPage;
+                    currentGamePage->base_makeActive( true );
+                    }
+                }
+            }
+        else if( currentGamePage == viewBlueprintPage ) {
+            if( viewBlueprintPage->getDone() ) {
+
+                currentGamePage = menuPage;
+                currentGamePage->base_makeActive( true );
+                }
+            }
+
 
         }
 

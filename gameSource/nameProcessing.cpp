@@ -22,3 +22,21 @@ char *nameParse( char *inNameString ) {
 
     return name;
     }
+
+
+
+
+char *makePossessive( char *inNameString ) {
+    
+    char *namePossessive;
+
+    if( inNameString[ strlen( inNameString ) - 1 ] == 's' ) {
+        namePossessive = autoSprintf( "%s'", inNameString );
+        }
+    else {
+        namePossessive = autoSprintf( "%s's", inNameString );
+        }
+    delete [] inNameString;
+
+    return namePossessive;
+    }

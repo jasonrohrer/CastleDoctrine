@@ -23,6 +23,7 @@ class MenuPage : public GamePage, public ActionListener {
 
         virtual char getStartEditHouse();
         virtual char getStartRobHouse();
+        virtual char getViewBlueprint();
         virtual char getShowReplayList();
         virtual char getStartSelfTestReplay();
         
@@ -51,10 +52,13 @@ class MenuPage : public GamePage, public ActionListener {
         
         TextButton mShowReplayListButton;
         TextButton mProofReplayButton;
+
+        TextButton mBlueprintButton;
         
 
         char mStartEditHouse;
         char mStartRobHouse;
+        char mViewBlueprint;
         char mShowReplayList;
         char mStartSelfTestReplay;
         

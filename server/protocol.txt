@@ -308,6 +308,42 @@ If last_robber is user_id, last_robber_name is set to "You".
 
 
 
+
+
+=== Call:
+server.php?action=get_blueprint&user_id=[id number]
+                               &to_rob_user_id=[id number]
+                               &to_rob_character_name=[name]
+                               &sequence_number=[number]
+                               &ticket_hmac=[hmac-sha1, hex-encoded]
+Returns:
+character_name
+houseMap
+OK
+
+--OR--
+
+RECLAIMED
+
+(if owner died)
+
+--OR--
+
+DENIED
+
+(if blueprint request fails for some reason)
+
+Where:
+character_name has spaces repaced by "_"
+houseMap = ASCII string representing the house layout
+
+
+
+
+
+
+
+
 === Call:
 server.php?action=start_rob_house&user_id=[id number]
                                  &to_rob_user_id=[id number]

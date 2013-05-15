@@ -145,6 +145,7 @@ if( $shutdownMode &&
       $action == "check_hmac" ||
       $action == "start_edit_house" ||
       $action == "list_houses" ||
+      $action == "get_blueprint" ||
       $action == "start_rob_house" ||
       $action == "list_logged_robberies" ||
       $action == "get_robbery_log" ||
@@ -185,6 +186,9 @@ else if( $action == "ping_house" ) {
     }
 else if( $action == "list_houses" ) {
     cd_listHouses();
+    }
+else if( $action == "get_blueprint" ) {
+    cd_getBlueprint();
     }
 else if( $action == "start_rob_house" ) {
     cd_startRobHouse();
@@ -3362,6 +3366,69 @@ function cd_listHouses() {
     else {
         echo "0\n";
         }
+    echo "OK";
+    }
+
+
+
+function cd_getBlueprint() {
+    global $tableNamePrefix;
+
+    if( ! cd_verifyTransaction() ) {
+        return;
+        }
+
+    $user_id = cd_getUserID();
+
+    $to_rob_user_id = cd_requestFilter( "to_rob_user_id", "/\d+/" );
+    $to_rob_character_name =
+        cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
+
+    
+    // can't look at blueprints while doing anything else
+    cd_processStaleCheckouts( $user_id );
+
+
+    
+    // automatically ignore blocked users and houses already checked
+    // out for robbery by another player
+
+    // ALLOW same user to re-checkout a house for robbery, even if it's
+    // currently checked out by that user, to allow for client request
+    // retries (in cases where first request actually goes through server-side)
+    
+    $query = "SELECT house_map, character_name ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$to_rob_user_id' AND blocked='0';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    
+    if( $numRows < 1 ) {
+        cd_log( "Blueprint fetch failed for robber $user_id,  ".
+                "victim $to_rob_user_id, failed to find target house in ".
+                "house table" );
+        cd_transactionDeny( false );
+        return;
+        }
+    $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    
+    $house_map = $row[ "house_map" ];
+    $character_name = $row[ "character_name" ];
+
+    if( $character_name != $to_rob_character_name ) {
+        // character names don't match
+        // user must have died and respawned as a new character
+        // rob request is no longer valid (old house gone)
+        echo "RECLAIMED";
+        return;
+        }
+    
+    
+    echo "$character_name\n";
+    echo "$house_map\n";
     echo "OK";
     }
 

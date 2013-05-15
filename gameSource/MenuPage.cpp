@@ -16,27 +16,33 @@ MenuPage::MenuPage()
           mRobHouseButton( mainFont, -4, -4, translate( "startRobHouse" ) ),
           mShowReplayListButton( mainFont, -4, -6, 
                                  translate( "listRobberyReplays" ) ),
-          mProofReplayButton( mainFont, 4, -4, 
+          mProofReplayButton( mainFont, 4, 6, 
                               translate( "startProofReplay" ) ),
+          mBlueprintButton( mainFont, 4, -4, 
+                            translate( "viewBlueprint" ) ),
           mStartEditHouse( false ),
           mStartRobHouse( false ),
+          mViewBlueprint( false ),
           mShowReplayList( false ),
           mStartSelfTestReplay( false ) {
 
     addComponent( &mEditHouseButton );
     addComponent( &mRobHouseButton );
     addComponent( &mShowReplayListButton );
+    addComponent( &mBlueprintButton );
     addComponent( &mProofReplayButton );
     addComponent( &mPickList );
 
     mEditHouseButton.addActionListener( this );
     mRobHouseButton.addActionListener( this );
     mShowReplayListButton.addActionListener( this );
+    mBlueprintButton.addActionListener( this );
     mProofReplayButton.addActionListener( this );
 
     mPickList.addActionListener( this );
 
     mRobHouseButton.setVisible( false );
+    mBlueprintButton.setVisible( false );
     mProofReplayButton.setVisible( false );
     }
 
@@ -55,6 +61,11 @@ char MenuPage::getStartEditHouse() {
 
 char MenuPage::getStartRobHouse() {
     return mStartRobHouse;
+    }
+
+
+char MenuPage::getViewBlueprint() {
+    return mViewBlueprint;
     }
 
 
@@ -82,15 +93,20 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
         if( mPickList.getSelectedHouse() == NULL ) {
             mRobHouseButton.setVisible( false );
             mProofReplayButton.setVisible( false );
+            mBlueprintButton.setVisible( false );
             }
         else {
             mRobHouseButton.setVisible( true );
             mProofReplayButton.setVisible( playerIsAdmin );
+            mBlueprintButton.setVisible( true );
             }
         }
     else if( inTarget == &mRobHouseButton ) {
         mStartRobHouse = true;
-        }
+        } 
+    else if( inTarget == &mBlueprintButton ) {
+        mViewBlueprint = true;
+        } 
     else if( inTarget == &mShowReplayListButton ) {
         mShowReplayList = true;
         }
@@ -121,6 +137,7 @@ void MenuPage::makeActive( char inFresh ) {
     
     mStartEditHouse = false;
     mStartRobHouse = false;
+    mViewBlueprint = false;
     mShowReplayList = false;
     mStartSelfTestReplay = false;
 
