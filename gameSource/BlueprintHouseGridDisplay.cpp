@@ -5,6 +5,9 @@
 BlueprintHouseGridDisplay::BlueprintHouseGridDisplay( double inX, 
                                                         double inY )
         : HouseGridDisplay( inX, inY ) {
+
+    mStepsBetweenHeldKeyRepeat = 4;
+    mAllowKeyRepeatAcceleration = true;
     }
 
 

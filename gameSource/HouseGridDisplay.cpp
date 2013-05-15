@@ -177,6 +177,9 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
         }
     
     mAllowMoveKeyHold = true;
+    mStepsBetweenHeldKeyRepeat = false;
+    
+    mStepsBetweenHeldKeyRepeat = 8;
     
     sInstanceCount++;
     }
@@ -516,6 +519,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
         mSpecialKeysHeldSteps[i] = 0;
+        mSpecialKeysHeldStepsTotal[i] = 0;
         }
     }
 
@@ -1053,6 +1057,7 @@ void HouseGridDisplay::step() {
     for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
         if( mSpecialKeysHeldSteps[i] > 0 ) {
             mSpecialKeysHeldSteps[i] ++;
+            mSpecialKeysHeldStepsTotal[i] ++;
             }
         }
 
@@ -1061,18 +1066,28 @@ void HouseGridDisplay::step() {
 
     int threshold = lrint( 30 / frameRateFactor );
 
-    int betweenJumpSteps = lrint( 8 / frameRateFactor );
+    int betweenJumpSteps = 
+        lrint( mStepsBetweenHeldKeyRepeat / frameRateFactor );
     
     if( mAllowMoveKeyHold ) {
         for( int i=MG_KEY_LEFT; i<=MG_KEY_DOWN; i++ ) {
         
             if( mSpecialKeysHeldSteps[i] > threshold ) {
                 
+                int thisNextJumpSteps = betweenJumpSteps;
+                
+                if( mAllowKeyRepeatAcceleration &&
+                    mSpecialKeysHeldStepsTotal[i] > threshold * 2 ) {
+                    // held down for long enough
+                    // delays between repeats cut in half from now on
+                    thisNextJumpSteps /= 2;
+                    }
+                
                 // repeat that key
                 specialKeyDown( i );
                 
                 // wait some steps before next repeat
-                mSpecialKeysHeldSteps[i] -= betweenJumpSteps;
+                mSpecialKeysHeldSteps[i] -= thisNextJumpSteps;
                 }
             
             
@@ -2668,12 +2683,14 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
         // not already down
 
         mSpecialKeysHeldSteps[ inKeyCode ] = 1;
+        mSpecialKeysHeldStepsTotal[ inKeyCode ] = 1;
         }
 
     // clear hold status of all other special keys
     for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
         if( i != inKeyCode ) {
             mSpecialKeysHeldSteps[i] = 0;
+            mSpecialKeysHeldStepsTotal[i] = 0;
             }
         }
     
@@ -2728,6 +2745,7 @@ void HouseGridDisplay::specialKeyDown( int inKeyCode ) {
 
 void HouseGridDisplay::specialKeyUp( int inKeyCode ) {
     mSpecialKeysHeldSteps[ inKeyCode ] = 0;
+    mSpecialKeysHeldStepsTotal[ inKeyCode ] = 0;
     }
 
 

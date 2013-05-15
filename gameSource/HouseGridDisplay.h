@@ -394,7 +394,13 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
 
         char mAllowMoveKeyHold;
+        // key repeat doubles speed after being held for a while?
+        char mAllowKeyRepeatAcceleration;
+        
+        char mStepsBetweenHeldKeyRepeat;
+
         int mSpecialKeysHeldSteps[MG_KEY_LAST_CODE + 1];
+        int mSpecialKeysHeldStepsTotal[MG_KEY_LAST_CODE + 1];
     };
 
 
