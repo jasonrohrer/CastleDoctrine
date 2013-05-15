@@ -28,10 +28,10 @@ if( isset( $blockRobots ) && $blockRobots == 1 ) {
 <table border=0 width="712" cellpadding=2 cellspacing=0>
 
 <tr bgcolor="#222222">
-<td width=20% align=center>[<a href="news.php">news</a>]</td>
-<td width=20% align=center>[<a href="forums">forums</a>]</td>
-<td width=20% align=center>[<a href="wiki">wiki</a>]</td>
-<td width=20% align=center>[<a href="buy.php">buy</a>]</td>
+<td width=20% align=center>[<a href="http://thecastledoctrine.net/news.php">news</a>]</td>
+<td width=20% align=center>[<a href="http://thecastledoctrine.net/forums">forums</a>]</td>
+<td width=20% align=center>[<a href="http://thecastledoctrine.net/wiki">wiki</a>]</td>
+<td width=20% align=center>[<a href="http://thecastledoctrine.net/buy.php">buy</a>]</td>
 <td width=20% align=center>[<a href="http://www.reddit.com/r/CastleDoctrine">subreddit</a>]</td>
 </tr>
 

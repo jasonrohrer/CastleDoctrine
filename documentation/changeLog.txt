@@ -77,6 +77,8 @@ Version 6
 
 --Mode for selling multiple items (half of items in slot with one click).
 
+--Fixed linking to wiki and forums and news from download pages.
+
 
 
 
