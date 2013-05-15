@@ -2234,7 +2234,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 stringDuplicate( 
                     getObjectDescription( id, state ) );
             
-            if( isPropertySet( id, state, wife ) ) {
+            if( isPropertySet( id, state, wife ) && mWifeName != NULL ) {
 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mWifeName );
@@ -2242,7 +2242,7 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 delete [] nonMobileDescription;
                 nonMobileDescription = nameInserted;
                 }
-            if( isPropertySet( id, state, son ) ) {
+            if( isPropertySet( id, state, son ) && mSonName != NULL ) {
                 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mSonName );
@@ -2250,7 +2250,8 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 delete [] nonMobileDescription;
                 nonMobileDescription = nameInserted;
                 }
-            if( isPropertySet( id, state, daughter ) ) {
+            if( isPropertySet( id, state, daughter ) && 
+                mDaughterName != NULL ) {
 
                 char *nameInserted =
                     autoSprintf( nonMobileDescription, mDaughterName );
