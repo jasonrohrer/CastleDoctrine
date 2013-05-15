@@ -350,7 +350,8 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // internal version of resetToggledStates (above)
         // does not perform sub-map copy-back or shadow recomputation
         void resetToggledStatesInternal( int inTargetState );
-
+        
+        int mLastResetTargetState;
 
 
         // maintain one bank of noise tiles for all instances

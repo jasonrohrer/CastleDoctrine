@@ -81,6 +81,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mLastPlacedObject( 0 ),
           mLastActionChangedDiff( false ),
           mLastActionPlayerMotion( false ),
+          mLastResetTargetState( 0 ),
           mToolTargetSprite( loadSprite( "toolTarget.tga" ) ),
           mToolTargetBorderSprite( loadSprite( "toolTargetBorder.tga" ) ),
           mToolTargetPickedFullIndex( -1 ),
@@ -555,6 +556,7 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState ) {
         // example:  walls that were burned down during a previous, successful
         // robbery, but not repaired by owner yet
         }
+    mLastResetTargetState = inTargetState;
     }
 
 
@@ -2063,7 +2065,7 @@ void HouseGridDisplay::draw() {
                    2 * ( HOUSE_D * mTileRadius ) );
 
     // draw full grid of floor under everything
-    SpriteHandle sprite = getObjectSprite( 0, 0, 0 );
+    SpriteHandle sprite = getObjectSprite( 0, 0, mLastResetTargetState );
     setDrawColor( 1, 1, 1, 1 );
     for( int y=HOUSE_D-1; y>=0; y-- ) {
         for( int x=0; x<HOUSE_D; x++ ) {
@@ -2084,7 +2086,7 @@ void HouseGridDisplay::draw() {
 
         SpriteHandle sprite = getObjectSprite( START_ID, 
                                                0, 
-                                               0 );
+                                               mLastResetTargetState );
         drawSprite( sprite, getTilePos( startSubIndex ), 1.0/32.0 );
         }
 
