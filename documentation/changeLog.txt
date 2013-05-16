@@ -79,6 +79,8 @@ Version 6
 
 --Fixed linking to wiki and forums and news from download pages.
 
+--Improved appearance of wired wooden walls (no internal, dead-end plugs).
+
 
 
 
