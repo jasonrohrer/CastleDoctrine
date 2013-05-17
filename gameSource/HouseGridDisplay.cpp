@@ -2074,6 +2074,38 @@ void HouseGridDisplay::draw() {
         }
     
 
+
+    // first, walk along top edge and draw one row of off-screen tiles, if 
+    // present (this "completes" top visible row of tiles by drawing
+    // overhangs from tiles that are north of them)
+
+    if( mSubMapOffsetY + HOUSE_D < mFullMapD ) {
+        
+        int y = mSubMapOffsetY + HOUSE_D;
+        
+        for( int x=0; x<HOUSE_D; x++ ) {    
+        
+            int fullI = y * mFullMapD + mSubMapOffsetX + x;
+                
+            int houseTile = mHouseMapIDs[ fullI ];
+            int houseTileState = mHouseMapCellStates[ fullI ];
+
+            int orientationIndex = getOrientationIndex( fullI, houseTile,
+                                                        houseTileState );
+
+            doublePair tilePos = getTilePosFull( fullI );
+
+            setDrawColor( 1, 1, 1, 1 );
+                
+
+            SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                   orientationIndex, 
+                                                   houseTileState );
+            
+            drawSprite( sprite, tilePos, 1.0/32.0 );
+            }
+        }    
+
     
     // draw house parts that are under shadows (non-structural parts)
     drawTiles( true );

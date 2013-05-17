@@ -81,6 +81,7 @@ Version 6
 
 --Improved appearance of wired wooden walls (no internal, dead-end plugs).
 
+--Fixed visual glitches in pits when they cross northern view edge.
 
 
 
