@@ -532,10 +532,12 @@ void HouseGridDisplay::setWifeMoney( int inMoney ) {
 
 
 
-void HouseGridDisplay::resetToggledStatesInternal( int inTargetState ) {
+void HouseGridDisplay::resetToggledStatesInternal( int inTargetState,
+                                                   char inForceUnstuck ) {
     for( int i=0; i<mNumMapSpots; i++ ) {
         
-        if( ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+        if( inForceUnstuck ||
+            ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
                              stuck ) ) {
             
     
@@ -545,9 +547,10 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState ) {
         // same for mobile objects
         if( mHouseMapMobileIDs[i] != 0 
             &&
-            ! isPropertySet( mHouseMapMobileIDs[i], 
-                             mHouseMapMobileCellStates[i],
-                             stuck ) ) {
+            ( inForceUnstuck ||
+              ! isPropertySet( mHouseMapMobileIDs[i], 
+                               mHouseMapMobileCellStates[i],
+                               stuck ) ) ) {
             
             mHouseMapMobileCellStates[i] = inTargetState;
             }
@@ -561,8 +564,9 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState ) {
 
 
 
-void HouseGridDisplay::resetToggledStates( int inTargetState ) {
-    resetToggledStatesInternal( inTargetState );
+void HouseGridDisplay::resetToggledStates( int inTargetState,
+                                           char inForceUnstuck ) {
+    resetToggledStatesInternal( inTargetState, inForceUnstuck );
     
     copyAllIntoSubCells();
 

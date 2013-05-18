@@ -16,7 +16,8 @@ void BlueprintHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     HouseGridDisplay::setHouseMap( inHouseMap );
     
     // switch all to blueprint state
-    resetToggledStates( 100 );
+    // even stuck ones (don't represent burned-down walls, etc., in blueprint)
+    resetToggledStates( 100, true );
     
     // robber invisible
     mRobberState = 100;

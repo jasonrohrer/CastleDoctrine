@@ -130,7 +130,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // resets all non-stuck objects to inTargetState
         // (example:  reset to 1 for presentation to robber, or 0 for 
         //    presentation to owner)
-        void resetToggledStates( int inTargetState );
+        // Normally preserves any objects in stuck states 
+        //  (unless inForceUnstuck is set).
+        void resetToggledStates( int inTargetState, 
+                                 char inForceUnstuck = false );
 
         
         void setTouchedHighlightRed( char inRed ) {
@@ -349,7 +352,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         // internal version of resetToggledStates (above)
         // does not perform sub-map copy-back or shadow recomputation
-        void resetToggledStatesInternal( int inTargetState );
+        // Normally preserves any objects in stuck states 
+        //  (unless inForceUnstuck is set).
+        void resetToggledStatesInternal( int inTargetState,
+                                         char inForceUnstuck = false );
         
         int mLastResetTargetState;
 
