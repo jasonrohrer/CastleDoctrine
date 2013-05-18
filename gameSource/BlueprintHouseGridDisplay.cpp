@@ -17,6 +17,9 @@ void BlueprintHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     
     // switch all to blueprint state
     resetToggledStates( 100 );
+    
+    // robber invisible
+    mRobberState = 100;
     }
 
 
