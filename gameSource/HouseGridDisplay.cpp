@@ -2316,12 +2316,19 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                     mHouseMapMobileIDs[ fullI ],
                     mHouseMapMobileCellStates[ fullI ] );
         
-            char *tip = autoSprintf( "%s  /  %s",
-                                     nonMobileDescription, mobileDescription );
-            
-            setToolTip( tip );
-            
-            delete [] tip;
+            if( mHouseMapIDs[fullI] != 0 ) {
+                // mobile on top of something
+                char *tip = autoSprintf( "%s  /  %s",
+                                         nonMobileDescription, 
+                                         mobileDescription );
+                setToolTip( tip );
+                
+                delete [] tip;
+                }
+            else {
+                // don't describe empty floor under mobile
+                setToolTip( mobileDescription );
+                }
             }
         else {
             setToolTip( nonMobileDescription );

@@ -83,6 +83,9 @@ Version 6
 
 --Fixed visual glitches in pits when they cross northern view edge.
 
+--Fixed tool tip for mobile over empty floor (no longer describes floor).
+
+
 
 
 Version 5_serverFixes   2013-May-1
