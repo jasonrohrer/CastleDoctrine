@@ -1216,7 +1216,39 @@ void applyToolTransition( int *inMapIDs, int *inMapStates,
     
     // all transitions triggered by this trigger
     TransitionTriggerRecord *r = &( triggerRecords[ inToolID ] );
+
+
+    if( mobileID != 0 ) {
+        
+        // check mobile first
+        for( int i=0; i<r->numTransitions; i++ ) {
+        
+            TransitionRecord *transRecord = &( r->transitions[i] );
+        
+
+            // affects mobile?
+            if( transRecord->targetID == mobileID
+                &&
+                ( transRecord->targetStartState == mobileState
+                  ||
+                  transRecord->targetStartState == -1 )
+                &&
+                transRecord->targetEndState != mobileState ) {
+                
+                inMapMobileStates[ inToolTargetIndex ] = 
+                    transRecord->targetEndState;
+                
+                // return after first one found
+                return;
+                }
+
+            }
+        }
     
+    
+    // did not affect mobile (or no mobile present)
+    // now check underlying tile
+
     for( int i=0; i<r->numTransitions; i++ ) {
         
         TransitionRecord *transRecord = &( r->transitions[i] );
@@ -1235,23 +1267,10 @@ void applyToolTransition( int *inMapIDs, int *inMapStates,
             // return after first one found
             return;
             }
-        // affects mobile?
-        else if( transRecord->targetID == mobileID
-            &&
-            ( transRecord->targetStartState == mobileState
-              ||
-              transRecord->targetStartState == -1 )
-            &&
-            transRecord->targetEndState != mobileState ) {
-            
-            inMapMobileStates[ inToolTargetIndex ] = 
-                transRecord->targetEndState;
-            
-            // return after first one found
-            return;
-            }
-
         }
+
+
+
     }
 
 

@@ -93,6 +93,11 @@ Version 6
 --Enabled panning with arrow keys (like blueprint panning) during tape replay
   when visibility shroud is toggled off (only works when replay paused).
 
+--Fixed bug when tool used on animal that is standing on another targetable
+  tile (like a crowbar againsta a pit bull standing on a voltage-triggered
+  switch).  Now mobile is affected before underlying tile (thanks Jeremy
+  Oertel).
+
 
 
 Version 5_serverFixes   2013-May-1
