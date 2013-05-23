@@ -97,7 +97,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // for each tile, true if (even partly) visible
         // false if completely invisible
         char mTileVisibleMap[ HOUSE_D * HOUSE_D ];
+        
 
+        // set to true to force tool tips for all tiles, even if shrouded
+        char mForceAllTileToolTips;
+        
 
         SimpleVector<char *> mMoveList;
 

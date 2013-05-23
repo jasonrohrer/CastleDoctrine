@@ -37,6 +37,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mLeaveSprite( loadSprite( "left.tga" ) ),
           mCurrentTool( -1 ),
           mToolJustUsed( false ),
+          mForceAllTileToolTips( false ),
           mRobberStoleFromWife( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
@@ -855,7 +856,7 @@ void RobHouseGridDisplay::pointerOver( float inX, float inY ) {
     // don't show tool tips for invisible tiles (shrouded)
     // or during blackout after robber hits goal
     if( overIndex != -1 && 
-        mTileVisibleMap[ overIndex ] 
+        ( mTileVisibleMap[ overIndex ] || mForceAllTileToolTips ) 
         &&
         mRobberIndex != mGoalIndex ) {
 

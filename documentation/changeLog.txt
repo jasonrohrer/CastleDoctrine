@@ -98,6 +98,9 @@ Version 6
   switch).  Now mobile is affected before underlying tile (thanks Jeremy
   Oertel).
 
+--Tool tips for house tiles now display properly during tape replay if shroud
+  toggled off.
+
 
 
 Version 5_serverFixes   2013-May-1
