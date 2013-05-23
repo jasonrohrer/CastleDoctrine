@@ -101,6 +101,9 @@ Version 6
 --Tool tips for house tiles now display properly during tape replay if shroud
   toggled off.
 
+--Fixed so that family standing on welcome mat can't be targeted (than Jeremy
+  Oertel).
+
 
 
 Version 5_serverFixes   2013-May-1

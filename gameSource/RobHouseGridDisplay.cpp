@@ -211,6 +211,8 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
         // don't draw highlight over robber
         hitSquares.deleteElementEqualTo( mRobberIndex );
         
+        // don't draw highlight over welcome mat
+        hitSquares.deleteElementEqualTo( mStartIndex );
         
         // filter target squares based on which targets can actually
         // be changed by the current tool
