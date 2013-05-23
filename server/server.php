@@ -4220,6 +4220,8 @@ function cd_listLoggedRobberies() {
     $searchClause = "";
 
     if( $name_search != "" ) {
+        $name_search = preg_replace( "/ /", "%", $name_search );
+        
         $searchClause = " robber_name LIKE '%$name_search%' ";
         }
     if( ! $admin ) {
