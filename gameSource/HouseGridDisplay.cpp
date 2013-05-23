@@ -1547,6 +1547,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 isSubMapPropertySet( i, forceUnderShadows ) ||
                 deadFamilyObject;
             
+            if( forceUnderShadowsObject ) {
+                aboveShadows = false;
+                }
+            
 
             doublePair tilePos = getTilePos( i );
  
