@@ -85,6 +85,8 @@ Version 6
 
 --Fixed tool tip for mobile over empty floor (no longer describes floor).
 
+--Made all cross-wiring less visually noisy (all wiring fat, no skinny wire
+  leads).
 
 
 
