@@ -3003,6 +3003,18 @@ void HouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
 
 
 
+int HouseGridDisplay::getVisibleOffsetX() {
+    return mSubMapOffsetX;
+    }
+
+
+
+int HouseGridDisplay::getVisibleOffsetY() {
+    return mSubMapOffsetY;
+    }
+
+
+
 
 
 

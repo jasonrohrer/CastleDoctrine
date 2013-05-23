@@ -140,7 +140,7 @@ void FetchBlueprintPage::step() {
    
                 if( strstr( result, "DENIED" ) != NULL ) {
                     mStatusError = true;
-                    mStatusMessageKey = "blueprintsNotFound";
+                    mStatusMessageKey = "blueprintNotFound";
                     mMenuButton.setVisible( true );
                     }
                 else if( strstr( result, "RECLAIMED" ) != NULL ) {

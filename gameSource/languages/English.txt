@@ -184,6 +184,10 @@ robDescription "Robbing %s house:"
 
 robBackpack "Backpack:"
 
+viewBlueprintShort "Blueprint"
+viewBlueprintTip "View house blueprint"
+
+
 suicide "Suicide"
 suicideTip "Lose everything and start over"
 unconfirmedSuicideTip "Click confirmation box first..."
@@ -236,7 +240,7 @@ houseStale "You left the house due to inactivity."
 houseStaleDead "You died due to inactivity."
 
 
-blueprintsNotFound "Failed to find the requested blueprints."
+blueprintNotFound "Failed to find the requested blueprint."
 
 
 robberyLogNotFound "Failed to find the requested robbery log."

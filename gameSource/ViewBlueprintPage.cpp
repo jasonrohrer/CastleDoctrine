@@ -22,7 +22,7 @@ extern int diffHighlightsOff;
 
 ViewBlueprintPage::ViewBlueprintPage() 
         : mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
+          mDoneButton( mainFont, 8, -2.5, translate( "doneEdit" ) ),
           mDone( false ),
           mDescription( NULL ) {
 
@@ -51,6 +51,11 @@ void ViewBlueprintPage::setDescription( const char *inDescription ) {
         delete [] mDescription;
         }
     mDescription = stringDuplicate( inDescription );
+    }
+
+
+void ViewBlueprintPage::setViewOffset( int inXOffset, int inYOffset ) {
+    mGridDisplay.setVisibleOffset( inXOffset, inYOffset );
     }
 
     

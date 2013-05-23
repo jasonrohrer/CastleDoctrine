@@ -88,6 +88,9 @@ Version 6
 --Made all cross-wiring less visually noisy (all wiring fat, no skinny wire
   leads).
 
+--Free blueprints for all houses are now available.
+
+
 
 
 Version 5_serverFixes   2013-May-1

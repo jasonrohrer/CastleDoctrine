@@ -24,6 +24,9 @@ class ViewBlueprintPage : public GamePage, public ActionListener {
 
         void setDescription( const char *inDescription );
 
+        void setViewOffset( int inXOffset, int inYOffset );
+        
+
         char getDone() {
             return mDone;
             }

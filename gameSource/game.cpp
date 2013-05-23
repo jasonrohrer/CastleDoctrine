@@ -111,6 +111,7 @@ StaleHousePage *staleHousePage;
 StaleHousePage *staleHouseDeadPage;
 FetchBlueprintPage *fetchBlueprintPage;
 ViewBlueprintPage *viewBlueprintPage;
+ViewBlueprintPage *viewBlueprintDuringRobPage;
 
 
 // position of view in world
@@ -515,6 +516,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     staleHouseDeadPage = new StaleHousePage( true );
     fetchBlueprintPage = new FetchBlueprintPage();
     viewBlueprintPage = new ViewBlueprintPage();
+    viewBlueprintDuringRobPage = new ViewBlueprintPage();
     
     currentGamePage = loginPage;
 
@@ -573,6 +575,7 @@ void freeFrameDrawer() {
     delete staleHouseDeadPage;
     delete fetchBlueprintPage;
     delete viewBlueprintPage;
+    delete viewBlueprintDuringRobPage;
     
 
     freeHouseObjects();
@@ -1630,6 +1633,35 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 clearNotes();
                 }
+            else if( robHousePage->getViewBlueprint() ) {
+                char *houseMap = robHousePage->getBlueprintMap();
+                
+                viewBlueprintDuringRobPage->setHouseMap( houseMap );
+                delete [] houseMap;
+
+
+                char *ownerName = robCheckoutHousePage->getOwnerName();
+                    
+                char *ownerNamePossessive = makePossessive( ownerName );
+                    
+                char *description = 
+                    autoSprintf( translate( "blueprintDescription" ),
+                                 ownerNamePossessive );
+
+                delete [] ownerNamePossessive;
+
+
+                viewBlueprintDuringRobPage->setDescription( description );
+                delete [] description;
+
+                viewBlueprintDuringRobPage->setViewOffset(
+                    robHousePage->getVisibleOffsetX(),
+                    robHousePage->getVisibleOffsetY() );
+
+
+                currentGamePage = viewBlueprintDuringRobPage;
+                currentGamePage->base_makeActive( true );
+                }
             else if( robHousePage->getDone() ) {
                 char *houseMap = robHousePage->getHouseMap();
                 char *moveList = robHousePage->getMoveList();
@@ -1763,6 +1795,16 @@ void drawFrame( char inUpdate ) {
 
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
+                }
+            }
+        else if( currentGamePage == viewBlueprintDuringRobPage ) {
+            if( viewBlueprintDuringRobPage->getDone() ) {
+
+                currentGamePage = robHousePage;
+
+                // keep music going, etc.
+                // not a fresh jump to active for rob page
+                currentGamePage->base_makeActive( false );
                 }
             }
 

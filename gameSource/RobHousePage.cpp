@@ -28,14 +28,18 @@ extern int musicOff;
 RobHousePage::RobHousePage() 
         : mShowBackpack( true ),
           mGridDisplay( 0, 0 ),
-          mDoneButton( mainFont, 8, -4, translate( "suicide" ) ),
-          mSuicideConfirmCheckbox( 8, -3.125, 1/16.0 ),
+          mBlueprintButton( mainFont, 8, -2.5, 
+                            translate( "viewBlueprintShort" ) ),
+          mDoneButton( mainFont, 8, -5, translate( "suicide" ) ),
+          mSuicideConfirmCheckbox( 8, -4.125, 1/16.0 ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDescription( NULL ),
-          mDeathMessage( NULL ) {    
+          mDeathMessage( NULL ),
+          mStartHouseMap( NULL ) {    
 
+    addComponent( &mBlueprintButton );
     addComponent( &mDoneButton );
     addComponent( &mSuicideConfirmCheckbox );
     addComponent( &mGallery );
@@ -45,12 +49,15 @@ RobHousePage::RobHousePage()
     mGallery.setAllowEdit( false );
     
 
+    mBlueprintButton.setMouseOverTip( translate( "viewBlueprintTip" ) );
+
     mDoneButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );
     mSuicideConfirmCheckbox.setMouseOverTip( 
         translate( "suicideConfirmTip" ) );
     mSuicideConfirmCheckbox.setMouseOverTipB( 
         translate( "suicideConfirmTip" ) );
     
+    mBlueprintButton.addActionListener( this );
     mDoneButton.addActionListener( this );
     mSuicideConfirmCheckbox.addActionListener( this );
     mGridDisplay.addActionListener( this );
@@ -96,6 +103,11 @@ RobHousePage::~RobHousePage() {
         delete [] mDeathMessage;
         }
 
+    if( mStartHouseMap != NULL ) {
+        delete [] mStartHouseMap;
+        }
+    
+
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         delete mPackSlots[i];
         }
@@ -108,6 +120,9 @@ void RobHousePage::showBackpack( char inShow ) {
         mPackSlots[i]->setVisible( inShow );
         }
     mShowBackpack = inShow;
+
+    // can't view blueprints during self-test
+    mBlueprintButton.setVisible( inShow );
     }
 
 
@@ -127,6 +142,11 @@ void RobHousePage::setDaughterName( const char *inDaughterName ) {
 
 
 void RobHousePage::setHouseMap( char *inHouseMap ) {
+    if( mStartHouseMap != NULL ) {
+        delete [] mStartHouseMap;
+        }
+    mStartHouseMap = stringDuplicate( inHouseMap );
+    
     mGridDisplay.setHouseMap( inHouseMap );
     
     mGallery.instantFadeOut( mGridDisplay.getAboutToLeave() );
@@ -141,6 +161,24 @@ void RobHousePage::setHouseMap( char *inHouseMap ) {
 
 char *RobHousePage::getHouseMap() {
     return mGridDisplay.getHouseMap();
+    }
+
+
+
+char *RobHousePage::getBlueprintMap() {
+    return stringDuplicate( mStartHouseMap );
+    }
+
+
+
+int RobHousePage::getVisibleOffsetX() {
+    return mGridDisplay.getVisibleOffsetX();
+    }
+
+
+
+int RobHousePage::getVisibleOffsetY() {
+    return mGridDisplay.getVisibleOffsetY();
     }
 
 
@@ -195,6 +233,9 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             mDoneButton.setMouseOverTip( 
                 translate( "unconfirmedSuicideTip" ) );
             }    
+        }
+    else if( inTarget == &mBlueprintButton ) {
+        mViewBlueprint = true;
         }
     else if( inTarget == &mDoneButton ) {
         if( mSuicideConfirmCheckbox.isVisible() && 
@@ -264,6 +305,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
             mDoneButton.setMouseOverTip( "" );
             mSuicideConfirmCheckbox.setVisible( false );
+            mBlueprintButton.setVisible( false );
             }
         }
     else if( ! mGridDisplay.getDead() ) {
@@ -304,6 +346,8 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         
 void RobHousePage::makeActive( char inFresh ) {
     LiveHousePage::makeActive( inFresh );
+
+    mViewBlueprint = false;
     
     
     if( !inFresh ) {
@@ -312,6 +356,8 @@ void RobHousePage::makeActive( char inFresh ) {
     
     mDone = false;
 
+    mBlueprintButton.setVisible( mShowBackpack );
+    
     // back to default button text
     mDoneButton.setLabelText( translate( "suicide" ) );
     mDoneButton.setMouseOverTip( translate( "unconfirmedSuicideTip" ) );

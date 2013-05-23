@@ -43,6 +43,15 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         void setHouseMap( char *inHouseMap );
         char *getHouseMap();
 
+        // gets starting map (not map as modified by robber so far)
+        // destroyed by caller
+        char *getBlueprintMap();
+        
+
+        virtual int getVisibleOffsetX();
+        virtual int getVisibleOffsetY();
+
+
         // destroyed by caller
         void setBackpackContents( char *inBackpackContents );
         char *getBackpackContents();
@@ -75,10 +84,17 @@ class RobHousePage : public LiveHousePage, public ActionListener {
             }
 
 
+        char getViewBlueprint() {
+            return mViewBlueprint;
+            }
+
+
         char getDone() {
             return mDone;
             }
             
+
+
         void setDescription( const char *inDescription );
         
 
@@ -98,6 +114,7 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         char mShowBackpack;
 
         RobHouseGridDisplay mGridDisplay;
+        TextButton mBlueprintButton;
         TextButton mDoneButton;
         CheckboxButton mSuicideConfirmCheckbox;
 
@@ -110,11 +127,14 @@ class RobHousePage : public LiveHousePage, public ActionListener {
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
         
+        char mViewBlueprint;
         char mDone;
 
         char *mDescription;
         
         char *mDeathMessage;
+
+        char *mStartHouseMap;
         
     };
 

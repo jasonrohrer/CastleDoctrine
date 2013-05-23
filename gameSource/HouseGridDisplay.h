@@ -149,6 +149,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
+
+        virtual int getVisibleOffsetX();
+        virtual int getVisibleOffsetY();
         
 
         virtual void step();
