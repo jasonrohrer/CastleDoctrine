@@ -90,6 +90,8 @@ Version 6
 
 --Free blueprints for all houses are now available.
 
+--Enabled panning with arrow keys (like blueprint panning) during tape replay
+  when visibility shroud is toggled off (only works when replay paused).
 
 
 

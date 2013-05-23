@@ -97,6 +97,13 @@ class ReplayRobHouseGridDisplay : public RobHouseGridDisplay,
 
         void takeStep();
         
+        // to jump back from panning around when next step taken
+        char mPanning;
+        int mSavedVisibleOffsetX;
+        int mSavedVisibleOffsetY;
+
+        void endPanning();
+        
 
         SimpleVector<char *> mReplayMoveList;
 

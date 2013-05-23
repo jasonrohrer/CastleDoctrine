@@ -26,8 +26,6 @@ void BlueprintHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
 
 void BlueprintHouseGridDisplay::specialKeyDown( int inKeyCode ) {
-    // FIXME: pan around
-    
     // hijack key hold-down behavior from HouseGridDisplay
     if( mSpecialKeysHeldSteps[ inKeyCode ] == 0 ) {
         // not already down

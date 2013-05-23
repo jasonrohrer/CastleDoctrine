@@ -39,6 +39,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mVisibilityToggle( false ),
           mJustRestarted( false ),
           mToolIDJustPicked( -1 ),
+          mPanning( false ),
           mOriginalWifeMoney( 0 ),
           mOriginalMoveList( NULL ) {
 
@@ -62,6 +63,10 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
 
     
     mVisibilityButton.setMouseOverTip( translate( "toggleVisibilityTip" ) );
+
+    // for panning around with arrow keys when paused
+    mStepsBetweenHeldKeyRepeat = 4;
+    mAllowKeyRepeatAcceleration = true;
     }
 
 
@@ -125,6 +130,8 @@ void ReplayRobHouseGridDisplay::setMoveList( char *inMoveList ) {
     mRestartButton.setVisible( false );
 
     hideRobber( false );
+
+    mPanning = false;
     }
 
 
@@ -193,6 +200,7 @@ void ReplayRobHouseGridDisplay::step() {
 
 void ReplayRobHouseGridDisplay::takeStep() {
     mRestartButton.setVisible( true );
+    endPanning();
     if( mReplayMoveList.size() > 0 ) {
         
         char *move = *( mReplayMoveList.getElement( 0 ) );
@@ -293,7 +301,66 @@ void ReplayRobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 
 void ReplayRobHouseGridDisplay::specialKeyDown( int inKeyCode ) {
-    // do nothing (ignore keyboard input)
+    // arrow keys for panning around while paused
+
+    if( mPlaying || ! mVisibilityToggle ) {
+        // ignore panning while playing or while shroud on
+        return;
+        }
+    
+
+    // hijack key hold-down behavior from HouseGridDisplay
+    if( mSpecialKeysHeldSteps[ inKeyCode ] == 0 ) {
+        // not already down
+
+        mSpecialKeysHeldSteps[ inKeyCode ] = 1;
+        }
+
+    // clear hold status of all other special keys
+    for( int i=0; i<MG_KEY_LAST_CODE+1; i++ ) {
+        if( i != inKeyCode ) {
+            mSpecialKeysHeldSteps[i] = 0;
+            }
+        }
+    
+
+    int newOffsetX = mSubMapOffsetX;
+    int newOffsetY = mSubMapOffsetY;
+
+
+    if( inKeyCode == MG_KEY_LEFT ) {
+        if( newOffsetX > 0 ) {
+            newOffsetX --;
+            }
+        }
+    else if( inKeyCode == MG_KEY_RIGHT ) {
+        if( newOffsetX + HOUSE_D < mFullMapD ) {
+            newOffsetX ++;
+            }
+        }
+    else if( inKeyCode == MG_KEY_DOWN ) {
+        if( newOffsetY > 0 ) {
+            newOffsetY --;
+            }
+        }
+    else if( inKeyCode == MG_KEY_UP ) {
+        if( newOffsetY + HOUSE_D < mFullMapD ) {
+            newOffsetY ++;
+            }
+        }
+
+    if( newOffsetX != mSubMapOffsetX ||
+        newOffsetY != mSubMapOffsetY ) {
+        
+        if( !mPanning ) {    
+            mPanning = true;
+            mSavedVisibleOffsetX = mSubMapOffsetX;
+            mSavedVisibleOffsetY = mSubMapOffsetY;
+            }
+        
+
+        setVisibleOffset( newOffsetX, newOffsetY );
+        }
     }
 
         
@@ -353,6 +420,7 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         fireActionPerformed( this );
         }
     else if( inTarget == &mVisibilityButton ) {
+        endPanning();
         mVisibilityToggle = ! mVisibilityToggle;
         recomputeVisibility();
         }
@@ -380,5 +448,17 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
             }
         }
     
+    }
+
+
+
+
+void ReplayRobHouseGridDisplay::endPanning() {
+    if( mPanning ) {
+        // jump back
+        setVisibleOffset( mSavedVisibleOffsetX, mSavedVisibleOffsetY );
+
+        mPanning = false;
+        }
     }
 
