@@ -4207,7 +4207,7 @@ function cd_listLoggedRobberies() {
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
 
-    $name_search = cd_requestFilter( "name_search", "/[a-z]+/i" );
+    $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
 
 
     // get user's current character name
