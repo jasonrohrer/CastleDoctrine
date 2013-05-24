@@ -6773,7 +6773,7 @@ function cd_getTotalSpace() {
     $query = "SELECT SUM( DATA_LENGTH ) ".
         "FROM information_schema.tables ".
         "WHERE TABLE_NAME like '$tableNamePrefix%' AND ".
-        "TABLE_SCHEMA like '$databasename';";
+        "TABLE_SCHEMA like '$databaseName';";
 
     $result = cd_queryDatabase( $query );
 
