@@ -1030,6 +1030,15 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
         }
     
     HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
+
+
+    if( xExtra != 0 || yExtra != 0 ) {                
+        // view on screen has moved
+        // must recompute visibility here so that family 
+        // start-moving-when-visible triggers work correctly
+        recomputeVisibility();
+        }    
+
     }
 
 
