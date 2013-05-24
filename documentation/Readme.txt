@@ -16,6 +16,9 @@ Press ESC to pause the game and view a menu screen.
 The mouse is used for almost all actions in the game, except for:
 
 1)  Moving your character:   Arrow keys or W A S D keys.
+    
+    The same keys are used for panning around blueprints and panning the view
+    during a tape replay (when the replay is paused and the shroud is off). 
 
 2)  Selecting tile under mouse for placement (eyedropper):   Control-click
 
