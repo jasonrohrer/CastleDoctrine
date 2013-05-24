@@ -1,4 +1,4 @@
-Version 6
+Version 6   2013-May-24
 
 --Fixed so that tools with reach cannot be used through unbroken windows
   (thanks Buddy Gorven).
