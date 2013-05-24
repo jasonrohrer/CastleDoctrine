@@ -42,6 +42,7 @@ mkdir -p languages
 
 cp CastleDoctrine/gameSource/CastleDoctrine ./CastleDoctrineApp
 cp CastleDoctrine/documentation/Readme.txt .
+cp CastleDoctrine/no_copyright.txt .
 cp CastleDoctrine/gameSource/graphics/* ./graphics
 cp CastleDoctrine/gameSource/settings/* ./settings
 cp CastleDoctrine/gameSource/languages/* ./languages
