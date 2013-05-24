@@ -104,6 +104,9 @@ Version 6
 --Fixed so that family standing on welcome mat can't be targeted (than Jeremy
   Oertel).
 
+--Added database column tracking time of last owner visit to each house.
+
+
 
 
 Version 5_serverFixes   2013-May-1

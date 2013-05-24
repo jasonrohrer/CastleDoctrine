@@ -764,6 +764,7 @@ function cd_setupDatabase() {
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
+            "last_owner_visit_time DATETIME NOT NULL,".
             "last_pay_check_time DATETIME NOT NULL,".
             "payment_count INT NOT NULL,".
             "you_paid_total INT NOT NULL,".
@@ -1897,6 +1898,7 @@ function cd_startEditHouse() {
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
+        "last_owner_visit_time = CURRENT_TIMESTAMP, ".
         "last_pay_check_time = CURRENT_TIMESTAMP, ".
         "loot_value = '$loot_value', value_estimate = '$value_estimate', ".
         "vault_contents = '$vault_contents', ".
@@ -5186,6 +5188,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
             "CURRENT_TIMESTAMP, ".
+            "CURRENT_TIMESTAMP, ".
             "CURRENT_TIMESTAMP, 0, 0, 0, ".
             "0 );";
 
@@ -5301,7 +5304,8 @@ function cd_showDataHouseList( $inTableName ) {
 
     
     if( $search != "" ) {
-        
+
+        $search = preg_replace( "/ /", "%", $search );
 
         $keywordClause = "WHERE ( $houseTable.user_id LIKE '%$search%' " .
             "OR character_name LIKE '%$search%' ".
@@ -5330,7 +5334,7 @@ function cd_showDataHouseList( $inTableName ) {
     $query = "SELECT $houseTable.user_id, character_name, ".
         "loot_value, value_estimate, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
-        "robber_deaths, last_ping_time, ".
+        "robber_deaths, last_ping_time, last_owner_visit_time, ".
         "$houseTable.blocked ".
         "FROM $houseTable INNER JOIN $usersTable ".
         "ON $houseTable.user_id = $usersTable.user_id $keywordClause ".
@@ -5391,7 +5395,8 @@ function cd_showDataHouseList( $inTableName ) {
     echo "<td>".orderLink( "robber_deaths", "Deaths" )."</td>\n";
     echo "<td>Checkout?</td>\n";
     echo "<td>Robbing User</td>\n";
-    echo "<td>".orderLink( "last_ping_time", "PingTime" )."</td>\n";
+    echo "<td>".orderLink( "last_ping_time", "Ping" )."</td>\n";
+    echo "<td>".orderLink( "last_owner_visit_time", "Owner Visit" )."</td>\n";
 
     echo "</tr>\n";
     
@@ -5408,6 +5413,8 @@ function cd_showDataHouseList( $inTableName ) {
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
         $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
+        $last_owner_visit_time =
+            mysql_result( $result, $i, "last_owner_visit_time" );
         $blocked = mysql_result( $result, $i, "blocked" );
         
         $block_toggle = "";
@@ -5462,6 +5469,7 @@ function cd_showDataHouseList( $inTableName ) {
         echo "[<a href=\"server.php?action=show_detail" .
             "&user_id=$robbing_user_id\">detail</a>]</td>\n";
         echo "<td>$last_ping_time</td>\n";
+        echo "<td>$last_owner_visit_time</td>\n";
         echo "</tr>\n";
         }
     echo "</table>";
