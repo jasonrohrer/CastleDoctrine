@@ -106,6 +106,10 @@ Version 6   2013-May-24
 
 --Added database column tracking time of last owner visit to each house.
 
+--Fixed server database size calculation to exclude tables in backup databases.
+
+
+
 
 
 

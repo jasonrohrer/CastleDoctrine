@@ -6768,11 +6768,12 @@ function cd_clearPasswordCookie() {
 
 
 function cd_getTotalSpace() {
-    global $tableNamePrefix;
+    global $tableNamePrefix, $databaseName;
 
     $query = "SELECT SUM( DATA_LENGTH ) ".
         "FROM information_schema.tables ".
-        "WHERE TABLE_NAME like '$tableNamePrefix%';";
+        "WHERE TABLE_NAME like '$tableNamePrefix%' AND ".
+        "TABLE_SCHEMA like '$databasename';";
 
     $result = cd_queryDatabase( $query );
 
