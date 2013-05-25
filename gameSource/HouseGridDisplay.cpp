@@ -993,6 +993,10 @@ char *HouseGridDisplay::getFamilyExitPaths() {
         
         }
 
+    if( mainListAccum.size() == 0 ) {
+        return stringDuplicate( "##" );
+        }
+
 
     char **listStrings = mainListAccum.getElementArray();
     
