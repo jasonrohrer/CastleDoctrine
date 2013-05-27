@@ -260,6 +260,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         
         
         char isSubMapPropertySet( int inSubCellIndex, propertyID inProperty );
+        char isMapPropertySet( int inFullCellIndex, propertyID inProperty );
 
         
         int mHighlightIndex;

@@ -3,6 +3,8 @@ Version 7
 --Fixed crash in edit-screen suicide when family members have no paths to exit
   (thanks Seth Archambault).
 
+--Fixed visual glitch in blueprints (some pixels in bottom row not being shadowed properly).
+
 
 
 

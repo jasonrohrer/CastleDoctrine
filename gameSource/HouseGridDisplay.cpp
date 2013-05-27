@@ -2136,6 +2136,46 @@ void HouseGridDisplay::draw() {
 
 
     
+    // walk along bottom edge and draw one last row of tiles, if 
+    // present (this "completes" bottom visible row of tiles by drawing
+    // overhangs from tiles that are south of them)
+    // 
+    // here we do this for tiles in bottom row that are forced under shadows
+
+    if( mSubMapOffsetY > 0 ) {
+        
+        int y = mSubMapOffsetY - 1;
+        
+        for( int x=0; x<HOUSE_D; x++ ) {    
+        
+            int fullI = y * mFullMapD + mSubMapOffsetX + x;
+              
+            if( isMapPropertySet( fullI, forceUnderShadows ) ) {
+                
+                int houseTile = mHouseMapIDs[ fullI ];
+                int houseTileState = mHouseMapCellStates[ fullI ];
+                
+                int orientationIndex = getOrientationIndex( fullI, houseTile,
+                                                            houseTileState );
+
+                doublePair tilePos = getTilePosFull( fullI );
+                
+                setDrawColor( 1, 1, 1, 1 );
+                
+                
+                SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                       orientationIndex, 
+                                                       houseTileState );
+            
+                drawSprite( sprite, tilePos, 1.0/32.0 );
+                }
+            }
+        }
+
+
+
+
+    
     setDrawColor( 0, 0, 0, 0.75 );
 
     toggleLinearMagFilter( true );
@@ -2156,6 +2196,9 @@ void HouseGridDisplay::draw() {
     // finally, walk along bottom edge and draw one last row of tiles, if 
     // present (this "completes" bottom visible row of tiles by drawing
     // overhangs from tiles that are south of them)
+    //
+    // here we do this for tiles in bottom row that are NOT 
+    // forced under shadows
 
     if( mSubMapOffsetY > 0 ) {
         
@@ -2164,25 +2207,29 @@ void HouseGridDisplay::draw() {
         for( int x=0; x<HOUSE_D; x++ ) {    
         
             int fullI = y * mFullMapD + mSubMapOffsetX + x;
+              
+            if( ! isMapPropertySet( fullI, forceUnderShadows ) ) {
                 
-            int houseTile = mHouseMapIDs[ fullI ];
-            int houseTileState = mHouseMapCellStates[ fullI ];
-
-            int orientationIndex = getOrientationIndex( fullI, houseTile,
-                                                        houseTileState );
-
-            doublePair tilePos = getTilePosFull( fullI );
-
-            setDrawColor( 1, 1, 1, 1 );
+                int houseTile = mHouseMapIDs[ fullI ];
+                int houseTileState = mHouseMapCellStates[ fullI ];
                 
+                int orientationIndex = getOrientationIndex( fullI, houseTile,
+                                                            houseTileState );
 
-            SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                   orientationIndex, 
-                                                   houseTileState );
+                doublePair tilePos = getTilePosFull( fullI );
+                
+                setDrawColor( 1, 1, 1, 1 );
+                
+                
+                SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                       orientationIndex, 
+                                                       houseTileState );
             
-            drawSprite( sprite, tilePos, 1.0/32.0 );
+                drawSprite( sprite, tilePos, 1.0/32.0 );
+                }
             }
         }
+
 
 
 
@@ -2926,6 +2973,14 @@ char HouseGridDisplay::isSubMapPropertySet( int inSubCellIndex,
                                             propertyID inProperty ) {
     return isPropertySet( mHouseSubMapIDs[ inSubCellIndex ],
                           mHouseSubMapCellStates[ inSubCellIndex ],
+                          inProperty );
+    }
+
+
+char HouseGridDisplay::isMapPropertySet( int inFullCellIndex, 
+                                         propertyID inProperty ) {
+    return isPropertySet( mHouseMapIDs[ inFullCellIndex ],
+                          mHouseMapCellStates[ inFullCellIndex ],
                           inProperty );
     }
 
