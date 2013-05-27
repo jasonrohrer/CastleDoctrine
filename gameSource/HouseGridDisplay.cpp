@@ -178,7 +178,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
         }
     
     mAllowMoveKeyHold = true;
-    mStepsBetweenHeldKeyRepeat = false;
+    mAllowKeyRepeatAcceleration = false;
     
     mStepsBetweenHeldKeyRepeat = 8;
     

@@ -3,9 +3,11 @@ Version 7
 --Fixed crash in edit-screen suicide when family members have no paths to exit
   (thanks Seth Archambault).
 
---Fixed visual glitch in blueprints (some pixels in bottom row not being shadowed properly).
+--Fixed visual glitch in blueprints (some pixels in bottom row not being
+  shadowed properly).
 
-
+--Fixed bug in movement acceleration, which is meant only for panning
+  (in blueprints and when paused during playback) affecting robber movement.
 
 
 
