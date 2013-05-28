@@ -9,7 +9,9 @@ Version 7
 --Fixed bug in movement acceleration, which is meant only for panning
   (in blueprints and when paused during playback) affecting robber movement.
 
---Improved legibility of blueprints by adding inner shading to walls.
+--Improved legibility of blueprints by adding inner shading to walls, pits,
+  and trapdoors.
+
 
 
 
