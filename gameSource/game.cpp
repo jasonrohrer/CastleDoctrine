@@ -517,7 +517,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     fetchBlueprintPage = new FetchBlueprintPage();
     viewBlueprintPage = new ViewBlueprintPage();
     viewBlueprintDuringRobPage = new ViewBlueprintPage();
-    
+
+    viewBlueprintDuringRobPage->setLive( true );
+
     currentGamePage = loginPage;
 
     currentGamePage->base_makeActive( true );

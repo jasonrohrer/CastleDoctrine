@@ -1,4 +1,4 @@
-#include "GamePage.h"
+#include "LiveHousePage.h"
 
 #include "TextButton.h"
 
@@ -9,7 +9,7 @@
 
 
 
-class ViewBlueprintPage : public GamePage, public ActionListener {
+class ViewBlueprintPage : public LiveHousePage, public ActionListener {
         
     public:
         
@@ -18,6 +18,16 @@ class ViewBlueprintPage : public GamePage, public ActionListener {
         virtual ~ViewBlueprintPage();
         
         
+        // call before making active the first time
+        //
+        // set to true to flag this page as part of a live house checkout
+        // where pings should be sent in response to user activity
+        // If false, pings are never sent.
+        //
+        // Defaults to false.
+        void setLive( char inLive );
+        
+
         
         // destroyed by caller
         void setHouseMap( const char *inHouseMap );
@@ -38,6 +48,8 @@ class ViewBlueprintPage : public GamePage, public ActionListener {
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize );
         
+        virtual void step();
+        
         
         virtual void makeActive( char inFresh );
 
@@ -50,5 +62,7 @@ class ViewBlueprintPage : public GamePage, public ActionListener {
         char mDone;
         
         char *mDescription;
+
+        char mLive;
     };
 

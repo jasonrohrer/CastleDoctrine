@@ -14,6 +14,10 @@ Version 7
 
 --Improved legibility of doors on blueprints by adding knobs.
 
+--Panning around a blueprint during robbery now counts as activity, preventing
+  the robbery checkout from becoming stale (thanks Seth Archambault).
+
+
 
 
 

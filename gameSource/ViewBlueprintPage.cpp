@@ -24,12 +24,14 @@ ViewBlueprintPage::ViewBlueprintPage()
         : mGridDisplay( 0, 0 ),
           mDoneButton( mainFont, 8, -2.5, translate( "doneEdit" ) ),
           mDone( false ),
-          mDescription( NULL ) {
+          mDescription( NULL ),
+          mLive( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mGridDisplay );
 
     mDoneButton.addActionListener( this );
+    mGridDisplay.addActionListener( this );
     }
 
 
@@ -38,6 +40,11 @@ ViewBlueprintPage::~ViewBlueprintPage() {
     if( mDescription != NULL ) {
         delete [] mDescription;
         }
+    }
+
+
+void ViewBlueprintPage::setLive( char inLive ) {
+    mLive = inLive;
     }
 
 
@@ -64,6 +71,13 @@ void ViewBlueprintPage::actionPerformed( GUIComponent *inTarget ) {
     if( inTarget == &mDoneButton ) {
         mDone = true;
         }
+    else if( inTarget == &mGridDisplay ) {
+        // movement on blueprint
+
+        if( mLive ) {
+            actionHappened();
+            }
+        }
     }
 
 
@@ -72,6 +86,10 @@ void ViewBlueprintPage::actionPerformed( GUIComponent *inTarget ) {
 
         
 void ViewBlueprintPage::makeActive( char inFresh ) {
+    if( mLive ) {
+        LiveHousePage::makeActive( inFresh );
+        }
+    
     if( !inFresh ) {
         return;
         }
@@ -96,3 +114,14 @@ void ViewBlueprintPage::draw( doublePair inViewCenter,
         drawMessage( mDescription, labelPos );
         }
     }
+
+
+
+
+void ViewBlueprintPage::step() {
+    if( mLive ) {
+        LiveHousePage::step();
+        }
+    
+    }
+

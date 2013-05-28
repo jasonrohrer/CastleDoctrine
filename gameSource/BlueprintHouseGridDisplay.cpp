@@ -70,6 +70,8 @@ void BlueprintHouseGridDisplay::specialKeyDown( int inKeyCode ) {
         newOffsetY != mSubMapOffsetY ) {
         
         setVisibleOffset( newOffsetX, newOffsetY );
+
+        fireActionPerformed( this );
         }
     
     
