@@ -12,6 +12,8 @@ Version 7
 --Improved legibility of blueprints by adding inner shading to walls, pits,
   and trapdoors.
 
+--Improved legibility of doors on blueprints by adding knobs.
+
 
 
 
