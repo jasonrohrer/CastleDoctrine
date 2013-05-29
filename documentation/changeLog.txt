@@ -1,4 +1,4 @@
-Version 7
+Version 7    2013-May-29
 
 --Fixed crash in edit-screen suicide when family members have no paths to exit
   (thanks Seth Archambault).
