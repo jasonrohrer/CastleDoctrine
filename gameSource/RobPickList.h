@@ -107,8 +107,13 @@ class RobPickList : public PageComponent, public ActionListener,
 
         TextField mSearchField;
         TextButton mFilterButton;
+        TextButton mIgnoreButton;
         
         char *mAppliedSearchWords;
+
+        char mIgnoreSet;
+        int mIgnoreTarget;
+        
     };
 
 

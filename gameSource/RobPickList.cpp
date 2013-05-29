@@ -55,21 +55,31 @@ RobPickList::RobPickList( double inX, double inY,
                         " " ),
           mFilterButton( mainFont, 4, 4,
                          translate( "filter" ) ),
-          mAppliedSearchWords( stringDuplicate( "" ) ) {
+          mIgnoreButton( mainFont, -4, 6,
+                         translate( "ignoreHouse" ) ),
+          mAppliedSearchWords( stringDuplicate( "" ) ),
+          mIgnoreSet( false ), 
+          mIgnoreTarget( 0 ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
     
+    mIgnoreButton.setVisible( false );
+
     addComponent( &mUpButton );
     addComponent( &mDownButton );
     addComponent( &mSearchField );
     addComponent( &mFilterButton );
+    addComponent( &mIgnoreButton );
     
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
 
     mSearchField.addActionListener( this );
     mFilterButton.addActionListener( this );
+    mIgnoreButton.addActionListener( this );
+
+    mIgnoreButton.setMouseOverTip( translate( "ignoreTip" ) );
     }
 
 
@@ -111,6 +121,12 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
 
         refreshList( true, false );
         }
+    else if( inTarget == &mIgnoreButton ) {
+        mIgnoreSet = true;
+        mIgnoreTarget = getSelectedHouse()->uniqueID;
+        
+        refreshList( true, true );
+        }
     }
 
 
@@ -125,7 +141,8 @@ void RobPickList::refreshList( char inPreserveSearch,
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
-
+    mIgnoreButton.setVisible( false );
+    
     mSearchField.focus();
 
     if( ! inPreserveSearch ) {
@@ -148,12 +165,27 @@ void RobPickList::refreshList( char inPreserveSearch,
         action = "list_logged_robberies";
         }
         
+    char *ignoreParameter;
+    
+    if( mIgnoreSet ) {
+        ignoreParameter = autoSprintf( "&add_to_ignore_list=%d",
+                                       mIgnoreTarget );
+        mIgnoreSet = false;
+        }
+    else {
+        ignoreParameter = stringDuplicate( "" );
+        }
+    
+
     char *actionString = autoSprintf( 
-        "action=%s&skip=%d&limit=%d&name_search=%s&user_id=%d"
+        "action=%s&skip=%d&limit=%d&name_search=%s%s&user_id=%d"
         "&%s",
-        action, mCurrentSkip, linesPerPage, mAppliedSearchWords, 
+        action, mCurrentSkip, linesPerPage, mAppliedSearchWords,
+        ignoreParameter,
         userID, ticketHash );
+
     delete [] ticketHash;
+    delete [] ignoreParameter;
             
     
     mWebRequest = startWebRequestSerial( "POST", 
@@ -644,6 +676,11 @@ void RobPickList::pointerUp( float inX, float inY ) {
         setTip( r );
         mHover = true;
         
+        if( ! mRobberyLog ) {
+            mIgnoreButton.setVisible( true );
+            }
+        
+
         fireActionPerformed( this );
         return;
         }

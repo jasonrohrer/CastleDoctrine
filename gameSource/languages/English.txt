@@ -161,6 +161,7 @@ houseCheckInFailed "House check in failed."
 
 nameSearch "Name Search:"
 filter "Filter"
+ignoreHouse "Ignore House"
 startRobHouse "Rob House"
 viewBlueprint "View House Blueprint"
 
@@ -173,6 +174,7 @@ robPickListTip "%d tried to rob %s house.  %d died trying"
 
 replayPickListTip "%s stole $%d after %d tried and %d died"
 
+ignoreTip "Hide house from list until house changes"
 
 
 startTileDescription "Welcome Mat"

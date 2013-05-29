@@ -291,6 +291,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."log" ) &&
         cd_doesTableExist( $tableNamePrefix."users" ) &&
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
+        cd_doesTableExist( $tableNamePrefix."ignore_houses" ) &&
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."scouting_counts" ) &&
@@ -813,6 +814,30 @@ function cd_setupDatabase() {
         echo "<B>$shadowTableName</B> table already exists<BR>";
         }
 
+
+
+    $tableName = $tableNamePrefix . "ignore_houses";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // This maps a user ID to another user ID, where the second
+        // ID specifies a house that the first user is ignoring.
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    
     
 
     $tableName = $tableNamePrefix . "scouting_counts";
@@ -3162,6 +3187,14 @@ function cd_endEditHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+
+    // house changed
+    // clear ignore status
+    $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
+        "WHERE house_user_id = $user_id;";
+    cd_queryDatabase( $query );
+    
+
     echo "OK";    
     }
 
@@ -3299,6 +3332,7 @@ function cd_listHouses() {
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
     $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
+    $add_to_ignore_list = cd_requestFilter( "add_to_ignore_list", "/\d+/" );
 
     $searchClause = "";
 
@@ -3307,10 +3341,22 @@ function cd_listHouses() {
         
         $searchClause = "AND houses.character_name LIKE '%$name_search%' ";
         }
+
+    
+
+    if( $add_to_ignore_list != "" ) {
+        $query = "REPLACE into $tableNamePrefix"."ignore_houses ".
+            "(user_id, house_user_id) ".
+            "VALUES( '$user_id', '$add_to_ignore_list' );";
+
+        $result = cd_queryDatabase( $query );
+        }
     
     
     // automatically ignore blocked users and houses already checked
     // out for robbery and houses that haven't been edited yet
+
+    // also skip houses this user is ignoring
 
     // join to include last robber name for each result
     // (maps each robbing_user_id to the corresponding character_name
@@ -3332,6 +3378,9 @@ function cd_listHouses() {
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
         "$searchClause ".
+        "AND houses.user_id NOT IN ".
+        "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
+        "  WHERE user_id = $user_id ) ".
         "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $query_limit;";
 
@@ -4021,6 +4070,13 @@ function cd_endRobHouse() {
         $pendingDatabaseUpdateQueries[] = $query;
 
 
+        // house changed
+        // clear ignore status
+        $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
+            "WHERE house_user_id = $last_robbed_owner_id;";
+        $pendingDatabaseUpdateQueries[] = $query;
+
+        
         // log robbery
 
         // in log, value_estimate holds true value of stuff taken
@@ -5252,6 +5308,13 @@ function cd_newHouseForUser( $user_id ) {
             " house_user_id = $user_id;";
         cd_queryDatabase( $query );
         }
+
+    // house changed (destroyed!)
+    // clear ignore status
+    $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
+        "WHERE house_user_id = $user_id;";
+    cd_queryDatabase( $query );
+
     
     }
 
