@@ -53,6 +53,10 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMapCellStates( NULL ),
           mHouseMapMobileIDs( NULL ),
           mHouseMapMobileCellStates( NULL ),
+          mHouseMapToolTipOverrideOn( NULL ),
+          mHouseMapToolTipOverrideState( NULL ),
+          mHouseMapMobileToolTipOverrideOn( NULL ),
+          mHouseMapMobileToolTipOverrideState( NULL ),
           mUntouchedHouseMapIDs( NULL ),
           mUntouchedHouseMapCellStates( NULL ),
           mUntouchedHouseMapMobileIDs( NULL ),
@@ -214,6 +218,20 @@ HouseGridDisplay::~HouseGridDisplay() {
         delete [] mHouseMapMobileCellStates;
         }
 
+    if( mHouseMapToolTipOverrideOn != NULL ) {
+        delete [] mHouseMapToolTipOverrideOn;
+        }
+    if( mHouseMapToolTipOverrideState != NULL ) {
+        delete [] mHouseMapToolTipOverrideState;
+        }
+    
+    if( mHouseMapMobileToolTipOverrideOn != NULL ) {
+        delete [] mHouseMapMobileToolTipOverrideOn;
+        }
+    if( mHouseMapMobileToolTipOverrideState != NULL ) {
+        delete [] mHouseMapMobileToolTipOverrideState;
+        }
+    
 
     if( mUntouchedHouseMapIDs != NULL ) {
         delete [] mUntouchedHouseMapIDs;
@@ -329,6 +347,20 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     if( mHouseMapMobileCellStates != NULL ) {
         delete [] mHouseMapMobileCellStates;
         }
+    
+    if( mHouseMapToolTipOverrideOn != NULL ) {
+        delete [] mHouseMapToolTipOverrideOn;
+        }
+    if( mHouseMapToolTipOverrideState != NULL ) {
+        delete [] mHouseMapToolTipOverrideState;
+        }
+    
+    if( mHouseMapMobileToolTipOverrideOn != NULL ) {
+        delete [] mHouseMapMobileToolTipOverrideOn;
+        }
+    if( mHouseMapMobileToolTipOverrideState != NULL ) {
+        delete [] mHouseMapMobileToolTipOverrideState;
+        }
 
 
     if( mUntouchedHouseMapIDs != NULL ) {
@@ -366,12 +398,21 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mHouseMapMobileCellStates = new int[ mNumMapSpots ];
     mHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
     
+    mHouseMapToolTipOverrideOn = new char[ mNumMapSpots ];
+    mHouseMapToolTipOverrideState = new int[ mNumMapSpots ];
+    mHouseMapMobileToolTipOverrideOn = new char[ mNumMapSpots ];
+    mHouseMapMobileToolTipOverrideState = new int[ mNumMapSpots ];
+    
+
     for( int i=0; i<mNumMapSpots; i++ ) {
         
         mHouseMapIDs[i] = 0;
         mHouseMapMobileIDs[i] = 0;
         mHouseMapCellStates[i] = 0;
         mHouseMapMobileCellStates[i] = 0;
+        
+        mHouseMapToolTipOverrideOn[i] = false;
+        mHouseMapMobileToolTipOverrideOn[i] = false;
         
 
         int numObjects;
@@ -535,23 +576,35 @@ void HouseGridDisplay::setWifeMoney( int inMoney ) {
 void HouseGridDisplay::resetToggledStatesInternal( int inTargetState,
                                                    char inForceUnstuck ) {
     for( int i=0; i<mNumMapSpots; i++ ) {
+        int id = mHouseMapIDs[i];
+        int state = mHouseMapCellStates[i];
         
-        if( inForceUnstuck ||
-            ! isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
-                             stuck ) ) {
+        char isStuck = isPropertySet( id, state, stuck );
+        
+        if( inForceUnstuck || ! isStuck ) {
             
-    
+            if( isStuck && ! isPropertySet( id, state, deadFamily ) ) {
+                mHouseMapToolTipOverrideOn[i] = true;
+                mHouseMapToolTipOverrideState[i] = mHouseMapCellStates[i];
+                }
+            
             mHouseMapCellStates[i] = inTargetState;
             }
 
         // same for mobile objects
+        isStuck = isPropertySet( mHouseMapMobileIDs[i], 
+                                 mHouseMapMobileCellStates[i], stuck );
+        
         if( mHouseMapMobileIDs[i] != 0 
             &&
-            ( inForceUnstuck ||
-              ! isPropertySet( mHouseMapMobileIDs[i], 
-                               mHouseMapMobileCellStates[i],
-                               stuck ) ) ) {
+            ( inForceUnstuck || ! isStuck ) ) {
             
+            if( isStuck ) {
+                mHouseMapMobileToolTipOverrideOn[i] = true;
+                mHouseMapMobileToolTipOverrideState[i] = 
+                    mHouseMapMobileCellStates[i];
+                }
+
             mHouseMapMobileCellStates[i] = inTargetState;
             }
         
@@ -2323,6 +2376,14 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
             int id = mHouseSubMapIDs[ mHighlightIndex ];
             int state = mHouseSubMapCellStates[ mHighlightIndex ];
 
+            
+            
+            if( mHouseMapToolTipOverrideOn[ fullI ] ) {
+                // override state for picking tool tip
+                state = mHouseMapToolTipOverrideState[ fullI ];
+                }
+            
+
             nonMobileDescription = 
                 stringDuplicate( 
                     getObjectDescription( id, state ) );
@@ -2370,11 +2431,17 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
 
         if( mHouseMapMobileIDs[ fullI ] != 0 ) {
             
+            int id = mHouseMapMobileIDs[ fullI ];
+            int state = mHouseMapMobileCellStates[ fullI ];
+            
+            if( mHouseMapMobileToolTipOverrideOn[ fullI ] ) {
+                // override state for picking tool tip
+                state = mHouseMapMobileToolTipOverrideState[ fullI ];
+                }
+
             const char *mobileDescription = 
-                getObjectDescription( 
-                    mHouseMapMobileIDs[ fullI ],
-                    mHouseMapMobileCellStates[ fullI ] );
-        
+                getObjectDescription( id, state );
+            
             if( mHouseMapIDs[fullI] != 0 ) {
                 // mobile on top of something
                 char *tip = autoSprintf( "%s  /  %s",

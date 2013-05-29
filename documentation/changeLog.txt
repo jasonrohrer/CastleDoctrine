@@ -20,6 +20,7 @@ Version 7
 --Fixed so that wife runs to a killed child even if she hasn't see the robber
   yet.
 
+--Mouse-over in blueprints now shows tool tips for damaged objects.
 
 
 

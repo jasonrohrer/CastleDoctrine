@@ -202,6 +202,15 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapMobileCellStates;
 
 
+        // for overriding tool tips on certain cells
+        // (used when resetToggledStates overrides stuck states)
+        char *mHouseMapToolTipOverrideOn;
+        int *mHouseMapToolTipOverrideState;
+        
+        char *mHouseMapMobileToolTipOverrideOn;
+        int *mHouseMapMobileToolTipOverrideState;
+        
+
         // for computing diffs during editing
         int *mUntouchedHouseMapIDs;
         int *mUntouchedHouseMapCellStates;
