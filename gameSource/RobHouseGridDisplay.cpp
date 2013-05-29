@@ -434,6 +434,9 @@ void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
                     // new path, same progress along it (wife at
                     // splice point)
                     *( mFamilyExitPathProgress.getElement( i ) ) = progress;
+
+                    // force wife to "see robber" so that she starts moving
+                    *( mFamilySeenRobber.getElement( i ) ) = true;
                     }
                 else {
                     // no path found

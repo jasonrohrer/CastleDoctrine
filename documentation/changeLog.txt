@@ -17,6 +17,8 @@ Version 7
 --Panning around a blueprint during robbery now counts as activity, preventing
   the robbery checkout from becoming stale (thanks Seth Archambault).
 
+--Fixed so that wife runs to a killed child even if she hasn't see the robber
+  yet.
 
 
 
