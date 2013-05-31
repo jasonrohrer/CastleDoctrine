@@ -1,3 +1,10 @@
+Version 7 Live Server Fixes
+
+--Added extra column in admin view showing edit count for a house (to monitor
+  how many top houses have not been edited again since being robbed).
+
+
+
 Version 7    2013-May-29
 
 --Fixed crash in edit-screen suicide when family members have no paths to exit

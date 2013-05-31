@@ -5397,7 +5397,7 @@ function cd_showDataHouseList( $inTableName ) {
     $query = "SELECT $houseTable.user_id, character_name, ".
         "loot_value, value_estimate, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
-        "robber_deaths, last_ping_time, last_owner_visit_time, ".
+        "robber_deaths, edit_count, last_ping_time, last_owner_visit_time, ".
         "$houseTable.blocked ".
         "FROM $houseTable INNER JOIN $usersTable ".
         "ON $houseTable.user_id = $usersTable.user_id $keywordClause ".
@@ -5456,6 +5456,7 @@ function cd_showDataHouseList( $inTableName ) {
     echo "<td>".orderLink( "value_estimate", "Value Est." )."</td>\n";
     echo "<td>".orderLink( "rob_attempts", "Rob Attempts" )."</td>\n";
     echo "<td>".orderLink( "robber_deaths", "Deaths" )."</td>\n";
+    echo "<td>".orderLink( "edit_count", "Edit Count" )."</td>\n";
     echo "<td>Checkout?</td>\n";
     echo "<td>Robbing User</td>\n";
     echo "<td>".orderLink( "last_ping_time", "Ping" )."</td>\n";
@@ -5475,6 +5476,7 @@ function cd_showDataHouseList( $inTableName ) {
         $robbing_user_id = mysql_result( $result, $i, "robbing_user_id" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
+        $edit_count = mysql_result( $result, $i, "edit_count" );
         $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
         $last_owner_visit_time =
             mysql_result( $result, $i, "last_owner_visit_time" );
@@ -5527,6 +5529,7 @@ function cd_showDataHouseList( $inTableName ) {
         echo "<td>$value_estimate</td>\n";
         echo "<td>$rob_attempts</td>\n";
         echo "<td>$robber_deaths</td>\n";
+        echo "<td>$edit_count</td>\n";
         echo "<td>$checkout</td>\n";
         echo "<td>$robbing_user_id ";
         echo "[<a href=\"server.php?action=show_detail" .
