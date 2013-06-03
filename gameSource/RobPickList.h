@@ -115,7 +115,7 @@ class RobPickList : public PageComponent, public ActionListener,
         char mIgnoreSet;
         int mIgnoreTarget;
 
-        char mIgnorePressedThisSession;
+        char mAnyPossiblyIgnored;
         
         char mClearIgnoreListSet;
         

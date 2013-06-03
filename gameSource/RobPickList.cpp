@@ -62,17 +62,14 @@ RobPickList::RobPickList( double inX, double inY,
           mAppliedSearchWords( stringDuplicate( "" ) ),
           mIgnoreSet( false ),
           mIgnoreTarget( 0 ),
-          mIgnorePressedThisSession( false ),
+          mAnyPossiblyIgnored( true ),
           mClearIgnoreListSet( false ){
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
     
     mIgnoreButton.setVisible( false );
-
-    // assume there are some ignored that we need to clear at start
-    // of new game session
-    mClearIgnoreListButton.setVisible( true );
+    mClearIgnoreListButton.setVisible( false );
 
     addComponent( &mUpButton );
     addComponent( &mDownButton );
@@ -137,7 +134,7 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         mIgnoreSet = true;
         mIgnoreTarget = getSelectedHouse()->uniqueID;
         
-        mIgnorePressedThisSession = true;
+        mAnyPossiblyIgnored = true;
         
         refreshList( true, true );
         }
@@ -145,7 +142,7 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         mClearIgnoreListSet = true;
         
         // those that we've ignored have been cleared now
-        mIgnorePressedThisSession = false;
+        mAnyPossiblyIgnored = false;
         
         mClearIgnoreListButton.setVisible( false );
         
@@ -169,7 +166,7 @@ void RobPickList::refreshList( char inPreserveSearch,
     mDownButton.setVisible( false );
     mIgnoreButton.setVisible( false );
 
-    if( mIgnorePressedThisSession ) {
+    if( mAnyPossiblyIgnored ) {
         mClearIgnoreListButton.setVisible( true );
         }
     
