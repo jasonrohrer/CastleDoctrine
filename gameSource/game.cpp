@@ -46,7 +46,7 @@ CustomRandomSource randSource;
 
 
 #include "LoginPage.h"
-#include "ServerShutdownPage.h"
+#include "FinalMessagePage.h"
 #include "CheckoutHousePage.h"
 #include "PaymentReportPage.h"
 #include "EditHousePage.h"
@@ -88,7 +88,7 @@ GamePage *currentGamePage = NULL;
 
 
 LoginPage *loginPage;
-ServerShutdownPage *serverShutdownPage;
+FinalMessagePage *finalMessagePage;
 CheckoutHousePage *checkoutHousePage;
 PaymentReportPage *paymentReportPage;
 EditHousePage *editHousePage;
@@ -490,7 +490,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     loginPage = new LoginPage();
-    serverShutdownPage = new ServerShutdownPage();
+    finalMessagePage = new FinalMessagePage();
     checkoutHousePage = new CheckoutHousePage();
     paymentReportPage = new PaymentReportPage();
     editHousePage = new EditHousePage();
@@ -554,7 +554,7 @@ void freeFrameDrawer() {
 
     currentGamePage = NULL;
     delete loginPage;
-    delete serverShutdownPage;
+    delete finalMessagePage;
     delete checkoutHousePage;
     delete paymentReportPage;
     delete editHousePage;
@@ -1021,7 +1021,15 @@ void drawFrame( char inUpdate ) {
     
     
     if( getServerShutdown() ) {
-        currentGamePage = serverShutdownPage;
+        currentGamePage = finalMessagePage;
+        finalMessagePage->setMessageKey( "serverShutdownMessage" );
+        
+        currentGamePage->base_makeActive( true );
+        }
+    else if( getPermadead() ) {
+        currentGamePage = finalMessagePage;
+        finalMessagePage->setMessageKey( "permadeadMessage" );
+
         currentGamePage->base_makeActive( true );
         }
     

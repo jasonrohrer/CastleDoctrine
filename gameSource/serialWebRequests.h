@@ -39,3 +39,8 @@ void clearWebRequestSerial( int inHandle );
 
 // true if server shut down and client should stop immediately
 char getServerShutdown();
+
+
+// true if player permanently dead (out of fresh starts) and 
+// client should stop immediately
+char getPermadead();

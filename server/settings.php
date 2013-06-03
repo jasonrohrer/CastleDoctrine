@@ -395,4 +395,11 @@ $shutdownMode = 0;
 
 
 
+// if server is running in perma-permadeath mode (limit on number of fresh
+// starts per player), how many lives each gets.
+// Set to -1 for no limit.
+// Note that 1 means player gets to play one life with no fresh start
+$startingLifeLimit = -1;
+
+
 ?>

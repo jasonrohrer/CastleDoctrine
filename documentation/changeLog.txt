@@ -5,6 +5,10 @@ Version 8
 
 --Added pencil-scratch marking on blueprints for tiles that have been damaged.
 
+--Added server option for running in perma-permadeath mode (hard limit on
+  number of lives per player).
+
+
 
 
 Version 7 Live Server Fixes

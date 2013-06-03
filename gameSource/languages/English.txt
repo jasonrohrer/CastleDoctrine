@@ -37,6 +37,8 @@ outOfDateClient "Please download the latest version."
 
 serverShutdownMessage "The server has been shut down for maintenance.##Please try again later."
 
+permadeadMessage "You are permanently dead on this server."
+
 
 houseBeingRobbed "Your house is currently being robbed.##You can't work on it now."
 returnMenu "Menu"

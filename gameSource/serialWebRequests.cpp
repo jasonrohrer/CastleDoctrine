@@ -51,6 +51,7 @@ static SimpleVector<SerialWebRecord> serialRecords;
 
 
 static char serverShutdown = false;
+static char playerPermadead = false;
 
 
 
@@ -102,6 +103,10 @@ void checkForServerShutdown( SerialWebRecord *inR ) {
         
         if( strstr( result, "SHUTDOWN" ) != NULL ) {
             serverShutdown = true;
+            }
+
+        if( strstr( result, "PERMADEAD" ) != NULL ) {
+            playerPermadead = true;
             }
 
         delete [] result;
@@ -199,7 +204,7 @@ int stepWebRequestSerial( int inHandle ) {
                 if( stepResult == 1 ) {
                     checkForServerShutdown( r );
                     
-                    if( serverShutdown ) {
+                    if( serverShutdown || playerPermadead ) {
                         // block client's normal response to this
                         // request, by reporting that it's still in
                         // progress, so that client shutdown behavior
@@ -244,7 +249,7 @@ int stepWebRequestSerial( int inHandle ) {
                     if( stepResult == 1 ) {
                         checkForServerShutdown( r );
                         
-                        if( serverShutdown ) {
+                        if( serverShutdown || playerPermadead ) {
                             // block client's normal response to this
                             // request, by reporting that it's still in
                             // progress, so that client shutdown behavior
@@ -362,5 +367,11 @@ void clearWebRequestSerial( int inHandle ) {
 
 char getServerShutdown() {
     return serverShutdown;
+    }
+
+
+
+char getPermadead() {
+    return playerPermadead;
     }
 

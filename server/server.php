@@ -701,6 +701,7 @@ function cd_setupDatabase() {
             "ticket_id VARCHAR(255) NOT NULL," .
             "email VARCHAR(255) NOT NULL," .
             "character_name_history LONGTEXT NOT NULL,".
+            "lives_left INT NOT NULL,".
             "last_robbed_owner_id INT NOT NULL,".
             "last_robbery_response LONGTEXT NOT NULL,".
             "admin TINYINT NOT NULL,".
@@ -1503,7 +1504,7 @@ function cd_checkUser() {
 
     // first, see if user already exists in local users table
 
-    $query = "SELECT ticket_id, blocked ".
+    $query = "SELECT ticket_id, lives_left, blocked ".
         "FROM $tableNamePrefix"."users ".
         "WHERE email = '$email';";
 
@@ -1520,12 +1521,16 @@ function cd_checkUser() {
     
         $ticket_id = $row[ "ticket_id" ];
         $blocked = $row[ "blocked" ];
+        $lives_left = $row[ "lives_left" ];
 
         if( $blocked ) {
             echo "DENIED";
 
             cd_log( "checkUser for $email DENIED, blocked locally" );
             return;
+            }
+        if( $lives_left == 0 ) {
+            cd_permadead();
             }
         }
     else {
@@ -1618,15 +1623,23 @@ function cd_checkUser() {
         // new user, in ticket server but not here yet
 
         // create
+        global $startingLifeLimit;
 
+        $lives_left = -1;
+
+        if( $startingLifeLimit > 0 ) {
+            $lives_left = $startingLifeLimit + 1;
+            }
+        
         // user_id auto-assigned
         $query = "INSERT INTO $tableNamePrefix"."users ".
-            "(ticket_id, email, character_name_history, ".
+            "(ticket_id, email, character_name_history, lives_left, ".
             " last_robbed_owner_id, last_robbery_response, ".
             " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
-            " '$ticket_id', '$email', '', 0, '', 0, 0, 0, 0 );";
+            " '$ticket_id', '$email', '', $lives_left, ".
+            " 0, '', 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -4933,6 +4946,7 @@ function cd_getUserID() {
 
 // checks the ticket HMAC for the user ID and sequence number
 // attached to a transaction (also makes sure user isn't blocked!)
+// also checks for permadeath condition (no fresh starts left) and handles it
 function cd_verifyTransaction() {
     global $tableNamePrefix;
     
@@ -4947,7 +4961,7 @@ function cd_verifyTransaction() {
 
     // automatically ignore blocked users
     
-    $query = "SELECT sequence_number, ticket_id ".
+    $query = "SELECT sequence_number, lives_left, ticket_id ".
         "FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id' AND blocked='0' FOR UPDATE;";
 
@@ -4965,6 +4979,13 @@ function cd_verifyTransaction() {
         }
     
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+
+    $lives_left = $row[ "lives_left" ];
+
+    if( $lives_left == 0 ) {
+        cd_permadead();
+        }
+    
 
     $last_sequence_number = $row[ "sequence_number" ];
 
@@ -5063,6 +5084,13 @@ function cd_isAdmin( $user_id ) {
 
 
 
+function cd_permadead() {
+    echo "PERMADEAD";
+    die();
+    }
+
+
+
 
 function cd_newHouseForUser( $user_id ) {
     global $tableNamePrefix;
@@ -5073,8 +5101,9 @@ function cd_newHouseForUser( $user_id ) {
     $ticket_id = "";
     $email = "";
     $character_name_history = "";
+    $lives_left = 0;
     
-    $query = "select ticket_id, email, character_name_history ".
+    $query = "select ticket_id, email, lives_left, character_name_history ".
         "FROM $tableNamePrefix"."users ".
         "WHERE user_id = $user_id;";
     $result = cd_queryDatabase( $query );
@@ -5086,10 +5115,26 @@ function cd_newHouseForUser( $user_id ) {
         $character_name_history =
             mysql_result( $result, 0, "character_name_history" );
         $email = mysql_result( $result, 0, "email" );
+        $lives_left = mysql_result( $result, 0, "lives_left" );
         }
+
     
     
 
+    
+    if( $lives_left == 0 ) {
+        cd_permadead();
+        }
+    
+    $lives_left --;
+
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET lives_left = $lives_left ".
+        "WHERE user_id = $user_id;";
+    $result = cd_queryDatabase( $query );
+    
+
+    
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
     // select first, for update, so we can safely delete old house

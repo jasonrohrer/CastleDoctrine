@@ -10,6 +10,10 @@ of houses being lost, etc.  Client should stop immediately (and a client that
 gets a SHUTDOWN response on startup should stop and tell user to try again
 later).
 
+Some calls can also return 'PERMADEAD' when the user is permanently dead and
+has no fresh starts left.  No additional actions are possible for this user
+on the server.  Client should immediately inform user of this condition.
+
 
 
 === Call:
