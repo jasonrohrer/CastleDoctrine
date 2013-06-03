@@ -5190,6 +5190,10 @@ function cd_newHouseForUser( $user_id ) {
 
 
     if( $lives_left == 0 ) {
+        cd_queryDatabase( "COMMIT;" );
+    
+        cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
+        
         cd_permadead();
         }
     
