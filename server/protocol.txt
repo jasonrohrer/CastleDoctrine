@@ -281,6 +281,7 @@ server.php?action=list_houses&user_id=[id number]
                              &limit=[number]
                              &name_search=[any+number+of+words]
                              &add_to_ignore_list=[id number (OPTIONAL)]
+                             &clear_ignore_list=[1 to clear (OPTIONAL)]
                              &sequence_number=[number]
                              &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
@@ -308,6 +309,9 @@ If last_robber is user_id, last_robber_name is set to "You".
 
 add_to_ignore_list is an optional parameter that includes one ID to add
 to the ignored-houses list for this user.
+
+clear_ignore_list, if present and set to 1, clears the ignored-house list
+for this user.
 
 
 

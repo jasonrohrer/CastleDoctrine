@@ -57,20 +57,29 @@ RobPickList::RobPickList( double inX, double inY,
                          translate( "filter" ) ),
           mIgnoreButton( mainFont, -4, 6,
                          translate( "ignoreHouse" ) ),
+          mClearIgnoreListButton( mainFont, 4, 6,
+                                  translate( "clearIgnoreList" ) ),
           mAppliedSearchWords( stringDuplicate( "" ) ),
-          mIgnoreSet( false ), 
-          mIgnoreTarget( 0 ) {
+          mIgnoreSet( false ),
+          mIgnoreTarget( 0 ),
+          mIgnorePressedThisSession( false ),
+          mClearIgnoreListSet( false ){
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
     
     mIgnoreButton.setVisible( false );
 
+    // assume there are some ignored that we need to clear at start
+    // of new game session
+    mClearIgnoreListButton.setVisible( true );
+
     addComponent( &mUpButton );
     addComponent( &mDownButton );
     addComponent( &mSearchField );
     addComponent( &mFilterButton );
     addComponent( &mIgnoreButton );
+    addComponent( &mClearIgnoreListButton );
     
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
@@ -78,8 +87,11 @@ RobPickList::RobPickList( double inX, double inY,
     mSearchField.addActionListener( this );
     mFilterButton.addActionListener( this );
     mIgnoreButton.addActionListener( this );
+    mClearIgnoreListButton.addActionListener( this );
 
     mIgnoreButton.setMouseOverTip( translate( "ignoreTip" ) );
+    mClearIgnoreListButton.setMouseOverTip( 
+        translate( "clearIgnoreListTip" ) );
     }
 
 
@@ -125,7 +137,21 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         mIgnoreSet = true;
         mIgnoreTarget = getSelectedHouse()->uniqueID;
         
+        mIgnorePressedThisSession = true;
+        
         refreshList( true, true );
+        }
+    else if( inTarget == &mClearIgnoreListButton ) {
+        mClearIgnoreListSet = true;
+        
+        // those that we've ignored have been cleared now
+        mIgnorePressedThisSession = false;
+        
+        mClearIgnoreListButton.setVisible( false );
+        
+        // back to top of list, since all bets are off about positioning
+        // with all the new list members that might be added
+        refreshList( true, false );
         }
     }
 
@@ -142,6 +168,10 @@ void RobPickList::refreshList( char inPreserveSearch,
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
     mIgnoreButton.setVisible( false );
+
+    if( mIgnorePressedThisSession ) {
+        mClearIgnoreListButton.setVisible( true );
+        }
     
     mSearchField.focus();
 
@@ -175,17 +205,29 @@ void RobPickList::refreshList( char inPreserveSearch,
     else {
         ignoreParameter = stringDuplicate( "" );
         }
+
+
+    char *clearIgnoreListParameter;
+    
+    if( mClearIgnoreListSet ) {
+        clearIgnoreListParameter = stringDuplicate( "&clear_ignore_list=1" );
+        mClearIgnoreListSet = false;
+        }
+    else {
+        clearIgnoreListParameter = stringDuplicate( "" );
+        }
     
 
     char *actionString = autoSprintf( 
-        "action=%s&skip=%d&limit=%d&name_search=%s%s&user_id=%d"
+        "action=%s&skip=%d&limit=%d&name_search=%s%s%s&user_id=%d"
         "&%s",
         action, mCurrentSkip, linesPerPage, mAppliedSearchWords,
-        ignoreParameter,
+        ignoreParameter, clearIgnoreListParameter,
         userID, ticketHash );
 
     delete [] ticketHash;
     delete [] ignoreParameter;
+    delete [] clearIgnoreListParameter;
             
     
     mWebRequest = startWebRequestSerial( "POST", 
@@ -678,6 +720,7 @@ void RobPickList::pointerUp( float inX, float inY ) {
         
         if( ! mRobberyLog ) {
             mIgnoreButton.setVisible( true );
+            mClearIgnoreListButton.setVisible( false );
             }
         
 

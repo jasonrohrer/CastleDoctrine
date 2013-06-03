@@ -3333,6 +3333,7 @@ function cd_listHouses() {
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
     $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
     $add_to_ignore_list = cd_requestFilter( "add_to_ignore_list", "/\d+/" );
+    $clear_ignore_list = cd_requestFilter( "clear_ignore_list", "/[1]/", "0" );
 
     $searchClause = "";
 
@@ -3349,6 +3350,12 @@ function cd_listHouses() {
             "(user_id, house_user_id) ".
             "VALUES( '$user_id', '$add_to_ignore_list' );";
 
+        $result = cd_queryDatabase( $query );
+        }
+    
+    if( $clear_ignore_list == "1" ) {
+        $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
+            "WHERE user_id = '$user_id';";
         $result = cd_queryDatabase( $query );
         }
     

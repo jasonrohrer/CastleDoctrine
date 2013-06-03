@@ -1,3 +1,10 @@
+Version 8
+
+--Added button for clearing a user's list of ignored houses (in case user
+  ignores one by mistake).
+
+
+
 Version 7 Live Server Fixes
 
 --Added extra column in admin view showing edit count for a house (to monitor
