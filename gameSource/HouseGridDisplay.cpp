@@ -600,7 +600,8 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState,
         
         if( inForceUnstuck || ! isStuck ) {
             
-            if( isStuck && ! isPropertySet( id, state, deadFamily ) ) {
+            if( isStuck && ! isPropertySet( id, state, deadFamily )
+                && ! isPropertySet( id, state, notDamaged ) ) {
                 mHouseMapToolTipOverrideOn[i] = true;
                 mHouseMapToolTipOverrideState[i] = mHouseMapCellStates[i];
                 }
