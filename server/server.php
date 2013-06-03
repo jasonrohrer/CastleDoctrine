@@ -5091,6 +5091,7 @@ function cd_permadead( $user_id ) {
 
     cd_queryDatabase( "DELETE from $tableNamePrefix"."houses ".
                       "WHERE user_id = '$user_id';" );
+    cd_queryDatabase( "COMMIT;" );
     
     echo "PERMADEAD";
     die();
