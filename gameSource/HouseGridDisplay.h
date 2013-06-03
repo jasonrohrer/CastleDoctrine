@@ -379,6 +379,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         static char sNoiseTileBankPopulated;
         static SpriteHandle sNoiseTileBank[ NUM_NOISE_TILES ];
 
+        static SpriteHandle sPencilScratchBank[ NUM_NOISE_TILES ];
+
+
         // track one set of static cell-to-noise-tile mappings
         // as long as house map never changes, all instances will copy this
         static int *sHouseMapNoiseTileIndices;
@@ -406,6 +409,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         SpriteHandle mToolTargetSprite;
         SpriteHandle mToolTargetBorderSprite;
         
+ 
         SimpleVector<int> mToolTargetFullIndices;
 
         int mToolTargetPickedFullIndex;

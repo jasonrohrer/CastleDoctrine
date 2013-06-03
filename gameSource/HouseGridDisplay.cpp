@@ -31,6 +31,7 @@ char HouseGridDisplay::sInstanceCount = 0;
 char HouseGridDisplay::sNoiseTileBankPopulated = false;
 
 SpriteHandle HouseGridDisplay::sNoiseTileBank[ NUM_NOISE_TILES ];
+SpriteHandle HouseGridDisplay::sPencilScratchBank[ NUM_NOISE_TILES ];
 
 int *HouseGridDisplay::sHouseMapNoiseTileIndices = NULL;
 
@@ -115,6 +116,21 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
                 }
         
             sNoiseTileBank[i] = fillSpriteAlphaOnly( noisePixels, 16, 16 );
+
+
+            // make pencil scratches
+            memset( noisePixels, 0, 16 * 16 );
+            
+            for( int y=7; y<=8; y++ ) {
+                for( int x=1; x<15; x++ ) {
+                    int p = y * 16 + x;
+                    
+                    noisePixels[p] = randSource.getRandomBoundedInt( 182, 
+                                                                     255 );
+                    
+                    }
+                }
+            sPencilScratchBank[i] = fillSpriteAlphaOnly( noisePixels, 16, 16 );
             }
 
 
@@ -273,6 +289,7 @@ HouseGridDisplay::~HouseGridDisplay() {
         
         for( int i=0; i<NUM_NOISE_TILES; i++ ) {
             freeSprite( sNoiseTileBank[i] );
+            freeSprite( sPencilScratchBank[i] );
             }
         sNoiseTileBankPopulated = false;
 
@@ -286,7 +303,7 @@ HouseGridDisplay::~HouseGridDisplay() {
 
     freeSprite( mToolTargetSprite );
     freeSprite( mToolTargetBorderSprite );
-
+    
     for( int i=0; i<mFamilyExitPaths.size(); i++ ) {
         delete [] *( mFamilyExitPaths.getElement( i ) );
         }
@@ -2338,6 +2355,18 @@ void HouseGridDisplay::draw() {
             int fullI = subToFull( i );
 
             doublePair tilePos = getTilePos( i );
+
+            // pencil scratches wherever tool tips have been overridden
+            if( mHouseMapToolTipOverrideOn[ fullI ] ||
+                mHouseMapMobileToolTipOverrideOn[ fullI ] ) {
+                
+                setDrawColor( 1, 1, 1, 1 );
+                
+                drawSprite( 
+                    sPencilScratchBank[ mHouseMapNoiseTileIndices[fullI] ],
+                    tilePos, 1.0/16.0 );
+                }
+            
 
             setDrawColor( 1, 1, 1, 0.0625 );
             drawSprite( sNoiseTileBank[ mHouseMapNoiseTileIndices[fullI] ],
