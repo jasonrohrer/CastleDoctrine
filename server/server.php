@@ -5122,16 +5122,7 @@ function cd_newHouseForUser( $user_id ) {
     
 
     
-    if( $lives_left == 0 ) {
-        cd_permadead();
-        }
     
-    $lives_left --;
-
-    $query = "UPDATE $tableNamePrefix"."users ".
-        "SET lives_left = $lives_left ".
-        "WHERE user_id = $user_id;";
-    $result = cd_queryDatabase( $query );
     
 
     
@@ -5196,6 +5187,15 @@ function cd_newHouseForUser( $user_id ) {
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
         }
+
+
+    if( $lives_left == 0 ) {
+        cd_permadead();
+        }
+    
+    $lives_left --;
+
+        
     
     
     // Generate a unique name here
@@ -5367,7 +5367,12 @@ function cd_newHouseForUser( $user_id ) {
         "WHERE house_user_id = $user_id;";
     cd_queryDatabase( $query );
 
-    
+
+    // decrement lives left
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET lives_left = $lives_left ".
+        "WHERE user_id = $user_id;";
+    $result = cd_queryDatabase( $query );
     }
 
 
