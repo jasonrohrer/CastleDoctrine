@@ -1504,7 +1504,7 @@ function cd_checkUser() {
 
     // first, see if user already exists in local users table
 
-    $query = "SELECT ticket_id, lives_left, blocked ".
+    $query = "SELECT ticket_id, user_id, lives_left, blocked ".
         "FROM $tableNamePrefix"."users ".
         "WHERE email = '$email';";
 
@@ -1521,6 +1521,8 @@ function cd_checkUser() {
     
         $ticket_id = $row[ "ticket_id" ];
         $blocked = $row[ "blocked" ];
+        
+        $user_id = $row[ "user_id" ];
         $lives_left = $row[ "lives_left" ];
 
         if( $blocked ) {
@@ -1530,7 +1532,7 @@ function cd_checkUser() {
             return;
             }
         if( $lives_left == 0 ) {
-            cd_permadead();
+            cd_permadead( $user_id );
             }
         }
     else {
@@ -4983,7 +4985,7 @@ function cd_verifyTransaction() {
     $lives_left = $row[ "lives_left" ];
 
     if( $lives_left == 0 ) {
-        cd_permadead();
+        cd_permadead( $user_id );
         }
     
 
@@ -5084,7 +5086,12 @@ function cd_isAdmin( $user_id ) {
 
 
 
-function cd_permadead() {
+function cd_permadead( $user_id ) {
+    global $tableNamePrefix;
+
+    cd_queryDatabase( "DELETE from $tableNamePrefix"."houses ".
+                      "WHERE user_id = '$user_id';" );
+    
     echo "PERMADEAD";
     die();
     }
@@ -5194,7 +5201,7 @@ function cd_newHouseForUser( $user_id ) {
     
         cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
         
-        cd_permadead();
+        cd_permadead( $user_id );
         }
     
     $lives_left --;
