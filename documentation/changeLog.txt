@@ -14,6 +14,8 @@ Version 9
   where they were sold from, vault or backpack, when possible instead of always
   being put back in the vault).
 
+--Added server-side check to enforce maximum number of backpack slots.
+
 
 
 

@@ -9,6 +9,10 @@ global $cd_minClientVersion;
 $cd_minClientVersion = "8";
 
 
+global $cd_numBackpackSlots;
+$cd_numBackpackSlots = 8;
+
+
 // edit settings.php to change server' settings
 include( "settings.php" );
 
@@ -2368,6 +2372,16 @@ function cd_endEditHouse() {
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
+    global $cd_numBackpackSlots;
+    if( count( preg_split( "/#/", $backpack_contents ) )
+        > $cd_numBackpackSlots ) {
+        cd_log( "House check-in with ".
+                "more than $cd_numBackpackSlots backpack slots denied" );
+        cd_transactionDeny();
+        return;
+        }
+    
+    
     $gallery_contents = cd_requestFilter( "gallery_contents", "/[#0-9]+/" );
 
     $price_list = cd_requestFilter( "price_list",
@@ -3647,6 +3661,14 @@ function cd_endRobHouse() {
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
 
+    global $cd_numBackpackSlots;
+    if( count( preg_split( "/#/", $backpack_contents ) )
+        > $cd_numBackpackSlots ) {
+        cd_log( "End of robbery with ".
+                "more than $cd_numBackpackSlots backpack slots denied" );
+        cd_transactionDeny();
+        return;
+        }
 
     
     
