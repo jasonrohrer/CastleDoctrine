@@ -26,7 +26,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         // destroyed by caller
         virtual void setHouseMap( char *inHouseMap );
         
-        virtual void setSuccess( char inSuccess );
+        virtual void setSuccess( int inSuccess );
 
         // destoryed by caller
         virtual void setBackpackContents( char *inBackpackContents );
@@ -62,7 +62,7 @@ class RobCheckinHousePage : public GamePage, public ActionListener {
         char mWifeRobbed;
         char mAnyFamilyKilled;
         
-        char mSuccess;
+        int mSuccess;
         
         int mMoneyTaken;
 

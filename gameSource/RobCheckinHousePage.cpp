@@ -19,7 +19,7 @@ extern char *serverURL;
 extern int userID;
 
 
-#define SLOT_Y 5.5
+#define SLOT_Y 4.75
 
 
 RobCheckinHousePage::RobCheckinHousePage() 
@@ -30,7 +30,7 @@ RobCheckinHousePage::RobCheckinHousePage()
           mWifeKilled( false ),
           mWifeRobbed( false ),
           mAnyFamilyKilled( false ),
-          mSuccess( false ),
+          mSuccess( 0 ),
           mHomeButton( mainFont, 4, -4, translate( "returnHome" ) ),
           mStartOverButton( mainFont, 4, -4, translate( "startOver" ) ),
           mGalleryDisplay( mainFont, 0, 0 ),
@@ -155,7 +155,7 @@ void RobCheckinHousePage::setAnyFamilyKilled( char inKilled ) {
 
 
 
-void RobCheckinHousePage::setSuccess( char inSuccess ) {
+void RobCheckinHousePage::setSuccess( int inSuccess ) {
     mSuccess = inSuccess;
     }
 
@@ -408,8 +408,8 @@ void RobCheckinHousePage::draw( doublePair inViewCenter,
         return;
         }
     
-
     const char *robReportKey;
+    const char *backpackDropKey;
     
     int numGalleryItems = mGalleryDisplay.getObjectCount();
 
@@ -437,8 +437,16 @@ void RobCheckinHousePage::draw( doublePair inViewCenter,
             }
         }
     
+    if( mSuccess == 1 ) {
+        backpackDropKey = "backpackDropVault";
+        }
+    else {
+        backpackDropKey = "backpackDropLeave";
+        }
+
     
-    char *robReport = autoSprintf( translate( robReportKey ), mMoneyTaken );
+    char *robReport = autoSprintf( translate( robReportKey ), 
+                                   translate( backpackDropKey ), mMoneyTaken );
         
     
     doublePair labelPos = { 0, 6.75 };

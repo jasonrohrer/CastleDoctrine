@@ -225,11 +225,15 @@ deathMessage "You died."
 startOver "Fresh Start"
 
 
-robSuccess "You stole $%d"
+backpackDropLeave "You ditch your backpack as you run out the door."
+backpackDropVault "You empty your backpack to make room for the vault contents."
 
-robStuffSuccess "You stole $%d and these items:"
 
-robOneItemSuccess "You stole $%d and this item:"
+robSuccess "%s##You stole $%d"
+
+robStuffSuccess "%s##You stole $%d and these items:"
+
+robOneItemSuccess "%s##You stole $%d and this item:"
 
 
 
