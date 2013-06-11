@@ -1,3 +1,10 @@
+Version 9
+
+--Removed wayward Un-Ignore All button from security tape list (thanks Dan
+  Alleck).
+
+
+
 Version 8   2013-June-3
 
 --Added button for clearing a user's list of ignored houses (in case user

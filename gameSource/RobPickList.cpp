@@ -166,7 +166,7 @@ void RobPickList::refreshList( char inPreserveSearch,
     mDownButton.setVisible( false );
     mIgnoreButton.setVisible( false );
 
-    if( mAnyPossiblyIgnored ) {
+    if( !mRobberyLog && mAnyPossiblyIgnored ) {
         mClearIgnoreListButton.setVisible( true );
         }
     
