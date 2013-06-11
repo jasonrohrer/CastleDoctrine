@@ -3,6 +3,9 @@ Version 9
 --Removed wayward Un-Ignore All button from security tape list (thanks Dan
   Alleck).
 
+--Fixed so that backpack purchase/sale cannot be lost by jumping to security
+  tapes (Tapes button hidden after purchase/sale made) (thanks Dan Alleck).
+
 
 
 Version 8   2013-June-3

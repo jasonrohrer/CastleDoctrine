@@ -329,10 +329,12 @@ void EditHousePage::checkIfPlacementAllowed() {
         mSuicideConfirmCheckbox.setVisible( false );
         }
 
-    // can jump to tapes as long as no editing done yet (so nothing will be
-    // lost when we abandon the house edit)
+    // can jump to tapes as long as no editing done yet and no purchase/sale
+    // done yet (so nothing will be lost when we abandon the house edit)
     mJumpToTapesButton.setVisible( mNumberOfTapes > 0 &&
-                                   ! mUndoButton.isVisible() );
+                                   ! mUndoButton.isVisible() &&
+                                   strcmp( mPurchaseList, "#" ) == 0 &&
+                                   strcmp( mSellList, "#" ) == 0 );
     }
 
 

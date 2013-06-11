@@ -1101,6 +1101,11 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setSonName( sonName );
                     editHousePage->setDaughterName( daughterName );
 
+                    // empty, because house just checked out an nothing
+                    // bought/sold yet
+                    editHousePage->setPurchaseList( "#" );
+                    editHousePage->setSellList( "#" );
+                    
                     editHousePage->setHouseMap( houseMap );
                     editHousePage->setVaultContents( vaultContents );
                     editHousePage->setBackpackContents( backpackContents );
@@ -1109,11 +1114,6 @@ void drawFrame( char inUpdate ) {
                     editHousePage->setNumberOfTapes( numberOfTapes );
                     editHousePage->setLootValue( lootValue );
                     editHousePage->setMustSelfTest( mustSelfTest );
-                    
-                    // empty, because house just checked out an nothing
-                    // bought/sold yet
-                    editHousePage->setPurchaseList( "#" );
-                    editHousePage->setSellList( "#" );
                     
 
                     delete [] sonName;
