@@ -156,6 +156,12 @@ int InventorySlotButton::getQuantity() {
 
 
 
+void InventorySlotButton::addToQuantity( int inDelta ) {
+    setQuantity( getQuantity() + inDelta );
+    }
+
+
+
 
 void InventorySlotButton::drawContents() {
     SpriteButton::drawContents();

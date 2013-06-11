@@ -131,7 +131,7 @@ LoadBackpackPage::~LoadBackpackPage() {
 
 
 void LoadBackpackPage::setVaultContents( char *inVaultContents ) {
-    vaultSlotsFromString( inVaultContents, mVaultSlots );
+    inventorySlotsFromString( inVaultContents, mVaultSlots, NUM_VAULT_SLOTS );
     }
 
 
@@ -145,8 +145,8 @@ char *LoadBackpackPage::getVaultContents() {
 
 void LoadBackpackPage::setBackpackContents( char *inBackpackContents ) {
 
-    backpackSlotsFromString( inBackpackContents,
-                             mPackSlots );
+    inventorySlotsFromString( inBackpackContents,
+                              mPackSlots, NUM_PACK_SLOTS );
        
     checkBuyButtonStatus();
     }
@@ -241,8 +241,10 @@ void LoadBackpackPage::checkBuyButtonStatus() {
     // we can afford it
 
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-        if( mPackSlots[i]->getObject() == -1 ) {
-            // empty slot found
+        int slotObject = mPackSlots[i]->getObject();
+        
+        if( slotObject == -1 || slotObject == selectedObject ) {
+            // empty or matching slot found
             mBuyButton.setVisible( true );
 
             char *tip = autoSprintf( translate( "buyTip" ),
@@ -254,7 +256,7 @@ void LoadBackpackPage::checkBuyButtonStatus() {
             return;
             }
         }
-    // no empty slots
+    // no empty/matching slots
     mBuyButton.setVisible( false );
     }
 
@@ -269,7 +271,7 @@ void LoadBackpackPage::checkUndoStatus() {
     else {
         mUndoButton.setVisible( true );
         
-        QuantityRecord lastTrans = 
+        PurchaseHistoryRecord lastTrans = 
             *( mPurchaseHistory.getElement( mPurchaseHistory.size() - 1 ) );
 
         
@@ -364,7 +366,7 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mUndoButton ) {
         if( mPurchaseHistory.size() > 0 ) {
             // undo last one
-            QuantityRecord lastTransaction = 
+            PurchaseHistoryRecord lastTransaction = 
                 *( mPurchaseHistory.getElement( 
                        mPurchaseHistory.size() - 1 ) );
             mPurchaseHistory.deleteElement( mPurchaseHistory.size() - 1 );
@@ -379,20 +381,51 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                             
                 mLootValue -= quantity * mToolPicker.getSellBackPrice( id );
 
-                // stick undone sales back in vault
+                // stick undone sales back in pack or vault
                 char found = false;
                 
-                // slot already contains these items?
-                for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
-                    if( mVaultSlots[i]->getObject() == id ) {
-                        mVaultSlots[i]->setQuantity( 
-                            mVaultSlots[i]->getQuantity() + quantity );
-                        found = true;
-                        break;
+                if( lastTransaction.targetSlotType == 0 ) {    
+                    // pack slot already contains these items?
+                    for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+                        if( mPackSlots[i]->getObject() == id ) {
+                            mPackSlots[i]->addToQuantity( quantity );
+                            found = true;
+                            break;
+                            }
+                        }
+
+                    if( !found ) {
+                        // stick in an empty pack slot
+                        for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+                            if( mPackSlots[i]->getObject() == -1 ) {
+                                mPackSlots[i]->setObject( id );
+                                mPackSlots[i]->setQuantity( quantity );
+                                mPackSlots[i]->setSellPrice( 
+                                    mToolPicker.getSellBackPrice( id ) );
+                                found = true;
+                                break;
+                                }
+                            }
                         }
                     }
+                
+                // no pack slots found to accommodate this undone sale
+                // OR sale wasn't out of a pack slot in the first place
+
+                if( !found ) {
+                    // vault slot already contains these items?
+                    for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
+                        if( mVaultSlots[i]->getObject() == id ) {
+                            mVaultSlots[i]->setQuantity( 
+                                mVaultSlots[i]->getQuantity() + quantity );
+                            found = true;
+                            break;
+                            }
+                        }
+                    }
+                
                 if( ! found ) {
-                    // stick in an empty slot
+                    // stick in an empty vault slot
                     for( int i=0; i<NUM_VAULT_SLOTS; i++ ) {
                         if( mVaultSlots[i]->getObject() == -1 ) {
                             mVaultSlots[i]->setObject( id );
@@ -411,14 +444,18 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 subtractFromQuantity( &mPurchaseRecords, idToUnbuy );
             
                 mLootValue += mToolPicker.getPrice( idToUnbuy );
-
-                // find in backpack?
+                
+                
                 char found = false;
-                for( int i=NUM_PACK_SLOTS - 1; i>=0; i-- ) {
-                    if( mPackSlots[i]->getObject() == idToUnbuy ) {
-                        mPackSlots[i]->setObject( -1 );
-                        found = true;
-                        break;
+                
+                if( lastTransaction.targetSlotType == 0 ) {
+                    // find in backpack?
+                    for( int i=NUM_PACK_SLOTS - 1; i>=0; i-- ) {
+                        if( mPackSlots[i]->getObject() == idToUnbuy ) {
+                            mPackSlots[i]->addToQuantity( -1 );
+                            found = true;
+                            break;
+                            }
                         }
                     }
             
@@ -446,23 +483,51 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         
         int price = mToolPicker.getPrice( selectedObject );
         int sellPrice = mToolPicker.getSellBackPrice( selectedObject );;
+        
+        // first look for matching slot
+        char found = false;
+        
         for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
-            if( mPackSlots[i]->getObject() == -1 ) {
-                // empty slot!
-                mPackSlots[i]->setObject( selectedObject );
-                mPackSlots[i]->setSellPrice( sellPrice );
+            if( mPackSlots[i]->getObject() == selectedObject ) {
+                found = true;
+                
+                mPackSlots[i]->addToQuantity( 1 );
                 mLootValue -= price;
                 
                 mToolPicker.useSelectedObject();
-
+                
                 addToQuantity( &mPurchaseRecords, selectedObject );
-
-                QuantityRecord historyRecord = { selectedObject, 1 };
+                
+                PurchaseHistoryRecord historyRecord = { selectedObject, 1, 0 };
                 mPurchaseHistory.push_back( historyRecord );
                 
                 checkUndoStatus();
 
                 break;
+                }
+            }
+        
+        if( ! found ) {
+            // check for empty slot instead
+            for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
+                if( mPackSlots[i]->getObject() == -1 ) {
+                    // empty slot!
+                    mPackSlots[i]->setObject( selectedObject );
+                    mPackSlots[i]->setSellPrice( sellPrice );
+                    mLootValue -= price;
+                
+                    mToolPicker.useSelectedObject();
+
+                    addToQuantity( &mPurchaseRecords, selectedObject );
+
+                    PurchaseHistoryRecord historyRecord = { selectedObject, 1,
+                                                            0 };
+                    mPurchaseHistory.push_back( historyRecord );
+                
+                    checkUndoStatus();
+
+                    break;
+                    }
                 }
             }
         
@@ -498,21 +563,35 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 if( id != -1 ) {
                     // click on a non-empty pack slot counts as an action
                     actionHappened();
-
-                    mPackSlots[i]->setObject( -1 );
+                    
+                    
                     
                     if( mSellMode ) {
 
-                        mLootValue += mToolPicker.getSellBackPrice( id );
+                        int quantitySold = 1;
+                            
+                        if( mSellHalfMode ) {
+                            quantitySold = mPackSlots[i]->getQuantity() / 2;
+                            }
+                        if( quantitySold < 1 ) {
+                            quantitySold = 1;
+                            }
+                        mPackSlots[i]->addToQuantity( - quantitySold );
+
+                        mLootValue += 
+                            quantitySold * 
+                            mToolPicker.getSellBackPrice( id );
                         
-                        addToQuantity( &mSellRecords, id );
-                        QuantityRecord historyRecord = { id, -1 };
+                        addToQuantity( &mSellRecords, id, quantitySold );
+                        PurchaseHistoryRecord historyRecord = 
+                            { id, -quantitySold, 0 };
                         mPurchaseHistory.push_back( historyRecord );
-                        
+
                         checkUndoStatus();
                         }
                     else {
-                        
+                        mPackSlots[i]->addToQuantity( -1 );
+
                         char foundInVault = false;
 
                         for( int j=0; j<NUM_VAULT_SLOTS; j++ ) {
@@ -577,31 +656,46 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                                 mToolPicker.getSellBackPrice( id );
                         
                             addToQuantity( &mSellRecords, id, quantitySold );
-                            QuantityRecord historyRecord = { id, 
-                                                             -quantitySold };
+                            PurchaseHistoryRecord historyRecord = 
+                                { id, -quantitySold, 1 };
                             mPurchaseHistory.push_back( historyRecord );
                         
                             checkUndoStatus();
                             }
                         else {
                             // ignore transfer click if backpack full
-                            int emptyIndex = -1;
-                            
+                            // and if it has no matching slot
+                            int foundIndex = -1;
+                            char empty = false;
                             for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
-                                if( mPackSlots[j]->getObject() == -1 ) {
-                                    emptyIndex = j;
+                                if( mPackSlots[j]->getObject() == id ) {
+                                    foundIndex = j;
                                     break;
                                     }
                                 }
+                            if( foundIndex == -1 ) {    
+                                for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
+                                    if( mPackSlots[j]->getObject() == -1 ) {
+                                        foundIndex = j;
+                                        empty = true;
+                                        break;
+                                        }
+                                    }
+                                }
                         
-                            if( emptyIndex != -1 ) {
+                            if( foundIndex != -1 ) {
 
                                 mVaultSlots[i]->setQuantity( 
                                     mVaultSlots[i]->getQuantity() - 1 );
                                 
-                                mPackSlots[emptyIndex]->setObject( id );
-                                mPackSlots[emptyIndex]->setSellPrice(
-                                    mToolPicker.getSellBackPrice( id ) );
+                                if( empty ) {
+                                    mPackSlots[foundIndex]->setObject( id );
+                                    mPackSlots[foundIndex]->setSellPrice(
+                                        mToolPicker.getSellBackPrice( id ) );
+                                    }
+                                else {
+                                    mPackSlots[foundIndex]->addToQuantity( 1 );
+                                    }
                                 
                                 checkBuyButtonStatus();
                                 }

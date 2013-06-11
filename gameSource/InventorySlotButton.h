@@ -37,6 +37,10 @@ class InventorySlotButton : public SpriteButton {
         
         int getQuantity();
 
+        // inDelta can be positive or negative
+        // if it brings quantity to zero, object ID is cleared
+        void addToQuantity( int inDelta );
+        
 
         // used for tool tip when transfer status is 3 (sell mode)
         void setSellPrice( int inSellPrice );

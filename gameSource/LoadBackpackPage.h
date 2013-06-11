@@ -15,6 +15,18 @@
 
 
 
+typedef struct PurchaseHistoryRecord {
+        int objectID;
+        int quantity;
+        
+        // 0 for pack
+        // 1 for vault
+        int targetSlotType;
+
+    } PurchaseHistoryRecord;
+
+
+
 
 class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
@@ -110,7 +122,7 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         // for undo
         // positive quanties here represent purchases
         // negative quantities represent sales
-        SimpleVector<QuantityRecord> mPurchaseHistory;
+        SimpleVector<PurchaseHistoryRecord> mPurchaseHistory;
         
 
         void checkBuyButtonStatus();

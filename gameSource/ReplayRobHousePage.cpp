@@ -118,7 +118,7 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
         }
     mPackSlotsString = stringDuplicate( inLog.backpackContents );
     
-    backpackSlotsFromString( mPackSlotsString, mPackSlots );
+    inventorySlotsFromString( mPackSlotsString, mPackSlots, NUM_PACK_SLOTS );
     }
 
 
@@ -150,7 +150,8 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
                     }
                 }
             // restore original tool list
-            backpackSlotsFromString( mPackSlotsString, mPackSlots );
+            inventorySlotsFromString( mPackSlotsString, mPackSlots, 
+                                      NUM_PACK_SLOTS );
             }
         else {
             int pickedID = mGridDisplay.getToolIDJustPicked();
@@ -165,10 +166,10 @@ void ReplayRobHousePage::actionPerformed( GUIComponent *inTarget ) {
                     }
                 }
             else if( mGridDisplay.getToolJustUsed() ) {
-                // clear our selected slot
+                // spend tool from selected slot
                 for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
                     if( mPackSlots[j]->getRingOn() ) {
-                        mPackSlots[j]->setObject( -1 );
+                        mPackSlots[j]->addToQuantity( -1 );
                         mPackSlots[j]->setRingOn( false );
                         break;
                         }

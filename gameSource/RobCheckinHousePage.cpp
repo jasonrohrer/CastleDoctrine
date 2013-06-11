@@ -221,8 +221,9 @@ void RobCheckinHousePage::step() {
                         if( mSuccess != 0 ) {
                             mStatusError = false;
                             
-                            vaultSlotsFromString( *( tokens->getElement( 1 ) ),
-                                                  mVaultSlots );
+                            inventorySlotsFromString( 
+                                *( tokens->getElement( 1 ) ),
+                                mVaultSlots, NUM_VAULT_SLOTS );
                             
                             int numVisible = 0;
                             

@@ -110,57 +110,26 @@ char subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
 
 
 
-void backpackSlotsFromString( 
+
+
+void inventorySlotsFromString( 
     char *inString,
-    InventorySlotButton *inPackSlots[], int inNumSlots ) {
-    
+    InventorySlotButton *inSlots[], int inNumSlots ) {
 
     for( int i=0; i<inNumSlots; i++ ) {
         // clear slots
-        inPackSlots[i]->setObject( -1 );
+        inSlots[i]->setObject( -1 );
         }
 
     SimpleVector<QuantityRecord> tempRecords;
     
     fromString( inString, &tempRecords );
     
-    int numFilledSlots = 0;
-        
-    for( int i=0; i<tempRecords.size(); i++ ) {
-        if( numFilledSlots < inNumSlots ) {            
-            QuantityRecord *r = tempRecords.getElement( i );
-            
-            for( int j=0; j<r->quantity; j++ ) {
-                if( numFilledSlots < inNumSlots ) {
-                    inPackSlots[numFilledSlots]->setObject( r->objectID );
-                    numFilledSlots++;
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-void vaultSlotsFromString( 
-    char *inString,
-    InventorySlotButton *inVaultSlots[], int inNumSlots ) {
-
-    for( int i=0; i<inNumSlots; i++ ) {
-        // clear slots
-        inVaultSlots[i]->setObject( -1 );
-        }
-
-    SimpleVector<QuantityRecord> tempRecords;
-    
-    fromString( inString, &tempRecords );
-    
-    for( int i=0; i<tempRecords.size(); i++ ) {
+    for( int i=0; i<tempRecords.size() && i < inNumSlots; i++ ) {
         QuantityRecord *r = tempRecords.getElement( i );
         
-        inVaultSlots[i]->setObject( r->objectID );
-        inVaultSlots[i]->setQuantity( r->quantity );
+        inSlots[i]->setObject( r->objectID );
+        inSlots[i]->setQuantity( r->quantity );
         }
     }
 

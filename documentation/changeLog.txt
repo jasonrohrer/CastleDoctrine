@@ -8,6 +8,12 @@ Version 9
 
 --Wire cutters can now disable an electric floor that is off.
 
+--Made backpack quantities unlimited (instead of one item per slot).
+
+--Improved behavior of undo button for tool sales (undone sales are put back
+  where they were sold from, vault or backpack, when possible instead of always
+  being put back in the vault).
+
 
 
 

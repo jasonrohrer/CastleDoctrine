@@ -185,8 +185,8 @@ int RobHousePage::getVisibleOffsetY() {
 
 void RobHousePage::setBackpackContents( char *inBackpackContents ) {
 
-    backpackSlotsFromString( inBackpackContents,
-                             mPackSlots );
+    inventorySlotsFromString( inBackpackContents,
+                              mPackSlots, NUM_PACK_SLOTS );
     }
 
 
@@ -262,10 +262,10 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
         // activity on house map
             
         if( mGridDisplay.getToolJustUsed() ) {    
-            // empty active slot in backpack
+            // spend tool from active slot in backpack
             for( int j=0; j<NUM_PACK_SLOTS; j++ ) {
                 if( mPackSlots[j]->getRingOn() ) {
-                    mPackSlots[j]->setObject( -1 );
+                    mPackSlots[j]->addToQuantity( -1 );
                     mPackSlots[j]->setRingOn( false );
                     break;
                     }

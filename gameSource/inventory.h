@@ -55,18 +55,11 @@ char subtractFromQuantity( SimpleVector<QuantityRecord> *inOldQuanties,
 
 
 
-// parses a string representation of backpack contents, and puts
+// parses a string representation inventory contents, and puts
 // result into inventory slots (replacing their contents)
-void backpackSlotsFromString( 
+void inventorySlotsFromString( 
     char *inString,
-    InventorySlotButton *inPackSlots[], int inNumSlots = NUM_PACK_SLOTS );
-
-
-// parses a string representation of vault contents, and puts
-// result into inventory slots (replacing their contents)
-void vaultSlotsFromString( 
-    char *inString,
-    InventorySlotButton *inVaultSlots[], int inNumSlots = NUM_VAULT_SLOTS );
+    InventorySlotButton *inSlots[], int inNumSlots );
 
 
 // encodes slots as a string (destroyed by caller)
