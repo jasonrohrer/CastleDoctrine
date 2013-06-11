@@ -97,6 +97,8 @@ wireCutters # wire_bridge => 2
 wireCutters # wire_vertical => 5
 wireCutters # wire_horizontal => 5
 
+wireCutters # floor_electric:1 => 4
+
 
 power     #   wire:3   =>  4
 noPower   #   wire:4   =>  3
