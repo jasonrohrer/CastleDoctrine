@@ -75,6 +75,7 @@ CheckboxButton.cpp \
 BlueprintHouseGridDisplay.cpp \
 ViewBlueprintPage.cpp \
 FetchBlueprintPage.cpp \
+sha1Encryption.cpp \
 
 
 

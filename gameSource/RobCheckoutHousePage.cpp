@@ -6,11 +6,13 @@
 
 #include "serialWebRequests.h"
 
+#include "sha1Encryption.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/crypto/hashes/sha1.h"
 
 
 extern Font *mainFont;
@@ -24,6 +26,7 @@ extern int userID;
 
 RobCheckoutHousePage::RobCheckoutHousePage() 
         : mWebRequest( -1 ),
+          mMapEncryptionKey( NULL ),
           mWifeName( NULL ),
           mSonName( NULL ),
           mDaughterName( NULL ),
@@ -84,6 +87,11 @@ RobCheckoutHousePage::~RobCheckoutHousePage() {
     if( mWebRequest != -1 ) {
         clearWebRequestSerial( mWebRequest );
         }
+    
+    if( mMapEncryptionKey != NULL ) {
+        delete [] mMapEncryptionKey;
+        }
+
     clearDataMembers();
 
     if( mToRobCharacterName != NULL ) {
@@ -261,7 +269,13 @@ void RobCheckoutHousePage::step() {
                         }
                     else {
                         mOwnerName = nameParse( *( tokens->getElement( 0 ) ) );
-                        mHouseMap = *( tokens->getElement( 1 ) );
+
+                        mHouseMap = 
+                            sha1Decrypt( mMapEncryptionKey,
+                                         *( tokens->getElement( 1 ) ) );
+                        delete [] *( tokens->getElement( 1 ) );
+                        
+
                         mBackpackContents = *( tokens->getElement( 2 ) );
                         mGalleryContents = *( tokens->getElement( 3 ) );
 
@@ -277,7 +291,7 @@ void RobCheckoutHousePage::step() {
                         mDaughterName = *( tokens->getElement( 8 ) );
 
                         printf( "OwnerName = %s\n", mOwnerName );
-                        printf( "HouseMap = %s\n", mHouseMap );
+                        // printf( "HouseMap = %s\n", mHouseMap );
                         printf( "Backpack = %s\n", mBackpackContents );
                         printf( "Gallery = %s\n", mGalleryContents );
                         printf( "WifeMoney = %d\n", mWifeMoney );
@@ -318,10 +332,18 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         
     char *ticketHash = getTicketHash();
 
+    if( mMapEncryptionKey != NULL ) {
+        delete [] mMapEncryptionKey;
+        }
+
+    mMapEncryptionKey = computeSHA1Digest( ticketHash );
+    
+
     char *fullRequestURL = autoSprintf( 
         "%s?action=start_rob_house&user_id=%d&to_rob_user_id=%d"
-        "&to_rob_character_name=%s&%s",
-        serverURL, userID, mToRobUserID, mToRobCharacterName, ticketHash );
+        "&to_rob_character_name=%s&map_encryption_key=%s&%s",
+        serverURL, userID, mToRobUserID, mToRobCharacterName, 
+        mMapEncryptionKey, ticketHash );
     delete [] ticketHash;
     
     mWebRequest = startWebRequestSerial( "GET", 

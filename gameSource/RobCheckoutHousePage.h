@@ -55,6 +55,7 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         void clearDataMembers();
         
         int mWebRequest;
+        char *mMapEncryptionKey;
         
         char *mWifeName;
         char *mSonName;

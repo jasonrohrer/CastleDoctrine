@@ -3535,6 +3535,8 @@ function cd_startRobHouse() {
     $to_rob_character_name =
         cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
 
+    $map_encryption_key = cd_requestFilter( "map_encryption_key", "/\S+/" );
+    
 
     // Don't count existing robbery of to_rob_user_id as stale,
     // because we could be experiencing a client retry where the first
@@ -3629,9 +3631,11 @@ function cd_startRobHouse() {
     if( $wife_present ) {
         $wife_money = (int)( $loot_value / 2 );
         }
+
+    $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
     
     echo "$character_name\n";
-    echo "$house_map\n";
+    echo "$encrypted_house_map\n";
     echo "$backpack_contents\n";
     echo "$gallery_contents\n";
     echo "$wife_money\n";

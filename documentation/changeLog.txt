@@ -19,6 +19,10 @@ Version 9
 --Remaining backpack contents ditched and added to victim house's vault at end
   of robbery, no matter how robbery ends (success, death, or leaving).
 
+--House map on robbery is now encrypted by server using a changing key provided
+  by the client, to weakly hide raw house map from protocol stream.  House map
+  of robbery targets no longer printed to stdout.
+
 
 
 Version 8   2013-June-3

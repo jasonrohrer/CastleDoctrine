@@ -165,6 +165,46 @@ static void checkForRequestRetry( SerialWebRecord *r ) {
     }
 
 
+// remove house map from request print out
+static char *trimMapFromRequest( char *inRequest ) {
+    if( inRequest == NULL ) {
+        return NULL;
+        }
+    
+    char *working = stringDuplicate( inRequest );
+    
+    const char *mapTag = "house_map=";
+    
+    char *mapStart = strstr( working, mapTag );
+    
+    if( mapStart != NULL ) {
+        mapStart = &( mapStart[ strlen( mapTag ) ] );
+        
+        // add ... and terminate
+        mapStart[0] = '.';
+        mapStart[1] = '.';
+        mapStart[2] = '.';
+        
+        mapStart[3] = '\0';
+        }
+    
+    
+    return working;
+    }
+
+
+
+static void printRequestStart( SerialWebRecord *r ) {
+    char *trimmedBody = trimMapFromRequest( r->body );
+                
+    printf( "\nStarting web request %d [%s %s %s]\n\n", 
+            r->activeHandle, r->method, r->url, trimmedBody );
+    
+    if( trimmedBody != NULL ) {
+        delete [] trimmedBody;
+        }
+    }
+
 
 
 int stepWebRequestSerial( int inHandle ) {
@@ -183,8 +223,8 @@ int stepWebRequestSerial( int inHandle ) {
             if( ! r->started ) {
                 r->activeHandle = 
                     startWebRequest( r->method, r->url, r->body );
-                printf( "\nStarting web request %d [%s %s %s]\n\n", 
-                        r->activeHandle, r->method, r->url, r->body );
+                
+                printRequestStart( r );
                 
                 r->startTime = game_time( NULL );
                 r->started = true;
@@ -229,8 +269,8 @@ int stepWebRequestSerial( int inHandle ) {
                 if( ! r->started ) {
                     r->activeHandle = 
                         startWebRequest( r->method, r->url, r->body );
-                    printf( "\nStarting web request %d [%s %s %s]\n\n", 
-                            r->activeHandle, r->method, r->url, r->body );
+                    
+                    printRequestStart( r );
 
                     r->startTime = game_time( NULL );
                     r->started = true;
