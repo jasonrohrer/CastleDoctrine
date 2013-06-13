@@ -16,6 +16,8 @@ Version 9
 
 --Added server-side check to enforce maximum number of backpack slots.
 
+--Remaining backpack contents ditched and added to victim house's vault at end
+  of robbery, no matter how robbery ends (success, death, or leaving).
 
 
 

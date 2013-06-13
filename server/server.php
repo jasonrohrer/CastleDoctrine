@@ -3863,9 +3863,10 @@ function cd_endRobHouse() {
 
     
 
-    // update contents of backpack (checked to be okay above)
+    // update contents of backpack to empty, because whole backpack
+    // ditched at end of robbery
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "backpack_contents = '$backpack_contents'".
+        "backpack_contents = '#'".
         "WHERE user_id = $user_id;";
 
     // but don't actually run the update yet (avoid deadlock)
@@ -4165,13 +4166,12 @@ function cd_endRobHouse() {
         
         }
 
-    
-    if( $success == 0 ) {
-        // drops backpack in this house's vault
-        $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
-                                                    $backpack_contents );
-        }
 
+    // regardless of robbery outcome
+    // drops remaining backpack in this house's vault
+    $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                $backpack_contents );
+    
 
     
     
