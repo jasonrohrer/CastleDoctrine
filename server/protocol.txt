@@ -360,11 +360,12 @@ houseMap = ASCII string representing the house layout
 server.php?action=start_rob_house&user_id=[id number]
                                  &to_rob_user_id=[id number]
 								 &to_rob_character_name=[name]
+                                 &map_encryption_key=[ASCII key]
                                  &sequence_number=[number]
                                  &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 character_name
-houseMap
+encrypted_house_map
 backpack_contents
 gallery_contents
 wife_money
@@ -389,11 +390,31 @@ DENIED
 
 Where:
 character_name has spaces repaced by "_"
-houseMap = ASCII string representing the house layout
 backpack_contents = ASCII string encoded as described for start_edit_house
                     (contents of robber's backpack)
 gallery_contents = ASCII string encoded as described for start_edit_house
 music_seed = integer used to seed music generator for this house's song
+
+encrypted_house_map = base64 ASCII encrypted string representing the house 
+                      layout
+
+
+Encryption based on SHA1 hash, where keystream is produced as follows, 
+where . means "concatonate":
+
+
+sha1( "0" . map_encryption_key . "0" ) . 
+sha1( "1" . map_encryption_key . "1" ) . 
+sha1( "2" . map_encryption_key . "2" ) . 
+...
+sha1( "N" . map_encryption_key . "N" )
+
+Where N is chosen so that N * 20 > length( house_map ).
+
+This keystream is XOR'd with the house_map, and then the result is base64-
+encoded to produce encrypted_house_map. 
+
+
 
 
 
