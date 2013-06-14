@@ -29,6 +29,8 @@ Version 9
   happens (where robber at least steps beyond mat or is at least carrying
   tools that will be dropped in vault).
 
+--Increased prices of cut-through and bypass tools (but tools that can analyze
+  and meddle are still cheap).
 
 
 
