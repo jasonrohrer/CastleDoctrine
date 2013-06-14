@@ -320,8 +320,9 @@ for this user.
 
 
 
-
-
+****
+NOTE:  The get_blueprints call was disabled in v9
+****
 === Call:
 server.php?action=get_blueprint&user_id=[id number]
                                &to_rob_user_id=[id number]

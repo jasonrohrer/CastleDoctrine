@@ -121,8 +121,10 @@ void RobHousePage::showBackpack( char inShow ) {
         }
     mShowBackpack = inShow;
 
+    // disabled in v9
     // can't view blueprints during self-test
-    mBlueprintButton.setVisible( inShow );
+    //mBlueprintButton.setVisible( inShow );
+    mBlueprintButton.setVisible( false );
     }
 
 
@@ -356,7 +358,9 @@ void RobHousePage::makeActive( char inFresh ) {
     
     mDone = false;
 
-    mBlueprintButton.setVisible( mShowBackpack );
+    // disabled in v9
+    //mBlueprintButton.setVisible( mShowBackpack );
+    mBlueprintButton.setVisible( false );
     
     // back to default button text
     mDoneButton.setLabelText( translate( "suicide" ) );

@@ -3459,6 +3459,11 @@ function cd_listHouses() {
 
 
 function cd_getBlueprint() {
+    // disabled in v9
+    cd_transactionDeny();
+    return;
+
+    
     global $tableNamePrefix;
 
     if( ! cd_verifyTransaction() ) {

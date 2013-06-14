@@ -98,7 +98,9 @@ void MenuPage::actionPerformed( GUIComponent *inTarget ) {
         else {
             mRobHouseButton.setVisible( true );
             mProofReplayButton.setVisible( playerIsAdmin );
-            mBlueprintButton.setVisible( true );
+            
+            // disabled in v9
+            //mBlueprintButton.setVisible( true );
             }
         }
     else if( inTarget == &mRobHouseButton ) {

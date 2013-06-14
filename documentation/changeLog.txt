@@ -23,6 +23,8 @@ Version 9
   by the client, to weakly hide raw house map from protocol stream.  House map
   of robbery targets no longer printed to stdout.
 
+--Disabled all blueprint functionality.
+
 
 
 Version 8   2013-June-3
