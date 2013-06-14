@@ -361,13 +361,13 @@ $housesPerPage = 50;
 
 
 // with these defaults, a $10000 price will drop below 1 in a bit more than 6
-// hours (price clamped to $1 after that)
+// days (price clamped to $1 after that)
 
 // price drop interval for auto-auctions in minutes
 $auctionPriceDropInterval = 3;
 
 // prices drop by half after this many minutes
-$auctionPriceHalfLife = 30;
+$auctionPriceHalfLife = 720;
 
 
 
