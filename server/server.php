@@ -4019,14 +4019,18 @@ function cd_endRobHouse() {
         $stuffTaken = "#";
         $galleryStuffTaken = "#";
         
-        if( $success == 0 ) {
-            // robber dies
 
-
+        // log any robbery where something semi-interesing happened:
+        // if tools were used (or dropped in vault) or if robber took
+        // at least 1 step in.
+        // (Don't log cases where a robbery carrying nothing stepped in
+        //  the door one step and then left)
+        if( strlen( $move_list ) > 1 || $old_backpack_contents != "#" ) {
+        
             // log this robbery too, because it can cause change owner can
             // notice (backpack stuff dropped in the vault)
 
-            // died, stol nothing
+            // died or left, stole nothing
             $total_value_stolen = 0;
 
             // log_id auto-assigned
@@ -4054,9 +4058,13 @@ function cd_endRobHouse() {
                 " '$scouting_count', '$last_scout_time', ".
                 " '$old_house_map', '$loadout', '$move_list', ".
                 " '$house_map' );";
-            cd_queryDatabase( $query );
+            cd_queryDatabase( $query );    
+            }
 
-            
+        
+        if( $success == 0 ) {
+            // robber dies
+
             // death count in this house not reset
             $robber_deaths ++;
             }

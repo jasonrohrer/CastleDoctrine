@@ -25,6 +25,11 @@ Version 9
 
 --Disabled all blueprint functionality.
 
+--Now saving security tapes for scouting trips where anything non-trivial
+  happens (where robber at least steps beyond mat or is at least carrying
+  tools that will be dropped in vault).
+
+
 
 
 Version 8   2013-June-3
