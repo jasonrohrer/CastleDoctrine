@@ -1476,6 +1476,7 @@ function cd_checkForFlush() {
             "wife_paid_total = ".
             "    wife_paid_total + wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
+            "AND edit_count != 0 ".
             "AND ( value_estimate > 0 OR ".
             "      consecutive_rob_success_count < 2 OR ".
             "      wife_present = 1 ) ".
