@@ -1,3 +1,12 @@
+Version 9  Live Server Fixes
+
+--Houses still earn salary if wife living, some money left in house, or one of
+  last two consecutive robberies was not successful.
+
+
+
+
+
 Version 9   2013-June-14
 
 --Removed wayward Un-Ignore All button from security tape list (thanks Dan

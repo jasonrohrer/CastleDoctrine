@@ -769,6 +769,10 @@ function cd_setupDatabase() {
             "robbing_user_id INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
+            // counts number of consecutive robbery successes (where
+            // something was taken).
+            // pay stops as soon as two successes in a row happen
+            "consecutive_rob_success_count INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "last_owner_visit_time DATETIME NOT NULL,".
             "last_pay_check_time DATETIME NOT NULL,".
@@ -1472,7 +1476,9 @@ function cd_checkForFlush() {
             "wife_paid_total = ".
             "    wife_paid_total + wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
-            "AND edit_count > 0 ".
+            "AND ( value_estimate > 0 OR ".
+            "      consecutive_rob_success_count < 2 OR ".
+            "      wife_present = 1 ) ".
             "AND last_pay_check_time < ".
             "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
         
@@ -2326,7 +2332,8 @@ function cd_endEditHouse() {
     $query = "SELECT user_id, edit_count, loot_value, house_map, ".
         "vault_contents, backpack_contents, gallery_contents, ".
         "self_test_house_map, self_test_move_list, ".
-        "self_test_running, rob_attempts, robber_deaths ".
+        "self_test_running, rob_attempts, robber_deaths, ".
+        "consecutive_rob_success_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 and edit_checkout = 1 FOR UPDATE;";
@@ -2356,6 +2363,7 @@ function cd_endEditHouse() {
     $edit_count = $row[ "edit_count" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $robber_deaths = $row[ "robber_deaths" ];
+    $consecutive_rob_success_count = $row[ "consecutive_rob_success_count" ];
     $self_test_running = $row[ "self_test_running" ];
     $old_self_test_house_map = $row[ "self_test_house_map" ];
     $old_self_test_move_list = $row[ "self_test_move_list" ];
@@ -2522,6 +2530,7 @@ function cd_endEditHouse() {
         // reset these stats, because this is a fresh house configuration
         $rob_attempts = 0;
         $robber_deaths = 0;
+        $consecutive_rob_success_count = 0;
         }
 
     
@@ -3209,6 +3218,7 @@ function cd_endEditHouse() {
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
         "wife_present='$wife_present', ".
         "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths', ".
+        "consecutive_rob_success_count = '$consecutive_rob_success_count', ".
         "last_pay_check_time = CURRENT_TIMESTAMP ".
         "WHERE user_id = $user_id;";
     cd_queryDatabase( $query );
@@ -3711,7 +3721,8 @@ function cd_endRobHouse() {
         "house_map, user_id, character_name, ".
         "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
-        "rob_attempts, robber_deaths, edit_count ".
+        "rob_attempts, robber_deaths, consecutive_rob_success_count, ".
+        "edit_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
         "robbing_user_id = '$user_id' AND blocked='0' ".
@@ -3906,6 +3917,7 @@ function cd_endRobHouse() {
     $victim_name = $row[ "character_name" ];
     $rob_attempts = $row[ "rob_attempts" ];
     $robber_deaths = $row[ "robber_deaths" ];
+    $consecutive_rob_success_count = $row[ "consecutive_rob_success_count" ];
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
 
@@ -4010,6 +4022,8 @@ function cd_endRobHouse() {
     
     
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
+        $consecutive_rob_success_count = 0;
+        
         // keep original house map, untouched
         $house_map = $old_house_map;
 
@@ -4071,6 +4085,8 @@ function cd_endRobHouse() {
         }
     else {
         // reached vault, successful robbery, or killed some family members
+
+        $consecutive_rob_success_count ++;
         
         // use new house map
 
@@ -4232,6 +4248,8 @@ function cd_endRobHouse() {
             "rob_checkout = 0, edit_count = '$edit_count', ".
             "rob_attempts = '$rob_attempts', ".
             "robber_deaths = '$robber_deaths',".
+            "consecutive_rob_success_count = ".
+            "    '$consecutive_rob_success_count', ".
             "house_map='$house_map', ".
             "loot_value = $house_money,  ".
             "wife_present = $wife_present,  ".
@@ -5346,6 +5364,7 @@ function cd_newHouseForUser( $user_id ) {
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
             "0, 0, 0, 0, 0, 0, ".
+            "0, ".   // consecutive success count
             "CURRENT_TIMESTAMP, ".
             "CURRENT_TIMESTAMP, ".
             "CURRENT_TIMESTAMP, 0, 0, 0, ".
