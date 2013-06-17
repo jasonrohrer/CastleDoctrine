@@ -4,6 +4,8 @@ Version 9  Live Server Fixes
   last two consecutive robberies was not successful.
 
 
+--In admin mode, tape name search now matches against both robber and victim.
+
 
 
 

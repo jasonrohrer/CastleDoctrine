@@ -4361,6 +4361,12 @@ function cd_listLoggedRobberies() {
         $name_search = preg_replace( "/ /", "%", $name_search );
         
         $searchClause = " robber_name LIKE '%$name_search%' ";
+
+        if( $admin ) {
+            // name search applies to both robber and victim name
+            $searchClause = " ( $searchClause OR ".
+                "victim_name LIKE '%$name_search%' ) ";
+            }
         }
     if( ! $admin ) {
         $specificUserClause =
