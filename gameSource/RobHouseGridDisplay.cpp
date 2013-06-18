@@ -843,8 +843,10 @@ void RobHouseGridDisplay::applyCurrentTool( int inTargetFullIndex ) {
         mForbiddenMoveHappened = true;
         }
     
-    // tool use triggers a step
+    // tool use triggers a step, but not for mobiles
+    freezeMobileObjects( true );
     applyTransitionsAndProcess();
+    freezeMobileObjects( false );
     
     stopUsingTool();
     mToolJustUsed = true;
