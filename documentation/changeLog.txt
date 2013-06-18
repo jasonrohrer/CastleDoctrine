@@ -3,8 +3,14 @@ Version 9  Live Server Fixes
 --Houses still earn salary if wife living, some money left in house, or one of
   last two consecutive robberies was not successful.
 
-
 --In admin mode, tape name search now matches against both robber and victim.
+
+--Houses that have reached 0 in value are now removed from the house list until
+  they either earn money or are edited by their owners.  This prevents dumping
+  tools in a wrecked house repeatedly across lives and also mitigates senseless
+  vandalism.  Also fixed a bug where a not-robbable house could be robbed on
+  the server through a hacked client, even when it was not being shown on the
+  house list.
 
 
 

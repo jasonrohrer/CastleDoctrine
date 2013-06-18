@@ -3424,6 +3424,7 @@ function cd_listHouses() {
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
+        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 )".
         "$searchClause ".
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
@@ -3588,8 +3589,10 @@ function cd_startRobHouse() {
         "character_name, rob_attempts, music_seed, wife_present, loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
-        "AND edit_checkout = 0 AND ".
-        "( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
+        "AND edit_checkout = 0 ".
+        "AND edit_count != 0 ".
+        "AND ( value_estimate != 0 OR edit_count > 0 ) ".
+        "AND ( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
