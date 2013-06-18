@@ -93,7 +93,7 @@ pickerDescription "Pick one:"
 doneEdit "Done"
 
 jumpToTapes "Tapes"
-jumpToTapesTip "View your security tapes"
+jumpToTapesTip "Leave house and view your security tapes"
 
 
 

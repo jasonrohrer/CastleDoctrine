@@ -10,6 +10,8 @@ Version 10
   so that transfers are not lost unexpectedly by jumping to view tapes (thanks
   Matrix).
 
+--Fixed Tapes tool tip to explain that you leave house to view tapes
+  (thanks Ukuko).
 
 
 
