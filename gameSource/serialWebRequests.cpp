@@ -194,7 +194,66 @@ static char *trimMapFromRequest( char *inRequest ) {
 
 
 
+
+// extracts the action variable from a web request
+static char *getActionFromRequest( char *inRequest ) {
+    if( inRequest == NULL ) {
+        return NULL;
+        }
+    
+    char *working = stringDuplicate( inRequest );
+    
+    const char *actionTag = "action=";
+       
+    char *actionStart = strstr( working, actionTag );
+
+    if( actionStart == NULL ) {
+        delete [] working;
+        return NULL;
+        }
+    
+
+    int actionTagLength = strlen( actionTag );
+    
+    char *actionValueStart = &( actionStart[ actionTagLength ] );
+    
+    char *nextBoundary = strstr( working, "&" );
+    
+    if( nextBoundary != NULL ) {
+        // terminate here    
+        nextBoundary[0] = '\0';
+        }
+    
+    char *actionValue = stringDuplicate( actionValueStart );
+    
+    delete [] working;
+    
+    return actionValue;
+    }
+
+
+
+
 static void printRequestStart( SerialWebRecord *r ) {
+    // hide contents of web request from stdout (prevent simple cheating)
+    
+    // at least show action value, for easier debugging
+    char *action = getActionFromRequest( r->url );
+    if( action == NULL ) {
+        action = getActionFromRequest( r->body );
+        }
+
+    printf( "\nStarting web request %d [%s]\n\n", r->activeHandle,
+            action );
+    if( action != NULL ) {    
+        delete [] action;
+        }
+    
+    return;
+
+
+    // old:  show all parts of request being started
+    /*
     char *trimmedBody = trimMapFromRequest( r->body );
                 
     printf( "\nStarting web request %d [%s %s %s]\n\n", 
@@ -203,6 +262,7 @@ static void printRequestStart( SerialWebRecord *r ) {
     if( trimmedBody != NULL ) {
         delete [] trimmedBody;
         }
+    */
     }
 
 

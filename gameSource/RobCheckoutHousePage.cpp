@@ -322,6 +322,11 @@ void RobCheckoutHousePage::step() {
     }
 
 
+// use these for unguessable data (key generation)
+extern int mouseDataBufferSize;
+extern float mouseDataBuffer[];
+
+
         
 void RobCheckoutHousePage::makeActive( char inFresh ) {
     if( !inFresh ) {
@@ -332,11 +337,28 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         
     char *ticketHash = getTicketHash();
 
+
+
+
     if( mMapEncryptionKey != NULL ) {
         delete [] mMapEncryptionKey;
         }
 
-    mMapEncryptionKey = computeSHA1Digest( ticketHash );
+    SimpleVector<char> keyGenCharacters;
+    keyGenCharacters.push_back( ticketHash, strlen( ticketHash ) );
+    
+    for( int b=0; b<mouseDataBufferSize; b++ ) {
+        char *dataString = autoSprintf( "%f", mouseDataBuffer[b] );
+        keyGenCharacters.push_back( dataString, strlen( dataString ) );
+        delete [] dataString;
+        }
+    
+    char *keyGenString = keyGenCharacters.getElementString();
+
+    mMapEncryptionKey = computeSHA1Digest( keyGenString );
+    
+    delete [] keyGenString;
+
     
 
     char *fullRequestURL = autoSprintf( 

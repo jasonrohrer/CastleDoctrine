@@ -1845,7 +1845,36 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
 
+// store mouse data for use as unguessable randomizing data
+// for key generation, etc.
+#define MOUSE_DATA_BUFFER_SIZE 20
+int mouseDataBufferSize = MOUSE_DATA_BUFFER_SIZE;
+int nextMouseDataIndex = 0;
+// ensure that stationary mouse data (same value over and over)
+// doesn't overwrite data from actual motion
+float lastBufferedMouseValue = 0;
+float mouseDataBuffer[ MOUSE_DATA_BUFFER_SIZE ];
+
+
+
 void pointerMove( float inX, float inY ) {
+
+    // save all mouse movement data for key generation
+    float bufferValue = inX + inY;
+    // ignore mouse positions that are the same as the last one
+    // only save data when mouse actually moving
+    if( bufferValue != lastBufferedMouseValue ) {
+        
+        mouseDataBuffer[ nextMouseDataIndex ] = bufferValue;
+        lastBufferedMouseValue = bufferValue;
+        
+        nextMouseDataIndex ++;
+        if( nextMouseDataIndex >= mouseDataBufferSize ) {
+            nextMouseDataIndex = 0;
+            }
+        }
+    
+
     if( isPaused() ) {
         return;
         }

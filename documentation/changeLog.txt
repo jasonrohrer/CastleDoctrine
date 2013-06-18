@@ -3,6 +3,9 @@ Version 10
 --Fixed so that you can't bypass the 'Download Latest Version' message by
   logging in again (thanks Colorfusion).
 
+--Fixed to hide map encryption key from console printout.  Made key less
+  guessable buy incorporating recent mouse movement data.
+
 
 
 
