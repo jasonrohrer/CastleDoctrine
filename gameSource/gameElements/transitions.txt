@@ -190,14 +190,10 @@ druggedMeat  # chihuahua:1 => 6
 gun  # pitbull:6   => 5
 gun  # chihuahua:6 => 5
 
-brick # pitbull:6   => 1
-brick # chihuahua:6 => 7
 
 water # pitbull:6   => 1
 water # chihuahua:6 => 1
 
-crowbar # pitbull:6   => 7
-crowbar # chihuahua:6 => 7
 
 
 player # pitbull:6   => 4
