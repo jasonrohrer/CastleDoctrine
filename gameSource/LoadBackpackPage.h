@@ -65,6 +65,12 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
             }
         
 
+        // true if contents of backpack or vault touched in any way
+        char getChangeHappened() {
+            return mChangeHappened;
+            }
+        
+
         char getDone() {
             return mDone;
             }
@@ -110,6 +116,8 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
 
         char mDone;
         char mShowGridToolPicker;
+
+        char mChangeHappened;
         
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];

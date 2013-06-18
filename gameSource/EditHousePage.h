@@ -87,6 +87,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void setMustSelfTest( char inMustSelfTest );
         
 
+        void setBackpackOrVaultChanged() {
+            mBackpackOrVaultChanged = true;
+            }
+
 
         // true if map changed since last setHouseMap call
         // or if self-map-test required for any other reason
@@ -152,6 +156,7 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         char mMapStartedOutEmpty;
         
+        char mBackpackOrVaultChanged;
 
         HouseObjectPicker mObjectPicker;
         HouseGridDisplay mGridDisplay;

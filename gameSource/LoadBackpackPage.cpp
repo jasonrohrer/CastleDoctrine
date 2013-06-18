@@ -30,7 +30,8 @@ LoadBackpackPage::LoadBackpackPage()
           mBuyModeButton( mainFont, 8, -2, translate( "buyMode" ) ),
           mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
           mBuyButton( "left.tga", 5, 5, 1 / 16.0 ),
-          mDone( false ) {
+          mDone( false ),
+          mChangeHappened( false ) {
 
     addComponent( &mDoneButton );
     addComponent( &mUndoButton );
@@ -132,6 +133,7 @@ LoadBackpackPage::~LoadBackpackPage() {
 
 void LoadBackpackPage::setVaultContents( char *inVaultContents ) {
     inventorySlotsFromString( inVaultContents, mVaultSlots, NUM_VAULT_SLOTS );
+    mChangeHappened = false;
     }
 
 
@@ -479,6 +481,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
         actionHappened();
         }
     else if( inTarget == &mBuyButton ) {
+        mChangeHappened = true;
+        
         int selectedObject = mToolPicker.getSelectedObject();
         
         int price = mToolPicker.getPrice( selectedObject );
@@ -562,6 +566,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 
                 if( id != -1 ) {
                     // click on a non-empty pack slot counts as an action
+                    mChangeHappened = true;
+
                     actionHappened();
                     
                     
@@ -633,6 +639,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                 
                     if( id != -1 ) {
                         // click on a non-empty vault slot counts as an action
+                        mChangeHappened = true;
+
                         actionHappened();
                         
                         if( mSellMode ) {

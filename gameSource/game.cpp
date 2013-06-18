@@ -1347,6 +1347,11 @@ void drawFrame( char inUpdate ) {
                 char *purchaseList = loadBackpackPage->getPurchaseList();
                 char *sellList = loadBackpackPage->getSellList();
                 
+                char changeHappened = loadBackpackPage->getChangeHappened();
+                if( changeHappened ) {
+                    editHousePage->setBackpackOrVaultChanged();
+                    }
+
                 editHousePage->setVaultContents( vaultContents );
                 editHousePage->setBackpackContents( backpackContents );
                 editHousePage->setPurchaseList( purchaseList );

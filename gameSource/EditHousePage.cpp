@@ -174,6 +174,8 @@ void EditHousePage::setHouseMap( const char *inHouseMap ) {
     mDiffHighlightToggleButton.setVisible( false );
 
     mMapStartedOutEmpty = mGridDisplay.getMapStartedOutEmpty();
+
+    mBackpackOrVaultChanged = false;
     }
 
 
@@ -333,8 +335,7 @@ void EditHousePage::checkIfPlacementAllowed() {
     // done yet (so nothing will be lost when we abandon the house edit)
     mJumpToTapesButton.setVisible( mNumberOfTapes > 0 &&
                                    ! mUndoButton.isVisible() &&
-                                   strcmp( mPurchaseList, "#" ) == 0 &&
-                                   strcmp( mSellList, "#" ) == 0 );
+                                   ! mBackpackOrVaultChanged );
     }
 
 
