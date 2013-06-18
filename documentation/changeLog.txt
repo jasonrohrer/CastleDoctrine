@@ -12,6 +12,9 @@ Version 9  Live Server Fixes
   the server through a hacked client, even when it was not being shown on the
   house list.
 
+--Experimenting with paying viable houses salary every 10 minutes instead of
+  every hour (to make game more lively and quicker).
+
 
 
 
