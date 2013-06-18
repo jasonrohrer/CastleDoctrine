@@ -233,8 +233,7 @@ void LoginPage::step() {
                             else if( minClientVersion > versionNumber ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "outOfDateClient";
-                                acceptInput();
-                                mLoginButton.setVisible( true );
+                                setWaiting( false );
                                 }
                             else if( strcmp( endString, "OK" ) == 0 ) {
                                 // good email, good client version!

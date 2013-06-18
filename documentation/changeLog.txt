@@ -1,3 +1,11 @@
+Version 10
+
+--Fixed so that you can't bypass the 'Download Latest Version' message by
+  logging in again (thanks Colorfusion).
+
+
+
+
 Version 9  Live Server Fixes
 
 --Houses still earn salary if wife living, some money left in house, or one of
