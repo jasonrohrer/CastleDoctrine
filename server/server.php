@@ -294,6 +294,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."server_globals" ) &&
         cd_doesTableExist( $tableNamePrefix."log" ) &&
         cd_doesTableExist( $tableNamePrefix."users" ) &&
+        cd_doesTableExist( $tableNamePrefix."maps" ) &&
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
         cd_doesTableExist( $tableNamePrefix."ignore_houses" ) &&
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
@@ -723,6 +724,28 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+
+    
+    $tableName = $tableNamePrefix . "maps";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // A cache of maps, indexed by sha1 hashes of maps
+        $query =
+            "CREATE TABLE $tableName(" .
+            "house_map_hash CHAR(40) NOT NULL PRIMARY KEY," .
+            "last_insert_date DATETIME NOT NULL," .
+            "INDEX( last_insert_date ),".
+            "house_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
     
     
     $tableName = $tableNamePrefix . "houses";
@@ -742,7 +765,8 @@ function cd_setupDatabase() {
             "wife_name VARCHAR(20) NOT NULL," .
             "son_name VARCHAR(20) NOT NULL," .
             "daughter_name VARCHAR(20) NOT NULL," .
-            "house_map LONGTEXT NOT NULL," .
+            "house_map_hash CHAR(40) NOT NULL," .
+            "INDEX( house_map_hash ),".
             "vault_contents LONGTEXT NOT NULL," .
             "backpack_contents LONGTEXT NOT NULL," .
             "gallery_contents LONGTEXT NOT NULL," .
@@ -754,7 +778,8 @@ function cd_setupDatabase() {
             // < 0 if successfully robbed at least once and still robbable
             "edit_count INT NOT NULL," .
             "INDEX( edit_count ),".
-            "self_test_house_map LONGTEXT NOT NULL," .
+            "self_test_house_map_hash CHAR(40) NOT NULL," .
+            "INDEX( self_test_house_map_hash ),".
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
             // loot plus resale value of vault items, rounded
@@ -915,10 +940,12 @@ function cd_setupDatabase() {
             "INDEX( rob_time ),".
             "scouting_count INT NOT NULL,".
             "last_scout_time DATETIME NOT NULL,".
-            "house_start_map LONGTEXT NOT NULL," .
+            "house_start_map_hash CHAR(40) NOT NULL," .
+            "INDEX( house_start_map_hash ),".
             "loadout LONGTEXT NOT NULL," .
             "move_list LONGTEXT NOT NULL," .
-            "house_end_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
+            "house_end_map_hash CHAR(40) NOT NULL,".
+            "INDEX( house_end_map_hash ) ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -1870,6 +1897,35 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         }
     
     }
+
+
+
+// returns map string
+function cd_getHouseMap( $inHash ) {
+    global $tableNamePrefix;
+
+    $query = "SELECT house_map FROM  $tableNamePrefix"."maps ".
+            "WHERE house_map_hash = '$inHash';";
+    $result = cd_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows == 0 ) {
+        cd_log(
+            "Failed to find house map for hash $inHash, returning default" );
+        return cd_getDefaultHouseMap();
+        }
+        
+    return mysql_result( $result, 0, "house_map" );
+    }
+
+
+
+// returns hash
+function cd_storeHouseMap( $inMap ) {
+    // FIXME
+    }
+
 
 
 
@@ -5176,6 +5232,64 @@ function cd_permadead( $user_id ) {
 
 
 
+function cd_getDefaultHouseMap() {
+    global $wifeList, $sonList, $daughterList;
+
+    $pickedWife = $wifeList[ array_rand( $wifeList, 1 ) ];
+    $pickedSon = $sonList[ array_rand( $sonList, 1 ) ];
+    $pickedDaughter = $daughterList[ array_rand( $daughterList, 1 ) ];
+    
+
+    // default house map, 32x32 map
+    // impenetrable walls around exterior
+    // goal in place
+    // default state for each cell (no ":state" part)
+    return 
+        "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+      "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        
+        "0#0#0#0#0#0#0#0#0#999#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#$pickedSon#0#$pickedWife#0#$pickedDaughter#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
+        "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998";
+    }
+
+    
+
+
 function cd_newHouseForUser( $user_id ) {
     global $tableNamePrefix;
     
@@ -5295,58 +5409,7 @@ function cd_newHouseForUser( $user_id ) {
     $foundName = false;
     
 
-    global $wifeList, $sonList, $daughterList;
-
-    $pickedWife = $wifeList[ array_rand( $wifeList, 1 ) ];
-    $pickedSon = $sonList[ array_rand( $sonList, 1 ) ];
-    $pickedDaughter = $daughterList[ array_rand( $daughterList, 1 ) ];
-    
-    
-    // default house map, 32x32 map
-    // impenetrable walls around exterior
-    // goal in place
-    // default state for each cell (no ":state" part)
-    $house_map =
-        "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-      "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        
-        "0#0#0#0#0#0#0#0#0#999#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#$pickedSon#0#$pickedWife#0#$pickedDaughter#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#998#".
-        "998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998#998";
+    $house_map = cd_getDefaultHouseMap();
     
     $vault_contents = "#";
     $backpack_contents = "#";
