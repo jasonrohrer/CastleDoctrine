@@ -48,7 +48,8 @@ Version 9  Live Server Fixes
 --Experimenting with paying viable houses salary every 10 minutes instead of
   every hour (to make game more lively and quicker).
 
---Added indexes to all columns used in WHERE and ORDER BY columns, preventing queries from needing to unnecessarily examine every row in a table.
+--Added indexes to all columns used in WHERE and ORDER BY columns, preventing
+  queries from needing to unnecessarily examine every row in a table.
 
 
 
