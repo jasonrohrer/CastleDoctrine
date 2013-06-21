@@ -21,7 +21,12 @@ Version 10
   lower price.  Drugged meat now turns pit bulls into indestructable land
   mines.
 
---Tool use no longer causes mobile objects to take a step.  This increases the tactical effect of animal positioning (because you can no longer use a tool on a wall to tune how far away an animal is from you---thanks Zed).  This also makes pit bulls behind doors harder to deal with (opening a door with a crowbar no longer brings the pit bull immediately into range for a second crowbar).
+--Tool use no longer causes mobile objects to take a step.  This increases the
+  tactical effect of animal positioning (because you can no longer use a tool
+  on a wall to tune how far away an animal is from you---thanks Zed).  This
+  also makes pit bulls behind doors harder to deal with (opening a door with a
+  crowbar no longer brings the pit bull immediately into range for a second
+  crowbar).
 
 
 
@@ -42,6 +47,9 @@ Version 9  Live Server Fixes
 
 --Experimenting with paying viable houses salary every 10 minutes instead of
   every hour (to make game more lively and quicker).
+
+--Added indexes to all columns used in WHERE and ORDER BY columns, preventing queries from needing to unnecessarily examine every row in a table.
+
 
 
 

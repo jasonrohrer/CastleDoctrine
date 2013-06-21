@@ -703,7 +703,9 @@ function cd_setupDatabase() {
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "ticket_id VARCHAR(255) NOT NULL," .
+            "INDEX( ticket_id )," .
             "email VARCHAR(255) NOT NULL," .
+            "INDEX( email ),".
             "character_name_history LONGTEXT NOT NULL,".
             "lives_left INT NOT NULL,".
             "last_robbed_owner_id INT NOT NULL,".
@@ -751,11 +753,13 @@ function cd_setupDatabase() {
             // > 0 if successfully edited and robbable
             // < 0 if successfully robbed at least once and still robbable
             "edit_count INT NOT NULL," .
+            "INDEX( edit_count ),".
             "self_test_house_map LONGTEXT NOT NULL," .
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
             // loot plus resale value of vault items, rounded
             "value_estimate INT NOT NULL," .
+            "INDEX( value_estimate )," .
             "wife_present TINYINT NOT NULL," . 
             // loot carried back from latest robbery, not deposited in vault
             // yet.  Deposited when house is next checked out for editing. 
@@ -774,8 +778,10 @@ function cd_setupDatabase() {
             // pay stops as soon as two successes in a row happen
             "consecutive_rob_success_count INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
+            "INDEX( last_ping_time ),".
             "last_owner_visit_time DATETIME NOT NULL,".
             "last_pay_check_time DATETIME NOT NULL,".
+            "INDEX( last_pay_check_time ),".
             "payment_count INT NOT NULL,".
             "you_paid_total INT NOT NULL,".
             "wife_paid_total INT NOT NULL,".
@@ -886,6 +892,7 @@ function cd_setupDatabase() {
             "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
+            "INDEX( house_user_id ),".
             "loot_value INT NOT NULL," .
             "wife_money INT NOT NULL," .
             "value_estimate INT NOT NULL," .
@@ -905,6 +912,7 @@ function cd_setupDatabase() {
             // (admin should still have access to them for a while).
             "owner_now_dead TINYINT NOT NULL," .
             "rob_time DATETIME NOT NULL,".
+            "INDEX( rob_time ),".
             "scouting_count INT NOT NULL,".
             "last_scout_time DATETIME NOT NULL,".
             "house_start_map LONGTEXT NOT NULL," .
@@ -954,7 +962,8 @@ function cd_setupDatabase() {
             "object_id INT NOT NULL PRIMARY KEY," .
             "order_number INT NOT NULL, ".
             "start_price INT NOT NULL, ".
-            "start_time DATETIME NOT NULL ) ENGINE = INNODB;";
+            "start_time DATETIME NOT NULL, ".
+            "INDEX( start_time ) ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
