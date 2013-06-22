@@ -4374,7 +4374,7 @@ function cd_endRobHouse() {
         $value_estimate = cd_computeValueEstimate( $house_money,
                                                    $house_vault_contents );
 
-        $house_map_hash = cd_storeHouseMap( $houseMap );
+        $house_map_hash = cd_storeHouseMap( $house_map );
         
         // update main table with changes, post-robbery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
