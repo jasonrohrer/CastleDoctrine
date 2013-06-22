@@ -1,11 +1,4 @@
 
-# to rollback
-
-ALTER TABLE castleServer_houses 
-DROP COLUMN house_map_hash,  
-ADD COLUMN house_map LONGTEXT NOT NULL AFTER daughter_name, 
-DROP COLUMN self_test_house_map_hash,  
-ADD COLUMN self_test_house_map LONGTEXT NOT NULL AFTER edit_count;
 
 
 
