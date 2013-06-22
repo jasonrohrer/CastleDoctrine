@@ -54,7 +54,8 @@ Version 9  Live Server Fixes
 --Added a hash-based map cach so that house maps aren't duplicated throughout
   various database tables (for example, a series of robbery tapes that all have
   the same starting map state) to dramatically reduce the amount of database
-  storage space used by maps and robbery tapes.
+  storage space used by maps and robbery tapes.  Total space used dropped from
+  86 KiB per user down to 20 KiB per user
 
 
 
