@@ -943,9 +943,7 @@ function cd_setupDatabase() {
             "house_start_map_hash CHAR(40) NOT NULL," .
             "INDEX( house_start_map_hash ),".
             "loadout LONGTEXT NOT NULL," .
-            "move_list LONGTEXT NOT NULL," .
-            "house_end_map_hash CHAR(40) NOT NULL,".
-            "INDEX( house_end_map_hash ) ) ENGINE = INNODB;";
+            "move_list LONGTEXT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -1494,6 +1492,54 @@ function cd_checkForFlush() {
             }
 
 
+        
+
+        $housesTable = $tableNamePrefix . "houses";
+        $mapsTable = $tableNamePrefix . "maps";
+        $robLogsTable = $tableNamePrefix . "robbery_logs";
+        
+        // delete unused maps from map cache
+        $query = "DELETE FROM $mapsTable ".
+            "WHERE 0 = ".
+            " ( SELECT COUNT(*) FROM $housesTable ".
+            "   WHERE house_map_hash = $mapsTable.house_map_hash ".
+            "         OR ".
+            "         self_test_house_map_hash = $mapsTable.house_map_hash ) ".
+            "AND 0 = ".
+            " ( SELECT COUNT(*) FROM $robLogsTable ".
+            "   WHERE house_start_map_hash = $mapsTable.house_map_hash ) ".
+            "AND last_insert_date < ".
+            "    SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ); ";
+        
+
+        $result = cd_queryDatabase( $query );
+
+        $staleMapsRemoved = mysql_affected_rows();
+
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
+        cd_log( "Flush removed $staleMapsRemoved unused maps." );
+
+        if( $enableLog ) {
+            // count remaining games for log
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."maps;";
+
+            $result = cd_queryDatabase( $query );
+
+            $count = mysql_result( $result, 0, 0 );
+
+            cd_log( "After flush, $count maps remain." );
+            }
+
+
+
+        
+
+
         // now pay anyone who needs paying
 
         global $payInterval, $playerPayAmount, $wifePayAmount;
@@ -1923,7 +1969,21 @@ function cd_getHouseMap( $inHash ) {
 
 // returns hash
 function cd_storeHouseMap( $inMap ) {
-    // FIXME
+    global $tableNamePrefix;
+    
+    $query = "SELECT SHA1( '$inMap' );";
+
+    $result = cd_queryDatabase( $query );
+
+    $house_map_hash = mysql_result( $result, 0, 0 );
+
+    $query = "REPLACE INTO $tableNamePrefix"."maps ".
+        "( house_map_hash, last_insert_date, house_map ) ".
+        "VALUES(  '$house_map_hash', CURRENT_TIMESTAMP, '$inMap' );";
+
+    $result = cd_queryDatabase( $query );
+
+    return $house_map_hash;
     }
 
 
@@ -1948,7 +2008,7 @@ function cd_startEditHouse() {
     // out for robbery
     
     $query = "SELECT character_name, wife_name, son_name, daughter_name, ".
-        "house_map, vault_contents, backpack_contents, ".
+        "house_map_hash, vault_contents, backpack_contents, ".
         "gallery_contents, ".
         "loot_value, ".
         "carried_loot_value, carried_vault_contents, ".
@@ -1976,7 +2036,7 @@ function cd_startEditHouse() {
     $son_name = $row[ "son_name" ];
     $daughter_name = $row[ "daughter_name" ];
     
-    $house_map = $row[ "house_map" ];
+    $house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
     $vault_contents = $row[ "vault_contents" ];
     $backpack_contents = $row[ "backpack_contents" ];
     $gallery_contents = $row[ "gallery_contents" ];
@@ -2395,9 +2455,9 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT user_id, edit_count, loot_value, house_map, ".
+    $query = "SELECT user_id, edit_count, loot_value, house_map_hash, ".
         "vault_contents, backpack_contents, gallery_contents, ".
-        "self_test_house_map, self_test_move_list, ".
+        "self_test_house_map_hash, self_test_move_list, ".
         "self_test_running, rob_attempts, robber_deaths, ".
         "consecutive_rob_success_count ".
         "FROM $tableNamePrefix"."houses ".
@@ -2431,10 +2491,11 @@ function cd_endEditHouse() {
     $robber_deaths = $row[ "robber_deaths" ];
     $consecutive_rob_success_count = $row[ "consecutive_rob_success_count" ];
     $self_test_running = $row[ "self_test_running" ];
-    $old_self_test_house_map = $row[ "self_test_house_map" ];
+    $old_self_test_house_map =
+        cd_getHouseMap( $row[ "self_test_house_map_hash" ] );
     $old_self_test_move_list = $row[ "self_test_move_list" ];
     $loot_value = $row[ "loot_value" ];
-    $old_house_map = $row[ "house_map" ];
+    $old_house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
     $old_vault_contents = $row[ "vault_contents" ];
     $old_backpack_contents = $row[ "backpack_contents" ];
     $old_gallery_contents = $row[ "gallery_contents" ];
@@ -3271,15 +3332,18 @@ function cd_endEditHouse() {
             }
         }
     
+    $house_map_hash = cd_storeHouseMap( $house_map );
+    $self_test_house_map_hash = cd_storeHouseMap( $self_test_house_map );
     
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "edit_checkout = 0, self_test_running = 0, house_map='$house_map', ".
+        "edit_checkout = 0, self_test_running = 0, ".
+        "house_map_hash='$house_map_hash', ".
         "vault_contents='$vault_contents', ".
         "backpack_contents='$backpack_contents', ".
         "gallery_contents='$gallery_contents', ".
         "edit_count='$edit_count', ".
-        "self_test_house_map='$self_test_house_map', ".
+        "self_test_house_map_hash='$self_test_house_map_hash', ".
         "self_test_move_list='$self_test_move_list', ".
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
         "wife_present='$wife_present', ".
@@ -3566,7 +3630,7 @@ function cd_getBlueprint() {
     // currently checked out by that user, to allow for client request
     // retries (in cases where first request actually goes through server-side)
     
-    $query = "SELECT house_map, character_name ".
+    $query = "SELECT house_map_hash, character_name ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0';";
 
@@ -3584,7 +3648,7 @@ function cd_getBlueprint() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
     
-    $house_map = $row[ "house_map" ];
+    $house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
     $character_name = $row[ "character_name" ];
 
     if( $character_name != $to_rob_character_name ) {
@@ -3650,7 +3714,7 @@ function cd_startRobHouse() {
     // retries (in cases where first request actually goes through server-side)
     
     $query = "SELECT wife_name, son_name, daughter_name, ".
-        "house_map, gallery_contents, ".
+        "house_map_hash, gallery_contents, ".
         "character_name, rob_attempts, music_seed, wife_present, loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
@@ -3676,7 +3740,7 @@ function cd_startRobHouse() {
     $son_name = $row[ "son_name" ];
     $daughter_name = $row[ "daughter_name" ];
     
-    $house_map = $row[ "house_map" ];
+    $house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
     $gallery_contents = $row[ "gallery_contents" ];
     $character_name = $row[ "character_name" ];
     $music_seed = $row[ "music_seed" ];
@@ -3787,7 +3851,7 @@ function cd_endRobHouse() {
     $ownerDied = 0;
     
     $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
-        "house_map, user_id, character_name, ".
+        "house_map_hash, user_id, character_name, ".
         "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, consecutive_rob_success_count, ".
@@ -3980,8 +4044,8 @@ function cd_endRobHouse() {
     $stuffTaken = $house_vault_contents;
     $galleryStuffTaken = $house_gallery_contents;
 
-    
-    $old_house_map = $row[ "house_map" ];
+    $old_house_map_hash = $row[ "house_map_hash" ];
+    $old_house_map = cd_getHouseMap( $old_house_map_hash );
     $victim_id = $row[ "user_id" ];
     $victim_name = $row[ "character_name" ];
     $rob_attempts = $row[ "rob_attempts" ];
@@ -4128,7 +4192,7 @@ function cd_endRobHouse() {
                 " wife_name, son_name, daughter_name,".
                 " owner_now_dead, rob_time,".
                 " scouting_count, last_scout_time, ".
-                " house_start_map, loadout, move_list, house_end_map ) ".
+                " house_start_map_hash, loadout, move_list ) ".
                 "VALUES(" .
                 " $user_id, $victim_id, '$house_money', '$wife_money', ".
                 "'$total_value_stolen', ".
@@ -4139,8 +4203,7 @@ function cd_endRobHouse() {
                 " '$wife_name', '$son_name', '$daughter_name',".
                 " '$ownerDied', CURRENT_TIMESTAMP,".
                 " '$scouting_count', '$last_scout_time', ".
-                " '$old_house_map', '$loadout', '$move_list', ".
-                " '$house_map' );";
+                " '$old_house_map_hash', '$loadout', '$move_list' );";
             cd_queryDatabase( $query );    
             }
 
@@ -4242,7 +4305,7 @@ function cd_endRobHouse() {
             " wife_name, son_name, daughter_name,".
             " owner_now_dead, rob_time,".
             " scouting_count, last_scout_time, ".
-            " house_start_map, loadout, move_list, house_end_map ) ".
+            " house_start_map_hash, loadout, move_list ) ".
             "VALUES(" .
             " $user_id, $victim_id, '$house_money', '$wife_money', ".
             "'$total_value_stolen', ".
@@ -4253,8 +4316,7 @@ function cd_endRobHouse() {
             " '$wife_name', '$son_name', '$daughter_name',".
             " '$ownerDied', CURRENT_TIMESTAMP,".
             " '$scouting_count', '$last_scout_time', ".
-            " '$old_house_map', '$loadout', '$move_list', ".
-            " '$house_map' );";
+            " '$old_house_map_hash', '$loadout', '$move_list' );";
         cd_queryDatabase( $query );
 
         // some (or all) loot taken
@@ -4311,6 +4373,8 @@ function cd_endRobHouse() {
 
         $value_estimate = cd_computeValueEstimate( $house_money,
                                                    $house_vault_contents );
+
+        $house_map_hash = cd_storeHouseMap( $houseMap );
         
         // update main table with changes, post-robbery
         $query = "UPDATE $tableNamePrefix"."houses SET ".
@@ -4319,7 +4383,7 @@ function cd_endRobHouse() {
             "robber_deaths = '$robber_deaths',".
             "consecutive_rob_success_count = ".
             "    '$consecutive_rob_success_count', ".
-            "house_map='$house_map', ".
+            "house_map_hash='$house_map_hash', ".
             "loot_value = $house_money,  ".
             "wife_present = $wife_present,  ".
             "vault_contents = '$house_vault_contents', ".
@@ -4531,7 +4595,7 @@ function cd_getRobberyLog() {
     $query = "SELECT user_id, house_user_id, ".
         "robber_name, victim_name, ".
         "wife_name, son_name, daughter_name, ".
-        "house_start_map, loadout, ".
+        "house_start_map_hash, loadout, ".
         "move_list, value_estimate, wife_money, music_seed ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
@@ -4569,12 +4633,13 @@ function cd_getRobberyLog() {
     if( $user_id == $row[ "house_user_id" ] ) {
         $victim_name = "You";
         }
-    
+
+    $house_start_map = cd_getHouseMap( $row[ "house_start_map_hash" ] );
     
     
     echo $robber_name . "\n";    
     echo $victim_name . "\n";    
-    echo $row[ "house_start_map" ] . "\n";    
+    echo $house_start_map . "\n";    
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";
     echo $row[ "value_estimate" ] . "\n";
@@ -4611,7 +4676,7 @@ function cd_getSelfTestLog() {
     
     $query = "SELECT character_name, ".
         "wife_name, son_name, daughter_name, ".
-        "self_test_house_map, self_test_move_list, wife_present, ".
+        "self_test_house_map_hash, self_test_move_list, wife_present, ".
         "loot_value, music_seed ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$house_owner_id';";
@@ -4632,9 +4697,13 @@ function cd_getSelfTestLog() {
     if( $row[ "wife_present" ] ) {
         $wife_money = (int)( $row[ "loot_value" ] / 2 );
         }
+
+    $self_test_house_map =
+        cd_getHouseMap( $row[ "self_test_house_map_hash" ] );
+    
     
     echo $row[ "character_name" ] . "\n";
-    echo $row[ "self_test_house_map" ] . "\n";
+    echo $self_test_house_map . "\n";
     echo $row[ "self_test_move_list" ] . "\n";
     echo $wife_money. "\n";
     echo $row[ "music_seed" ] . "\n";
@@ -5410,6 +5479,9 @@ function cd_newHouseForUser( $user_id ) {
     
 
     $house_map = cd_getDefaultHouseMap();
+
+    $house_map_hash = cd_storeHouseMap( $house_map );
+    
     
     $vault_contents = "#";
     $backpack_contents = "#";
@@ -5438,10 +5510,10 @@ function cd_newHouseForUser( $user_id ) {
         $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
             " $user_id, '$character_name', ".
             "'$wife_name', '$son_name', '$daughter_name', ".
-            "'$house_map', ".
+            "'$house_map_hash', ".
             "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
             "0, '$music_seed', ".
-            "0, '$house_map', '#', ".
+            "0, '$house_map_hash', '#', ".
             "'$playerStartMoney', '$playerStartMoney', 1, ".
             "'$carried_loot_value', '$carried_vault_contents', ".
             "'$carried_gallery_contents', ".
@@ -6119,7 +6191,7 @@ function cd_showObjectReport() {
         }
     
     
-    $query = "SELECT house_map, backpack_contents, vault_contents ".
+    $query = "SELECT house_map_hash, backpack_contents, vault_contents ".
         "FROM $tableNamePrefix"."houses ".
         "ORDER BY value_estimate DESC ".
         "$limitClause;";
@@ -6142,7 +6214,8 @@ function cd_showObjectReport() {
 
         $houseContains = array();
         
-        $house_map = mysql_result( $result, $i, "house_map" );
+        $house_map = cd_getHouseMap(
+            mysql_result( $result, $i, "house_map_hash" ) );
 
         $houseArray = preg_split( "/#/", $house_map );
 

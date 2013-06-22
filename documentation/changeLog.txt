@@ -51,6 +51,10 @@ Version 9  Live Server Fixes
 --Added indexes to all columns used in WHERE and ORDER BY columns, preventing
   queries from needing to unnecessarily examine every row in a table.
 
+--Added a hash-based map cach so that house maps aren't duplicated throughout
+  various database tables (for example, a series of robbery tapes that all have
+  the same starting map state) to dramatically reduce the amount of database
+  storage space used by maps and robbery tapes.
 
 
 

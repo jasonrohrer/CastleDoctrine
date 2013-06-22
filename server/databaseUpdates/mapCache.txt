@@ -13,6 +13,14 @@ ADD COLUMN self_test_house_map LONGTEXT NOT NULL AFTER edit_count;
 # Must access  http://host/castleServer/server.php to generate new maps table.
 
 
+# house_end_map no longer needed in robbery logs
+# note that since every one of these is likely to be unique, they will
+# take up a lot of space
+
+ALTER TABLE castleServer_robbery_logs
+DROP COLUMN house_end_map;
+
+
 
 
 # First, add hash columns
@@ -52,13 +60,10 @@ self_test_house_map_hash = SHA1( self_test_house_map );
 
 ALTER TABLE castleServer_robbery_logs
 ADD COLUMN house_start_map_hash CHAR(40) NOT NULL AFTER house_start_map, 
-ADD INDEX( house_start_map_hash ), 
-ADD COLUMN house_end_map_hash CHAR(40) NOT NULL AFTER house_end_map, 
-ADD INDEX( house_end_map_hash );
+ADD INDEX( house_start_map_hash );
 
 UPDATE castleServer_robbery_logs SET 
-house_start_map_hash = SHA1( house_start_map ), 
-house_end_map_hash = SHA1( house_end_map );
+house_start_map_hash = SHA1( house_start_map );
 
 
 
@@ -75,8 +80,6 @@ REPLACE into castleServer_maps (house_map_hash, last_insert_date, house_map ) SE
 REPLACE into castleServer_maps (house_map_hash, last_insert_date, house_map ) SELECT self_test_house_map_hash, CURRENT_TIMESTAMP, self_test_house_map from castleServer_houses_owner_died;
 
 REPLACE into castleServer_maps (house_map_hash, last_insert_date, house_map ) SELECT house_start_map_hash, CURRENT_TIMESTAMP, house_start_map from castleServer_robbery_logs; 
-
-REPLACE into castleServer_maps (house_map_hash, last_insert_date, house_map ) SELECT house_end_map_hash, CURRENT_TIMESTAMP, house_end_map from castleServer_robbery_logs; 
 
 
 
@@ -96,5 +99,4 @@ DROP COLUMN self_test_house_map;
 
 
 ALTER TABLE castleServer_robbery_logs
-DROP COLUMN house_start_map,
-DROP COLUMN house_end_map;
+DROP COLUMN house_start_map;
