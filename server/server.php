@@ -5641,7 +5641,7 @@ function cd_newHouseForUser( $user_id ) {
             "backpack_contents = '$backpack_contents', ".
             "gallery_contents = '$gallery_contnets', ".
             "last_auction_price = 0, ".
-            "musc_seed = '$music_seed', ".
+            "music_seed = '$music_seed', ".
             "edit_count = 0, ".
             "self_test_house_map_hash = '$house_map_hash', ".
             "self_test_move_list = '#', ".
