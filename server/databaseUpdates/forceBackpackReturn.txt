@@ -5,6 +5,13 @@ ADD COLUMN last_owner_action_time DATETIME NOT NULL AFTER last_ping_time,
 ADD INDEX( last_owner_action_time );
 
 
+ALTER TABLE castleServer_houses_owner_died 
+ADD COLUMN backpack_value_estimate INT NOT NULL AFTER value_estimate, 
+ADD INDEX( backpack_value_estimate ), 
+ADD COLUMN last_owner_action_time DATETIME NOT NULL AFTER last_ping_time, 
+ADD INDEX( last_owner_action_time );
+
+
 UPDATE castleServer_houses 
 SET last_owner_action_time = CURRENT_TIMESTAMP;
 
