@@ -5635,7 +5635,7 @@ function cd_newHouseForUser( $user_id ) {
             "character_name = '$character_name', ".
             "wife_name = '$wife_name', ".
             "son_name = '$son_name', ".
-            "daughter_names = '$daughter_name', ".
+            "daughter_name = '$daughter_name', ".
             "house_map_hash = '$house_map_hash', ".
             "vault_contents = '$vault_contents', ".
             "backpack_contents = '$backpack_contents', ".
