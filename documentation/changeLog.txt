@@ -57,6 +57,9 @@ Version 9  Live Server Fixes
   storage space used by maps and robbery tapes.  Total space used dropped from
   86 KiB per user down to 20 KiB per user
 
+--Cut 10-minute salaries in half to slow things down (you and your spouse earn
+  $70 and $140 every 10 minutes).
+
 
 
 

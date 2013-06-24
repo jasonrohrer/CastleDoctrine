@@ -381,8 +381,8 @@ $playerStartMoney = 2000;
 // originally 1 hour, experimenting with every 10 minutes
 $payInterval = "0 0:10:0.000";
 
-$playerPayAmount = 140;
-$wifePayAmount = 280;
+$playerPayAmount = 70;
+$wifePayAmount = 140;
 
 
 
