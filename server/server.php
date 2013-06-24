@@ -785,6 +785,9 @@ function cd_setupDatabase() {
             // loot plus resale value of vault items, rounded
             "value_estimate INT NOT NULL," .
             "INDEX( value_estimate )," .
+            // resale value of backpack items, rounded
+            "backpack_value_estimate INT NOT NULL," .
+            "INDEX( backpack_value_estimate )," .
             "wife_present TINYINT NOT NULL," . 
             // loot carried back from latest robbery, not deposited in vault
             // yet.  Deposited when house is next checked out for editing. 
@@ -804,6 +807,8 @@ function cd_setupDatabase() {
             "consecutive_rob_success_count INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "INDEX( last_ping_time ),".
+            "last_owner_action_time DATETIME NOT NULL,".
+            "INDEX( last_owner_action_time ),".
             "last_owner_visit_time DATETIME NOT NULL,".
             "last_pay_check_time DATETIME NOT NULL,".
             "INDEX( last_pay_check_time ),".
@@ -1361,7 +1366,7 @@ function cd_checkForFlush() {
         // for each owner who quit game mid-self-test, clear checkout
         // this will force-kill the owner
         // (Do this now to return paintings to auction house, otherwise
-        //  an owner that quits suring self test and never comes back could
+        //  an owner that quits during self test and never comes back could
         //  trap the paintings forever even though they are logically dead)
         $query = "SELECT user_id, last_ping_time ".
             "FROM $tableNamePrefix"."houses ".
@@ -1443,6 +1448,23 @@ function cd_checkForFlush() {
                 "in-test: $staleSelfTestIDList; ".
                 "in-rob: $staleRobberyIDList )." );
 
+
+
+        
+        $numBackpacksReturned =
+            cd_returnBackpack(
+                "last_owner_action_time < ".
+                "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) ".
+                "AND edit_checkout != 1" );
+        
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+        cd_log( "Flush operation returned $numBackpacksReturned ".
+                "backpacks to their vaults." );
+        
+
+        
         global $enableLog;
         
         if( $enableLog ) {
@@ -2037,6 +2059,9 @@ function cd_startEditHouse() {
     $daughter_name = $row[ "daughter_name" ];
     
     $house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
+    // vault contents can be in non-normal form from a backpack merge operation
+    // HOWEVER, it will be corrected below when merged with carried vault
+    // contents 
     $vault_contents = $row[ "vault_contents" ];
     $backpack_contents = $row[ "backpack_contents" ];
     $gallery_contents = $row[ "gallery_contents" ];
@@ -2233,7 +2258,14 @@ function cd_idQuanityStringToArray( $inIDQuantityString ) {
             $id = $pairParts[0];
             $quantity = $pairParts[1];
 
-            $result[ $id ] = $quantity;
+            if( array_key_exists( $id, $result ) ) {
+                // duplicate ids in string
+                // add their quantities into one array cell
+                $result[ $id ] += $quantity;
+                }
+            else {
+                $result[ $id ] = $quantity;
+                }
             }
         }
     return $result;
@@ -2259,6 +2291,21 @@ function cd_idQuanityArrayToString( $inArray ) {
 
     return $resultString;
     }
+
+
+
+
+// consolidates all quatities for a given id into one bin
+// Transforms:   500:1#3:5#500:2
+// into:         500:3#3:5
+
+function cd_idQuantityNormalizeString( $inIDQuantityString ) {
+    return
+        cd_idQuanityArrayToString(
+            cd_idQuanityStringToArray( $inIDQuantityString ) );
+    }
+
+    
 
 
 
@@ -3335,6 +3382,8 @@ function cd_endEditHouse() {
     $house_map_hash = cd_storeHouseMap( $house_map );
     $self_test_house_map_hash = cd_storeHouseMap( $self_test_house_map );
     
+    $backpack_value_estimate =
+        cd_computeValueEstimate( 0, $backpack_contents );
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 0, self_test_running = 0, ".
@@ -3346,6 +3395,7 @@ function cd_endEditHouse() {
         "self_test_house_map_hash='$self_test_house_map_hash', ".
         "self_test_move_list='$self_test_move_list', ".
         "loot_value='$loot_value', value_estimate='$value_estimate', ".
+        "backpack_value_estimate='$backpack_value_estimate', ".
         "wife_present='$wife_present', ".
         "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths', ".
         "consecutive_rob_success_count = '$consecutive_rob_success_count', ".
@@ -4019,7 +4069,8 @@ function cd_endRobHouse() {
     // update contents of backpack to empty, because whole backpack
     // ditched at end of robbery
     $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "backpack_contents = '#'".
+        "backpack_contents = '#', ".
+        "backpack_value_estimate = 0 ".
         "WHERE user_id = $user_id;";
 
     // but don't actually run the update yet (avoid deadlock)
@@ -4038,6 +4089,10 @@ function cd_endRobHouse() {
     $house_value_estimate = $row[ "value_estimate" ];
     $wife_present = $row[ "wife_present" ];
     $house_vault_contents = $row[ "vault_contents" ];
+    // contents can be in non-normal form from a backpack merge operation
+    $house_vault_contents =
+        cd_idQuantityNormalizeString( $house_vault_contents );
+    
     $house_gallery_contents = $row[ "gallery_contents" ];
     
     $amountTaken = $house_money;
@@ -4569,6 +4624,64 @@ function cd_listLoggedRobberies() {
 
 
 
+
+// return this user's backpack and backpack value to vault and
+// main value estimate
+//
+// Returns number of backpacks returned to vaults.
+function cd_returnBackpackUser( $user_id ) {
+    return cd_returnBackpack( "user_id = '$user_id'" );
+    }
+
+
+
+
+// returns backpack to vault for all rows in house table matching
+// where phrase containing $where_phrase
+// Works like:  UPDATE houses SET .... WHERE $where_phrase AND ...;
+//
+// Consolidates two separate merge cases (where vault empty and not) into
+// one fuction
+//
+// Returns number of backpacks returned to vaults.
+function cd_returnBackpack( $where_phrase ) {
+    global $tableNamePrefix;
+
+    // one query for case where vault not empty
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "value_estimate = value_estimate + backpack_value_estimate, ".
+        "backpack_value_estimate = 0, ".
+        "vault_contents = CONCAT( vault_contents, '#', backpack_contents ), ".
+        "backpack_contents = '#' ".
+        "WHERE $where_phrase AND ".
+        "backpack_value_estimate != 0 AND ".
+        "vault_contents != '#';";
+    cd_queryDatabase( $query );
+
+    $numReturned = mysql_affected_rows();
+    
+    
+    // another query for case where vault empty
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "value_estimate = value_estimate + backpack_value_estimate, ".
+        "backpack_value_estimate = 0, ".
+        "vault_contents = backpack_contents, ".
+        "backpack_contents = '#' ".
+        "WHERE $where_phrase AND ".
+        "backpack_value_estimate != 0 AND ".
+        "vault_contents = '#';";
+    cd_queryDatabase( $query );
+
+    
+    $numReturned += mysql_affected_rows();
+    
+
+    return $numReturned;
+    }
+
+
+
+
 function cd_getRobberyLog() {
     global $tableNamePrefix;
 
@@ -4583,6 +4696,8 @@ function cd_getRobberyLog() {
     // while fetching a log to watch.
     cd_processStaleCheckouts( $user_id );
 
+
+    cd_returnBackpackUser( $user_id );
     
     
     $admin = cd_isAdmin( $user_id );
@@ -5230,6 +5345,14 @@ function cd_verifyTransaction() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+
+    // counts as an action for this user
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "last_owner_action_time = CURRENT_TIMESTAMP ".
+        "WHERE user_id = $user_id;";
+    
+    cd_queryDatabase( $query );
+    
     return 1;
     }
 
@@ -5507,22 +5630,43 @@ function cd_newHouseForUser( $user_id ) {
 
         global $playerStartMoney;
         
-        $query = "INSERT INTO $tableNamePrefix"."houses VALUES(" .
-            " $user_id, '$character_name', ".
-            "'$wife_name', '$son_name', '$daughter_name', ".
-            "'$house_map_hash', ".
-            "'$vault_contents', '$backpack_contents', '$gallery_contnets', ".
-            "0, '$music_seed', ".
-            "0, '$house_map_hash', '#', ".
-            "'$playerStartMoney', '$playerStartMoney', 1, ".
-            "'$carried_loot_value', '$carried_vault_contents', ".
-            "'$carried_gallery_contents', ".
-            "0, 0, 0, 0, 0, 0, ".
-            "0, ".   // consecutive success count
-            "CURRENT_TIMESTAMP, ".
-            "CURRENT_TIMESTAMP, ".
-            "CURRENT_TIMESTAMP, 0, 0, 0, ".
-            "0 );";
+        $query = "INSERT INTO $tableNamePrefix"."houses SET " .
+            "user_id=$user_id, ".
+            "character_name = '$character_name', ".
+            "wife_name = '$wife_name', ".
+            "son_name = '$son_name', ".
+            "daughter_names = '$daughter_name', ".
+            "house_map_hash = '$house_map_hash', ".
+            "vault_contents = '$vault_contents', ".
+            "backpack_contents = '$backpack_contents', ".
+            "gallery_contents = '$gallery_contnets', ".
+            "last_auction_price = 0, ".
+            "musc_seed = '$music_seed', ".
+            "edit_count = 0, ".
+            "self_test_house_map_hash = '$house_map_hash', ".
+            "self_test_move_list = '#', ".
+            "loot_value = '$playerStartMoney', ".
+            "value_estimate = '$playerStartMoney', ".
+            "backpack_value_estimate = 0, ".
+            "wife_present = 1, ".
+            "carried_loot_value = '$carried_loot_value', ".
+            "carried_vault_contents = '$carried_vault_contents', ".
+            "carried_gallery_contents = '$carried_gallery_contents', ".
+            "edit_checkout = 0, ".
+            "self_test_running = 0, ".
+            "rob_checkout = 0, ".
+            "robbing_user_id = 0, ".
+            "rob_attempts = 0,".
+            "robber_deaths = 0, ".
+            "consecutive_rob_success_count = 0, ".
+            "last_ping_time = CURRENT_TIMESTAMP, ".
+            "last_owner_action_time = CURRENT_TIMESTAMP, ".
+            "last_owner_visit_time = CURRENT_TIMESTAMP, ".
+            "last_pay_check_time = CURRENT_TIMESTAMP, ".
+            "payment_count = 0, ".
+            "you_paid_total = 0, ".
+            "wife_paid_total = 0, ".
+            "blocked = 0;";
 
         // bypass our default error handling here so that
         // we can react to duplicate errors

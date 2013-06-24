@@ -60,6 +60,12 @@ Version 9  Live Server Fixes
 --Cut 10-minute salaries in half to slow things down (you and your spouse earn
   $70 and $140 every 10 minutes).
 
+--Backpacks are now force-returned to vaults upon viewing a tape or after 5
+  minutes of no owner game activity.  Thus, backpacks can only be used for
+  active robbery work and not as an infinite space to keep tools safe from
+  other robbers.
+
+
 
 
 
