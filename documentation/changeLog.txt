@@ -14,8 +14,7 @@ Version 10
   (thanks Ukuko).
 
 --Sleeping dogs (drugged) can no longer be killed with crowbars or woken with
-  bricks.  They can still be woken with water (while standing next to them,
-  dangerously) and killed with a gun.  This increases the tactical challenge of
+  water or bricks.  This increases the tactical challenge of
   killing a dog with a crowbar (because crowbar plus drugged meat is no longer
   equivalent to a gun on a lone pit bull), balancing against the crowbar's
   lower price.  Drugged meat now turns pit bulls into indestructable land

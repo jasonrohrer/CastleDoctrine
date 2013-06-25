@@ -191,8 +191,6 @@ gun  # pitbull:6   => 5
 gun  # chihuahua:6 => 5
 
 
-water # pitbull:6   => 1
-water # chihuahua:6 => 1
 
 
 
