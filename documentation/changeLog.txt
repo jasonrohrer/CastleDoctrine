@@ -28,6 +28,10 @@ Version 10
   crowbar no longer brings the pit bull immediately into range for a second
   crowbar).
 
+--Client no longer crashes when it receives a corrupted house map (instead, it
+  shows a house filled with exterior walls).
+
+
 
 
 

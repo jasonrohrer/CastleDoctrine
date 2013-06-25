@@ -385,7 +385,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // track one set of static cell-to-noise-tile mappings
         // as long as house map never changes, all instances will copy this
         static int *sHouseMapNoiseTileIndices;
-                
+        // regen if map size changes
+        static int sHouseMapNoiseTileIndicesSize;
+
         static SpriteHandle sDropShadowSprite;
 
 

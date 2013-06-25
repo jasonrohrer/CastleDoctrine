@@ -34,6 +34,7 @@ SpriteHandle HouseGridDisplay::sNoiseTileBank[ NUM_NOISE_TILES ];
 SpriteHandle HouseGridDisplay::sPencilScratchBank[ NUM_NOISE_TILES ];
 
 int *HouseGridDisplay::sHouseMapNoiseTileIndices = NULL;
+int HouseGridDisplay::sHouseMapNoiseTileIndicesSize = -1;
 
 
 SpriteHandle HouseGridDisplay::sDropShadowSprite = NULL;
@@ -296,6 +297,7 @@ HouseGridDisplay::~HouseGridDisplay() {
         if( sHouseMapNoiseTileIndices != NULL ) {
             delete [] sHouseMapNoiseTileIndices;
             sHouseMapNoiseTileIndices = NULL;
+            sHouseMapNoiseTileIndicesSize = -1;
             }
 
         freeSprite( sDropShadowSprite );
@@ -408,6 +410,40 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     
     mNumMapSpots = numTokens;
     mFullMapD = (int)sqrt( mNumMapSpots );
+
+    if( mFullMapD < HOUSE_D ) {
+        // house map not even big enoug to fill screen
+        // probably corrupted!
+    
+        printf( "House map corrupted\n" );
+
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            delete [] tokens[i];
+            }
+        delete [] tokens;
+        
+        mNumMapSpots = HOUSE_D * HOUSE_D;
+        mFullMapD = HOUSE_D;
+
+        tokens = new char*[mNumMapSpots];
+        
+        int startLoc = mFullMapD * ( mFullMapD / 2 );
+        int vaultLoc = startLoc + 1;
+        
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            if( i == startLoc ) {
+                tokens[i] = stringDuplicate( "0" );
+                }
+            else if( i == vaultLoc ) {
+                tokens[i] = autoSprintf( "%d", GOAL_ID );
+                }
+            else {
+                // fill with solid concrete to represent this
+                tokens[i] = stringDuplicate( "998" );
+                }
+            }
+        }
+    
     
     mHouseMapIDs = new int[ mNumMapSpots ];
     mHouseMapCellStates = new int[ mNumMapSpots ];
@@ -491,12 +527,17 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
         delete [] tokens[i];
         
-        if( sHouseMapNoiseTileIndices == NULL ) {
+        if( sHouseMapNoiseTileIndices == NULL ||
+            sHouseMapNoiseTileIndicesSize != mNumMapSpots ) {
             
+            // cache of indices doesn't exist or is wrong size
+            // generate new
+
             mHouseMapNoiseTileIndices[i] = 
                 randSource.getRandomBoundedInt( 0, NUM_NOISE_TILES - 1 );
             }
         else {
+            // cache fits, use it
             mHouseMapNoiseTileIndices[i] = sHouseMapNoiseTileIndices[i];
             }
         }
@@ -504,9 +545,19 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     delete [] tokens;
 
 
-    if( sHouseMapNoiseTileIndices == NULL ) {
-        sHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
+    if( sHouseMapNoiseTileIndices == NULL ||
+        sHouseMapNoiseTileIndicesSize != mNumMapSpots ) {
 
+        // create or replace cache with the index values we just
+        // generated.
+
+        if( sHouseMapNoiseTileIndices != NULL ) {
+            delete [] sHouseMapNoiseTileIndices;
+            }
+
+        sHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
+        sHouseMapNoiseTileIndicesSize = mNumMapSpots;
+        
         memcpy( sHouseMapNoiseTileIndices, mHouseMapNoiseTileIndices,
                 mNumMapSpots * sizeof( int ) );
         }
