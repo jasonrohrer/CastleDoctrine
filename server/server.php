@@ -4386,10 +4386,12 @@ function cd_endRobHouse() {
         }
 
 
-    // regardless of robbery outcome
-    // drops remaining backpack in this house's vault
-    $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
-                                                $backpack_contents );
+    if( $success == 0 || $success == 1 ) {    
+        // on death in house or vault reach
+        // drops remaining backpack in this house's vault
+        $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                    $backpack_contents );
+        }
     
 
     
