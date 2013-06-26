@@ -30,6 +30,8 @@ Version 10
 --Client no longer crashes when it receives a corrupted house map (instead, it
   shows a house filled with exterior walls).
 
+--Escaped family members now return to house after robber suicide instead of
+  leaving for good (thanks Largestherb).
 
 
 

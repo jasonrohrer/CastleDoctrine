@@ -71,6 +71,13 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void pointerUp( float inX, float inY );
 
 
+        // at end of robbery, deal with family repositioning
+        // called automatically in cases where this grid display catches
+        // the end condition (but not for externally-detected end conditions,
+        // like suicide)
+        void processFamilyAtEnd();
+
+
     protected:
         
         int mSuccess;
@@ -144,8 +151,6 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         SimpleVector<char> mFamilySeenRobber;
         
         
-        // at end of robbery, deal with family repositioning
-        void processFamilyAtEnd();
         
 
         // true if robber reaches wife's cell after killing her
