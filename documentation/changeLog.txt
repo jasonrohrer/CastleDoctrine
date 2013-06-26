@@ -39,6 +39,8 @@ Version 10
 --Added a Move Half button to the backpack screen that parallels the behavior
   of the Sell Half button (thanks Matrix).
 
+--Unwatched security tapes are now highlighted in green.
+
 
 
 

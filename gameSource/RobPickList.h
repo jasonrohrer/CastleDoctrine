@@ -25,6 +25,7 @@ typedef struct HouseRecord {
         int lootValue;
         int robAttempts;
         int robberDeaths;
+        int flag;
         
         char selected;
         doublePair position;

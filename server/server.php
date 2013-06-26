@@ -920,6 +920,7 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "log_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," .
+            "log_watched TINYINT NOT NULL," .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "INDEX( house_user_id ),".
@@ -3634,8 +3635,9 @@ function cd_listHouses() {
             $robber_name = "You";
             }
         
+        // for now, leave chill flag off
         echo "$house_user_id#$character_name#$robber_name".
-            "#$value_estimate#$rob_attempts#$robber_deaths\n";
+            "#$value_estimate#$rob_attempts#$robber_deaths#0\n";
         }
     
     if( $numRows > $limit ) {
@@ -4238,8 +4240,9 @@ function cd_endRobHouse() {
             // log_id auto-assigned
             $query =
                 "INSERT INTO $tableNamePrefix"."robbery_logs ".
-                "(user_id, house_user_id, loot_value, wife_money, ".
-                "value_estimate, ".
+                "(log_watched, ".
+                " user_id, house_user_id, loot_value, wife_money, ".
+                " value_estimate, ".
                 " vault_contents, gallery_contents, ".
                 " music_seed, ".
                 " rob_attempts, robber_deaths,".
@@ -4249,8 +4252,9 @@ function cd_endRobHouse() {
                 " scouting_count, last_scout_time, ".
                 " house_start_map_hash, loadout, move_list ) ".
                 "VALUES(" .
+                " 0, ".
                 " $user_id, $victim_id, '$house_money', '$wife_money', ".
-                "'$total_value_stolen', ".
+                " '$total_value_stolen', ".
                 " '$house_vault_contents', '$house_gallery_contents', ".
                 " '$music_seed', ".
                 " '$rob_attempts', '$robber_deaths', ".
@@ -4351,7 +4355,7 @@ function cd_endRobHouse() {
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
-            "(user_id, house_user_id, loot_value, wife_money, ".
+            "( log_watched, user_id, house_user_id, loot_value, wife_money, ".
             "value_estimate, ".
             " vault_contents, gallery_contents, ".
             " music_seed, ".
@@ -4362,7 +4366,7 @@ function cd_endRobHouse() {
             " scouting_count, last_scout_time, ".
             " house_start_map_hash, loadout, move_list ) ".
             "VALUES(" .
-            " $user_id, $victim_id, '$house_money', '$wife_money', ".
+            " 0, $user_id, $victim_id, '$house_money', '$wife_money', ".
             "'$total_value_stolen', ".
             " '$house_vault_contents', '$house_gallery_contents', ".
             " '$music_seed', ".
@@ -4580,7 +4584,7 @@ function cd_listLoggedRobberies() {
     $query_limit = $limit + 1;
     
     $query = "SELECT user_id, house_user_id, ".
-        "log_id, victim_name, robber_name, ".
+        "log_id, log_watched, victim_name, robber_name, ".
         "value_estimate, rob_attempts, robber_deaths ".
         "FROM $tableName ".
         "$whereClause ".
@@ -4602,6 +4606,7 @@ function cd_listLoggedRobberies() {
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
+        $log_watched = mysql_result( $result, $i, "log_watched" );
 
         if( $robber_id == $user_id ) {
             $robber_name = "You";
@@ -4612,7 +4617,7 @@ function cd_listLoggedRobberies() {
         
         
         echo "$log_id#$victim_name#$robber_name".
-            "#$value_estimate#$rob_attempts#$robber_deaths\n";
+            "#$value_estimate#$rob_attempts#$robber_deaths#$log_watched\n";
         }
 
     if( $numRows > $limit ) {
@@ -4753,6 +4758,14 @@ function cd_getRobberyLog() {
 
     $house_start_map = cd_getHouseMap( $row[ "house_start_map_hash" ] );
     
+
+    if( ! $admin ) {
+        // admin watching tape doesn't count, but user watching tape does
+        $query = "UPDATE $tableNamePrefix"."robbery_logs ".
+            "SET log_watched = 1 ".
+            "WHERE log_id = '$log_id';";
+        cd_queryDatabase( $query );
+        }
     
     echo $robber_name . "\n";    
     echo $victim_name . "\n";    

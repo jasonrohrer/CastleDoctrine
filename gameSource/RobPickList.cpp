@@ -365,7 +365,7 @@ void RobPickList::step() {
                         int numParts;
                         char **parts = split( line, "#", &numParts );
                         
-                        if( numParts != 6 ) {
+                        if( numParts != 7 ) {
                             printf( "Unexpected number of parts (%d) on house "
                                     "list line: %d\n", numParts, i );
                             badParse = true;
@@ -399,6 +399,8 @@ void RobPickList::step() {
                             sscanf( parts[3], "%d", &( r.lootValue ) );
                             sscanf( parts[4], "%d", &( r.robAttempts ) );
                             sscanf( parts[5], "%d", &( r.robberDeaths ) );
+                            
+                            sscanf( parts[6], "%d", &( r.flag ) );
 
                             mHouseList.push_back( r );
                             }
@@ -541,12 +543,52 @@ void RobPickList::draw() {
                       r->position.x + lineWidthRight, 
                       r->position.y + lineHeight / 2 );
 
-            if( r->selected ) {
-                setDrawColor( 1, 1, 0, 1 );
+
+            if( mRobberyLog ) {                
+                if( r->selected ) {
+                    if( r->flag == 1 ) {
+                        // old selected, yellow
+                        setDrawColor( 1, 1, 0, 1 );
+                        }
+                    else {
+                        // new, selected, greenish (brighter)
+                        setDrawColor( 0, 1, 0, 1 );
+                        }
+                    }
+                else {
+                    if( r->flag == 1 ) {
+                        // old white
+                        setDrawColor( 1, 1, 1, 1 );
+                        }
+                    else {
+                        // new, green
+                        setDrawColor( 0, 1, .25, 1 );
+                        }
+                    }
                 }
             else {
-                setDrawColor( 1, 1, 1, 1 );
+                if( r->selected ) {
+                    if( r->flag == 1 ) {
+                        // chills, selected, purple
+                        setDrawColor( 0.75, 0, 1, 1 );
+                        }
+                    else {
+                        // non-chills selected, yellow
+                        setDrawColor( 1, 1, 0, 1 );
+                        }
+                    }
+                else {
+                    if( r->flag == 1 ) {
+                        // chills, purple
+                        setDrawColor( 0.5, 0, 1, 1 );
+                        }
+                    else {
+                        // non-chills, white
+                        setDrawColor( 1, 1, 1, 1 );
+                        }
+                    }
                 }
+
             
             char *nameToDraw = r->characterName;
             

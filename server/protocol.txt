@@ -289,16 +289,19 @@ server.php?action=list_houses&user_id=[id number]
                              &sequence_number=[number]
                              &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
+user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 ....
 more_pages
 OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
+
+f is a flag associated with each list item.  It is 0 if the house is normal,
+and 1 if the house currently gives user_id the chills.
 
 name_search contains a single word or multiple words concatonated with "+"
 ("+" is URL-encoding of " ")
@@ -485,16 +488,19 @@ server.php?action=list_logged_robberies&user_id=[id number]
                                        &sequence_number=[number]
                                        &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths
+log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 ....
 more_pages
 OK
 
 Where:
 character_name and last_robber_name have spaces repaced by "_"
+
+f is a flag associated with each list item.  It is 0 if the tape has not been
+watched yet, and 1 if the tape has been watched.
 
 more_pages is 1 if there are more pages and 0 of there are not
 

@@ -1,0 +1,7 @@
+
+
+ALTER TABLE castleServer_robbery_logs 
+ADD COLUMN log_watched TINYINT NOT NULL AFTER log_id;
+
+UPDATE castleServer_robbery_logs
+SET log_watched = 0; 
