@@ -79,6 +79,41 @@ void InventorySlotButton::setHalfSellTip() {
 
 
 
+
+void InventorySlotButton::setHalfMoveTip( char inVault ) {
+
+    const char *tipHalf = "backpackHalfSlotTip";
+    const char *tipOne = "backpackSlotTip";
+    
+    if( inVault ) {
+        tipHalf = "vaultHalfSlotTip";
+        tipOne = "vaultSlotTip";
+        }
+    
+    char *tip;
+    
+
+    if( mQuantity > 3 ) {
+        int sellQuantity = mQuantity / 2;
+        const char *toolDescription = getToolDescriptionPlural( mObjectID );
+
+        tip = autoSprintf( translate( tipHalf ),
+                           sellQuantity, toolDescription, 
+                           sellQuantity * mSellPrice );
+        }
+    else {
+        const char *toolDescription = getToolDescription( mObjectID );
+
+        tip = autoSprintf( translate( tipOne ),
+                           toolDescription, mSellPrice );
+        }
+    
+    setMouseOverTip( tip );
+    delete [] tip;
+    }
+
+
+
 void InventorySlotButton::setObject( int inID ) {
     mObjectID = inID;
     
@@ -118,6 +153,14 @@ void InventorySlotButton::setObject( int inID ) {
                 setHalfSellTip();
                 }
                 break;
+            case 5: {
+                setHalfMoveTip( false );
+                }
+                break;
+            case 6: {
+                setHalfMoveTip( true );
+                }
+                break;
             default:
                 setMouseOverTip( toolDescription );
                 break;
@@ -142,8 +185,16 @@ void InventorySlotButton::setQuantity( int inQuantity ) {
         setObject( -1 );
         }
     else {
-        if( mTransferStatus == 4 ) {
-            setHalfSellTip();
+        switch( mTransferStatus ) {
+            case 4:
+                setHalfSellTip();
+                break;
+            case 5:
+                setHalfMoveTip( false );
+                break;
+            case 6:
+                setHalfMoveTip( true );
+                break;
             }
         }
     }

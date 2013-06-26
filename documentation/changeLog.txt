@@ -36,6 +36,9 @@ Version 10
 --Fixed so that encryption key used for robbery house maps does not break when
   playing back recordedGame files (thanks Christian Stritzelberger).
 
+--Added a Move Half button to the backpack screen that parallels the behavior
+  of the Sell Half button (thanks Matrix).
+
 
 
 

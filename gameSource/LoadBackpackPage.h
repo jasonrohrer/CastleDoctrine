@@ -102,7 +102,9 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
         char mSellMode;
         char mSellHalfMode;
-        
+
+        char mMoveHalfMode;
+
         HouseObjectPicker mToolPicker;
         TextButton mDoneButton;
         TextButton mSellModeButton;
@@ -110,6 +112,10 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         TextButton mSellOneButton;
 
         TextButton mBuyModeButton;
+
+        TextButton mMoveHalfButton;
+        TextButton mMoveOneButton;
+
         KeyEquivalentTextButton mUndoButton;
         
         SpriteButton mBuyButton;

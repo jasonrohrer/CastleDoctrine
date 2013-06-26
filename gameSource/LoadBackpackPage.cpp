@@ -22,13 +22,16 @@ extern Font *mainFont;
 LoadBackpackPage::LoadBackpackPage() 
         : mSellMode( false ),
           mSellHalfMode( false ),
+          mMoveHalfMode( false ),
           mToolPicker( 8, 5, true ),
           mDoneButton( mainFont, 8, -5, translate( "doneEdit" ) ),
-          mSellModeButton( mainFont, 8, -3, translate( "sellMode" ) ),
+          mSellModeButton( mainFont, 8, -2.5, translate( "sellMode" ) ),
           mSellHalfButton( mainFont, 5, -4, translate( "sellHalf" ) ),
           mSellOneButton( mainFont, 5, -5, translate( "sellOne" ) ),
-          mBuyModeButton( mainFont, 8, -2, translate( "buyMode" ) ),
-          mUndoButton( mainFont, 8, -0.5, translate( "undo" ), 'z', 'Z' ),
+          mBuyModeButton( mainFont, 8, -1.5, translate( "buyMode" ) ),
+          mMoveHalfButton( mainFont, 5, -4, translate( "moveHalf" ) ),
+          mMoveOneButton( mainFont, 5, -5, translate( "moveOne" ) ),
+          mUndoButton( mainFont, 8, 0, translate( "undo" ), 'z', 'Z' ),
           mBuyButton( "left.tga", 5, 5, 1 / 16.0 ),
           mDone( false ),
           mChangeHappened( false ) {
@@ -43,12 +46,18 @@ LoadBackpackPage::LoadBackpackPage()
     addComponent( &mSellOneButton );
 
     addComponent( &mBuyModeButton );
+    addComponent( &mMoveHalfButton );
+    addComponent( &mMoveOneButton );
+
     
     mSellModeButton.setMouseOverTip( translate( "sellModeTip" ) );
     mSellHalfButton.setMouseOverTip( translate( "sellHalfTip" ) );
     mSellOneButton.setMouseOverTip( translate( "sellOneTip" ) );
     
     mBuyModeButton.setMouseOverTip( translate( "buyModeTip" ) );
+
+    mMoveHalfButton.setMouseOverTip( translate( "moveHalfTip" ) );
+    mMoveOneButton.setMouseOverTip( translate( "moveOneTip" ) );
     
 
     mDoneButton.setMouseOverTip( "" );
@@ -63,6 +72,9 @@ LoadBackpackPage::LoadBackpackPage()
 
     mBuyModeButton.addActionListener( this );
     mBuyModeButton.setVisible( false );
+
+    mMoveHalfButton.addActionListener( this );
+    mMoveOneButton.addActionListener( this );
 
 
     mToolPicker.addActionListener( this );
@@ -314,6 +326,9 @@ void LoadBackpackPage::checkSellModeStatus() {
     mSellHalfButton.setVisible( mSellMode && !mSellHalfMode );
     mSellOneButton.setVisible( mSellMode && mSellHalfMode );
 
+    mMoveHalfButton.setVisible( !mSellMode && !mMoveHalfMode );
+    mMoveOneButton.setVisible( !mSellMode && mMoveHalfMode );
+
     int packTransferMode = 1;
     int vaultTransferMode = 2;
     
@@ -327,6 +342,11 @@ void LoadBackpackPage::checkSellModeStatus() {
             vaultTransferMode = 3;
             }
         }
+    else if( mMoveHalfMode ) {
+        packTransferMode = 5;
+        vaultTransferMode = 6;
+        }
+
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
         mPackSlots[i]->setTransferStatus( packTransferMode );
         int id = mPackSlots[i]->getObject();
@@ -553,6 +573,15 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mBuyModeButton ) {
         mSellMode = false;
         mSellHalfMode = false;
+        mMoveHalfMode = false;
+        checkSellModeStatus();
+        }
+    else if( inTarget == &mMoveHalfButton ) {
+        mMoveHalfMode = true;
+        checkSellModeStatus();
+        }
+    else if( inTarget == &mMoveOneButton ) {
+        mMoveHalfMode = false;
         checkSellModeStatus();
         }
     else {
@@ -596,15 +625,21 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                         checkUndoStatus();
                         }
                     else {
-                        mPackSlots[i]->addToQuantity( -1 );
+                        int quantityMoved = 1;
+                        if( mMoveHalfMode ) {
+                            quantityMoved = mPackSlots[i]->getQuantity() / 2;
+                            }
+                        if( quantityMoved < 1 ) {
+                            quantityMoved = 1;
+                            }
+                        
+                        mPackSlots[i]->addToQuantity( - quantityMoved );
 
                         char foundInVault = false;
 
                         for( int j=0; j<NUM_VAULT_SLOTS; j++ ) {
                             if( mVaultSlots[j]->getObject() == id ) {
-                                mVaultSlots[j]->setQuantity( 
-                                    mVaultSlots[j]->getQuantity() + 1 );
-                                
+                                mVaultSlots[j]->addToQuantity( quantityMoved );
                                 foundInVault = true;
                                 break;
                                 }
@@ -614,6 +649,8 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                             for( int j=0; j<NUM_VAULT_SLOTS; j++ ) {
                                 if( mVaultSlots[j]->getObject() == -1 ) {
                                     mVaultSlots[j]->setObject( id );
+                                    mVaultSlots[j]->setQuantity( 
+                                        quantityMoved );
                                     mVaultSlots[j]->setSellPrice(
                                         mToolPicker.getSellBackPrice( id ) );
                                     break;
@@ -693,16 +730,29 @@ void LoadBackpackPage::actionPerformed( GUIComponent *inTarget ) {
                         
                             if( foundIndex != -1 ) {
 
-                                mVaultSlots[i]->setQuantity( 
-                                    mVaultSlots[i]->getQuantity() - 1 );
-                                
+                                int quantityMoved = 1;
+                                if( mMoveHalfMode ) {
+                                    quantityMoved = 
+                                        mVaultSlots[i]->getQuantity() / 2;
+                                    }
+                                if( quantityMoved < 1 ) {
+                                    quantityMoved = 1;
+                                    }
+
+                                mVaultSlots[i]->addToQuantity( 
+                                    - quantityMoved );
+                                                                
                                 if( empty ) {
                                     mPackSlots[foundIndex]->setObject( id );
+                                    mPackSlots[foundIndex]->setQuantity( 
+                                        quantityMoved );
+                                    
                                     mPackSlots[foundIndex]->setSellPrice(
                                         mToolPicker.getSellBackPrice( id ) );
                                     }
                                 else {
-                                    mPackSlots[foundIndex]->addToQuantity( 1 );
+                                    mPackSlots[foundIndex]->addToQuantity( 
+                                        quantityMoved );
                                     }
                                 
                                 checkBuyButtonStatus();
@@ -736,7 +786,8 @@ void LoadBackpackPage::makeActive( char inFresh ) {
     mShowGridToolPicker = false;
     mSellMode = false;
     mSellHalfMode = false;
-
+    mMoveHalfMode = false;
+    
     checkSellModeStatus();
     }
         

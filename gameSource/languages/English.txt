@@ -116,6 +116,11 @@ familyExitMessage  "Family needs##empty path##to exit."
 buyTip "Buy %s for backpack"
 backpackSlotTip "Move %s to vault"
 vaultSlotTip "Move %s to backpack"
+
+backpackHalfSlotTip "Move %d %s to vault"
+vaultHalfSlotTip "Move %d %s to backpack"
+
+
 sellSlotTip "Sell %s for $%d" 
 sellHalfSlotTip "Sell %d %s for $%d" 
 
@@ -125,12 +130,18 @@ sellHalf "Sell Half"
 sellOne  "Sell One"
 
 buyMode "Buy Mode"
+moveHalf "Move Half"
+moveOne  "Move One"
+
 
 sellModeTip "Switch to selling tools"
 buyModeTip "Switch to buying tools"
 
 sellHalfTip "Switch to selling half of the items in a slot"
 sellOneTip "Switch to selling one item at a time"
+
+moveHalfTip "Switch to moving half of the items in a slot"
+moveOneTip "Switch to moving one item at a time"
 
 
 

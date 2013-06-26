@@ -20,10 +20,12 @@ class InventorySlotButton : public SpriteButton {
 
         // Controls tool tip
         // 0 for no transfer on click
-        // 1 for transfer to vault
-        // 2 for transfer to backpack
+        // 1 for transfer one item to vault
+        // 2 for transfer one item to backpack
         // 3 for selling one item
         // 4 for selling half of items
+        // 5 for transfer half of items to vault
+        // 6 for transfer half items to backpack
         //
         // defaults to 0
         virtual void setTransferStatus( int inStatus );
@@ -80,6 +82,9 @@ class InventorySlotButton : public SpriteButton {
 
 
         void setHalfSellTip();
+
+        // true to generate tip for vault slot, false for backpack slot
+        void setHalfMoveTip( char inVault );
         
     };
 
