@@ -33,6 +33,10 @@ Version 10
 --Escaped family members now return to house after robber suicide instead of
   leaving for good (thanks Largestherb).
 
+--Fixed so that encryption key used for robbery house maps does not break when
+  playing back recordedGame files (thanks Christian Stritzelberger).
+
+
 
 
 

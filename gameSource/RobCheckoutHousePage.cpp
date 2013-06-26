@@ -345,7 +345,6 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         }
 
     SimpleVector<char> keyGenCharacters;
-    keyGenCharacters.push_back( ticketHash, strlen( ticketHash ) );
     
     for( int b=0; b<mouseDataBufferSize; b++ ) {
         char *dataString = autoSprintf( "%f", mouseDataBuffer[b] );
