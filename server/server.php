@@ -297,6 +297,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."maps" ) &&
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
         cd_doesTableExist( $tableNamePrefix."ignore_houses" ) &&
+        cd_doesTableExist( $tableNamePrefix."chilling_houses" ) &&
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."scouting_counts" ) &&
@@ -871,6 +872,33 @@ function cd_setupDatabase() {
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
             "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    $tableName = $tableNamePrefix . "chilling_houses";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // This maps a user ID to another user ID, where the second
+        // ID specifies a house that the first user has developed a chill for.
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL," .
+            "PRIMARY KEY( user_id, house_user_id )," .
+            "chill_start_time DATETIME NOT NULL, ".
+            "INDEX( chill_start_time ), ".
+            // flag that is always 1
+            // allows this table to be used in left joins that produce
+            // a column with 1 for present entries
+            "chill TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -3597,10 +3625,14 @@ function cd_listHouses() {
     $query = "SELECT houses.user_id, houses.character_name, ".
         "houses.value_estimate, houses.rob_attempts, houses.robber_deaths, ".
         "robbers.character_name as robber_name, ".
-        "robbers.user_id as robber_id ".
+        "robbers.user_id as robber_id, ".
+        "chills.chill as chill ".
         "FROM $tableName as houses ".
         "LEFT JOIN $tableName as robbers ".
-        "ON houses.robbing_user_id = robbers.user_id ".
+        "     ON houses.robbing_user_id = robbers.user_id ".
+        "LEFT JOIN $tableNamePrefix"."chilling_houses as chills ".
+        "     ON houses.user_id = chills.house_user_id AND ".
+        "        chills.user_id = '$user_id' ".
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
@@ -3625,6 +3657,7 @@ function cd_listHouses() {
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
+        $chill = mysql_result( $result, $i, "chill" );
 
         if( $robber_name == NULL ) {
             $robber_name = "Null_Null_Null";
@@ -3634,10 +3667,16 @@ function cd_listHouses() {
             // hide name from self
             $robber_name = "You";
             }
-        
-        // for now, leave chill flag off
+
+        if( $chill == NULL ) {
+            $chill = 0;
+            }
+        else {
+            $chill = 1;
+            }
+
         echo "$house_user_id#$character_name#$robber_name".
-            "#$value_estimate#$rob_attempts#$robber_deaths#0\n";
+            "#$value_estimate#$rob_attempts#$robber_deaths#$chill\n";
         }
     
     if( $numRows > $limit ) {
