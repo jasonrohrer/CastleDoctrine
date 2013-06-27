@@ -61,10 +61,12 @@ SpriteButton::~SpriteButton() {
 
 
 
-void SpriteButton::setSprite( SpriteHandle inSprite ) {
+void SpriteButton::setSprite( SpriteHandle inSprite, char inShouldDestroy ) {
     if( mShouldDestroySprite && mSprite != NULL ) {
         freeSprite( mSprite );
         }
+
+    mShouldDestroySprite = inShouldDestroy;
     mSprite = inSprite;
     }
 

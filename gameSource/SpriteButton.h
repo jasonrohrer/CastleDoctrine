@@ -23,7 +23,7 @@ class SpriteButton : public Button {
 
         virtual ~SpriteButton();
         
-        void setSprite( SpriteHandle inSprite );
+        void setSprite( SpriteHandle inSprite, char inShouldDestroy = false );
 
 
     protected:

@@ -32,9 +32,14 @@ LoadBackpackPage::LoadBackpackPage()
           mMoveHalfButton( mainFont, 5, -4, translate( "moveHalf" ) ),
           mMoveOneButton( mainFont, 5, -5, translate( "moveOne" ) ),
           mUndoButton( mainFont, 8, 0, translate( "undo" ), 'z', 'Z' ),
-          mBuyButton( "left.tga", 5, 5, 1 / 16.0 ),
+          // lie about sprite size and set sprite below, so border
+          // isn't so huge
+          mBuyButton( NULL, 9, 9, 5, 5, 1 / 16.0 ),
           mDone( false ),
           mChangeHappened( false ) {
+
+    mBuyButton.setSprite( loadSprite( "buy.tga" ), true );
+
 
     addComponent( &mDoneButton );
     addComponent( &mUndoButton );
