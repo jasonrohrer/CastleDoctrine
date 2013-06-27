@@ -44,6 +44,10 @@ Version 10
 --Removed SDL_LockAudio call before SDL_CloseAudio, fixing an occasional
   hang-at-exit on certain platforms.
 
+--Dying in a house now taints the house with a chill for you that keeps you out
+  of that house for one hour (thanks Zed).  Chilling houses are marked with a
+  different color in the house list.
+
 
 
 

@@ -5860,6 +5860,11 @@ function cd_newHouseForUser( $user_id ) {
         "WHERE house_user_id = $user_id;";
     cd_queryDatabase( $query );
 
+    // clear chills
+    $query = "DELETE FROM $tableNamePrefix"."chilling_houses ".
+        "WHERE house_user_id = $user_id;";
+    cd_queryDatabase( $query );
+    
 
     // decrement lives left
     $query = "UPDATE $tableNamePrefix"."users ".
