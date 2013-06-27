@@ -1,4 +1,4 @@
-Version 10
+Version 10   2013-June-27
 
 --Fixed so that you can't bypass the 'Download Latest Version' message by
   logging in again (thanks Colorfusion).
