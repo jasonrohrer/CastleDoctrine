@@ -256,6 +256,8 @@ auctionListFetchFailed "Failed to fetch auction list"
 houseBeingRobbedOrEdited "Someone else is in that house.##You can't rob it now."
 houseReclaimed "That house was reclaimed by##the state after the owner die."
 
+houseChilling "Something about this house gives you the chills.##You can't bear to enter it."
+
 houseStale "You left the house due to inactivity."
 
 houseStaleDead "You died due to inactivity."

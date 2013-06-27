@@ -1981,6 +1981,20 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
                 "$staleSelfTestCount stale self tests, force killing them." );
         
         cd_newHouseForUser( $user_id );
+
+
+        if( $staleRobberyCount > 0 ) {
+            // don't do this on robbery in shadow table, because that
+            // owner/house is dead/gone now, and chill disappears with it
+            
+            // this house now gives this player a chill
+
+            $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+                "SET user_id = '$user_id', ".
+                "house_user_id = '$last_robbed_owner'_id, ".
+                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
+            cd_queryDatabase( $query );
+            }
         }
     else {
         // at least end their current editing session
@@ -3781,6 +3795,17 @@ function cd_startRobHouse() {
     // the player mistakenly.
     cd_processStaleCheckouts( $user_id, $to_rob_user_id );
 
+    
+    // check if house chilled
+    $query = "SELECT chill FROM $tableNamePrefix"."chilling_houses ".
+        "WHERE user_id = '$user_id' and house_user_id = '$to_rob_user_id'; ";
+
+    $result = cd_queryDatabase( $query );
+
+    if( mysql_numrows( $result ) != 0 ) {
+        echo "CHILLING";
+        return;
+        }
 
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -4545,6 +4570,20 @@ function cd_endRobHouse() {
     if( $success == 0 ) {                
         // starts over as new character, house destroyed
         cd_newHouseForUser( $user_id );
+
+
+        if( ! $ownerDied ) {
+            // if owner died during robbery, chill clears instantly
+
+            // otherwise
+            // this house now gives this player a chill
+            
+            $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+                "SET user_id = '$user_id', ".
+                "house_user_id = '$last_robbed_owner_id', ".
+                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
+            cd_queryDatabase( $query );
+            }
         }
     
 

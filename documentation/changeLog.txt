@@ -41,6 +41,8 @@ Version 10
 
 --Unwatched security tapes are now highlighted in green.
 
+--Removed SDL_LockAudio call before SDL_CloseAudio, fixing an occasional
+  hang-at-exit on certain platforms.
 
 
 

@@ -251,6 +251,11 @@ void RobCheckoutHousePage::step() {
                     mStatusMessageKey = "houseReclaimed";
                     mMenuButton.setVisible( true );
                     }
+                else if( strstr( result, "CHILLING" ) != NULL ) {
+                    mStatusError = true;
+                    mStatusMessageKey = "houseChilling";
+                    mMenuButton.setVisible( true );
+                    }
                 else {
                     // house checked out!
                     

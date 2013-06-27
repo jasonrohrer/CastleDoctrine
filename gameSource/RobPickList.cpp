@@ -527,7 +527,14 @@ void RobPickList::draw() {
         if( r->draw ) {
             
             if( r->selected ) {
-                setDrawColor( 0.35, 0.35, 0.15, 1 );
+                if( !mRobberyLog && r->flag ) {
+                    // chill selected
+                    setDrawColor( 0.31, 0.125, 0.5, 1 );
+                    }
+                else {
+                    // regular selected
+                    setDrawColor( 0.35, 0.35, 0.15, 1 );
+                    }
                 }
             else {
                 if( altColor ) {
@@ -570,7 +577,7 @@ void RobPickList::draw() {
                 if( r->selected ) {
                     if( r->flag == 1 ) {
                         // chills, selected, purple
-                        setDrawColor( 0.75, 0, 1, 1 );
+                        setDrawColor( 0.63, 0.25, 1, 1 );
                         }
                     else {
                         // non-chills selected, yellow
