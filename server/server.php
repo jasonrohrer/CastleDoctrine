@@ -1281,7 +1281,7 @@ function cd_clearLog() {
 // check if we should flush stale checkouts from the database
 // do this once every 2 minutes
 function cd_checkForFlush() {
-    global $tableNamePrefix;
+    global $tableNamePrefix, $chillTimeout;
 
     $tableName = "$tableNamePrefix"."server_globals";
     
@@ -1586,6 +1586,38 @@ function cd_checkForFlush() {
             cd_log( "After flush, $count maps remain." );
             }
 
+
+
+
+        // check for stale house chills
+        $query = "DELETE ".
+            "FROM $tableNamePrefix"."chilling_houses ".
+            "WHERE  chill_start_time < ".
+            "       SUBTIME( CURRENT_TIMESTAMP, '$chillTimeout' );";
+
+        $result = cd_queryDatabase( $query );
+
+        $staleChillsRemoved = mysql_affected_rows();
+
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
+        cd_log( "Flush removed $staleChillsRemoved stale house chills." );
+
+        if( $enableLog ) {
+            // count remaining chills for log
+            $query =
+                "SELECT COUNT(*) FROM $tableNamePrefix"."chilling_houses;";
+
+            $result = cd_queryDatabase( $query );
+
+            $count = mysql_result( $result, 0, 0 );
+
+            cd_log( "After flush, $count house chills remain." );
+            }
 
 
         

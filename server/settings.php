@@ -385,6 +385,10 @@ $playerPayAmount = 70;
 $wifePayAmount = 140;
 
 
+// how long the chill on a house lasts after you die there
+// experimenting with 1 hour
+$chillTimeout = "0 1:00:0.000";
+
 
 
 // server shutdown mode
