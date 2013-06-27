@@ -1991,7 +1991,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
 
             $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
                 "SET user_id = '$user_id', ".
-                "house_user_id = '$last_robbed_owner'_id, ".
+                "house_user_id = '$last_robbed_owner_id', ".
                 "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
             cd_queryDatabase( $query );
             }
