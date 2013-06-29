@@ -1,3 +1,13 @@
+Version 10  Live Server Fixes
+
+--Fixed bug where family positions in server-side-simulation house map did not
+  match actual family positions in the case of robber suicide, causing house
+  check-in after suicide (if family moved at all) to fail.
+
+
+
+
+
 Version 10   2013-June-27
 
 --Fixed so that you can't bypass the 'Download Latest Version' message by

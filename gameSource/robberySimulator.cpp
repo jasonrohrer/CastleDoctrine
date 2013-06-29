@@ -107,6 +107,14 @@ wife_money
         return stringDuplicate( "FAILED" );
         }
     
+    if( replayCheckerDisplay->getDead() && 
+        replayCheckerDisplay->getDeathSourceID() == -1 ) {
+        // dead, but not killed by anything
+        // suicide.
+
+        replayCheckerDisplay->processFamilyAtEnd();
+        }
+
     
     /*
 Returns:

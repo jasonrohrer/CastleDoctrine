@@ -314,6 +314,8 @@ char RobHouseGridDisplay::getToolJustUsed() {
 void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mSuccess = 0;
     mDead = false;
+    mDeathSourceID = -1;
+    mDeathSourceState = 1;
 
     stopUsingTool();
     mToolJustUsed = false;
