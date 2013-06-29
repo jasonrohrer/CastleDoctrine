@@ -4262,9 +4262,21 @@ function cd_endRobHouse() {
                 $sim_any_family_killed != $any_family_killed ||
                 $sim_end_backpack_contents != $backpack_contents ||
                 $sim_end_house_map != $house_map ) {
+
+                $backpackMismatch =
+                    ( $sim_end_backpack_contents != $backpack_contents );
+
+                $mapMismatch = ( $sim_end_house_map != $house_map );
                 
-                cd_log( "Robbery end with submitted results that don't".
-                        " match simulation results denied" );
+                cd_log(
+                    "Robbery end with submitted results that don't".
+                    " match simulation results denied ".
+                    " success=$success($sim_success) ".
+                    " wifeKilled=$wife_killed($sim_wife_killed) ".
+                    " wifeRobbed=$wife_robbed($sim_wife_robbed) ".
+                    " anyKilled=$any_family_killed($sim_any_family_killed) ".
+                    " backpackMismatch=$backpackMismatch ".
+                    " mapMismatch=$mapMismatch)" );
                 cd_transactionDeny();
                 return;
                 }
