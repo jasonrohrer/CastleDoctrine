@@ -457,6 +457,46 @@ void RobHouseGridDisplay::startWifeSearchForDeadChild( int inIndex ) {
 
 void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
+    // check for family deaths, regardless of whether mobiles frozen
+    int numPaths = mFamilyExitPaths.size();
+    for( int i=0; i<numPaths; i++ ) {
+        int progress = *( mFamilyExitPathProgress.getElement( i ) );
+        
+        int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+        
+        GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+        
+        if( pathLength == 1 || progress < pathLength - 1 ) {
+            
+            int oldIndex = posToIndex( path[progress] );
+
+            if( mHouseMapCellStates[ oldIndex ] != 1 ) {
+                // killed!
+                // don't move
+                    
+                if( *( mFamilyStatus.getElement( i ) ) != 0 ) {
+                    // just died
+                    
+                    if( isPropertySet( mHouseMapIDs[oldIndex],
+                                       mHouseMapCellStates[oldIndex],
+                                       son ) ||
+                        isPropertySet( mHouseMapIDs[oldIndex],
+                                       mHouseMapCellStates[oldIndex],
+                                       daughter ) ) {
+
+                        startWifeSearchForDeadChild( oldIndex );
+                        }
+
+                    // dead status
+                    *( mFamilyStatus.getElement( i ) ) = 0;
+                    }
+                }
+            }        
+        }
+    
+
+
+
     if( ! areMobilesFrozen() ) {
         
         // first, move each family member
@@ -497,23 +537,6 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                 if( mHouseMapCellStates[ oldIndex ] != 1 ) {
                     // killed!
                     // don't move
-                    
-                    if( *( mFamilyStatus.getElement( i ) ) != 0 ) {
-                        // just died
-                        
-                        if( isPropertySet( mHouseMapIDs[oldIndex],
-                                           mHouseMapCellStates[oldIndex],
-                                           son ) ||
-                            isPropertySet( mHouseMapIDs[oldIndex],
-                                           mHouseMapCellStates[oldIndex],
-                                           daughter ) ) {
-
-                            startWifeSearchForDeadChild( oldIndex );
-                            }
-
-                        // dead status
-                        *( mFamilyStatus.getElement( i ) ) = 0;
-                        }
                     }
                 else if( progress < pathLength - 1 ) {
                     

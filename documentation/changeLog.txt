@@ -1,3 +1,11 @@
+Version 11
+
+--Fixed bug in family death detection being delayed by a step, which resulted
+  in several unexpected behaviors (thanks Ukuko).
+
+
+
+
 Version 10  Live Server Fixes
 
 --Fixed bug where family positions in server-side-simulation house map did not
