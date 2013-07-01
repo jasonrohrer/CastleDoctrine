@@ -23,7 +23,18 @@ typedef struct HouseRecord {
         char *characterName;
         char *lastRobberName;
         int lootValue;
-        int robAttempts;
+        
+
+        // records for rob pick and tape list have different stats
+        // but both are ints, so can be scanned and presented
+        // this may be overkill.... but I've never gotten to use a union before
+        union {
+                int robAttempts;
+                int numSteps;
+                int eitherStat;
+            } stat;
+        
+
         int robberDeaths;
         int flag;
         

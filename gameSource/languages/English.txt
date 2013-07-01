@@ -186,7 +186,7 @@ emptyList "None found."
 
 robPickListTip "%d tried to rob %s house.  %d died trying"
 
-replayPickListTip "%s stole $%d after %d tried and %d died"
+replayPickListTip "%s stole $%d in %d steps after %d died"
 
 ignoreTip "Hide house from list until house changes"
 clearIgnoreListTip "Resumes showing all houses, with none ignored"

@@ -3,6 +3,8 @@ Version 11
 --Fixed bug in family death detection being delayed by a step, which resulted
   in several unexpected behaviors (thanks Ukuko).
 
+--Each security tape now has a length stat (thanks Bey Bey).
+
 
 
 

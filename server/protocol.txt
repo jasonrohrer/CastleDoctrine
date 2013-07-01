@@ -488,10 +488,10 @@ server.php?action=list_logged_robberies&user_id=[id number]
                                        &sequence_number=[number]
                                        &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-log_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
+log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
 ....
 more_pages
 OK

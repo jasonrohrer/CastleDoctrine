@@ -977,7 +977,8 @@ function cd_setupDatabase() {
             "house_start_map_hash CHAR(40) NOT NULL," .
             "INDEX( house_start_map_hash ),".
             "loadout LONGTEXT NOT NULL," .
-            "move_list LONGTEXT NOT NULL ) ENGINE = INNODB;";
+            "move_list LONGTEXT NOT NULL," .
+            "num_moves INT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -4105,7 +4106,8 @@ function cd_endRobHouse() {
 
     $move_list = cd_requestFilter( "move_list", "/[mt0-9@#LS]+/" );
     
-
+    $num_moves = 0;
+    
     // make sure tools used in move_list agrees with change to backpack
     // contents
     $toolsUsedString = "#";
@@ -4139,7 +4141,8 @@ function cd_endRobHouse() {
                     $toolsUsedArray[ $tool_id ] = 1;
                     }
                 }
-        
+            
+            $num_moves ++;
             }
 
         $toolsUsedString = cd_idQuanityArrayToString( $toolsUsedArray );
@@ -4358,7 +4361,8 @@ function cd_endRobHouse() {
                 " wife_name, son_name, daughter_name,".
                 " owner_now_dead, rob_time,".
                 " scouting_count, last_scout_time, ".
-                " house_start_map_hash, loadout, move_list ) ".
+                " house_start_map_hash, loadout, move_list, ".
+                " num_moves ) ".
                 "VALUES(" .
                 " 0, ".
                 " $user_id, $victim_id, '$house_money', '$wife_money', ".
@@ -4370,7 +4374,8 @@ function cd_endRobHouse() {
                 " '$wife_name', '$son_name', '$daughter_name',".
                 " '$ownerDied', CURRENT_TIMESTAMP,".
                 " '$scouting_count', '$last_scout_time', ".
-                " '$old_house_map_hash', '$loadout', '$move_list' );";
+                " '$old_house_map_hash', '$loadout', '$move_list', ".
+                " '$num_moves' );";
             cd_queryDatabase( $query );    
             }
 
@@ -4472,7 +4477,8 @@ function cd_endRobHouse() {
             " wife_name, son_name, daughter_name,".
             " owner_now_dead, rob_time,".
             " scouting_count, last_scout_time, ".
-            " house_start_map_hash, loadout, move_list ) ".
+            " house_start_map_hash, loadout, move_list, ".
+            " num_moves ) ".
             "VALUES(" .
             " 0, $user_id, $victim_id, '$house_money', '$wife_money', ".
             "'$total_value_stolen', ".
@@ -4483,7 +4489,8 @@ function cd_endRobHouse() {
             " '$wife_name', '$son_name', '$daughter_name',".
             " '$ownerDied', CURRENT_TIMESTAMP,".
             " '$scouting_count', '$last_scout_time', ".
-            " '$old_house_map_hash', '$loadout', '$move_list' );";
+            " '$old_house_map_hash', '$loadout', '$move_list', ".
+            " '$num_moves' );";
         cd_queryDatabase( $query );
 
         // some (or all) loot taken
@@ -4707,7 +4714,7 @@ function cd_listLoggedRobberies() {
     
     $query = "SELECT user_id, house_user_id, ".
         "log_id, log_watched, victim_name, robber_name, ".
-        "value_estimate, rob_attempts, robber_deaths ".
+        "value_estimate, num_moves, robber_deaths ".
         "FROM $tableName ".
         "$whereClause ".
         "ORDER BY rob_time DESC ".
@@ -4726,7 +4733,7 @@ function cd_listLoggedRobberies() {
         $victim_name = mysql_result( $result, $i, "victim_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
-        $rob_attempts = mysql_result( $result, $i, "rob_attempts" );
+        $num_moves = mysql_result( $result, $i, "num_moves" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
         $log_watched = mysql_result( $result, $i, "log_watched" );
 
@@ -4739,7 +4746,7 @@ function cd_listLoggedRobberies() {
         
         
         echo "$log_id#$victim_name#$robber_name".
-            "#$value_estimate#$rob_attempts#$robber_deaths#$log_watched\n";
+            "#$value_estimate#$num_moves#$robber_deaths#$log_watched\n";
         }
 
     if( $numRows > $limit ) {

@@ -397,7 +397,7 @@ void RobPickList::step() {
                             
 
                             sscanf( parts[3], "%d", &( r.lootValue ) );
-                            sscanf( parts[4], "%d", &( r.robAttempts ) );
+                            sscanf( parts[4], "%d", &( r.stat.eitherStat ) );
                             sscanf( parts[5], "%d", &( r.robberDeaths ) );
                             
                             sscanf( parts[6], "%d", &( r.flag ) );
@@ -617,7 +617,7 @@ void RobPickList::draw() {
             delete [] lootString;
 
 
-            char *attemptString = autoSprintf( "%d", r->robAttempts );
+            char *attemptString = autoSprintf( "%d", r->stat.eitherStat );
         
             drawPos = r->position;
             drawPos.x += 5;
@@ -712,7 +712,8 @@ void RobPickList::setTip( HouseRecord *inRecord ) {
 
         tip = autoSprintf( translate( "replayPickListTip" ), 
                            lastName, inRecord->lootValue, 
-                           inRecord->robAttempts, inRecord->robberDeaths );
+                           inRecord->stat.robAttempts, 
+                           inRecord->robberDeaths );
         delete [] lastName;
         }
     else {
@@ -735,7 +736,7 @@ void RobPickList::setTip( HouseRecord *inRecord ) {
             
 
         tip = autoSprintf( translate( "robPickListTip" ), 
-                           inRecord->robAttempts, 
+                           inRecord->stat.numSteps, 
                            possessiveName, 
                            inRecord->robberDeaths );
         delete [] possessiveName;
