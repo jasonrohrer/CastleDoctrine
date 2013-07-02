@@ -1,9 +1,21 @@
+Version 11   Live Server Fixes
+
+--A robber's backpack contents are now discarded upon leaving the target house
+  or reaching the vault.  Backpack contents are only added to the vault when a
+  robber dies in the house.  Experimenting with this as a solution to the
+  multi-life tool dumping loophole.
+
+
+
+
+
 Version 11   2012-July-2
 
 --Fixed bug in family death detection being delayed by a step, which resulted
   in several unexpected behaviors (thanks Ukuko).
 
 --Each security tape now has a length stat (thanks Bey Bey).
+
 
 
 
