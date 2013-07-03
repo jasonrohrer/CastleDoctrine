@@ -1633,7 +1633,7 @@ function cd_checkForFlush() {
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET ".
             "loot_value = ".
-            "    loot_value + $playerPayAmount + ".
+            "    loot_value + $playerPayAmount, ".
             "wife_loot_value = ".
             "    wife_loot_value + wife_present * $wifePayAmount, ".
             "value_estimate = ".
