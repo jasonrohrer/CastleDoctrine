@@ -783,6 +783,8 @@ function cd_setupDatabase() {
             "INDEX( self_test_house_map_hash ),".
             "self_test_move_list LONGTEXT NOT NULL," .
             "loot_value INT NOT NULL," .
+            // portion of money held by wife
+            "wife_loot_value INT NOT NULL," .
             // loot plus resale value of vault items, rounded
             "value_estimate INT NOT NULL," .
             "INDEX( value_estimate )," .
@@ -1632,7 +1634,8 @@ function cd_checkForFlush() {
             "SET ".
             "loot_value = ".
             "    loot_value + $playerPayAmount + ".
-            "    wife_present * $wifePayAmount, ".
+            "wife_loot_value = ".
+            "    wife_loot_value + wife_present * $wifePayAmount, ".
             "value_estimate = ".
             "    value_estimate + $playerPayAmount + ".
             "    wife_present * $wifePayAmount, ".
@@ -2108,7 +2111,7 @@ function cd_startEditHouse() {
     $query = "SELECT character_name, wife_name, son_name, daughter_name, ".
         "house_map_hash, vault_contents, backpack_contents, ".
         "gallery_contents, ".
-        "loot_value, ".
+        "loot_value, wife_loot_value, wife_present, ".
         "carried_loot_value, carried_vault_contents, ".
         "carried_gallery_contents, ".
         "edit_count, music_seed, ".
@@ -2142,6 +2145,8 @@ function cd_startEditHouse() {
     $backpack_contents = $row[ "backpack_contents" ];
     $gallery_contents = $row[ "gallery_contents" ];
     $loot_value = $row[ "loot_value" ];
+    $wife_loot_value = $row[ "wife_loot_value" ];
+    $wife_present = $row[ "wife_present" ];
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
 
@@ -2155,8 +2160,12 @@ function cd_startEditHouse() {
     $carried_vault_contents = $row[ "carried_vault_contents" ];
     $carried_gallery_contents = $row[ "carried_gallery_contents" ];
 
+
+    $total_loot_value = $loot_value + $wife_loot_value;
+
+    
     // add carried stuff into vault
-    $loot_value += $carried_loot_value;
+    $total_loot_value += $carried_loot_value;
     $vault_contents =
         cd_idQuantityUnion( $vault_contents, $carried_vault_contents );
     
@@ -2171,13 +2180,24 @@ function cd_startEditHouse() {
             }
         }
 
-    $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
+    $value_estimate = cd_computeValueEstimate( $total_loot_value,
+                                               $vault_contents );
+
+    if( $wife_present ) {
+        $wife_loot_value = floor( $total_loot_value / 2 );
+        $loot_value = ceil( $total_loot_value / 2 );
+        }
+    else {
+        $wife_loot_value = 0;
+        $loot_value = $total_loot_value;
+        }
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
         "last_owner_visit_time = CURRENT_TIMESTAMP, ".
         "last_pay_check_time = CURRENT_TIMESTAMP, ".
-        "loot_value = '$loot_value', value_estimate = '$value_estimate', ".
+        "loot_value = '$loot_value', wife_loot_value = '$wife_loot_value', ".
+        "value_estimate = '$value_estimate', ".
         "vault_contents = '$vault_contents', ".
         "gallery_contents = '$gallery_contents', ".
         "carried_loot_value = 0, ".
@@ -2292,7 +2312,7 @@ function cd_startEditHouse() {
     echo "\n";
     echo $last_price_list_number . ":" . $priceListBody . ":" . $signature;
     echo "\n";
-    echo $loot_value;
+    echo $total_loot_value;
     echo "\n";
     echo $must_self_test;
     echo "\n";
@@ -2578,7 +2598,8 @@ function cd_endEditHouse() {
     // automatically ignore blocked users and houses already checked
     // out for robbery
     
-    $query = "SELECT user_id, edit_count, loot_value, house_map_hash, ".
+    $query = "SELECT user_id, edit_count, loot_value, wife_loot_value, ".
+        "wife_present, house_map_hash, ".
         "vault_contents, backpack_contents, gallery_contents, ".
         "self_test_house_map_hash, self_test_move_list, ".
         "self_test_running, rob_attempts, robber_deaths, ".
@@ -2618,10 +2639,15 @@ function cd_endEditHouse() {
         cd_getHouseMap( $row[ "self_test_house_map_hash" ] );
     $old_self_test_move_list = $row[ "self_test_move_list" ];
     $loot_value = $row[ "loot_value" ];
+    $wife_loot_value = $row[ "wife_loot_value" ];
+    $wife_present = $row[ "wife_present" ];
     $old_house_map = cd_getHouseMap( $row[ "house_map_hash" ] );
     $old_vault_contents = $row[ "vault_contents" ];
     $old_backpack_contents = $row[ "backpack_contents" ];
     $old_gallery_contents = $row[ "gallery_contents" ];
+
+
+    $total_loot_value = $loot_value + $wife_loot_value;
     
     
     $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
@@ -3006,7 +3032,8 @@ function cd_endEditHouse() {
             }
 
         // items sold back for half their value, rounded down
-        $loot_value += $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
+        $total_loot_value +=
+            $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
         }
 
     
@@ -3129,9 +3156,9 @@ function cd_endEditHouse() {
             return;
             }
         
-        $loot_value -= $priceArray[ "$id" ] * $count;
+        $total_loot_value -= $priceArray[ "$id" ] * $count;
 
-        if( $loot_value < 0 ) {
+        if( $total_loot_value < 0 ) {
             // more edits than they could afford
             cd_log( "House check-in with exceeded player budget denied" );
             cd_transactionDeny();
@@ -3176,9 +3203,9 @@ function cd_endEditHouse() {
             return;
             }
         
-        $loot_value -= $quantity * $priceArray[ "$id" ];
+        $total_loot_value -= $quantity * $priceArray[ "$id" ];
 
-        if( $loot_value < 0 ) {
+        if( $total_loot_value < 0 ) {
             // more edits than they could afford
             cd_log( "House check-in with ".
                     "purchases exceeding player budget denied" );
@@ -3213,9 +3240,18 @@ function cd_endEditHouse() {
     
     
 
-    $value_estimate = cd_computeValueEstimate( $loot_value, $vault_contents );
+    $value_estimate = cd_computeValueEstimate( $total_loot_value,
+                                               $vault_contents );
 
 
+    if( $wife_present ) {
+        $wife_loot_value = floor( $total_loot_value / 2 );
+        $loot_value = ceil( $total_loot_value / 2 );
+        }
+    else {
+        $wife_loot_value = 0;
+        $loot_value = $total_loot_value;
+        }
 
 
     // now check family exit paths
@@ -3470,7 +3506,8 @@ function cd_endEditHouse() {
         "edit_count='$edit_count', ".
         "self_test_house_map_hash='$self_test_house_map_hash', ".
         "self_test_move_list='$self_test_move_list', ".
-        "loot_value='$loot_value', value_estimate='$value_estimate', ".
+        "loot_value='$loot_value', wife_loot_value='$wife_loot_value', ".
+        "value_estimate='$value_estimate', ".
         "backpack_value_estimate='$backpack_value_estimate', ".
         "wife_present='$wife_present', ".
         "rob_attempts='$rob_attempts', robber_deaths='$robber_deaths', ".
@@ -3864,7 +3901,8 @@ function cd_startRobHouse() {
     
     $query = "SELECT wife_name, son_name, daughter_name, ".
         "house_map_hash, gallery_contents, ".
-        "character_name, rob_attempts, music_seed, wife_present, loot_value ".
+        "character_name, rob_attempts, music_seed, wife_present, loot_value, ".
+        "wife_loot_value ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 ".
@@ -3895,6 +3933,7 @@ function cd_startRobHouse() {
     $music_seed = $row[ "music_seed" ];
     $wife_present = $row[ "wife_present" ];
     $loot_value = $row[ "loot_value" ];
+    $wife_loot_value = $row[ "wife_loot_value" ];
     
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
@@ -3923,11 +3962,6 @@ function cd_startRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
-    $wife_money = 0;
-
-    if( $wife_present ) {
-        $wife_money = (int)( $loot_value / 2 );
-        }
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
     
@@ -3935,7 +3969,7 @@ function cd_startRobHouse() {
     echo "$encrypted_house_map\n";
     echo "$backpack_contents\n";
     echo "$gallery_contents\n";
-    echo "$wife_money\n";
+    echo "$wife_loot_value\n";
     echo "$music_seed\n";
     echo "$wife_name\n";
     echo "$son_name\n";
@@ -3999,7 +4033,8 @@ function cd_endRobHouse() {
     
     $ownerDied = 0;
     
-    $query = "SELECT loot_value, value_estimate, music_seed, wife_present, ".
+    $query = "SELECT loot_value, wife_loot_value, ".
+        "value_estimate, music_seed, wife_present, ".
         "house_map_hash, user_id, character_name, ".
         "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
@@ -4186,7 +4221,8 @@ function cd_endRobHouse() {
     
     $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
 
-    $house_money = $row[ "loot_value" ];
+    $vault_loot_value = $row[ "loot_value" ];
+    $wife_loot_value = $row[ "wife_loot_value" ];
     $house_value_estimate = $row[ "value_estimate" ];
     $wife_present = $row[ "wife_present" ];
     $house_vault_contents = $row[ "vault_contents" ];
@@ -4196,7 +4232,7 @@ function cd_endRobHouse() {
     
     $house_gallery_contents = $row[ "gallery_contents" ];
     
-    $amountTaken = $house_money;
+    $amountTaken = 0;
     $stuffTaken = $house_vault_contents;
     $galleryStuffTaken = $house_gallery_contents;
 
@@ -4216,11 +4252,6 @@ function cd_endRobHouse() {
     $daughter_name = $row[ "daughter_name" ];
 
 
-    // wife carries half money, if she's there
-    $wife_money = (int)( $house_money / 2 );
-    if( !$wife_present ) {
-        $wife_money = 0;
-        }
 
 
 
@@ -4241,7 +4272,7 @@ function cd_endRobHouse() {
             cd_simulateRobbery( $old_house_map,
                                 $old_backpack_contents,
                                 $move_list,
-                                $wife_money,
+                                $wife_loot_value,
                                     
                                 &$sim_success,
                                 &$sim_wife_killed,
@@ -4365,7 +4396,8 @@ function cd_endRobHouse() {
                 " num_moves ) ".
                 "VALUES(" .
                 " 0, ".
-                " $user_id, $victim_id, '$house_money', '$wife_money', ".
+                " $user_id, $victim_id, '$vault_loot_value', ".
+                " '$wife_loot_value', ".
                 " '$total_value_stolen', ".
                 " '$house_vault_contents', '$house_gallery_contents', ".
                 " '$music_seed', ".
@@ -4402,17 +4434,16 @@ function cd_endRobHouse() {
             }
         
         
-        $vaultMoney = $house_money - $wife_money;
 
         $amountTaken = 0;
 
         if( $success != 0 && $wife_robbed ) {
             // robbed wife without dying
-            $amountTaken += $wife_money;
+            $amountTaken += $wife_loot_value;
             }
         
         if( $success == 1 ) {
-            $amountTaken += $vaultMoney;
+            $amountTaken += $vault_loot_value;
             }
         else {
             $stuffTaken = "#";
@@ -4480,8 +4511,9 @@ function cd_endRobHouse() {
             " house_start_map_hash, loadout, move_list, ".
             " num_moves ) ".
             "VALUES(" .
-            " 0, $user_id, $victim_id, '$house_money', '$wife_money', ".
-            "'$total_value_stolen', ".
+            " 0, $user_id, $victim_id, '$vault_loot_value', ".
+            " '$wife_loot_value', ".
+            " '$total_value_stolen', ".
             " '$house_vault_contents', '$house_gallery_contents', ".
             " '$music_seed', ".
             " '$rob_attempts', '$robber_deaths', ".
@@ -4494,7 +4526,21 @@ function cd_endRobHouse() {
         cd_queryDatabase( $query );
 
         // some (or all) loot taken
-        $house_money -= $amountTaken;
+        if( $success == 1 ) {
+            
+            $vault_loot_value = 0;
+            }
+        if( $success != 0 && $wife_robbed ) {
+            // robbed wife without dying
+            $wife_loot_value = 0;
+            }
+        else if( $wife_killed ) {
+            // wife dead, but she wasn't successfully robbed
+            // move her money into the vault
+            $vault_loot_value += $wife_loot_value;
+            $wife_loot_value = 0;
+            }
+        
 
         if( $success == 1 ) {
             // reached vault, stole everything there too    
@@ -4548,7 +4594,8 @@ function cd_endRobHouse() {
             $wife_present = 0;
             }
 
-        $value_estimate = cd_computeValueEstimate( $house_money,
+        $value_estimate = cd_computeValueEstimate( $vault_loot_value +
+                                                   $wife_loot_value,
                                                    $house_vault_contents );
 
         $house_map_hash = cd_storeHouseMap( $house_map );
@@ -4561,7 +4608,8 @@ function cd_endRobHouse() {
             "consecutive_rob_success_count = ".
             "    '$consecutive_rob_success_count', ".
             "house_map_hash='$house_map_hash', ".
-            "loot_value = $house_money,  ".
+            "loot_value = $vault_loot_value,  ".
+            "wife_loot_value = $wife_loot_value,  ".
             "wife_present = $wife_present,  ".
             "vault_contents = '$house_vault_contents', ".
             "gallery_contents = '$house_gallery_contents', ".
@@ -4937,7 +4985,7 @@ function cd_getSelfTestLog() {
     $query = "SELECT character_name, ".
         "wife_name, son_name, daughter_name, ".
         "self_test_house_map_hash, self_test_move_list, wife_present, ".
-        "loot_value, music_seed ".
+        "wife_loot_value, music_seed ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$house_owner_id';";
 
@@ -4952,20 +5000,21 @@ function cd_getSelfTestLog() {
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 
 
-    $wife_money = 0;
-
-    if( $row[ "wife_present" ] ) {
-        $wife_money = (int)( $row[ "loot_value" ] / 2 );
-        }
-
     $self_test_house_map =
         cd_getHouseMap( $row[ "self_test_house_map_hash" ] );
-    
+
+
+    // NOTE:
+    // wife loot value is out-of-sync here, because we should return
+    // the wife money when the self test was submitted, not the value that
+    // it has since changed to.
+    // Still, this is for admin only, and it's a minor glitch, so it's
+    // not worth adding extra database complexity to correct it.
     
     echo $row[ "character_name" ] . "\n";
     echo $self_test_house_map . "\n";
     echo $row[ "self_test_move_list" ] . "\n";
-    echo $wife_money. "\n";
+    echo $row[ "wife_loot_value" ] . "\n";
     echo $row[ "music_seed" ] . "\n";
     echo $row[ "wife_name" ] . "\n";
     echo $row[ "son_name" ] . "\n";
@@ -5140,7 +5189,7 @@ function cd_buyAuction() {
 
     // make sure user has enough balance in house, and house checked out
 
-    $query = "SELECT gallery_contents, loot_value, ".
+    $query = "SELECT gallery_contents, wife_loot_value, loot_value, ".
         "vault_contents, backpack_contents ".
         "FROM $houseTable ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
@@ -5157,8 +5206,12 @@ function cd_buyAuction() {
         }
 
     $old_balance = mysql_result( $result, 0, "loot_value" );
+    $old_wife_balance = mysql_result( $result, 0, "wife_loot_value" );
 
-    if( $old_balance < $price ) {
+    $old_total_balance = $old_balance + $old_wife_balance;
+    
+    
+    if( $old_total_balance < $price ) {
         // not enough money.
         // check if resellable items might be making up the difference
         $vault_contents = mysql_result( $result, 0, "vault_contents" );
@@ -5171,7 +5224,7 @@ function cd_buyAuction() {
             cd_idQuantityToResaleValue( $totalContents, cd_getPriceArray() );
 
     
-        if( $old_balance + $itemResaleValue < $price ) {
+        if( $old_total_balance + $itemResaleValue < $price ) {
             cd_log( "Auction purchase failed, ".
                     "not enough money or resellable items\n" );
             cd_transactionDeny();
@@ -5186,8 +5239,11 @@ function cd_buyAuction() {
     // they have sold those items, and that it will be reflected in check-in,
     // or else their check in will fail due to a negative result balance
     // (this negative balance is temporary until checkin fixes it).
-    $new_balance = $old_balance - $price;
+    $new_total_balance = $old_total_balance - $price;
 
+    $new_vault_balance = ceil( $new_total_balance / 2 );
+    $new_wife_balance = floor( $new_total_balance / 2 );
+    
     $old_gallery_contents = mysql_result( $result, 0, "gallery_contents" );
     $new_gallery_contents = "";
     
@@ -5205,7 +5261,8 @@ function cd_buyAuction() {
     // now make changes
 
     $query = "UPDATE $houseTable SET ".
-        "loot_value = '$new_balance', ".
+        "loot_value = '$new_vault_balance', ".
+        "wife_loot_value = '$new_wife_balance', ".
         "gallery_contents = '$new_gallery_contents', ".
         "last_auction_price = '$price' ".
         "WHERE user_id = '$user_id';";
@@ -5769,11 +5826,16 @@ function cd_newHouseForUser( $user_id ) {
     while( $daughter_name == $wife_name ) {
         $daughter_name = cd_pickName( "daughter_names" );
         }
+
+    global $playerStartMoney;
+    
+    $loot_value = ceil( $playerStartMoney / 2 );
+    $wife_loot_value = floor( $playerStartMoney / 2 );
+    
     
     while( !$foundName && $errorNumber == 1062 ) {
         $character_name = cd_pickFullName();
-
-        global $playerStartMoney;
+        
         
         $query = "INSERT INTO $tableNamePrefix"."houses SET " .
             "user_id=$user_id, ".
@@ -5790,7 +5852,8 @@ function cd_newHouseForUser( $user_id ) {
             "edit_count = 0, ".
             "self_test_house_map_hash = '$house_map_hash', ".
             "self_test_move_list = '#', ".
-            "loot_value = '$playerStartMoney', ".
+            "loot_value = '$loot_value', ".
+            "wife_loot_value = '$wife_loot_value', ".
             "value_estimate = '$playerStartMoney', ".
             "backpack_value_estimate = 0, ".
             "wife_present = 1, ".
@@ -5970,7 +6033,7 @@ function cd_showDataHouseList( $inTableName ) {
     
              
     $query = "SELECT $houseTable.user_id, character_name, ".
-        "loot_value, value_estimate, edit_checkout, ".
+        "loot_value, wife_loot_value, value_estimate, edit_checkout, ".
         "self_test_running, rob_checkout, robbing_user_id, rob_attempts, ".
         "robber_deaths, edit_count, last_ping_time, last_owner_visit_time, ".
         "$houseTable.blocked ".
@@ -6028,6 +6091,7 @@ function cd_showDataHouseList( $inTableName ) {
     echo "<td>Blocked?</td>\n";
     echo "<td>".orderLink( "character_name", "Character Name" )."</td>\n";
     echo "<td>".orderLink( "loot_value", "Loot Value" )."</td>\n";
+    echo "<td>".orderLink( "wife_loot_value", "Wife Loot" )."</td>\n";
     echo "<td>".orderLink( "value_estimate", "Value Est." )."</td>\n";
     echo "<td>".orderLink( "rob_attempts", "Rob Attempts" )."</td>\n";
     echo "<td>".orderLink( "robber_deaths", "Deaths" )."</td>\n";
@@ -6044,6 +6108,7 @@ function cd_showDataHouseList( $inTableName ) {
         $user_id = mysql_result( $result, $i, "user_id" );
         $character_name = mysql_result( $result, $i, "character_name" );
         $loot_value = mysql_result( $result, $i, "loot_value" );
+        $wife_loot_value = mysql_result( $result, $i, "wife_loot_value" );
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
         $edit_checkout = mysql_result( $result, $i, "edit_checkout" );
         $self_test_running = mysql_result( $result, $i, "self_test_running" );
@@ -6101,6 +6166,7 @@ function cd_showDataHouseList( $inTableName ) {
         echo "<td align=right>$blocked [$block_toggle]</td>\n";
         echo "<td>$character_name</td>\n";
         echo "<td>$loot_value</td>\n";
+        echo "<td>$wife_loot_value</td>\n";
         echo "<td>$value_estimate</td>\n";
         echo "<td>$rob_attempts</td>\n";
         echo "<td>$robber_deaths</td>\n";
