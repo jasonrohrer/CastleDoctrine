@@ -1,9 +1,10 @@
-Version 12
+Version 12     2013-July-4
 
 --Animals now only start moving after the player sees them, making it
   impossible for a never-visible animal to move around behind the walls and
   trigger things mysteriously (the animal now has to be seen at least once,
   perhaps through a window, before it can start doing this).
+
 
 
 
@@ -28,7 +29,7 @@ Version 11   Live Server Fixes
 
 
 
-Version 11   2012-July-2
+Version 11   2013-July-2
 
 --Fixed bug in family death detection being delayed by a step, which resulted
   in several unexpected behaviors (thanks Ukuko).
