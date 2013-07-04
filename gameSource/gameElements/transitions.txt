@@ -17,6 +17,11 @@ noMobile #   power_door:3  => 1
 player   #   door_push   =>  2
 
 
+visible # pitbull:1 => 11
+visible # chihuahua:1 => 11
+visible # cat:1 => 11
+
+
 floor_electric:2 # pitbull => 3
 floor_electric:2 # chihuahua => 3
 floor_electric:2 # cat => 3
@@ -69,7 +74,7 @@ ladder # pit:1 => 3
 
 
 
-player # pitbull:1 => 4
+player # pitbull:11 => 4
 
 pitbull:4 # player => 4
 
@@ -180,12 +185,12 @@ ammoniumNitrateBomb # wall_wood_wired:1 => 5
 ammoniumNitrateBomb # wall_wood_wired:2 => 5
 
 
-gun  # pitbull:1 => 5
-gun  # chihuahua:1 => 5
-gun  # cat:1 => 5
+gun  # pitbull:11 => 5
+gun  # chihuahua:11 => 5
+gun  # cat:11 => 5
 
-druggedMeat  # pitbull:1 => 6
-druggedMeat  # chihuahua:1 => 6
+druggedMeat  # pitbull:11 => 6
+druggedMeat  # chihuahua:11 => 6
 
 gun  # pitbull:6   => 5
 gun  # chihuahua:6 => 5
@@ -220,12 +225,12 @@ water # floor_electric:2 => 3
 
 
 
-crowbar  # pitbull:1 => 7
-crowbar  # chihuahua:1 => 7
-crowbar  # cat:1 => 7
+crowbar  # pitbull:11 => 7
+crowbar  # chihuahua:11 => 7
+crowbar  # cat:11 => 7
 
-brick  # chihuahua:1 => 7
-brick  # cat:1 => 7
+brick  # chihuahua:11 => 7
+brick  # cat:11 => 7
 
 
 

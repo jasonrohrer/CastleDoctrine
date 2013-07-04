@@ -632,6 +632,36 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
     
     
     recomputeVisibility();
+
+
+
+    // now trigger transitions based on the new visibility
+    
+    char *fullMapTilesVisible = new char[ mFullMapD * mFullMapD ];
+
+    memset( fullMapTilesVisible, false, mFullMapD * mFullMapD );
+    
+    for( int y=0; y<HOUSE_D; y++ ) {
+        int bigY = y + mSubMapOffsetY;
+
+        for( int x=0; x<HOUSE_D; x++ ) {
+            int bigX = x + mSubMapOffsetX;
+
+            int subIndex = y * HOUSE_D + x;
+            
+            int bigIndex = bigY * mFullMapD + bigX;
+            
+            fullMapTilesVisible[ bigIndex ] = mTileVisibleMap[ subIndex ];
+            }
+        }
+
+    
+    applyVisibilityTransitions( mHouseMapIDs, mHouseMapCellStates, 
+                                mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                                mFullMapD, mFullMapD,
+                                fullMapTilesVisible );
+
+    delete [] fullMapTilesVisible;
     }
 
 

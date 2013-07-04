@@ -1,3 +1,13 @@
+Version 12
+
+--Animals now only start moving after the player sees them, making it
+  impossible for a never-visible animal to move around behind the walls and
+  trigger things mysteriously (the animal now has to be seen at least once,
+  perhaps through a window, before it can start doing this).
+
+
+
+
 Version 11   Live Server Fixes
 
 --A robber's backpack contents are now discarded upon leaving the target house

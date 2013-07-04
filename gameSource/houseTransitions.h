@@ -40,4 +40,12 @@ void applyToolTransition( int *inMapIDs, int *inMapStates,
 
 
 
+// applies transitions that are triggered by a map tile's visibility
+void applyVisibilityTransitions( int *inMapIDs, int *inMapStates, 
+                                 int *inMapMobileIDs, int *inMapMobileStates,
+                                 int inMapW, int inMapH,
+                                 char *inMapTilesVisible );
+
+
+
 #endif
