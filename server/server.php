@@ -4039,7 +4039,7 @@ function cd_endRobHouse() {
         "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
         "rob_attempts, robber_deaths, consecutive_rob_success_count, ".
-        "edit_count ".
+        "edit_count, payment_count, wife_paid_total, you_paid_total ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
         "robbing_user_id = '$user_id' AND blocked='0' ".
@@ -4246,6 +4246,10 @@ function cd_endRobHouse() {
     $edit_count = $row[ "edit_count" ];
     $music_seed = $row[ "music_seed" ];
 
+    $payment_count = $row[ "payment_count" ];
+    $wife_paid_total = $row[ "wife_paid_total" ];
+    $you_paid_total = $row[ "you_paid_total" ];
+    
 
     $wife_name = $row[ "wife_name" ];
     $son_name = $row[ "son_name" ];
@@ -4586,6 +4590,29 @@ function cd_endRobHouse() {
     
 
 
+
+    // resent payment reports for money that has already been stolen
+    if( $wife_robbed && $success != 0 ) {
+        $wife_paid_total = 0;
+        // stole money from wife
+        }
+
+    if( ! $wife_present && $success == 1 ) {
+        // reached vault, and wife's money in there too, because she's
+        // already dead
+        $wife_paid_total = 0;
+        }
+    if( $success == 1 ) {
+        // owner's pay stolen too from vault
+        $you_paid_total = 0;
+        }
+
+    if( $wife_paid_total == 0 && $you_paid_total == 0 ) {
+        // no pay left to report
+        $payment_count = 0;
+        }
+    
+    
     
     
         
@@ -4613,7 +4640,10 @@ function cd_endRobHouse() {
             "wife_present = $wife_present,  ".
             "vault_contents = '$house_vault_contents', ".
             "gallery_contents = '$house_gallery_contents', ".
-            "value_estimate = '$value_estimate' ".
+            "value_estimate = '$value_estimate', ".
+            "wife_paid_total = '$wife_paid_total', ".
+            "you_paid_total = '$you_paid_total', ".
+            "payment_count = '$payment_count' ".
             "WHERE user_id = '$last_robbed_owner_id' AND ".
             "robbing_user_id = $user_id AND rob_checkout = 1;";
         cd_queryDatabase( $query );

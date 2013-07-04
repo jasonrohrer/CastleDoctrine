@@ -15,12 +15,14 @@ Version 11   Live Server Fixes
   robber dies in the house.  Experimenting with this as a solution to the
   multi-life tool dumping loophole.
 
-
 --Wife retains her half of the money (and accumulates her own salary) even
   after a robbery that reaches the vault.  Previously, after a vault robbery,
   half of the money she held would be put in the vault.  This changes prevents
   someone from whittling away at house's money by reaching the vault over and
   over without finding the wife.
+
+--No longer reports salary earnings to you that have already been stolen.
+
 
 
 
