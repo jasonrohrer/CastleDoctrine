@@ -5809,6 +5809,21 @@ function cd_newHouseForUser( $user_id ) {
             "WHERE user_id = $user_id;";
         cd_queryDatabase( $query );
         }
+    else {
+        // row did not exist, which means our FOR UPDATE lock is weak
+        // and will let other processes through for the same non-existing
+        // row.
+        
+        // Those processes then have the potential to deadlock each other
+        // when they get to the INSERT below.
+        
+        // (SELECT ... FOR UPDATE does not block other SELECT ... FOR UPDATEs
+        //  when the row does not exist, but it does block other INSERTS).
+        
+        // COMMIT to release the FOR UPDATE lock here
+        cd_queryDatabase( "COMMIT;" );
+        }
+
 
 
     if( $lives_left == 0 ) {
