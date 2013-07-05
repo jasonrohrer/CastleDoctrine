@@ -16,8 +16,6 @@ include( "header.php" );
 
 <center>
 
-<br><br><br>
-Scroll down.
 
 <br><br><br>
 <img src="contestImages/approachCropped.png" width=256 height=256>
