@@ -88,7 +88,8 @@ enum triggerID {
     trigger_noPower,
     trigger_powerNorth,
     trigger_noPowerNorth,
-    trigger_visible
+    trigger_visible,
+    trigger_END
     };                                              
     
 
@@ -292,7 +293,10 @@ void initHouseTransitions() {
     
     SimpleVector<int> occurrenceCounts;
 
-    int maxTriggerID = 0;
+    // at least enough bins in array to handle all of our built-in triggers
+    // Thus, even if a built-in doesn't occur in our transitions.txt file,
+    // we still make a record for it with a 0-count in it.
+    int maxTriggerID = trigger_END;
 
     for( int i=0; i<parsedRecords.size(); i++ ) {
     

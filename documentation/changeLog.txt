@@ -1,3 +1,12 @@
+Version 13
+
+--Fixed a crash that occurred when the user mistakenly launched the v12 game
+  application from the v11 folder (thanks Paciferal).
+
+
+
+
+
 Version 12     2013-July-4
 
 --Animals now only start moving after the player sees them, making it
