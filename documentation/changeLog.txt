@@ -7,6 +7,15 @@ Version 13
 
 
 
+Version 12   Live Server Fixes
+
+--Added missing column to shadow table where dead owners' houses are held to
+  prevent unexpected responses from server (thanks Gardner Marshall).
+
+
+
+
+
 Version 12     2013-July-4
 
 --Animals now only start moving after the player sees them, making it
