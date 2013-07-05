@@ -32,7 +32,8 @@ if( isset( $blockRobots ) && $blockRobots == 1 ) {
 <td width=20% align=center>[<a href="http://thecastledoctrine.net/forums">forums</a>]</td>
 <td width=20% align=center>[<a href="http://thecastledoctrine.gamepedia.com">wiki</a>]</td>
 <td width=20% align=center>[<a href="http://thecastledoctrine.net/buy.php">buy</a>]</td>
-<td width=20% align=center>[<a href="http://www.reddit.com/r/CastleDoctrine">subreddit</a>]</td>
+<td width=20% align=center>[<a href="http://thecastledoctrine.net/permadeathContest.php">???</a>]</td>
+<!--<td width=20% align=center>[<a href="http://www.reddit.com/r/CastleDoctrine">subreddit</a>]</td>-->
 </tr>
 
 <tr><td colspan=5 bgcolor="#222222">
