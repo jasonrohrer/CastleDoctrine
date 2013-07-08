@@ -3,6 +3,11 @@ Version 13
 --Fixed a crash that occurred when the user mistakenly launched the v12 game
   application from the v11 folder (thanks Paciferal).
 
+--Added empty vault sprite, and changed so that reaching an empty vault does
+  not end the robbery (if owner has not edited house since last robbery).  This
+  eliminates grinding that was possible through damage that was saved by
+  reaching a vault repeatedly in a broken house.
+
 
 
 

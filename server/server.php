@@ -3907,7 +3907,7 @@ function cd_startRobHouse() {
     $query = "SELECT wife_name, son_name, daughter_name, ".
         "house_map_hash, gallery_contents, ".
         "character_name, rob_attempts, music_seed, wife_present, loot_value, ".
-        "wife_loot_value ".
+        "wife_loot_value, vault_contents, consecutive_rob_success_count ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$to_rob_user_id' AND blocked='0' ".
         "AND edit_checkout = 0 ".
@@ -3939,6 +3939,8 @@ function cd_startRobHouse() {
     $wife_present = $row[ "wife_present" ];
     $loot_value = $row[ "loot_value" ];
     $wife_loot_value = $row[ "wife_loot_value" ];
+    $vault_contents = $row[ "vault_contents" ];
+    $consecutive_rob_success_count = $row[ "consecutive_rob_success_count" ];
     
     $rob_attempts = $row[ "rob_attempts" ];
     $rob_attempts ++;
@@ -3966,6 +3968,17 @@ function cd_startRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+
+    if( $vault_contents == "#" && $loot_value == 0
+        && $consecutive_rob_success_count > 0 ) {
+        // vault has been reached since last edit
+        // and is currently empty
+
+        // switch vault to empty state
+        $house_map = preg_replace( "/#999#/", "#999:2!#", $house_map );
+        }
+    
+        
 
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
@@ -4262,6 +4275,23 @@ function cd_endRobHouse() {
 
 
 
+    
+    // before running simulation, tweak house map to insert
+    // empty vault (to match map that was sent to client from startRobHouse)
+    $old_house_map_untouched = $old_house_map;
+    
+    if( $house_vault_contents == "#" && $vault_loot_value == 0
+        && $consecutive_rob_success_count > 0 ) {
+        // vault has been reached since last edit
+        // and is currently empty
+
+        // switch vault to empty state
+        $old_house_map = preg_replace( "/#999#/", "#999:2!#", $old_house_map );
+
+        // store this map and use it it robbery log, too
+        $old_house_map_hash = cd_storeHouseMap( $old_house_map );
+        }
+
 
 
     
@@ -4365,7 +4395,7 @@ function cd_endRobHouse() {
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
         
         // keep original house map, untouched
-        $house_map = $old_house_map;
+        $house_map = $old_house_map_untouched;
 
         // don't touch loot value
         // or vault
@@ -4632,6 +4662,12 @@ function cd_endRobHouse() {
                                                    $wife_loot_value,
                                                    $house_vault_contents );
 
+        // never store house map with "empty vault" state in place
+        // because vault status can change separately from map changing
+
+        $house_map = preg_replace( "/#999:2!#/", "#999#", $house_map );
+
+        
         $house_map_hash = cd_storeHouseMap( $house_map );
         
         // update main table with changes, post-robbery
