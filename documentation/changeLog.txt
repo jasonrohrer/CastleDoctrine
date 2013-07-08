@@ -15,6 +15,9 @@ Version 12   Live Server Fixes
 --Fixed a potential deadlock on duplicate newHouse calls when a user's house
   does not yet exist.
 
+--Changed so that vault stops earning money after it is reached by robbers
+  twice (until the next owner repair).
+
 
 
 

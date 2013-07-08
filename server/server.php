@@ -804,9 +804,9 @@ function cd_setupDatabase() {
             "robbing_user_id INT NOT NULL," .
             "rob_attempts INT NOT NULL,".
             "robber_deaths INT NOT NULL,".
-            // counts number of consecutive robbery successes (where
-            // something was taken).
-            // pay stops as soon as two successes in a row happen
+            // used to count consecutive vault reaches
+            // now counts total vault reaches
+            // vault pay stops as soon as two vault reaches happen
             "consecutive_rob_success_count INT NOT NULL,".
             "last_ping_time DATETIME NOT NULL,".
             "INDEX( last_ping_time ),".
@@ -1632,22 +1632,27 @@ function cd_checkForFlush() {
         
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET ".
+            // only add to loot value if there have been less than two
+            // vault reaches
             "loot_value = ".
-            "    loot_value + $playerPayAmount, ".
+            "    loot_value + ".
+            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
+            // only add to wife money if wife present
             "wife_loot_value = ".
             "    wife_loot_value + wife_present * $wifePayAmount, ".
             "value_estimate = ".
-            "    value_estimate + $playerPayAmount + ".
+            "    value_estimate + ".
+            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount + ".
             "    wife_present * $wifePayAmount, ".
             "last_pay_check_time = CURRENT_TIMESTAMP, ".
             "payment_count = payment_count + 1, ".
-            "you_paid_total = you_paid_total + $playerPayAmount, ".
+            "you_paid_total = you_paid_total + ".
+            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
             "wife_paid_total = ".
             "    wife_paid_total + wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
             "AND edit_count != 0 ".
-            "AND ( value_estimate > 0 OR ".
-            "      consecutive_rob_success_count < 2 OR ".
+            "AND ( consecutive_rob_success_count < 2 OR ".
             "      wife_present = 1 ) ".
             "AND last_pay_check_time < ".
             "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
@@ -4358,7 +4363,6 @@ function cd_endRobHouse() {
     
     
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
-        $consecutive_rob_success_count = 0;
         
         // keep original house map, untouched
         $house_map = $old_house_map;
@@ -4426,7 +4430,10 @@ function cd_endRobHouse() {
     else {
         // reached vault, successful robbery, or killed some family members
 
-        $consecutive_rob_success_count ++;
+        if( $success == 1 ) {
+            // vault reach
+            $consecutive_rob_success_count ++;
+            }
         
         // use new house map
 
