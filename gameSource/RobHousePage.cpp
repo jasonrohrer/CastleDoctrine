@@ -33,6 +33,8 @@ RobHousePage::RobHousePage()
           mDoneButton( mainFont, 8, -5, translate( "suicide" ) ),
           mSuicideConfirmCheckbox( 8, -4.125, 1/16.0 ),
           mMusicToggleButton( "musicOn.tga", "musicOff.tga", -8, -6, 1/16.0 ),
+          mSafeMoveToggleButton( "safeMoveOff.tga", "safeMoveOn.tga", 
+                                 8, -2.5, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDescription( NULL ),
@@ -45,6 +47,7 @@ RobHousePage::RobHousePage()
     addComponent( &mGallery );
     addComponent( &mGridDisplay );
     addComponent( &mMusicToggleButton );
+    addComponent( &mSafeMoveToggleButton );
 
     mGallery.setAllowEdit( false );
     
@@ -62,9 +65,14 @@ RobHousePage::RobHousePage()
     mSuicideConfirmCheckbox.addActionListener( this );
     mGridDisplay.addActionListener( this );
     mMusicToggleButton.addActionListener( this );
+    mSafeMoveToggleButton.addActionListener( this );
 
     mMusicToggleButton.setMouseOverTip( translate( "musicOff" ) );
     mMusicToggleButton.setMouseOverTipB( translate( "musicOn" ) );
+
+
+    mSafeMoveToggleButton.setMouseOverTip( translate( "safeMoveOn" ) );
+    mSafeMoveToggleButton.setMouseOverTipB( translate( "safeMoveOff" ) );
     
 
     doublePair slotCenter = { 7.25, 4 };
@@ -265,6 +273,11 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             }
         SettingsManager::setSetting( "musicOff", musicOff );
         }
+    else if( inTarget == &mSafeMoveToggleButton ) {
+        char on = mSafeMoveToggleButton.getToggled();
+        
+        mGridDisplay.setSafeMoveMode( on );
+        }
     else if( inTarget == &mGridDisplay ) {
         mGallery.fadeOut( mGridDisplay.getAboutToLeave() );
 
@@ -384,6 +397,10 @@ void RobHousePage::makeActive( char inFresh ) {
     setMusicFromSeed( mMusicSeed );
 
     mMusicToggleButton.setToggled( musicOff );
+    
+
+    mSafeMoveToggleButton.setToggled( false );
+    mGridDisplay.setSafeMoveMode( false );
     }
 
 

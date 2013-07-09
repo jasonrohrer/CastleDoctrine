@@ -2037,6 +2037,40 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 drawSprite( mToolTargetBorderSprite, tilePos, 
                             1.0 / 16.0 );
                 }
+            else if( fullI != mStartIndex && // handle start separately
+                     mSpecialHighlightFullIndices.getElementIndex( fullI ) 
+                     != -1 ) {
+                
+                int highlightIndex = 
+                    mSpecialHighlightFullIndices.getElementIndex( fullI );
+                
+                SpriteHandle highlightSprite = 
+                    *( mSpecialHighlightSprites.getElement( highlightIndex ) );
+                
+                
+                // look at tile to the south
+                // if it's blocking, skip drawing entirely
+                // (draw it on top later)
+                // This is different from tool target highligh, where we
+                // draw half strength on top of blocking tiles later
+
+                char southBlocking = true;
+                
+                int southI = fullI - mFullMapD;
+
+                if( southI >= 0 ) {
+                    southBlocking = 
+                        isPropertySet( mHouseMapIDs[ southI ],
+                                       mHouseMapCellStates[ southI ],
+                                       blocking );
+                    }
+                
+                if( !southBlocking ) {
+                    setDrawColor( 1, 1, 1, 0.5 );
+                    
+                    drawSprite( highlightSprite, tilePos, 1.0 / 16.0 );
+                    }
+                }
             
 
             
@@ -2390,9 +2424,40 @@ void HouseGridDisplay::draw() {
                 drawSprite( mToolTargetSprite, tilePos, 
                             1.0 / 16.0 );
                 
-                setDrawColor( 1, 1, 1, 0.25 );
+                setDrawColor( 1, 1, 1, 0.5 );
                 drawSprite( mToolTargetBorderSprite, tilePos, 
                             1.0 / 16.0 );
+                }
+            }
+        }
+
+    for( int i=0; i<mSpecialHighlightFullIndices.size(); i++ ) {
+        int fullI = *( mSpecialHighlightFullIndices.getElement(i) );
+        
+        int subI = fullToSub( fullI );
+        
+        if( subI != -1 ) {
+            char southBlocking = true;
+        
+            int southI = fullI - mFullMapD;
+            
+            if( southI >= 0 ) {
+                southBlocking = 
+                    isPropertySet( mHouseMapIDs[ southI ],
+                                   mHouseMapCellStates[ southI ],
+                                   blocking );
+                }
+
+            if( southBlocking ) {
+                // draw full strength
+                doublePair tilePos = getTilePos( subI );
+                
+                setDrawColor( 1, 1, 1, 0.5 );
+                
+                SpriteHandle highlightSprite = 
+                    *( mSpecialHighlightSprites.getElement(i) );
+
+                drawSprite( highlightSprite, tilePos, 1.0 / 16.0 );
                 }
             }
         }
@@ -3561,6 +3626,23 @@ void HouseGridDisplay::setTargetHighlights(
 void HouseGridDisplay::setPickedTargetHighlight( int inPickedFullIndex ) {
     mToolTargetPickedFullIndex = inPickedFullIndex;
     }
+
+
+
+void HouseGridDisplay::addSpecialHighlight( int inFullIndex, 
+                                            SpriteHandle inSprite ) {
+    
+    mSpecialHighlightFullIndices.push_back( inFullIndex );
+    mSpecialHighlightSprites.push_back( inSprite );
+    }
+
+
+
+void HouseGridDisplay::clearSpecialHighlights() {
+    mSpecialHighlightFullIndices.deleteAll();
+    mSpecialHighlightSprites.deleteAll();
+    }
+
 
 
 

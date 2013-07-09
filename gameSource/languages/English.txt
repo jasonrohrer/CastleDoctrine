@@ -226,6 +226,12 @@ leave "Leave"
 musicOff "Turn music off"
 musicOn "Turn music on"
 
+safeMoveOn "Enable safe ENTER-confirmation for movement"
+safeMoveOff "Disable safe ENTER-confirmation for movement"
+
+safeMoveTip "Press ENTER to confirm this move"
+
+
 
 killedBy "You were killed by:"
 

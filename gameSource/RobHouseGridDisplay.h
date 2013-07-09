@@ -46,6 +46,9 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char getToolJustUsed();
         
         
+        void setSafeMoveMode( char inOn );
+
+
         // true if robber standing in the entrance
         char getAboutToLeave();
         
@@ -70,6 +73,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void pointerDrag( float inX, float inY );
         virtual void pointerUp( float inX, float inY );
 
+        
+        // override to catch ENTER for safe move mode
+        virtual void keyDown( unsigned char inASCII );
+
 
         // at end of robbery, deal with family repositioning
         // called automatically in cases where this grid display catches
@@ -90,6 +97,17 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
         int mCurrentTool;
         char mToolJustUsed;
+
+        char mSafeMoveMode;
+        char mSafeMoveProposed;
+        int mSafeMoveIndex;
+        char mSafeMoveConfirmed;
+
+        SpriteHandle mSafeUpSprite;
+        SpriteHandle mSafeLeftSprite;
+        SpriteHandle mSafeDownSprite;
+        SpriteHandle mSafeRightSprite;
+        
 
 
         // 0 = visible (shroud transparent)

@@ -416,6 +416,16 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
         int mToolTargetPickedFullIndex;
         
+
+
+        void addSpecialHighlight( int inFullIndex, SpriteHandle inSprite );
+        void clearSpecialHighlights();
+
+        
+        SimpleVector<int> mSpecialHighlightFullIndices;
+        SimpleVector<SpriteHandle> mSpecialHighlightSprites;
+
+
         int mForbiddenMoveHappened;
 
 

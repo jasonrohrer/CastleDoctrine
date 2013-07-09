@@ -119,6 +119,7 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         CheckboxButton mSuicideConfirmCheckbox;
 
         SpriteToggleButton mMusicToggleButton;
+        SpriteToggleButton mSafeMoveToggleButton;
         
 
         Gallery mGallery;

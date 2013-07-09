@@ -37,6 +37,14 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mLeaveSprite( loadSprite( "left.tga" ) ),
           mCurrentTool( -1 ),
           mToolJustUsed( false ),
+          mSafeMoveMode( false ),
+          mSafeMoveProposed( false ),
+          mSafeMoveIndex( -1 ),
+          mSafeMoveConfirmed( false ),
+          mSafeUpSprite( loadSprite( "moveUp.tga" ) ),
+          mSafeLeftSprite( loadSprite( "moveLeft.tga" ) ),
+          mSafeDownSprite( loadSprite( "moveDown.tga" ) ),
+          mSafeRightSprite( loadSprite( "moveRight.tga" ) ),
           mForceAllTileToolTips( false ),
           mRobberStoleFromWife( false ) {
 
@@ -51,6 +59,11 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
     clearMoveList();
 
     freeSprite( mLeaveSprite );
+
+    freeSprite( mSafeUpSprite );
+    freeSprite( mSafeLeftSprite );
+    freeSprite( mSafeDownSprite );
+    freeSprite( mSafeRightSprite );
     }
 
 
@@ -154,6 +167,11 @@ char *RobHouseGridDisplay::getMoveList() {
 
 
 void RobHouseGridDisplay::startUsingTool( int inToolID ) {
+    mSafeMoveConfirmed = false;
+    mSafeMoveProposed = false;
+    mSafeMoveIndex = -1;
+    clearSpecialHighlights();
+    
     if( ! getToolInRange( inToolID ) ) {
         mForbiddenMoveHappened = true;
         return;
@@ -307,6 +325,17 @@ char RobHouseGridDisplay::getToolJustUsed() {
     mToolJustUsed = false;
 
     return temp;
+    }
+
+
+
+
+void RobHouseGridDisplay::setSafeMoveMode( char inOn ) {
+    mSafeMoveMode = inOn;
+    mSafeMoveProposed = false;
+    mSafeMoveIndex = -1;
+    mSafeMoveConfirmed = false;
+    clearSpecialHighlights();
     }
 
 
@@ -995,6 +1024,22 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 
 
+void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {    
+    if( mSafeMoveMode && mSafeMoveProposed ) {
+        
+        if( inASCII == 13 ) {
+            mSafeMoveConfirmed = true;
+            // apply move again, now that we have confirmation
+            moveRobber( mSafeMoveIndex );
+            }
+        }
+    
+    HouseGridDisplay::keyDown( inASCII );
+    }
+
+
+
+
 void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     if( mDead ) {
         // can't move anymore
@@ -1006,6 +1051,59 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
         stopUsingTool();
         mToolJustUsed = false;
         }
+
+
+    if( mSafeMoveMode ) {
+        if( mSafeMoveProposed && mSafeMoveConfirmed &&
+            inNewIndex == mSafeMoveIndex ) {
+            // this call is a confirmation
+
+            // go ahead and move, below
+            mSafeMoveConfirmed = false;
+            mSafeMoveProposed = false;
+            mSafeMoveIndex = -1;
+
+            clearSpecialHighlights();
+            }
+        else {
+            // this is a new proposal
+
+            mSafeMoveConfirmed = false;
+            mSafeMoveProposed = true;
+            mSafeMoveIndex = inNewIndex;
+            clearSpecialHighlights();
+            
+            // add highlight for this proposal
+            doublePair robberPos = getTilePosFull( mRobberIndex );
+            doublePair movePos = getTilePosFull( mSafeMoveIndex );
+        
+            double dX = movePos.x - robberPos.x;
+            double dY = movePos.y - robberPos.y;
+            
+            SpriteHandle moveSprite;
+            
+            if( dX < 0 ) {
+                moveSprite = mSafeLeftSprite;
+                }
+            else if( dX > 0 ) {
+                moveSprite = mSafeRightSprite;
+                }
+            else if( dY < 0 ) {
+                moveSprite = mSafeDownSprite;
+                }
+            else if( dY > 0 ) {
+                moveSprite = mSafeUpSprite;
+                }
+
+            
+            addSpecialHighlight( mSafeMoveIndex, moveSprite );
+            setToolTip( translate( "safeMoveTip" ) );
+            
+            // wait for confirmation
+            return;
+            }
+        }
+    
     
 
     HouseGridDisplay::moveRobber( inNewIndex );
