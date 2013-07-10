@@ -1,3 +1,11 @@
+Version 13   Live Server Fixes
+
+--Changed cost of steel walls to 30, wired wood walls to 15, and torch to 300.
+
+
+
+
+
 Version 13   2013-July-9
 
 --Fixed a crash that occurred when the user mistakenly launched the v12 game

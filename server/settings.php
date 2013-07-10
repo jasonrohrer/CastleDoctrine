@@ -124,7 +124,7 @@ $headlessClientPorts = array( 5077, 5078 );
 // array( ID, Price, InGallery, Note )
 $defaultPrices = array(
     array( 1, 10, 0, "Wooden Wall" ),
-    array( 2, 20, 0, "Steel Wall" ),
+    array( 2, 30, 0, "Steel Wall" ),
     array( 3, 50, 0, "Concrete Wall" ),
     array( 0, 0, 0, "Empty Floor" ),
     array( 21, 20, 0, "Door" ),
@@ -134,7 +134,7 @@ $defaultPrices = array(
     array( 102, 5, 0, "Wiring" ),
     array( 120, 5, 0, "Vertical Wiring" ),
     array( 121, 5, 0, "Horizontal Wiring" ),
-    array( 51, 20, 0, "Wired Wooden Wall" ),
+    array( 51, 15, 0, "Wired Wooden Wall" ),
     array( 101, 50, 0, "Pressure Toggle Switch (Starts Off)" ),
     array( 108, 50, 0, "Pressure Toggle Switch (Starts On)" ),
     array( 100, 50, 0, "Sticking Pressure Switch" ),
@@ -152,7 +152,7 @@ $defaultPrices = array(
     
     array( 500, 100, 0, "Saw" ),
     array( 509, 100, 0, "Crowbar" ),
-    array( 501, 200, 0, "Cutting Torch" ),
+    array( 501, 300, 0, "Cutting Torch" ),
     array( 502, 1000, 0, "S-W Model 36" ),
     array( 503, 2, 0, "Brick" ),
     array( 504, 10, 0, "Voltage Detector" ),
