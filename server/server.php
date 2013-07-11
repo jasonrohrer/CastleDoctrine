@@ -3501,7 +3501,7 @@ function cd_endEditHouse() {
     
     $backpack_value_estimate =
         cd_computeValueEstimate( 0, $backpack_contents );
-    
+    sleep( 10 );
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 0, self_test_running = 0, ".
         "house_map_hash='$house_map_hash', ".
@@ -3519,8 +3519,34 @@ function cd_endEditHouse() {
         "consecutive_rob_success_count = '$consecutive_rob_success_count', ".
         "last_pay_check_time = CURRENT_TIMESTAMP ".
         "WHERE user_id = $user_id;";
-    cd_queryDatabase( $query );
 
+    // manually detect deadlock here
+    //
+    // this deadlock has been seen twice, and it seems to be due
+    // to the order in which index records are locked between this statement
+    // (which changes edit_count, and thus touches that index) and statements
+    // in checkForFlush.  This has been seen deadlocking against a single
+    // update statement (not a series of statements) in checkForFlush,
+    // so it doesn't seem like something I have control over (I can't get
+    // more granular than a single update statement alone in a transaction).
+    // It seems like the order that index records are locked WITHIN that
+    // update statement, meshed with the order that they are locked within
+    // this statement, is causing the deadlock.
+    $result = cd_queryDatabase( $query, 0 );
+
+    if( $result == FALSE ) {
+        cd_queryDatabase( "COMMIT;" );
+        cd_queryDatabase( "SET AUTOCOMMIT=1" );
+
+        cd_log( "Deadlock detected in endEndEditHouse ".
+                "final UPDATE, restarting endEndEditHouse call" );
+
+        // call self again
+        endEndEditHouse();
+        return;
+        }
+    
+    
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
@@ -5540,7 +5566,20 @@ function cd_getUserID() {
 // checks the ticket HMAC for the user ID and sequence number
 // attached to a transaction (also makes sure user isn't blocked!)
 // also checks for permadeath condition (no fresh starts left) and handles it
+
+// can be called multiple times in one run without tripping over the repeated
+// sequence number (only checked the first time)
+global $transactionAlreadyVerified;
+$transactionAlreadyVerified = 0;
+
 function cd_verifyTransaction() {
+    global $transactionAlreadyVerified;
+
+    if( $transactionAlreadyVerified ) {
+        return 1;
+        }
+    
+    
     global $tableNamePrefix;
     
     $user_id = cd_getUserID();
@@ -5627,6 +5666,9 @@ function cd_verifyTransaction() {
         "WHERE user_id = $user_id;";
     
     cd_queryDatabase( $query );
+
+
+    $transactionAlreadyVerified = 1;
     
     return 1;
     }
@@ -7115,10 +7157,13 @@ function cd_closeDatabase() {
  * Queries the database, and dies with an error message on failure.
  *
  * @param $inQueryString the SQL query string.
+ * @param $inDeadlockFatal 1 to treat a deadlock as a fatal error (default)
+ *        or 0 to return an error code on deadlock.
  *
- * @return a result handle that can be passed to other mysql functions.
+ * @return a result handle that can be passed to other mysql functions or
+ *        FALSE on deadlock (if deadlock is not a fatal error).
  */
-function cd_queryDatabase( $inQueryString ) {
+function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
     global $cd_mysqlLink;
 
     if( gettype( $cd_mysqlLink ) != "resource" ) {
@@ -7149,6 +7194,11 @@ function cd_queryDatabase( $inQueryString ) {
                 or cd_operationError(
                     "Database query failed:<BR>$inQueryString<BR><BR>" .
                     mysql_error() );
+            }
+        else if( $inDeadlockFatal == 0 && $errorNumber == 1213 ) {
+            // deadlock detected, but it's not a fatal error
+            // caller will handle it
+            return FALSE;
             }
         else {
             // some other error (we're still connected, so we can
