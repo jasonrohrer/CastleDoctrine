@@ -3501,7 +3501,7 @@ function cd_endEditHouse() {
     
     $backpack_value_estimate =
         cd_computeValueEstimate( 0, $backpack_contents );
-    sleep( 10 );
+
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 0, self_test_running = 0, ".
         "house_map_hash='$house_map_hash', ".
