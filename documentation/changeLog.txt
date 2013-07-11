@@ -1,3 +1,12 @@
+Version 14   
+
+--Animals now avoid stepping next to other dead animals, unless the animal is
+  player-seeking and the player is standing there.  This makes it harder to use
+  the dead body of one dog as a safe spot from which to club other dogs.
+
+
+
+
 Version 13   Live Server Fixes
 
 --Changed cost of steel walls to 30, wired wood walls to 15, and torch to 300.

@@ -745,6 +745,51 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
     
 
     memset( moveHappened, false, numCells );
+
+
+    
+    // make a map of dead mobile objects
+    // mobiles avoid moving there if they can help it (unless player-seeking
+    // and player is standing there)
+    char *deadMobilePresentAdjacent = new char[ numCells ];
+    
+    memset( deadMobilePresentAdjacent, false, numCells );
+    
+    for( int i=0; i<numCells; i++ ) {
+        // for now, mobiles only become stuck when dead
+        // This may change later, in which case a new property to
+        // distinguish dead mobiles (like 'deadMobile' may need to be added).
+        if( !deadMobilePresentAdjacent[i] ) {
+            
+            deadMobilePresentAdjacent[i] = 
+                isPropertySet( inMapMobileIDs[i], 
+                               inMapMobileStates[i], 
+                               stuck );
+            if( deadMobilePresentAdjacent[i] ) {
+                // spread to neighbor cells too
+                
+                int x = i % inMapW;
+                int y = i / inMapW;
+                
+                if( x > 0 ) {
+                    deadMobilePresentAdjacent[ i - 1 ] = true;
+                    }
+                if( x < inMapW - 1 ) {
+                    deadMobilePresentAdjacent[ i + 1 ] = true;
+                    }
+                if( y > 0 ) {
+                    deadMobilePresentAdjacent[ i - inMapW ] = true;
+                    }
+                if( y < inMapH - 1 ) {
+                    deadMobilePresentAdjacent[ i + inMapW ] = true;
+                    }
+                }
+            }
+        
+        }
+    
+    
+    
     
 
     for( int i=0; i<numCells; i++ ) {
@@ -814,6 +859,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                     
                         if( better && 
                             inMapMobileIDs[destI] == 0 &&
+                            ! deadMobilePresentAdjacent[destI] &&
                             ! isPropertySet( inMapIDs[destI], 
                                              inMapStates[destI],
                                              blocking ) &&
@@ -848,7 +894,17 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                     double tryDist = 
                         distance( tryX, tryY, robberX, robberY );
                     
+                    char blockedByDead = deadMobilePresentAdjacent[destI];
+                    
+                    if( seek && destI == inRobberIndex ) {
+                        // ignore nearby dead creatures as we jump to
+                        // square where robber is standing
+                        blockedByDead = false;
+                        }
+                    
+
                     if( inMapMobileIDs[destI] == 0 &&
+                        ! blockedByDead &&
                         ! isPropertySet( inMapIDs[destI], 
                                          inMapStates[destI],
                                          blocking ) &&
@@ -891,6 +947,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
         }
     
 
+    delete [] deadMobilePresentAdjacent;
 
 
 
