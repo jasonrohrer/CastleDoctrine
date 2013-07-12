@@ -2650,7 +2650,9 @@ void HouseGridDisplay::placeMandatory( int inFullIndex, int inIndex ) {
     
     copySubCellBack( inIndex );
 
-    mLastActionChangedDiff = false;
+    // placing a mandatory can remove another object, so it might
+    // change the diff
+    mLastActionChangedDiff = true;
     mLastActionPlayerMotion = false;
     fireActionPerformed( this );
     }
