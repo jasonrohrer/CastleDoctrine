@@ -1,4 +1,4 @@
-Version 14   
+Version 14   2013-July-12
 
 --Animals now avoid stepping next to other dead animals, unless the animal is
   player-seeking and the player is standing there.  This makes it harder to use
