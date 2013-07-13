@@ -4376,6 +4376,20 @@ function cd_endRobHouse() {
                     " anyKilled=$any_family_killed($sim_any_family_killed) ".
                     " backpackMismatch=$backpackMismatch ".
                     " mapMismatch=$mapMismatch)" );
+                
+                cd_log(
+                    "Simulation called with these parameters: ".
+                    "old_house_map = $old_house_map , ".
+                    "old_backpack_contents = $old_backpack_contents , ".
+                    "move_list = $move_list , ".
+                    "wife_loot_value = $wife_loot_value " );
+
+                cd_log(
+                    "Simulation returned with these results: ".
+                    "sim_end_backpack = $sim_end_backpack_contents , ".
+                    "sim_end_house_map = $sim_end_house_map " );
+                
+                
                 cd_transactionDeny();
                 return;
                 }
