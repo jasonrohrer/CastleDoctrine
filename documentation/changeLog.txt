@@ -1,3 +1,10 @@
+Version 15
+
+--Fixed recording and playback of Alt-tab behavior in recordedGames.
+
+
+
+
 Version 14   2013-July-12
 
 --Animals now avoid stepping next to other dead animals, unless the animal is
