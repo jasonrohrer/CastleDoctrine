@@ -28,7 +28,8 @@ int versionNumber = 14;
 #include "minorGems/util/random/CustomRandomSource.h"
 
 
-CustomRandomSource randSource;
+// static seed
+CustomRandomSource randSource( 34957197 );
 
 
 
