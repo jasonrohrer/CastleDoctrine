@@ -8,6 +8,7 @@ rm -r CastleDoctrine/documentation/html
 rm -r CastleDoctrine/documentation/sourceArt
 rm -r CastleDoctrine/documentation/visualStyle
 rm -r CastleDoctrine/documentation/press
+rm -r CastleDoctrine/documentation/videos
 
 
 
