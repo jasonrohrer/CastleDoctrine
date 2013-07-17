@@ -8,6 +8,17 @@ Version 15
 
 
 
+
+Version 14   Live Server Fixes
+
+--Fixed simulation mismatch (resulting in 'House checkin failed' after robbery)
+  caused by salary paid during robbery, which flipped the vault state from
+  empty to not empty before the end of the robbery.
+
+
+
+
+
 Version 14   2013-July-12
 
 --Animals now avoid stepping next to other dead animals, unless the animal is

@@ -4317,6 +4317,42 @@ function cd_endRobHouse() {
         // store this map and use it it robbery log, too
         $old_house_map_hash = cd_storeHouseMap( $old_house_map );
         }
+    else {
+        // watch out for robber-submitted house map that included
+        // vault in empty state, even though vault now has something in it.
+
+        // Vault-pay could have happened mid-robbery, since the robber
+        // fetched the map from the server.  So, the empty vault sprite
+        // is correct (and if we don't insert it into OUR start map,
+        // the simulation will fail mistakenly).
+
+        // Note that the other mismatch case (where the robber's map shows a
+        // non-empty vault, but we think it should be empty) should never
+        // happen, because nothing can cause a vault to empty, or the
+        // consecutive rob success count to go up, during this robber's
+        // robbery.
+        // This other mismatch could be a sign of cheating (where the robber
+        // changed the map to be able to vault-reach when the shouldn't
+        // have been able to), so it's okay for the sim to fail.
+
+        // Conversely, there's no incentive to cheat by forging an empty
+        // vault when there shouldn't be one.
+        
+        if( preg_match( "/#999:2!#/", $house_map ) ) {
+            // Robber's map shows an empty vault, even though we don't
+            // think it should be empty
+
+            // Trust the robber's map in this case to avoid simulation mismatch
+            
+            // switch vault to empty state
+            $old_house_map = preg_replace( "/#999#/",
+                                           "#999:2!#", $old_house_map );
+
+            // store this map and use it it robbery log, too
+            $old_house_map_hash = cd_storeHouseMap( $old_house_map );
+            }
+        }
+    
 
 
 
