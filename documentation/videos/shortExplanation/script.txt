@@ -5,38 +5,47 @@ Maybe you're DAVID RUSSEL WALKER.
 
 And this is your family.
 
-And you got this house.  It doesn't look like much right now, but here's your vault, where you got two thousand free and clear to build whatever you want.
+And you got this house.  And it doesn't look like much right now, but here's your vault, where you got two thousand free and clear to build whatever you want.
 
-But we're not talkin' couch covers and lampshades.
+But we're not talkin' couch covers and lampshades here.
 
 'Cause this is your neighborhood.
 
 Dozens of people just like you, and they all need more money just like you, and that two thousand you got is lookin' good to them, and sooner or later, they're gonna be comin' for it.
 
-Whoops.  Guess it was sooner.
+Whoops.  I guess it was sooner.
 
-While you were checkin' out the neighborhood, your wife was killed, her money was taken, and your vault was hit too.  You watch the security tape to see who did it.  DANIEL HERBERT GETZ.  You'll remember that name.
+'Cause while you were out lookin' around the neighborhood, your wife was killed, and her money was taken, and your vault was hit too.  And you watch the security tape to see who did it.  DANIEL HERBERT GETZ.  You'll remember that name.
 
 
-And now you got nothin left, so you end it, and start from scratch, and maybe now you're BRADFORD J. FOREMAN, with a new family and a fresh 2000.
+And now you got nothin' left, so you end it, and start from scratch, and maybe now you're BRADFORD J. FOREMAN, with a new family and a fresh 2000.
 
-This time build something for Mr. Getz in case he visits.
+This time, you build something for Mr. Getz in case he visits.
 
-There are a few catches, though.  First, you can't completely block your family in, 'cause they need an obstacle-free path to the exit.
+But there are a few catches, though.  First of all, you can't completely block your family in, 'cause they need an obstacle-free path to the exit.
 
-Second, your security can't be so good that it keeps you out, and you gotta be able to reach your own vault without dying.
+And second, your security can't be so good that it keeps you out, and you gotta be able to reach your own vault without dying.
 
-Third, this is dangerous stuff that you're building here, and you're hoping it will kill Mr. Getz, but it can kill you too.  Death is death in this game.  As in, you lose everything and start over.
+And third, this is dangerous stuff that you're building here, and you're hoping it will kill Mr. Getz, but it can kill you too.  And death is death in this game.  As in, you lose everything and start over.
 
 And you learn this the hard way, at the jaws of your own pit bull.
 
-Now you start again as NAME NAME NAME, and you build a better house this time, and you test your traps carefully with indicator lights and chihuahuas in place of the pitbulls tis time.
+So, now you start again as NAME NAME NAME, and you build a better house this time, and you test your traps carefully with indicator lights and chihuahuas in place of trapdoors and pitbulls this time.
 
-And after testing, you reach your own vault safely, so now you got a working security system.  You spend some of the left over money on robbery tools and head out into the night to risk your life breaking through other people's houses, hopin' for a big score.
+And you finally get it all working without killing yourself.  And you spend some of the left over money on robbery tools, and then you head out into the night to risk your own life breaking through other people's houses, hopin' for a big score.
 
-I'm Jason, and this is my game The Castle Doctrine, with every single pixel and line of code and musical note hand-crafted by me over the past two years.
+I'm Jason, and this is my massively multiplayer game The Castle Doctrine, with every single pixel and line of code and musical note hand-crafted by me over the past two years.
 
-It's safe to say that there's never been anything quite like it, and it's kindof a huge social experiment.
+It's brutal, and sad, and hilarious, and tense.  And it'll fill you with triumph one moment and despair the next.  And watching your security tapes where other players permadeath themselves in traps that you designed?  Well, there's never been anything quite like that, and the whole thing is kindof a huge social experiment.
 
-It's brutal, and sad, hilarious, and tense, all at the same time.  It's extremely hard, and it can seem frustrating, but it's always always fair:  'cause you never have to die, and whenever you do, it's clearly your fault, which almost makes it worse.  It'll sink you into deep despair, where you sit staring at the screen in shock, just moments after catapulting you to incredible triumph.  Fortunes and dynasties rise and then crumble in an instant, and you get to watch it all happen.  You get to make it all happen.
+So, I'll be keepin' a close eye on my own security tapes, and maybe I'll catch you there one of these days.
+
+
+
+
+
+
+// cut stuff:
+
+, all at the same time.  It's extremely hard, and it can seem frustrating, but it's always always fair:  'cause you never have to die, and whenever you do, it's clearly your fault, which almost makes it worse.  It'll sink you into deep despair, where you sit staring at the screen in shock, just moments after catapulting you to incredible triumph.  Fortunes and dynasties rise and then crumble in an instant, and you get to watch it all happen.  You get to make it all happen.
 
