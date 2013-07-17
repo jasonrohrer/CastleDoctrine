@@ -5,6 +5,8 @@ Version 15
 --Changed noise generator (for house tile visual effect) to use a static seed
   (ensures pixel-consistent appearance across multiple plays).
 
+--Fixed way of bypassing login block (pause and unpause) when version update
+  needed (thanks Alex Diamond).
 
 
 

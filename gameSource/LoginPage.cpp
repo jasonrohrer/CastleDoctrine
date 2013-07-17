@@ -57,6 +57,7 @@ LoginPage::LoginPage()
           mLoginButton( mainFont, 4, -4, translate( "loginButton" ) ),
           mHaveServerURL( false ),
           mLoggedIn( false ),
+          mLoginBlocked( false ),
           mRequestSteps( 0 ),
           mWebRequest( -1 ) {
     
@@ -233,6 +234,7 @@ void LoginPage::step() {
                             else if( minClientVersion > versionNumber ) {
                                 mStatusError = true;
                                 mStatusMessageKey = "outOfDateClient";
+                                mLoginBlocked = true;
                                 setWaiting( false );
                                 }
                             else if( strcmp( endString, "OK" ) == 0 ) {
@@ -391,7 +393,7 @@ void LoginPage::acceptInput() {
 
 
 void LoginPage::makeActive( char inFresh ) {
-    if( mWebRequest == -1 && !mLoggedIn ) {
+    if( mWebRequest == -1 && !mLoggedIn && !mLoginBlocked ) {
         acceptInput();
         }
 
@@ -491,7 +493,7 @@ void LoginPage::switchFields() {
     if( mFields[0]->isFocused() ) {
         mFields[1]->focus();
         }
-    else {
+    else if( mFields[1]->isFocused() ) {
         mFields[0]->focus();
         }
     }

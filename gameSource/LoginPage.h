@@ -56,6 +56,9 @@ class LoginPage : public GamePage, public ActionListener {
         char mHaveServerURL;
         char mLoggedIn;
         
+        // if client out of date
+        char mLoginBlocked;
+        
 
         char *mServerURL;
 
