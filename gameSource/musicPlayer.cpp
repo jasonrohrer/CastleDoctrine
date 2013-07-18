@@ -664,7 +664,7 @@ double squareWave( double inT ) {
 
 
 
-// sawtoot wave with period of 2pi
+// sawtooth wave with period of 2pi
 double sawWave( double inT ) {
     double sum = 0;
     
