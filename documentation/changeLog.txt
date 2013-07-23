@@ -1,4 +1,4 @@
-Version 15
+Version 15   2013-July-23
 
 --Fixed recording and playback of Alt-tab behavior in recordedGames.
 
@@ -13,6 +13,7 @@ Version 15
 
 --Added a visual status display to make Ctrl-click eyedropper functionality
   more apparent.
+
 
 
 
