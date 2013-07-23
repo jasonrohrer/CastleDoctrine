@@ -6,6 +6,9 @@
 #include "SpriteToggleButton.h"
 #include "CheckboxButton.h"
 
+#include "EyedropperStatusDisplay.h"
+
+
 #include "HouseGridDisplay.h"
 #include "HouseObjectPicker.h"
 
@@ -170,6 +173,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
 
         SpriteToggleButton mDiffHighlightToggleButton;
         
+        EyedropperStatusDisplay mEyedropperStatus;
+        
+
         // Once undo pressed, never show suicide button again
         // (it occupies same spot, and too risky for user to hit
         //  undo-undo-undo-suicide)

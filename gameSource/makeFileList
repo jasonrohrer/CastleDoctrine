@@ -72,6 +72,7 @@ BlueprintHouseGridDisplay.cpp \
 ViewBlueprintPage.cpp \
 FetchBlueprintPage.cpp \
 sha1Encryption.cpp \
+EyedropperStatusDisplay.cpp \
 
 
 
@@ -103,6 +104,8 @@ graphics/moveDown.tga \
 graphics/moveRight.tga \
 graphics/safeMoveOn.tga \
 graphics/safeMoveOff.tga \
+graphics/eyedropperOn.tga \
+graphics/eyedropperOff.tga \
 
 
 

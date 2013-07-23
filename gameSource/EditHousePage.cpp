@@ -40,6 +40,7 @@ EditHousePage::EditHousePage()
           mDiffHighlightToggleButton( "diffHighlightsOn.tga", 
                                       "diffHighlightsOff.tga", 
                                       8, -1.75, 1/16.0 ),
+          mEyedropperStatus( 6.5, 5, 1/16.0 ),
           mBlockSuicideButton( false ),
           mGallery( mainFont, -8, 0 ),
           mNumberOfTapes( 0 ),
@@ -59,6 +60,7 @@ EditHousePage::EditHousePage()
 
     addComponent( &mDiffHighlightToggleButton );
     
+    addComponent( &mEyedropperStatus );
 
     mDoneButton.setMouseOverTip( "" );
     mUndoButton.setMouseOverTip( translate( "undoTip" ) );
