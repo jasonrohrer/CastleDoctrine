@@ -1553,27 +1553,53 @@ function cd_checkForFlush() {
         $robLogsTable = $tableNamePrefix . "robbery_logs";
         
         // delete unused maps from map cache
-        $query = "DELETE FROM $mapsTable ".
-            "WHERE 0 = ".
-            " ( SELECT COUNT(*) FROM $housesTable ".
-            "   WHERE house_map_hash = $mapsTable.house_map_hash ".
-            "         OR ".
-            "         self_test_house_map_hash = $mapsTable.house_map_hash ) ".
-            "AND 0 = ".
-            " ( SELECT COUNT(*) FROM $robLogsTable ".
-            "   WHERE house_start_map_hash = $mapsTable.house_map_hash ) ".
-            "AND last_insert_date < ".
+
+        // avoid deadlock here by breaking this operation into
+        // separate transactions (one for each query)
+        cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
+
+        $query = "SELECT house_map_hash FROM $mapsTable ".
+            "WHERE last_insert_date < ".
             "    SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ); ";
         
-
         $result = cd_queryDatabase( $query );
 
-        $staleMapsRemoved = mysql_affected_rows();
+        $numRows = mysql_numrows( $result );
 
+        $staleMapsRemoved = 0;
+        
+        for( $i=0; $i<$numRows; $i++ ) {
+            $house_map_hash = mysql_result( $result, $i, "house_map_hash" );
+            
+            $query =
+                "SELECT ".
+                "    ( SELECT COUNT(*) FROM $robLogsTable ".
+                "      WHERE house_start_map_hash = '$house_map_hash' ) ".
+                "    + ".
+                "    COUNT(*) FROM $housesTable ".
+                "         WHERE ".
+                "           house_map_hash = '$house_map_hash' OR ".
+                "           self_test_house_map_hash = '$house_map_hash'; ";
+        
 
-        // commit to free lock before next lock
-        cd_queryDatabase( "COMMIT;" );
+            $countSumResult = cd_queryDatabase( $query );
 
+            $countSum = mysql_result( $countSumResult, 0, 0 );
+
+            if( $countSum == 0 ) {
+
+                // double-check update date here, just
+                // in case map was re-stored since we checked above
+                $query = "DELETE FROM $mapsTable WHERE ".
+                    "house_map_hash = '$house_map_hash' AND ".
+                    "last_insert_date < ".
+                    "    SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ); ";
+
+                cd_queryDatabase( $query );
+
+                $staleMapsRemoved ++;
+                }
+            }
 
         
         cd_log( "Flush removed $staleMapsRemoved unused maps." );
@@ -1590,6 +1616,8 @@ function cd_checkForFlush() {
             }
 
 
+        // back to transactions
+        cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
 
         // check for stale house chills
