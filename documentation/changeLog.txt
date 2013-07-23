@@ -8,6 +8,8 @@ Version 15
 --Fixed way of bypassing login block (pause and unpause) when version update
   needed (thanks Alex Diamond).
 
+--Fixed bug in dogs stepping next to dead dogs that are next to other dead dogs
+  (thanks Ludicrosity).
 
 
 

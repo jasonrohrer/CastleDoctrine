@@ -759,30 +759,27 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
         // for now, mobiles only become stuck when dead
         // This may change later, in which case a new property to
         // distinguish dead mobiles (like 'deadMobile' may need to be added).
-        if( !deadMobilePresentAdjacent[i] ) {
+        if( isPropertySet( inMapMobileIDs[i], 
+                           inMapMobileStates[i], 
+                           stuck ) ) {
             
-            deadMobilePresentAdjacent[i] = 
-                isPropertySet( inMapMobileIDs[i], 
-                               inMapMobileStates[i], 
-                               stuck );
-            if( deadMobilePresentAdjacent[i] ) {
-                // spread to neighbor cells too
+            deadMobilePresentAdjacent[i] = true;
+            
+            // spread to neighbor cells too    
+            int x = i % inMapW;
+            int y = i / inMapW;
                 
-                int x = i % inMapW;
-                int y = i / inMapW;
-                
-                if( x > 0 ) {
-                    deadMobilePresentAdjacent[ i - 1 ] = true;
-                    }
-                if( x < inMapW - 1 ) {
-                    deadMobilePresentAdjacent[ i + 1 ] = true;
-                    }
-                if( y > 0 ) {
-                    deadMobilePresentAdjacent[ i - inMapW ] = true;
-                    }
-                if( y < inMapH - 1 ) {
-                    deadMobilePresentAdjacent[ i + inMapW ] = true;
-                    }
+            if( x > 0 ) {
+                deadMobilePresentAdjacent[ i - 1 ] = true;
+                }
+            if( x < inMapW - 1 ) {
+                deadMobilePresentAdjacent[ i + 1 ] = true;
+                }
+            if( y > 0 ) {
+                deadMobilePresentAdjacent[ i - inMapW ] = true;
+                }
+            if( y < inMapH - 1 ) {
+                deadMobilePresentAdjacent[ i + inMapW ] = true;
                 }
             }
         
