@@ -1,3 +1,10 @@
+Version 16
+
+--Added support for web proxies (thanks Florian Yusuf Ali).
+
+
+
+
 Version 15   Live Server Fixes
 
 --Fixed a potential deadlock involving house map cache flushing.

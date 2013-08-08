@@ -43,3 +43,14 @@ try switching to 30 FPS by putting a 1 in "settings/halfFrameRate.ini".
 If it still seems sluggish at 30 FPS, switch to 15 FPS by putting a 2 in 
 that settings file.  If it still seems sluggish, try 7.5 FPS by putting a 3 
 in that settings file, and so on.
+
+
+
+
+== Web Proxies ==
+
+If your network requires that you use a proxy server to connect to the web,
+edit settings/webProxy.ini and insert your proxy's address and port in the 
+address:port format.  Here's an example:
+
+197.211.197.70:3128
