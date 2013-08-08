@@ -20,6 +20,7 @@ extern Font *mainFont;
 #include "tools.h"
 
 #include <math.h>
+#include <limits.h>
 
 
 
@@ -1220,10 +1221,74 @@ void RobHouseGridDisplay::recomputeVisibility() {
         }
     
 
+    char *blockingMap = new char[ HOUSE_D * HOUSE_D ];    
+
+    memset( blockingMap, 0, HOUSE_D * HOUSE_D );
+
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        if( isSubMapPropertySet( i, visionBlocking ) ) {
+            
+            blockingMap[ i ] = 1;
+            }
+        }
+    
+    int robberX = robSubIndex % HOUSE_D;
+    int robberY = robSubIndex / HOUSE_D;
+    
+    // in middle of blown up tile
+    int robberBlowupX = robberX * VIS_BLOWUP + VIS_BLOWUP / 2;
+    int robberBlowupY = robberY * VIS_BLOWUP + VIS_BLOWUP / 2;
+    
+
+    // make sure there is room for our high res int coordinates, for
+    // the farthest subspace tile, in 32-bitint space
+    // also room for taking the square of coordinates (for measuring
+    // distance)
+    // 46340 is smaller than the sqrt of INT_MAX
+    int highResFactor = 46340 / (VIS_BLOWUP * HOUSE_D );
+    
+
+
+    // seven steps per tile when checking for line-of-sight obstruction
+    int numStepsFactor = ( highResFactor * VIS_BLOWUP ) / 7;
+    
+
+    for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
+
+            int highY = y * highResFactor + highResFactor / 2;
+            int highX = x * highResFactor + highResFactor / 2;
+             
+            int robberHighY = 
+                robberBlowupY * highResFactor + highResFactor / 2;
+            int robberHighX = 
+                robberBlowupX * highResFactor + highResFactor / 2;
+
+            int distHigh = 
+                (int)( sqrt( ( highY - robberHighY ) *
+                             ( highY - robberHighY ) ) )
+                +
+                (int)( sqrt( ( highX - robberHighX ) *
+                             ( highX - robberHighX ) ) );
+                
+            int numSteps = distHigh / numStepsFactor;
+
+            
+            // next:  take this number of steps along high-res
+            // line between robber and the point that we're checking
+            }
+        }
+    
+
+    delete [] blockingMap;
+        
+
+
     doublePair robPos = getTilePos( fullToSub( mRobberIndex ) );
 
     
     doublePair cornerPos = getTilePos( 0 );
+
 
     
     int i = 0;
@@ -1297,6 +1362,19 @@ void RobHouseGridDisplay::recomputeVisibility() {
             }
         }
     
+    for( int y=HOUSE_D; y>=0; y-- ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            if( mTileVisibleMap[ y * HOUSE_D + x ] ) {
+                printf( "1" );
+                }
+            else {
+                printf( "0" );
+                }
+            }
+        printf( "\n" );
+        }
+    printf( "\n" );
+
     }
 
 
