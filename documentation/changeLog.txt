@@ -2,6 +2,11 @@ Version 16
 
 --Added support for web proxies (thanks Florian Yusuf Ali).
 
+--Fixed visibility computation mismatch across platforms (caused by floating
+  point round-off inconsistencies between platforms) by switching to an integer
+  visibility computation.  This was causing server-side simulation of robberies
+  to fail in rare cases (thanks Raymond Koo).
+
 
 
 

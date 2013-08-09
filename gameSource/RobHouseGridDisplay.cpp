@@ -1024,7 +1024,6 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
     }
 
 
-static char visType = true;
 
 void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {    
     if( mSafeMoveMode && mSafeMoveProposed ) {
@@ -1036,12 +1035,6 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
             }
         }
     
-    /*
-    if( inASCII == 'v' ) {
-        visType = !visType;
-        recomputeVisibility();
-        }
-    */
     HouseGridDisplay::keyDown( inASCII );
     }
 
@@ -1226,45 +1219,8 @@ void RobHouseGridDisplay::recomputeVisibility() {
             }
         return;
         }
-    
-    
 
-
-       
-
-
-    if( visType ) {
-        recomputeVisibilityInt();    
-        }
-    else {
-        recomputeVisibilityFloat();    
-        }
-    
-
-    for( int y=HOUSE_D * VIS_BLOWUP; y>=0; y-- ) {
-        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
-            
-            int i = y * HOUSE_D * VIS_BLOWUP + x;
-
-            if( mTargetVisibleMap[ i ] ) {
-                printf( "1" );
-                }
-            else {
-                printf( "0" );
-                }
-            }
-        printf( "\n" );
-        }
-
-    if( visType ) {
-        printf( "INT\n" );
-        }
-    else {
-        printf( "FLOAT\n" );
-        }
-    printf( "\n" );
-
-
+    recomputeVisibilityInt();    
     }
 
 
