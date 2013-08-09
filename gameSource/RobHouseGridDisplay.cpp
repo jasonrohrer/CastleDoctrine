@@ -1244,38 +1244,55 @@ void RobHouseGridDisplay::recomputeVisibility() {
     // the farthest subspace tile, in 32-bitint space
     // also room for taking the square of coordinates (for measuring
     // distance)
-    // 46340 is smaller than the sqrt of INT_MAX
-    int highResFactor = 46340 / (VIS_BLOWUP * HOUSE_D );
+    // 32767 is small enough to be squared and doubled without exceeding
+    // 32-bit INT_MAX
+    int highResFactor = 32767 / (VIS_BLOWUP * HOUSE_D );
     
 
 
-    // seven steps per tile when checking for line-of-sight obstruction
-    int numStepsFactor = ( highResFactor * VIS_BLOWUP ) / 7;
+    // match number of steps per tile in old, float implementation
+    numStepsFactor = 2879 / 8;
+    // tweak
+    numStepsFactor -= 3;
     
+
+    int robberHighY = 
+        robberBlowupY * highResFactor ;//+ highResFactor / 2;
+    int robberHighX = 
+        robberBlowupX * highResFactor ;//+ highResFactor / 2;
+
 
     for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+
+        int flipY = HOUSE_D * VIS_BLOWUP - y - 1;
+
+
+        int mapY = y / VIS_BLOWUP;
+        int highY = flipY * highResFactor + highResFactor / 2;
+        int dHighY = highY - robberHighY;
+
         for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
-
-            int highY = y * highResFactor + highResFactor / 2;
+            int mapX = x / VIS_BLOWUP;
             int highX = x * highResFactor + highResFactor / 2;
-             
-            int robberHighY = 
-                robberBlowupY * highResFactor + highResFactor / 2;
-            int robberHighX = 
-                robberBlowupX * highResFactor + highResFactor / 2;
+            int dHighX =  highX - robberHighX;
 
+            int mapI = mapY * HOUSE_D + mapX;
+            
             int distHigh = 
-                (int)( sqrt( ( highY - robberHighY ) *
-                             ( highY - robberHighY ) ) )
-                +
-                (int)( sqrt( ( highX - robberHighX ) *
-                             ( highX - robberHighX ) ) );
-                
+                (int)( sqrt( dHighY * dHighY + dHighX * dHighX ) );
+                            
             int numSteps = distHigh / numStepsFactor;
 
             
             // next:  take this number of steps along high-res
             // line between robber and the point that we're checking
+            
+            int selfBlockingSteps = 0;
+            
+            for( int s=0; s<numSteps; s++ ) {
+                
+                
+                }
             }
         }
     
