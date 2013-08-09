@@ -1024,6 +1024,7 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
     }
 
 
+static char visType = true;
 
 void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {    
     if( mSafeMoveMode && mSafeMoveProposed ) {
@@ -1035,6 +1036,12 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
             }
         }
     
+    /*
+    if( inASCII == 'v' ) {
+        visType = !visType;
+        recomputeVisibility();
+        }
+    */
     HouseGridDisplay::keyDown( inASCII );
     }
 
@@ -1220,6 +1227,52 @@ void RobHouseGridDisplay::recomputeVisibility() {
         return;
         }
     
+    
+
+
+       
+
+
+    if( visType ) {
+        recomputeVisibilityInt();    
+        }
+    else {
+        recomputeVisibilityFloat();    
+        }
+    
+
+    for( int y=HOUSE_D * VIS_BLOWUP; y>=0; y-- ) {
+        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
+            
+            int i = y * HOUSE_D * VIS_BLOWUP + x;
+
+            if( mTargetVisibleMap[ i ] ) {
+                printf( "1" );
+                }
+            else {
+                printf( "0" );
+                }
+            }
+        printf( "\n" );
+        }
+
+    if( visType ) {
+        printf( "INT\n" );
+        }
+    else {
+        printf( "FLOAT\n" );
+        }
+    printf( "\n" );
+
+
+    }
+
+
+
+
+
+void RobHouseGridDisplay::recomputeVisibilityInt() {
+    int robSubIndex = fullToSub( mRobberIndex );
 
     char *blockingMap = new char[ HOUSE_D * HOUSE_D ];    
 
@@ -1251,23 +1304,28 @@ void RobHouseGridDisplay::recomputeVisibility() {
 
 
     // match number of steps per tile in old, float implementation
-    numStepsFactor = 2879 / 8;
+    int numStepsFactor = 2879 / 8;
     // tweak
     numStepsFactor -= 3;
     
 
     int robberHighY = 
-        robberBlowupY * highResFactor ;//+ highResFactor / 2;
+        robberBlowupY * highResFactor;
     int robberHighX = 
-        robberBlowupX * highResFactor ;//+ highResFactor / 2;
+        robberBlowupX * highResFactor;
 
 
+    int backToMapFactor = highResFactor * VIS_BLOWUP;
+
+
+    int i = 0;
+    
     for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
 
         int flipY = HOUSE_D * VIS_BLOWUP - y - 1;
 
 
-        int mapY = y / VIS_BLOWUP;
+        int mapY = flipY / VIS_BLOWUP;
         int highY = flipY * highResFactor + highResFactor / 2;
         int dHighY = highY - robberHighY;
 
@@ -1287,20 +1345,59 @@ void RobHouseGridDisplay::recomputeVisibility() {
             // next:  take this number of steps along high-res
             // line between robber and the point that we're checking
             
+
             int selfBlockingSteps = 0;
+
+            char hit = false;
             
-            for( int s=0; s<numSteps; s++ ) {
+            // skip last few steps so that we show borders of visible walls
+
+            for( int s=1; s<numSteps - 1; s++ ) {
+
+                int stepHighX = robberHighX + ( dHighX * s ) / numSteps;
+                int stepHighY = robberHighY + ( dHighY * s ) / numSteps;
+
+                int stepTileX = stepHighX / backToMapFactor;
+                int stepTileY = stepHighY / backToMapFactor;
+
+                int stepI = stepTileY * HOUSE_D + stepTileX;
                 
-                
+                // avoid self-blocking on first steps into self
+
+                if( selfBlockingSteps < 2 && stepI == mapI ) {
+                    // blocked by self for few steps
+                    // don't count this as vision blocking
+                    selfBlockingSteps ++;
+                    }
+                else if( blockingMap[ stepI ] ) {
+                    hit = true;
+                    break;
+                    }
                 }
+            
+            if( hit ) {
+                mTargetVisibleMap[i] = false;
+                }
+            else {
+                mTargetVisibleMap[i] = true;
+                
+                // at least one sub-area of tile is visible
+                
+                mTileVisibleMap[ mapI ] = true;
+                }
+            
+            i++;
             }
         }
     
 
     delete [] blockingMap;
-        
+    }
 
 
+
+void RobHouseGridDisplay::recomputeVisibilityFloat() {
+    
     doublePair robPos = getTilePos( fullToSub( mRobberIndex ) );
 
     
@@ -1378,20 +1475,6 @@ void RobHouseGridDisplay::recomputeVisibility() {
             i++;
             }
         }
-    
-    for( int y=HOUSE_D; y>=0; y-- ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
-            if( mTileVisibleMap[ y * HOUSE_D + x ] ) {
-                printf( "1" );
-                }
-            else {
-                printf( "0" );
-                }
-            }
-        printf( "\n" );
-        }
-    printf( "\n" );
-
     }
 
 

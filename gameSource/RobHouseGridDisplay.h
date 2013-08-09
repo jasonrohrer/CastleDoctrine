@@ -139,6 +139,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
 
 
         virtual void recomputeVisibility();
+
+        // two different sub-implementations
+        virtual void recomputeVisibilityInt();
+        virtual void recomputeVisibilityFloat();
         
 
         void applyTransitionsAndProcess();
