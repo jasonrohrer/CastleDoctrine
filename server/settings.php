@@ -118,6 +118,40 @@ $headlessClientPorts = array( 5077, 5078 );
 
 
 
+$emailAdminOnFatalError = 0;
+
+$adminEmail = "jason@server.com";
+
+
+
+// mail settings
+
+$siteEmailAddress = "Jason Rohrer <jcr13@cornell.edu>";
+
+// if off, then raw sendmail is used instead 
+$useSMTP = 0;
+
+// SMTP requires that the PEAR Mail package is installed
+// set the include path here for Mail.php, if needed:
+/*
+ini_set( 'include_path',
+         ini_get( 'include_path' ) . PATH_SEPARATOR . '/home/jcr13/php' );
+*/
+
+$smtpHost = "ssl://mail.server.com";
+
+$smtpPort = "465";
+
+$smtpUsername = "jason@server.com";
+
+$smtpPassword = "secret";
+
+
+
+
+
+
+
 // prices that are loaded when database is first setup
 // they can be changed manually later from the admin page
 //

@@ -7395,6 +7395,13 @@ function cd_fatalError( $message ) {
     echo( $logMessage );
 
     cd_log( $logMessage );
+
+    global $emailAdminOnFatalError, $adminEmail;
+
+    if( $emailAdminOnFatalError ) {
+        cd_mail( $adminEmail, "Castle Doctrine fatal error",
+                 $logMessage );
+        }
     
     die();
     }
@@ -7878,6 +7885,56 @@ function cd_sha1Decrypt( $inKey, $inEncryptedDataBase64 ) {
 
 
     return $decryptedData;
+    }
+
+
+
+
+
+function cd_mail( $inEmail,
+                  $inSubject,
+                  $inBody ) {
+    
+    global $useSMTP, $siteEmailAddress;
+
+    if( $useSMTP ) {
+        require_once "Mail.php";
+
+        global $smtpHost, $smtpPort, $smtpUsername, $smtpPassword;
+
+        $headers = array( 'From' => $siteEmailAddress,
+                          'To' => $inEmail,
+                          'Subject' => $inSubject );
+        
+        $smtp = Mail::factory( 'smtp',
+                               array ( 'host' => $smtpHost,
+                                       'port' => $smtpPort,
+                                       'auth' => true,
+                                       'username' => $smtpUsername,
+                                       'password' => $smtpPassword ) );
+
+
+        $mail = $smtp->send( $inEmail, $headers, $inBody );
+
+
+        if( PEAR::isError( $mail ) ) {
+            ts_log( "Email send failed:  " .
+                    $mail->getMessage() );
+            return false;
+            }
+        else {
+            return true;
+            }
+        }
+    else {
+        // raw sendmail
+        $mailHeaders = "From: $siteEmailAddress";
+        
+        return mail( $inEmail,
+                     $inSubject,
+                     $inBody,
+                     $mailHeaders );
+        }
     }
 
 

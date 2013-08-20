@@ -26,6 +26,8 @@ Version 15   Live Server Fixes
 --Fixed unavoidable deadlock in endRobHouse by restarting transaction (thanks
   Colorfusion).
 
+--Server now emails admin a report about each fatal error that occurs.
+
 
 
 
