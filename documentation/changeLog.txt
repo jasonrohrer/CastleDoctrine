@@ -7,6 +7,9 @@ Version 16
   visibility computation.  This was causing server-side simulation of robberies
   to fail in rare cases (thanks Raymond Koo).
 
+--Blocked quitting from game when quitting would kill player (during robbery
+  and self-test).
+
 
 
 

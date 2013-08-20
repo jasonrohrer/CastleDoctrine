@@ -10,6 +10,7 @@ pauseMessage1 "Press ENTER to resume"
 pauseMessage2 "or type something for posterity:"
 
 pauseMessage3 "Press '%' to quit"
+pauseMessage3b "You can't quit now (you'll die)"
 
 pauseMessage4 "-"
 

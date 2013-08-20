@@ -858,8 +858,15 @@ static void drawPauseScreen() {
     //                      messagePos, alignCenter );
 
     messagePos.y -= 0.625 * (viewHeight / 15);
-    mainFont->drawString( translate( "pauseMessage3" ), 
-                           messagePos, alignCenter );
+
+    const char* quitMessageKey = "pauseMessage3";
+    
+    if( isQuittingBlocked() ) {
+        quitMessageKey = "pauseMessage3b";
+        }
+
+    mainFont->drawString( translate( quitMessageKey ), 
+                          messagePos, alignCenter );
 
     }
 
@@ -1260,6 +1267,7 @@ void drawFrame( char inUpdate ) {
                     selfHouseTestPage->setMusicSeed( 
                         checkoutHousePage->getMusicSeed() );
 
+                    blockQuitting( true );
                     currentGamePage = selfHouseTestPage;
                     currentGamePage->base_makeActive( true );
                     selfHouseTestPage->startSelfTest();
@@ -1448,6 +1456,7 @@ void drawFrame( char inUpdate ) {
                 // but player was not in danger when this happened
                 // (just started self test)
                 // So don't display a dead message
+                blockQuitting( false );
                 currentGamePage = staleHousePage;
                 currentGamePage->base_makeActive( true );
                 clearNotes();
@@ -1455,11 +1464,14 @@ void drawFrame( char inUpdate ) {
             else if( selfHouseTestPage->isStale() ) {
                 // house test stale, and starting the test didn't fail
                 // player died from letting the self test go stale
+                blockQuitting( false );
                 currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
                 clearNotes();
                 }
             else if( selfHouseTestPage->getDone() ) {
+                blockQuitting( false );
+
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
@@ -1638,6 +1650,7 @@ void drawFrame( char inUpdate ) {
                     robHousePage->setMusicSeed( 
                         robCheckoutHousePage->getMusicSeed() );
 
+                    blockQuitting( true );
                     currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );
                     }
@@ -1645,6 +1658,7 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == robHousePage ) {
             if( robHousePage->isStale() ) {
+                blockQuitting( false );
                 currentGamePage = staleHouseDeadPage;
                 currentGamePage->base_makeActive( true );
                 clearNotes();
@@ -1679,6 +1693,7 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else if( robHousePage->getDone() ) {
+                blockQuitting( false );
                 char *houseMap = robHousePage->getHouseMap();
                 char *moveList = robHousePage->getMoveList();
                 char *backpackContents = robHousePage->getBackpackContents();
