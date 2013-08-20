@@ -12,6 +12,9 @@ Version 16
 
 --Animals now only follow or flee you if they can see you.
 
+--Metal walls no longer conduct electricity.
+
+
 
 
 

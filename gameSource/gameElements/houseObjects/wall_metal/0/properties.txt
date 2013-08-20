@@ -3,4 +3,3 @@ blocking
 shadowMaking
 structural
 wall
-conductive
