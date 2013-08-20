@@ -1,2 +1,2 @@
 deadly
-conductive
+conductiveInternal

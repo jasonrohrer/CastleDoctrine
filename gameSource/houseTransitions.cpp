@@ -413,11 +413,21 @@ static char *propagatePower(  int *inMapIDs,
     // separately track whether each cell is passing power only left-to-right
     // or only top-to-bottom (can be both!)
     // fully conductive cells that become powered have both of these set
+    // 
+    // cells that are powered but only conductiveInternal have NEITHER
+    // of these set (don't pass power at all) and also have flag
+    // set in internalPowerMap below
     char *leftRightPowerMap = new char[numCells];
     memset( leftRightPowerMap, false, numCells );
 
     char *topBottomPowerMap = new char[numCells];
     memset( topBottomPowerMap, false, numCells );
+
+
+    char *internalPowerMap = new char[numCells];
+    memset( internalPowerMap, false, numCells );
+
+
 
 
     char change = false;
@@ -453,6 +463,7 @@ static char *propagatePower(  int *inMapIDs,
                 
                 if( y > 0 &&
                     powerMap[ i - inMapW ] &&
+                    ! internalPowerMap[ i - inMapW ] &&
                     ( ! leftRightPowerMap[ i - inMapW ]
                       || topBottomPowerMap[ i - inMapW ] ) ) {
                     powerMap[i] = true;
@@ -463,6 +474,7 @@ static char *propagatePower(  int *inMapIDs,
                     }
                 if( y < inMapH - 1 &&
                     powerMap[ i + inMapW ] &&
+                    ! internalPowerMap[ i + inMapW ] &&
                     ( ! leftRightPowerMap[ i + inMapW ]
                       || topBottomPowerMap[ i + inMapW ] ) ) {
                     powerMap[i] = true;
@@ -473,6 +485,7 @@ static char *propagatePower(  int *inMapIDs,
                     }
                 if( x > 0 &&
                     powerMap[ i - 1 ] &&
+                    ! internalPowerMap[ i - 1 ] &&
                     ( leftRightPowerMap[ i - 1 ]
                       || ! topBottomPowerMap[ i - 1 ] ) ) {
                     powerMap[i] = true;
@@ -483,6 +496,7 @@ static char *propagatePower(  int *inMapIDs,
                     }            
                 if( x < inMapW - 1 &&
                     powerMap[ i + 1 ] &&
+                    ! internalPowerMap[ i + 1 ] &&
                     ( leftRightPowerMap[ i + 1 ]
                       || ! topBottomPowerMap[ i + 1 ] ) ) {
                     powerMap[i] = true;
@@ -502,6 +516,7 @@ static char *propagatePower(  int *inMapIDs,
                     
                     if( x > 0 &&
                         powerMap[ i - 1 ] &&
+                        ! internalPowerMap[ i - 1 ] &&
                         ( leftRightPowerMap[ i - 1 ]
                           || ! topBottomPowerMap[ i - 1 ] )  ) {
                         
@@ -511,6 +526,7 @@ static char *propagatePower(  int *inMapIDs,
                         }
                     if( x < inMapW - 1 &&
                         powerMap[ i + 1 ] &&
+                        ! internalPowerMap[ i + 1 ] &&
                         ( leftRightPowerMap[ i + 1 ]
                           || ! topBottomPowerMap[ i + 1 ] ) ) {
                         
@@ -530,6 +546,7 @@ static char *propagatePower(  int *inMapIDs,
                     
                     if( y > 0 &&
                         powerMap[ i - inMapW ] &&
+                        ! internalPowerMap[ i - inMapW ] &&
                         ( ! leftRightPowerMap[ i - inMapW ]
                           || topBottomPowerMap[ i - inMapW ] ) ) {
                         
@@ -539,6 +556,7 @@ static char *propagatePower(  int *inMapIDs,
                         }
                     if( y < inMapH - 1 &&
                         powerMap[ i + inMapW ] &&
+                        ! internalPowerMap[ i + inMapW ] &&
                         ( ! leftRightPowerMap[ i + inMapW ]
                           || topBottomPowerMap[ i + inMapW ] ) ) {
                         
@@ -548,11 +566,68 @@ static char *propagatePower(  int *inMapIDs,
                         }
                     }
                 
+
+
+                if( !powerMap[i] &&
+                    !internalPowerMap[i] &&
+                    isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveInternal ) ) {
+            
+                    // look for any neighbor with power
+                    int x = i % inMapW;
+                    
+                    if( x > 0 &&
+                        powerMap[ i - 1 ] &&
+                        ! internalPowerMap[ i - 1 ] &&
+                        ( leftRightPowerMap[ i - 1 ]
+                          || ! topBottomPowerMap[ i - 1 ] )  ) {
+                        
+                        powerMap[i] = true;
+                        internalPowerMap[i] = true;
+                        change = true;
+                        }
+                    if( x < inMapW - 1 &&
+                        powerMap[ i + 1 ] &&
+                        ! internalPowerMap[ i + 1 ] &&
+                        ( leftRightPowerMap[ i + 1 ]
+                          || ! topBottomPowerMap[ i + 1 ] ) ) {
+                        
+                        powerMap[i] = true;
+                        internalPowerMap[i] = true;
+                        change = true;
+                        }
+                    
+                    int y = i / inMapW;
+                    
+                    if( y > 0 &&
+                        powerMap[ i - inMapW ] &&
+                        ! internalPowerMap[ i - inMapW ] &&
+                        ( ! leftRightPowerMap[ i - inMapW ]
+                          || topBottomPowerMap[ i - inMapW ] ) ) {
+                        
+                        powerMap[i] = true;
+                        internalPowerMap[i] = true;
+                        change = true;
+                        }
+                    if( y < inMapH - 1 &&
+                        powerMap[ i + inMapW ] &&
+                        ! internalPowerMap[ i + inMapW ] &&
+                        ( ! leftRightPowerMap[ i + inMapW ]
+                          || topBottomPowerMap[ i + inMapW ] ) ) {
+                        
+                        powerMap[i] = true;
+                        internalPowerMap[i] = true;
+                        change = true;
+                        }
+                    }
+
+
                 }
             }
         }
 
     delete [] leftRightPowerMap;
+    delete [] internalPowerMap;
     
     *outTopBottomPowerMap = topBottomPowerMap;
 
