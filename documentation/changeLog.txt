@@ -14,7 +14,7 @@ Version 16
 
 --Metal walls no longer conduct electricity.
 
-
+--Removed wired wooden walls.
 
 
 

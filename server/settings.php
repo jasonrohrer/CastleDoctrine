@@ -168,7 +168,6 @@ $defaultPrices = array(
     array( 102, 5, 0, "Wiring" ),
     array( 120, 5, 0, "Vertical Wiring" ),
     array( 121, 5, 0, "Horizontal Wiring" ),
-    array( 51, 15, 0, "Wired Wooden Wall" ),
     array( 101, 50, 0, "Pressure Toggle Switch (Starts Off)" ),
     array( 108, 50, 0, "Pressure Toggle Switch (Starts On)" ),
     array( 100, 50, 0, "Sticking Pressure Switch" ),
