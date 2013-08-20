@@ -66,7 +66,7 @@ static TransitionTriggerRecord *triggerRecords = NULL;
 
 
 
-#define NUM_BUILT_IN_TRIGGERS 8
+#define NUM_BUILT_IN_TRIGGERS 9
 
 static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = { 
     "player",
@@ -76,7 +76,8 @@ static const char *builtInTriggerNames[NUM_BUILT_IN_TRIGGERS] = {
     "noPower",
     "powerNorth",
     "noPowerNorth",
-    "visible"
+    "visible",
+    "notVisible"
     };
 
 
@@ -89,6 +90,7 @@ enum triggerID {
     trigger_powerNorth,
     trigger_noPowerNorth,
     trigger_visible,
+    trigger_notVisible,
     trigger_END
     };                                              
     
@@ -1342,8 +1344,8 @@ void applyVisibilityTransitions( int *inMapIDs, int *inMapStates,
                                  char *inMapTilesVisible ) {
     
 
-    TransitionTriggerRecord *r = 
-        &( triggerRecords[ trigger_visible ] );
+    TransitionTriggerRecord *r;
+    
         
 
     int numCells = inMapW * inMapH;
@@ -1353,61 +1355,64 @@ void applyVisibilityTransitions( int *inMapIDs, int *inMapStates,
         
 
         if( inMapTilesVisible[c] ) {
-
-            int cellID = inMapIDs[c];
-            int cellState = inMapStates[c];        
-
-            if( cellID != 0 ) {            
-                for( int i=0; i<r->numTransitions; i++ ) {
-                    TransitionRecord *transRecord = &( r->transitions[i] );
+            r = &( triggerRecords[ trigger_visible ] );
+            }
+        else {
+            r = &( triggerRecords[ trigger_notVisible ] );
+            }
+        
+        
+        int cellID = inMapIDs[c];
+        int cellState = inMapStates[c];        
+            
+        if( cellID != 0 ) {            
+            for( int i=0; i<r->numTransitions; i++ ) {
+                TransitionRecord *transRecord = &( r->transitions[i] );
                 
-                    if( transRecord->targetID == cellID
-                        &&
-                        ( transRecord->targetStartState == cellState
-                          ||
-                          transRecord->targetStartState == -1 )
-                        &&
-                        transRecord->targetEndState != cellState ) {
+                if( transRecord->targetID == cellID
+                    &&
+                    ( transRecord->targetStartState == cellState
+                      ||
+                      transRecord->targetStartState == -1 )
+                    &&
+                    transRecord->targetEndState != cellState ) {
                     
-                        inMapStates[c] = 
-                            transRecord->targetEndState;
+                    inMapStates[c] = 
+                        transRecord->targetEndState;
                     
-                        // only allow one transition triggered for
-                        // the object in this spot
-                        break;
-                        }
-                    }
-                }
-
-
-
-            int mobileCellID = inMapMobileIDs[c];
-            int mobileCellState = inMapMobileStates[c];
-
-            if( mobileCellID != 0 ) {            
-                for( int i=0; i<r->numTransitions; i++ ) {
-                    TransitionRecord *transRecord = &( r->transitions[i] );
-                
-                    if( transRecord->targetID == mobileCellID
-                        &&
-                        ( transRecord->targetStartState == mobileCellState
-                          ||
-                          transRecord->targetStartState == -1 )
-                        &&
-                        transRecord->targetEndState != mobileCellState ) {
-                    
-                        inMapMobileStates[c] = 
-                            transRecord->targetEndState;
-                    
-                        // only allow one transition triggered for
-                        // the mobile object in this spot
-                        break;
-                        }
+                    // only allow one transition triggered for
+                    // the object in this spot
+                    break;
                     }
                 }
             }
 
-        
+
+
+        int mobileCellID = inMapMobileIDs[c];
+        int mobileCellState = inMapMobileStates[c];
+
+        if( mobileCellID != 0 ) {            
+            for( int i=0; i<r->numTransitions; i++ ) {
+                TransitionRecord *transRecord = &( r->transitions[i] );
+                
+                if( transRecord->targetID == mobileCellID
+                    &&
+                    ( transRecord->targetStartState == mobileCellState
+                      ||
+                      transRecord->targetStartState == -1 )
+                    &&
+                    transRecord->targetEndState != mobileCellState ) {
+                    
+                    inMapMobileStates[c] = 
+                        transRecord->targetEndState;
+                    
+                    // only allow one transition triggered for
+                    // the mobile object in this spot
+                    break;
+                    }
+                }
+            }
         }
 
 

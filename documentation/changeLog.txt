@@ -10,6 +10,9 @@ Version 16
 --Blocked quitting from game when quitting would kill player (during robbery
   and self-test).
 
+--Animals now only follow or flee you if they can see you.
+
+
 
 
 
