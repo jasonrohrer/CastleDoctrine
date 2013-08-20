@@ -32,10 +32,15 @@ specify your own set of four keys (change "wasd" to "tfgh", for example).
 
 == Screen Size ==
 
-If the game doesn't look good at the default 640x480 full-screen on your 
-monitor, you can edit the screen dimensions in the "settings" folder.  You
-can also toggle full-screen mode.  Once the game has been started in 
-full-screen mode, you can switch to windowed mode by pressing Alt-Enter.
+The game defaults to windowed mode, automatically picking the largest possible
+window that fits comfortably on your monitor.  You can override this behavior
+by editing useLargestWindow.ini in the settings folder.  After that, you can
+control the window size by editing screenWidth.ini and screenHeight.ini.
+
+The same size settings are also used as a target screen resolution if you
+switch the game to full-screen mode in the settings folder.  Once the game has
+been started in full-screen mode, you can switch to windowed mode by pressing
+Alt-Enter.
 
 If the game seems sluggish at the default 60 frames-per-second, 
 try switching to 30 FPS by putting a 1 in "settings/halfFrameRate.ini".

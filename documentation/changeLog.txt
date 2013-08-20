@@ -18,6 +18,8 @@ Version 16
 
 --Powered doors and trapdoors no longer pass power neighboring objects.
 
+--Game now runs in windowed mode by default, picking the largest window that
+  fits comfortably on the user's screen.
 
 
 
