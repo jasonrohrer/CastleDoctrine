@@ -4550,7 +4550,7 @@ function cd_endRobHouse() {
                 " '$scouting_count', '$last_scout_time', ".
                 " '$old_house_map_hash', '$loadout', '$move_list', ".
                 " '$num_moves' );";
-            cd_queryDatabase( $query );    
+            $pendingDatabaseUpdateQueries[] = $query;
             }
 
         
@@ -4668,7 +4668,7 @@ function cd_endRobHouse() {
             " '$scouting_count', '$last_scout_time', ".
             " '$old_house_map_hash', '$loadout', '$move_list', ".
             " '$num_moves' );";
-        cd_queryDatabase( $query );
+        $pendingDatabaseUpdateQueries[] = $query;
 
         // some (or all) loot taken
         if( $success == 1 ) {
@@ -4793,7 +4793,30 @@ function cd_endRobHouse() {
             "payment_count = '$payment_count' ".
             "WHERE user_id = '$last_robbed_owner_id' AND ".
             "robbing_user_id = $user_id AND rob_checkout = 1;";
-        cd_queryDatabase( $query );
+
+
+        // manually detect deadlock, which is unavoidable here, even though
+        // we're only locking one row, because of the way that index locks
+        // work (if a checkForFlush happens at the same moment)
+        $result = cd_queryDatabase( $query, 0 );
+
+        // redo transaction in case of deadlock
+        if( $result == FALSE ) {
+            cd_queryDatabase( "COMMIT;" );
+            cd_queryDatabase( "SET AUTOCOMMIT=1" );
+            
+            cd_log( "Deadlock detected in endRobHouse ".
+                    "final UPDATE, restarting endRobHouse call" );
+
+            // call self again
+            // this is safe to do, because all of our data-changing queries
+            // have been queued in $pendingDatabaseUpdateQueries[], so none of
+            // them have ben executed yet.
+            // They will be discarded as we call ourself again.
+            endRobHouse();
+            return;
+            }
+        
         }
     else {
         // owner died elsewhere while we were robbing, house

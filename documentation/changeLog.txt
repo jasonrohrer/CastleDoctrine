@@ -23,6 +23,9 @@ Version 15   Live Server Fixes
 
 --Fixed a potential deadlock involving house map cache flushing.
 
+--Fixed unavoidable deadlock in endRobHouse by restarting transaction (thanks
+  Colorfusion).
+
 
 
 
