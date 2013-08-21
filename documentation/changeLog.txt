@@ -35,6 +35,9 @@ Version 15   Live Server Fixes
 
 --Server now emails admin a report about each fatal error that occurs.
 
+--Salary now based on a percentage of house value, but caps out at a fixed
+  amount for houses with value greater than 10,000.
+
 
 
 

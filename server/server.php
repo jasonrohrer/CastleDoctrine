@@ -1656,7 +1656,15 @@ function cd_checkForFlush() {
 
         // now pay anyone who needs paying
 
-        global $payInterval, $playerPayAmount, $wifePayAmount;
+        global $payInterval, $playerPayAmount, $wifePayAmount,
+            $playerStartMoney;
+
+
+        // scale pay based on value estimate
+        // houses with greater value earn more money, up to a point
+        // Once they pass 5x playerStartMoney, the amount/hour stops increasing
+
+        $maxValueThreshold = $playerStartMoney * 5;
         
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET ".
@@ -1664,20 +1672,27 @@ function cd_checkForFlush() {
             // vault reaches
             "loot_value = ".
             "    loot_value + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
             "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
             // only add to wife money if wife present
             "wife_loot_value = ".
-            "    wife_loot_value + wife_present * $wifePayAmount, ".
+            "    wife_loot_value + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
+            "    wife_present * $wifePayAmount, ".
             "value_estimate = ".
             "    value_estimate + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
             "    (consecutive_rob_success_count < 2 ) * $playerPayAmount + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
             "    wife_present * $wifePayAmount, ".
             "last_pay_check_time = CURRENT_TIMESTAMP, ".
             "payment_count = payment_count + 1, ".
             "you_paid_total = you_paid_total + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
             "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
-            "wife_paid_total = ".
-            "    wife_paid_total + wife_present * $wifePayAmount ".
+            "wife_paid_total =  wife_paid_total + ".
+            "    LEAST( value_estimate / $maxValueThreshold, 1 ) * ".
+            "    wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
             "AND edit_count != 0 ".
             "AND ( consecutive_rob_success_count < 2 OR ".
