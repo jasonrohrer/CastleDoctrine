@@ -47,6 +47,7 @@ Version 15   Live Server Fixes
   (though this shouldn't be possible anyway, assuming that people don't mod
   clients to allow buying paintings when their house is not being edited).
 
+--Added function for getting email addresses of recent players in admin view.
 
 
 

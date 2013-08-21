@@ -236,6 +236,9 @@ else if( $action == "show_prices" ) {
 else if( $action == "show_object_report" ) {
     cd_showObjectReport();
     }
+else if( $action == "show_recent_user_emails" ) {
+    cd_showRecentUserEmails();
+    }
 else if( $action == "show_detail" ) {
     cd_showDetail();
     }
@@ -6511,12 +6514,20 @@ function cd_showData() {
     <INPUT TYPE="Submit" VALUE="Search">
     </FORM>
              </td>
-             <td>
+             <td align=center>
 <FORM ACTION="server.php" METHOD="post">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_object_report">
     <INPUT TYPE="text" MAXLENGTH=10 SIZE=10 NAME="limit"
              VALUE="0">
              <INPUT TYPE="Submit" VALUE="Object Report"><br>(0 for no limit)
+    </FORM>
+             </td>
+             <td align=right>
+<FORM ACTION="server.php" METHOD="post">
+    <INPUT TYPE="hidden" NAME="action" VALUE="show_recent_user_emails">
+    Past <INPUT TYPE="text" MAXLENGTH=10 SIZE=10 NAME="day_limit"
+             VALUE="7"> Days  
+             <INPUT TYPE="Submit" VALUE="Get User Emails">
     </FORM>
              </td>
              </tr></table>
@@ -6906,6 +6917,43 @@ function cd_showObjectReport() {
 
     echo "</td></tr></table>";
 
+    }
+
+
+
+
+
+function cd_showRecentUserEmails() {
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_recent_user_emails" );
+
+    cd_generateHeader();
+
+    $day_limit = cd_requestFilter( "day_limit", "/\d+/", 7 );
+    
+    $query = "set group_concat_max_len=10000;";
+
+    cd_queryDatabase( $query );
+    
+    
+    $query = "SELECT COUNT(*), GROUP_CONCAT( users.email separator ', ') ".
+        "FROM $tableNamePrefix"."houses AS houses ".
+        "LEFT JOIN $tableNamePrefix"."users AS users ".
+        "ON houses.user_id = users.user_id ".
+        "WHERE houses.last_owner_visit_time > ".
+        "      SUBTIME( CURRENT_TIMESTAMP, '$day_limit 0:00:00' );";
+        
+    $result = cd_queryDatabase( $query );
+
+    $count = mysql_result( $result, 0, 0 );
+    $emailList = mysql_result( $result, 0, 1 );
+
+
+    echo "$count users played the game in the past $day_limit days:<br><br>";
+
+    echo "$emailList";
     }
 
 
