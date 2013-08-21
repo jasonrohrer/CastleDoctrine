@@ -4043,7 +4043,7 @@ function cd_startRobHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
-    if( $vault_contents == "#" && $loot_value == 0
+    if( $vault_contents == "#" && $gallery_contents == "#" && $loot_value == 0
         && $consecutive_rob_success_count > 0 ) {
         // vault has been reached since last edit
         // and is currently empty
@@ -4354,7 +4354,8 @@ function cd_endRobHouse() {
     // empty vault (to match map that was sent to client from startRobHouse)
     $old_house_map_untouched = $old_house_map;
     
-    if( $house_vault_contents == "#" && $vault_loot_value == 0
+    if( $house_vault_contents == "#" && $house_gallery_contents == "#"
+        && $vault_loot_value == 0
         && $consecutive_rob_success_count > 0 ) {
         // vault has been reached since last edit
         // and is currently empty

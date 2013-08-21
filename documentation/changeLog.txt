@@ -43,6 +43,11 @@ Version 15   Live Server Fixes
   houses and also thwarts two-account collaboration where one account quickly
   dumps starting money to the other.
 
+--Fixed so that a house containing paintings will never show an empty vault
+  (though this shouldn't be possible anyway, assuming that people don't mod
+  clients to allow buying paintings when their house is not being edited).
+
+
 
 
 
