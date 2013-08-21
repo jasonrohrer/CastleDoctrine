@@ -808,6 +808,8 @@ function cd_setupDatabase() {
             // now counts total vault reaches
             // vault pay stops as soon as two vault reaches happen
             "consecutive_rob_success_count INT NOT NULL,".
+            "creation_time DATETIME NOT NULL,".
+            "INDEX( creation_time ),".
             "last_ping_time DATETIME NOT NULL,".
             "INDEX( last_ping_time ),".
             "last_owner_action_time DATETIME NOT NULL,".
@@ -3794,7 +3796,9 @@ function cd_listHouses() {
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
-        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 )".
+        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 ) ".
+        "AND houses.creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
+        "                                    '0 0:05:0.0000' ) ".
         "$searchClause ".
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
@@ -3983,6 +3987,7 @@ function cd_startRobHouse() {
         "AND edit_count != 0 ".
         "AND ( value_estimate != 0 OR edit_count > 0 ) ".
         "AND ( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
+        "AND creation_time < SUBTIME( CURRENT_TIMESTAMP, '0 0:05:0.0000' ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -6113,6 +6118,7 @@ function cd_newHouseForUser( $user_id ) {
             "rob_attempts = 0,".
             "robber_deaths = 0, ".
             "consecutive_rob_success_count = 0, ".
+            "creation_time = CURRENT_TIMESTAMP, ".
             "last_ping_time = CURRENT_TIMESTAMP, ".
             "last_owner_action_time = CURRENT_TIMESTAMP, ".
             "last_owner_visit_time = CURRENT_TIMESTAMP, ".

@@ -38,6 +38,11 @@ Version 15   Live Server Fixes
 --Salary now based on a percentage of house value, but caps out at a fixed
   amount for houses with value greater than 10,000.
 
+--Brand new houses are kept off the robbable list for 5 minutes from the time
+  they are created by the server.  This reduces the prevalance of throw-away
+  houses and also thwarts two-account collaboration where one account quickly
+  dumps starting money to the other.
+
 
 
 
