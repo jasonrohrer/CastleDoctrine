@@ -329,6 +329,16 @@ char isPaused() {
 
 
 
+void blockQuitting( char inNoQuitting ) {
+    }
+
+
+char isQuittingBlocked() {
+    return false;
+    }
+
+
+
 void wakeUpPauseFrameRate() {
     }
 
