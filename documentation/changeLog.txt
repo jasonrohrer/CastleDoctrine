@@ -1,3 +1,11 @@
+Version 17
+
+--Fixed bug that was causing useLargestWindow setting to be ignored.  Now
+  window size can be set by user (thanks Colorfusion).
+
+
+
+
 Version 16   Live Server Fixes
 
 --Changed so that every house earns something in each pay interval (a minimum
