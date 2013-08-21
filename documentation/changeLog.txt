@@ -1,3 +1,11 @@
+Version 16   Live Server Fixes
+
+--Changed so that every house earns something in each pay interval (a minimum
+  fraction of the maximum possible pay).
+
+
+
+
 Version 16   2013-August-21
 
 --Added support for web proxies (thanks Florian Yusuf Ali).
