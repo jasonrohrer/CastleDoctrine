@@ -1672,7 +1672,7 @@ function cd_checkForFlush() {
         $maxValueThreshold = $playerStartMoney * 5;
 
         // they always earn at least this fraction of their max salary
-        $minF = 0.1;
+        $minF = 0.5;
         
         $query = "UPDATE $tableNamePrefix"."houses ".
             "SET ".
