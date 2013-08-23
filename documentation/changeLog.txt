@@ -5,6 +5,10 @@ Version 17
 
 --Quadrupled all tool prices.
 
+--Changed tool and tile prices according to a new four-tiered pricing model
+  with a fixed build-cost/bypass-cost ratio for everything.
+
+
 
 
 Version 16   Live Server Fixes
