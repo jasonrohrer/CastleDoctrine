@@ -8,6 +8,9 @@ Version 17
 --Changed tool and tile prices according to a new four-tiered pricing model
   with a fixed build-cost/bypass-cost ratio for everything.
 
+--Changed bypass-cost theory for mobile bottlenecks (pit bulls).  Direct
+  bypass (gun) now costs 1x, and disabling (meat) costs 1/8x.
+
 
 
 
