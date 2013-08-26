@@ -8,6 +8,10 @@ Version 17
 --Fixed directions that animals face when they can't see you so that they don't
   suddenly jump orientations when they come into view.
 
+--Added a club tool (bludgeon functionality of the crowbar, without the
+  door-opening capabilities, allowing it to be cheaper).  Removed
+  mostly-useless voltage detector to make room for it.
+
 
 
 

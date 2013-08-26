@@ -189,7 +189,7 @@ $defaultPrices = array(
     array( 501, 800, 0, "Cutting Torch" ),
     array( 502, 800, 0, "S-W Model 36" ),
     array( 503, 150, 0, "Brick" ),
-    array( 504, 10, 0, "Voltage Detector" ),
+    array( 512, 200, 0, "Club" ),
     array( 505, 1200, 0, "Doorstop" ),
     array( 506, 50, 0, "Wire Cutters" ),
     array( 507, 1200, 0, "Ammonium Nitrate Diesel Bomb" ),

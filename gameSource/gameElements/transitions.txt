@@ -238,6 +238,10 @@ crowbar  # pitbull:11 => 7
 crowbar  # chihuahua:11 => 7
 crowbar  # cat:11 => 7
 
+club  # pitbull:11 => 7
+club  # chihuahua:11 => 7
+club  # cat:11 => 7
+
 brick  # chihuahua:11 => 7
 brick  # cat:11 => 7
 
@@ -273,3 +277,19 @@ crowbar # daughter:1 => 7
 crowbar # daughter2:1 => 7
 crowbar # daughter3:1 => 7
 crowbar # daughter4:1 => 7
+
+
+club # wife:1 => 7
+club # wife2:1 => 7
+club # wife3:1 => 7
+club # wife4:1 => 7
+
+club # son:1 => 7
+club # son2:1 => 7
+club # son3:1 => 7
+club # son4:1 => 7
+
+club # daughter:1 => 7
+club # daughter2:1 => 7
+club # daughter3:1 => 7
+club # daughter4:1 => 7
