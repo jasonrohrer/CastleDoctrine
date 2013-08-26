@@ -1,4 +1,4 @@
-playerSeeking
+playerFacing
 mobile
 onTopOfPlayer
 darkHaloBehind

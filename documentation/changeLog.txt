@@ -5,6 +5,10 @@ Version 17
 
 --Fixed vision 'leak' through diagonals.
 
+--Fixed directions that animals face when they can't see you so that they don't
+  suddenly jump orientations when they come into view.
+
+
 
 
 

@@ -1,5 +1,5 @@
 mandatory
 family
 son
-playerSeeking
+playerFacing
 darkHaloBehind

@@ -1,4 +1,5 @@
 playerAvoiding
+playerFacingAway
 mobile
 onTopOfPlayer
 darkHaloBehind

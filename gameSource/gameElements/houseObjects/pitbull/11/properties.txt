@@ -1,3 +1,4 @@
 playerSeeking
+playerFacing
 mobile
 darkHaloBehind

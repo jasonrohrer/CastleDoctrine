@@ -1,5 +1,5 @@
 mandatory
 family
 wife
-playerSeeking
+playerFacing
 darkHaloBehind

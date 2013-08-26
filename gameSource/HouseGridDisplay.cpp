@@ -1449,8 +1449,8 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
 
 
 
-        if( isPropertySet( inTileID, inTileState, playerSeeking ) ||
-            isPropertySet( inTileID, inTileState, playerAvoiding ) ) {
+        if( isPropertySet( inTileID, inTileState, playerFacing ) ||
+            isPropertySet( inTileID, inTileState, playerFacingAway ) ) {
             
             int x = inFullIndex % mFullMapD;
             int y = inFullIndex / mFullMapD;
@@ -1461,7 +1461,7 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
             int dX = robberX - x;
             int dY = robberY - y;
             
-            if( isPropertySet( inTileID, inTileState, playerAvoiding ) ) {
+            if( isPropertySet( inTileID, inTileState, playerFacingAway ) ) {
                 // face away from player
                 dX *= -1;
                 dY *= -1;

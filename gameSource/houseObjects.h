@@ -73,6 +73,8 @@ int getObjectID( const char *inName );
     F(mobileBlocking), \
     F(playerSeeking), \
     F(playerAvoiding), \
+    F(playerFacing), \
+    F(playerFacingAway), \
     F(interactingWithPlayer), \
     F(onTopOfPlayer) \
 

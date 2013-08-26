@@ -1,5 +1,5 @@
 mandatory
 family
 daughter
-playerSeeking
+playerFacing
 darkHaloBehind
