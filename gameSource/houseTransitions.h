@@ -19,6 +19,7 @@ char areMobilesFrozen();
 // applies transition rules to transform inMapIDs and inMapStates
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,
+                       int *inMapMobileStartingPositions,
                        int inMapW, int inMapH,
                        int inRobberIndex,
                        int inLastRobberIndex,

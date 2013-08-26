@@ -764,6 +764,7 @@ static char distCompare( double inDistA, double inDistB, char inSeek ) {
 static void applyMobileTransitions( int *inMapIDs, int *inMapStates, 
                                     int *inMapMobileIDs, 
                                     int *inMapMobileStates,
+                                    int *inMapMobileStartingPositions,
                                     int inMapW, int inMapH,
                                     int inRobberIndex,
                                     int inLastRobberIndex,
@@ -1009,9 +1010,12 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 
                 inMapMobileIDs[destI] = inMapMobileIDs[i];
                 inMapMobileStates[destI] = inMapMobileStates[i];
+                inMapMobileStartingPositions[destI] = 
+                    inMapMobileStartingPositions[i];
                 
                 inMapMobileIDs[i] = 0;
                 inMapMobileStates[i] = 0;
+                inMapMobileStartingPositions[i] = -1;
 
                 // don't keep moving it if we encounter it later in loop
                 moveHappened[destI] = true;
@@ -1156,6 +1160,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,
+                       int *inMapMobileStartingPositions,
                        int inMapW, int inMapH,
                        int inRobberIndex,
                        int inLastRobberIndex,
@@ -1164,6 +1169,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     if( !mobileObjectsFrozen ) {
         applyMobileTransitions( inMapIDs, inMapStates,
                                 inMapMobileIDs, inMapMobileStates,
+                                inMapMobileStartingPositions,
                                 inMapW, inMapH, inRobberIndex,
                                 inLastRobberIndex,
                                 inStartIndex );

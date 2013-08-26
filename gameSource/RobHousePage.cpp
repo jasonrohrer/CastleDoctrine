@@ -256,7 +256,7 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
             // commited suicide to end robbery
             // in that case, mGridDisplay does not detect the suicide
             // must force family end process
-            mGridDisplay.processFamilyAtEnd();
+            mGridDisplay.processFamilyAndMobilesAtEnd();
             }
 
         mDone = true;

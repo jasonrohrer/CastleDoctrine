@@ -47,6 +47,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mSafeDownSprite( loadSprite( "moveDown.tga" ) ),
           mSafeRightSprite( loadSprite( "moveRight.tga" ) ),
           mForceAllTileToolTips( false ),
+          mHouseMapMobileStartingPositions( NULL ),
           mRobberStoleFromWife( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
@@ -65,6 +66,10 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
     freeSprite( mSafeLeftSprite );
     freeSprite( mSafeDownSprite );
     freeSprite( mSafeRightSprite );
+
+    if( mHouseMapMobileStartingPositions != NULL ) {
+        delete [] mHouseMapMobileStartingPositions;
+        }
     }
 
 
@@ -354,6 +359,23 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     HouseGridDisplay::setHouseMap( inHouseMap );    
 
+    if( mHouseMapMobileStartingPositions != NULL ) {
+        delete [] mHouseMapMobileStartingPositions;
+        }
+
+    mHouseMapMobileStartingPositions = new int[ mNumMapSpots ];
+    
+    for( int i=0; i<mNumMapSpots; i++ ) {
+    
+        if( mHouseMapMobileIDs[i] != -1 ) {
+            mHouseMapMobileStartingPositions[i] = i;
+            }
+        else {
+            mHouseMapMobileStartingPositions[i] = -1;
+            }
+        }
+    
+
 
     mFamilyExitPathProgress.deleteAll();
     mFamilyObjects.deleteAll();
@@ -622,6 +644,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
                       mHouseMapMobileIDs, mHouseMapMobileCellStates,
+                      mHouseMapMobileStartingPositions,
                       mFullMapD, mFullMapD,
                       mRobberIndex,
                       mLastRobberIndex,
@@ -641,7 +664,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                                         mDeathSourceID,
                                         mDeathSourceState );
         mSuccess = 0;
-        processFamilyAtEnd();
+        processFamilyAndMobilesAtEnd();
         }
     else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
                             mHouseMapMobileCellStates[ mRobberIndex ], 
@@ -656,7 +679,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                                         mDeathSourceID,
                                         mDeathSourceState );
         mSuccess = 0;
-        processFamilyAtEnd();
+        processFamilyAndMobilesAtEnd();
         }
 
     
@@ -1129,7 +1152,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
     
     if( mRobberIndex == mGoalIndex ) {
         mSuccess = 1;
-        processFamilyAtEnd();
+        processFamilyAndMobilesAtEnd();
 
         fireActionPerformed( this );
         }
@@ -1139,7 +1162,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
 void RobHouseGridDisplay::robberTriedToLeave() {
     mSuccess = 2;
-    processFamilyAtEnd();
+    processFamilyAndMobilesAtEnd();
 
     mMoveList.push_back( stringDuplicate( "L" ) );
 
@@ -1522,7 +1545,7 @@ void RobHouseGridDisplay::recomputeVisibilityFloat() {
 
 
 
-void RobHouseGridDisplay::processFamilyAtEnd() {
+void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
     int numFamily = mFamilyObjects.size();
     
     for( int i=0; i<numFamily; i++ ) {
@@ -1626,5 +1649,74 @@ void RobHouseGridDisplay::processFamilyAtEnd() {
 
         }
     
+
+
+    // now mobiles
+
+    int *newMobileIDs = new int[ mNumMapSpots ];
+    int *newMobileCellStates = new int[ mNumMapSpots ];
+    
+    memcpy( newMobileIDs, mHouseMapMobileIDs, mNumMapSpots * sizeof( int ) );
+    memcpy( newMobileCellStates, mHouseMapMobileCellStates, 
+            mNumMapSpots * sizeof( int ) );
+
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        if( newMobileIDs[i] != 0 && 
+            ! isPropertySet( newMobileIDs[i], 
+                             newMobileCellStates[i], stuck ) ) {
+            
+            // clear out any that aren't stuck
+            // to make room for mobiles jumping back to land here
+            newMobileIDs[i] = 0;
+            newMobileCellStates[i] = 0;
+            }
+        }
+    
+
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        if( mHouseMapMobileIDs[i] != 0 && 
+            ! isPropertySet( mHouseMapMobileIDs[i], 
+                             mHouseMapMobileCellStates[i], stuck ) ) {
+            
+            int jumpBackTarget = mHouseMapMobileStartingPositions[i];
+            
+            if( newMobileIDs[jumpBackTarget] == 0 ) {
+                // clear!
+                
+                // jump this mobile back to where it started
+                newMobileIDs[jumpBackTarget] = mHouseMapMobileIDs[i];
+                newMobileCellStates[jumpBackTarget] = 
+                    mHouseMapMobileCellStates[i];
+                }
+            else {
+                // starting position not clear 
+                // (dead mobile there?)
+                // (another mobile that was blocked from returning there?)
+
+                // try staying where we are
+                if( newMobileIDs[i] == 0 ) {
+                    // current spot empty in new map, stay there
+                    newMobileIDs[i] = mHouseMapMobileIDs[i];
+                    newMobileCellStates[i] = 
+                        mHouseMapMobileCellStates[i];
+                    }
+                
+                // else, where we were trying to jump back to is blocked
+                // and where we are now is blocked
+                // Nowhere to go, so this mobile disappears (runs away)
+                }
+            }
+        }
+
+    // all jump-backs are done now
+
+    // copy back into main mobile maps
+
+    memcpy( mHouseMapMobileIDs, newMobileIDs, mNumMapSpots * sizeof( int ) );
+    memcpy( mHouseMapMobileCellStates, newMobileCellStates,
+            mNumMapSpots * sizeof( int ) );
+
+    delete [] newMobileIDs;
+    delete [] newMobileCellStates;
     }
 

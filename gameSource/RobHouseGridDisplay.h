@@ -78,11 +78,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void keyDown( unsigned char inASCII );
 
 
-        // at end of robbery, deal with family repositioning
+        // at end of robbery, deal with family/mobile repositioning
         // called automatically in cases where this grid display catches
         // the end condition (but not for externally-detected end conditions,
         // like suicide)
-        void processFamilyAtEnd();
+        void processFamilyAndMobilesAtEnd();
 
 
     protected:
@@ -157,6 +157,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // override from HouseGridDisplay
         void pointerOver( float inX, float inY );
 
+
+        // so that living mobiles can return to where they started
+        // at the beginning of the robbery, if starting position is not blocked
+        int *mHouseMapMobileStartingPositions;
+        
 
         // step index for each family member
         SimpleVector<int> mFamilyExitPathProgress;

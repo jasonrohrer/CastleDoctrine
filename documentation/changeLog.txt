@@ -12,6 +12,9 @@ Version 17
   door-opening capabilities, allowing it to be cheaper).  Removed
   mostly-useless voltage detector to make room for it.
 
+--Changed so that all still-living animals jump back to their starting
+  positions, if possible, post-robbery.
+
 
 
 
