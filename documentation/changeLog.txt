@@ -3,13 +3,7 @@ Version 17
 --Fixed bug that was causing useLargestWindow setting to be ignored.  Now
   window size can be set by user (thanks Colorfusion).
 
---Quadrupled all tool prices.
-
---Changed tool and tile prices according to a new four-tiered pricing model
-  with a fixed build-cost/bypass-cost ratio for everything.
-
---Changed bypass-cost theory for mobile bottlenecks (pit bulls).  Direct
-  bypass (gun) now costs 1x, and disabling (meat) costs 1/8x.
+--Fixed vision 'leak' through diagonals.
 
 
 
@@ -18,6 +12,15 @@ Version 16   Live Server Fixes
 
 --Changed so that every house earns something in each pay interval (a minimum
   fraction of the maximum possible pay).
+
+--Quadrupled all tool prices.
+
+--Changed tool and tile prices according to a new four-tiered pricing model
+  with a fixed build-cost/bypass-cost ratio for everything (pricing theory).
+
+--Changed bypass-cost theory for mobile bottlenecks (pit bulls).  Direct
+  bypass (gun) now costs 1x, and disabling (meat) costs 1/8x.
+
 
 
 

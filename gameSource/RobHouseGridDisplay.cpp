@@ -1227,8 +1227,26 @@ void RobHouseGridDisplay::recomputeVisibility() {
 
 
 
+
+
+typedef struct intPair {
+        int x, y;
+    } intPair;
+
+
+typedef struct cornerLeak {
+        intPair a, b;
+    } cornerLeak;
+
+
+
+
 void RobHouseGridDisplay::recomputeVisibilityInt() {
     int robSubIndex = fullToSub( mRobberIndex );
+
+    int robberX = robSubIndex % HOUSE_D;
+    int robberY = robSubIndex / HOUSE_D;
+
 
     char *blockingMap = new char[ HOUSE_D * HOUSE_D ];    
 
@@ -1240,9 +1258,77 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
             blockingMap[ i ] = 1;
             }
         }
+
+    // now patch-up blocking map to fix diagonal corners that look like this:
+    //
+    //  OOOXOO
+    //  OOXOOO
+    //
+    // And tend to let vision through.
+    //
+    // We have to spots to consider patching, A and B:
+    //
+    //  OOAXOO
+    //  OOXBOO
+    //
+    // We can patch the "back side" safely, because the robber
+    // shouldn't be able to see it anyway (if corner blocks vision).
+    //
+    // Find the back side:  look at which of A or B is farthest from robber.
     
-    int robberX = robSubIndex % HOUSE_D;
-    int robberY = robSubIndex / HOUSE_D;
+
+    SimpleVector<cornerLeak> leaks;
+    
+    for( int y=0; y<HOUSE_D-1; y++ ) {
+        for( int x=0; x<HOUSE_D-1; x++ ) {
+            
+            if( blockingMap[ y * HOUSE_D + x ] &&
+                blockingMap[ (y+1) * HOUSE_D + x + 1 ] &&
+                ! blockingMap[ (y+1) * HOUSE_D + x ] &&
+                ! blockingMap[ y * HOUSE_D + x + 1 ] ) {
+                
+                cornerLeak l = { {x, y+1}, {x+1, y} };
+                leaks.push_back( l );
+                }
+
+            if( !blockingMap[ y * HOUSE_D + x ] &&
+                !blockingMap[ (y+1) * HOUSE_D + x + 1 ] &&
+                blockingMap[ (y+1) * HOUSE_D + x ] &&
+                blockingMap[ y * HOUSE_D + x + 1 ] ) {
+                
+                cornerLeak l = { {x, y}, {x+1, y+1} };
+                leaks.push_back( l );
+                }
+            }
+        }
+    
+    int numLeaks = leaks.size();
+    
+    for( int i=0; i<numLeaks; i++ ) {
+        
+        cornerLeak l = *( leaks.getElement( i ) );
+        
+        // compute dist squared instead
+        double distA = 
+            (l.a.x - robberX) * (l.a.x - robberX) +
+            (l.a.y - robberY) * (l.a.y - robberY);
+        
+        double distB = 
+            (l.b.x - robberX) * (l.b.x - robberX) +
+            (l.b.y - robberY) * (l.b.y - robberY);
+        
+        // test this for weirdness
+        // I think it breaks in cases where distA ~ distB
+        if( distA > distB + 1 ) {
+            blockingMap[ l.a.y * HOUSE_D + l.a.x ] =  true;
+            }
+        else if( distB > distA + 1 ) {
+            blockingMap[ l.b.y * HOUSE_D + l.b.x ] =  true;
+            }
+        }
+    
+
+
     
     // in middle of blown up tile
     int robberBlowupX = robberX * VIS_BLOWUP + VIS_BLOWUP / 2;
