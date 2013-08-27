@@ -112,7 +112,7 @@ wife_money
         // dead, but not killed by anything
         // suicide.
 
-        replayCheckerDisplay->processFamilyAtEnd();
+        replayCheckerDisplay->processFamilyAndMobilesAtEnd();
         }
 
     
