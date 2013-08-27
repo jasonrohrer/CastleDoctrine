@@ -214,6 +214,7 @@ player # chihuahua:6 => 1
 
 brick # window:1 => 3
 crowbar # window:1 => 3
+club # window:1 => 3
 
 brick   #   toggle_switch:1   =>  2
 brick   #   toggle_switch_prepressed:1   =>  2
