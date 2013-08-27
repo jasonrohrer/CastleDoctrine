@@ -1,4 +1,4 @@
-Version 17
+Version 17   2013-August-27
 
 --Fixed bug that was causing useLargestWindow setting to be ignored.  Now
   window size can be set by user (thanks Colorfusion).
