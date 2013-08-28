@@ -1,6 +1,7 @@
-Version 18
+Version 18   2013-August-27
 
 --Fixed glitch causing visibal animal position jump-back after robber death.
+
 
 
 
