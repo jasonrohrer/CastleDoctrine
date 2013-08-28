@@ -1,3 +1,11 @@
+Version 18   Live Server Fixes
+
+--Gun price up to 1200 to strengthen Pit Bulls somewhat, and Powered Door price
+  down to 600 to compensate for door drawbacks.
+
+
+
+
 Version 18   2013-August-27
 
 --Fixed glitch causing visibal animal position jump-back after robber death.
