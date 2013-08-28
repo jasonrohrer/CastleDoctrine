@@ -902,9 +902,8 @@ function cd_setupDatabase() {
             "PRIMARY KEY( user_id, house_user_id )," .
             "chill_start_time DATETIME NOT NULL, ".
             "INDEX( chill_start_time ), ".
-            // flag that is always 1
-            // allows this table to be used in left joins that produce
-            // a column with 1 for present entries
+            // is the chill in effect yet?  If so, 1, else 0
+            // chill starts coming into effect when user dies somewhere
             "chill TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -2073,20 +2072,6 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
                 "$staleSelfTestCount stale self tests, force killing them." );
         
         cd_newHouseForUser( $user_id );
-
-
-        if( $staleRobberyCount > 0 ) {
-            // don't do this on robbery in shadow table, because that
-            // owner/house is dead/gone now, and chill disappears with it
-            
-            // this house now gives this player a chill
-
-            $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
-                "SET user_id = '$user_id', ".
-                "house_user_id = '$last_robbed_owner_id', ".
-                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
-            cd_queryDatabase( $query );
-            }
         }
     else {
         // at least end their current editing session
@@ -3837,10 +3822,8 @@ function cd_listHouses() {
             }
 
         if( $chill == NULL ) {
+            // chill not even present
             $chill = 0;
-            }
-        else {
-            $chill = 1;
             }
 
         echo "$house_user_id#$character_name#$robber_name".
@@ -3952,7 +3935,8 @@ function cd_startRobHouse() {
     
     // check if house chilled
     $query = "SELECT chill FROM $tableNamePrefix"."chilling_houses ".
-        "WHERE user_id = '$user_id' and house_user_id = '$to_rob_user_id'; ";
+        "WHERE user_id = '$user_id' AND house_user_id = '$to_rob_user_id' ".
+        "AND chill = 1;";
 
     $result = cd_queryDatabase( $query );
 
@@ -4058,8 +4042,17 @@ function cd_startRobHouse() {
         $house_map = preg_replace( "/#999#/", "#999:2!#", $house_map );
         }
     
-        
+    
+    // a potential chill, if user dies in this house or some other house
+    // soon.  Start timer now.
+    $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+        "SET user_id = '$user_id', ".
+        "house_user_id = '$to_rob_user_id', ".
+        "chill_start_time = CURRENT_TIMESTAMP, chill = 0;";
 
+    cd_queryDatabase( $query ); 
+
+    
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
     
@@ -4897,20 +4890,6 @@ function cd_endRobHouse() {
     if( $success == 0 ) {                
         // starts over as new character, house destroyed
         cd_newHouseForUser( $user_id );
-
-
-        if( ! $ownerDied ) {
-            // if owner died during robbery, chill clears instantly
-
-            // otherwise
-            // this house now gives this player a chill
-            
-            $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
-                "SET user_id = '$user_id', ".
-                "house_user_id = '$last_robbed_owner_id', ".
-                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
-            cd_queryDatabase( $query );
-            }
         }
     
 
@@ -6207,7 +6186,13 @@ function cd_newHouseForUser( $user_id ) {
         "WHERE house_user_id = $user_id;";
     cd_queryDatabase( $query );
     
-
+    
+    // all houses user has been inside recently give the user a chill
+    $query = "UPDATE $tableNamePrefix"."chilling_houses ".
+        "SET chill = 1 WHERE user_id = '$user_id';";
+    cd_queryDatabase( $query );
+    
+    
     // decrement lives left
     $query = "UPDATE $tableNamePrefix"."users ".
         "SET lives_left = $lives_left ".
