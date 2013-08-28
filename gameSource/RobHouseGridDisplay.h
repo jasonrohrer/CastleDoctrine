@@ -56,6 +56,10 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // override to update visibility when map changes
         virtual void setHouseMap( const char *inHouseMap );
 
+        // override to copy in mobile final jump-back positions
+        virtual char *getHouseMap();
+
+
         // override to shift visibility map too
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
         
@@ -161,6 +165,12 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // so that living mobiles can return to where they started
         // at the beginning of the robbery, if starting position is not blocked
         int *mHouseMapMobileStartingPositions;
+        
+        // the states of mobiles after they jump-back at the end
+        // (we don't draw this, ever, but we return it when getHouseMap is 
+        //  called)
+        int *mHouseMapMobileFinalIDs;
+        int *mHouseMapMobileFinalCellStates;
         
 
         // step index for each family member

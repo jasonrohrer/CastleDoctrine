@@ -1,3 +1,10 @@
+Version 18
+
+--Fixed glitch causing visibal animal position jump-back after robber death.
+
+
+
+
 Version 17   2013-August-27
 
 --Fixed bug that was causing useLargestWindow setting to be ignored.  Now

@@ -90,7 +90,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *getSonName();
         char *getDaughterName();
 
-        char *getHouseMap();
+        virtual char *getHouseMap();
         char *getEditList();
         
         SimpleVector<GridDiffRecord> getEditDiff();

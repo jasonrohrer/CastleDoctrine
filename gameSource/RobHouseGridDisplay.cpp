@@ -48,6 +48,8 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mSafeRightSprite( loadSprite( "moveRight.tga" ) ),
           mForceAllTileToolTips( false ),
           mHouseMapMobileStartingPositions( NULL ),
+          mHouseMapMobileFinalIDs( NULL ),
+          mHouseMapMobileFinalCellStates( NULL ),
           mRobberStoleFromWife( false ) {
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
@@ -69,6 +71,13 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
 
     if( mHouseMapMobileStartingPositions != NULL ) {
         delete [] mHouseMapMobileStartingPositions;
+        }
+
+    if( mHouseMapMobileFinalIDs != NULL ) {
+        delete [] mHouseMapMobileFinalIDs;
+        }
+    if( mHouseMapMobileFinalCellStates != NULL ) {
+        delete [] mHouseMapMobileFinalCellStates;
         }
     }
 
@@ -367,7 +376,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     
     for( int i=0; i<mNumMapSpots; i++ ) {
     
-        if( mHouseMapMobileIDs[i] != -1 ) {
+        if( mHouseMapMobileIDs[i] != 0 ) {
             mHouseMapMobileStartingPositions[i] = i;
             }
         else {
@@ -417,6 +426,32 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     applyTransitionsAndProcess();
     freezeMobileObjects( false );
     }
+
+
+
+
+char *RobHouseGridDisplay::getHouseMap() {
+    
+    if( mHouseMapMobileFinalIDs != NULL &&
+        mHouseMapMobileFinalCellStates != NULL ) {
+        
+        memcpy( mHouseMapMobileIDs, mHouseMapMobileFinalIDs, 
+                mNumMapSpots * sizeof( int ) );
+
+        memcpy( mHouseMapMobileCellStates, mHouseMapMobileFinalCellStates,
+                mNumMapSpots * sizeof( int ) );
+        
+    
+        delete [] mHouseMapMobileFinalIDs;
+        delete [] mHouseMapMobileFinalCellStates;
+
+        mHouseMapMobileFinalIDs = NULL;
+        mHouseMapMobileFinalCellStates = NULL;
+        }
+    
+    return HouseGridDisplay::getHouseMap();
+    }
+
 
 
 
@@ -1653,6 +1688,16 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
 
     // now mobiles
 
+    if( mHouseMapMobileFinalIDs != NULL ) {
+        delete [] mHouseMapMobileFinalIDs;
+        mHouseMapMobileFinalIDs = NULL;
+        }
+    if( mHouseMapMobileFinalCellStates != NULL ) {
+        delete [] mHouseMapMobileFinalCellStates;
+        mHouseMapMobileFinalCellStates = NULL;
+        }
+    
+
     int *newMobileIDs = new int[ mNumMapSpots ];
     int *newMobileCellStates = new int[ mNumMapSpots ];
     
@@ -1710,13 +1755,11 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
 
     // all jump-backs are done now
 
-    // copy back into main mobile maps
 
-    memcpy( mHouseMapMobileIDs, newMobileIDs, mNumMapSpots * sizeof( int ) );
-    memcpy( mHouseMapMobileCellStates, newMobileCellStates,
-            mNumMapSpots * sizeof( int ) );
+    // save these into final state for mobiles (never drawn, but returned
+    // by getHouseMap() )
 
-    delete [] newMobileIDs;
-    delete [] newMobileCellStates;
+    mHouseMapMobileFinalIDs = newMobileIDs;
+    mHouseMapMobileFinalCellStates = newMobileCellStates;
     }
 
