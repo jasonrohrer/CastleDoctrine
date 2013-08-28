@@ -5,7 +5,14 @@ Version 18   Live Server Fixes
 
 --Chills are now put on all houses player entered in the last hour when player
   dies, regardless of where player dies.  Player is haunted by what they did
-  during the last hour of their past life.
+  during the last hour of their past life.  This closes the "go home and kill
+  yourself to get more money and try that house again" exploit.
+
+--All tools dumped at the end of a robbery (including when reaching vault or
+  running out the door) are now added to the vault.  This is safe now, because
+  the suicide-at-home exploit has been closed.
+
+
 
 
 

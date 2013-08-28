@@ -4716,14 +4716,11 @@ function cd_endRobHouse() {
         }
 
 
-    if( $success == 0 ) {    
-        // on death in house
-        // drops remaining backpack in this house's vault
-        $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
-                                                    $backpack_contents );
-        }
-    // other cases (leave or reach vault) results in backpack being dumped
     
+    // drops remaining backpack in this house's vault in all cases
+    $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                $backpack_contents );
+        
 
     
     
