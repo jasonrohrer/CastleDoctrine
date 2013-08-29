@@ -3,9 +3,7 @@
 <center>
 
 
-.. click ..<br>
-
-<a href="buy.php"><image border=0 width=532 height=263 src="alarm.jpg"></a>
+<a href="buy.php"><image  alt="a massively-multiplayer game of burglary and home defense by Jason Rohrer" border=0 width=532 height=263 src="alarm.jpg"></a>
 
 <br>
 
