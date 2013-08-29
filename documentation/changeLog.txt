@@ -12,6 +12,9 @@ Version 18   Live Server Fixes
   running out the door) are now added to the vault.  This is safe now, because
   the suicide-at-home exploit has been closed.
 
+--Changed from a linear bypass-cost curve to a sqrt-based curve, creating
+  diminishing returns as you build with more expensive tiles, and increasing
+  the viability of low-end house designs.
 
 
 

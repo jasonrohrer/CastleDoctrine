@@ -1,9 +1,9 @@
-Wood_Wall 5 50
-Metal_Wall 80 800
-Concrete_Wall 120 1200
-Pit 180 3600
+Wood_Wall 5 400
+Metal_Wall 100 800
+Concrete_Wall 230 1200
+Pit 600 1800
 
-Electric_Floor 50 100
+Electric_Floor 50 400
 Door 600 2400
-Trapdoor 1800 3600
+Trapdoor 1800 1800
 Pitbull 800 1200
