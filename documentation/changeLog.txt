@@ -20,6 +20,9 @@ Version 18   Live Server Fixes
   for the fact that it passes power, so it's more powerful than other
   bottlenecks.
 
+--Fixed possible negative balance when selling tools to buy paintings but
+  quitting the game before house check-in (thanks Colorfusion).
+
 
 
 

@@ -1432,8 +1432,51 @@ function cd_checkForFlush() {
         // commit to free lock before next lock
         cd_queryDatabase( "COMMIT;" );
 
+
+
+
+        
+        // handle stale edit checkouts that have negative balances
+        // this can happen when a user sells tools to buy a painting
+        // but exits the game befor the tool sale is checked in.
+        $query = "SELECT user_id, last_ping_time, loot_value, ".
+            "wife_loot_value, vault_contents, backpack_contents ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE loot_value + wife_loot_value < 0 ".
+            "AND edit_checkout = 1 AND self_test_running = 0 ".
+            "AND edit_count != 0 " .
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
+        
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+
+        $staleEditIDList = "";
+
+        $priceArray = cd_getPriceArray();
+        
+        for( $i=0; $i<$numRows; $i++ ) {
+            $user_id = mysql_result( $result, $i, "user_id" );
+            $last_ping_time = mysql_result( $result, $i, "last_ping_time" );
+            
+            $staleEditIDList =
+                "$user_id"."[$last_ping_time], $staleEditIDList";
+            
+            cd_processStaleCheckouts( $user_id );
+            }
+
+        $totalFlushCount += $numRows;
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
+
         
         
+        // (same, for non-negative balances)
         // now clear checkout status on stale edit checkouts that were
         // not in the middle of self-test (and were not the first edit,
         // post-robbery).
@@ -1451,8 +1494,6 @@ function cd_checkForFlush() {
         $result = cd_queryDatabase( $query );
 
         $numRows = mysql_numrows( $result );
-
-        $staleEditIDList = "";
         
         for( $i=0; $i<$numRows; $i++ ) {
             $user_id = mysql_result( $result, $i, "user_id" );
@@ -2076,9 +2117,84 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
     else {
         // at least end their current editing session
 
-        // (don't need to do this if we're force killing them)
+
+        // watch out for negative balance!
+
+        // this can happen when a user sells tools to buy a painting
+        // but exits the game befor the tool sale is checked in.
+        $query = "SELECT loot_value, ".
+            "wife_loot_value, vault_contents, backpack_contents ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE user_id = '$user_id' FOR UPDATE;";
+        
+        $result = cd_queryDatabase( $query );
+
+        $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+        
+        $priceArray = cd_getPriceArray();
+        
+
+        $loot_value = $row[ "loot_value" ];
+        $wife_loot_value = $row[ "wife_loot_value" ];
+
+        $vault_contents = $row[ "vault_contents" ];
+        $backpack_contents = $row[ "backpack_contents" ];
+
+        $backpackValue =
+            cd_idQuantityToResaleValue( $backpack_contents, $priceArray );
+        $vaultValue =
+            cd_idQuantityToResaleValue( $vault_contents, $priceArray );
+
+        if( $loot_value + $wife_loot_value < 0 ) {
+
+            // first, try selling backpack
+            $loot_value += $backpackValue;
+            $backpack_contents = "#";
+            
+            if( $loot_value + $wife_loot_value < 0 ) {
+                
+                // still negative, try selling vault too
+                $loot_value != $vaultValue;
+                $vault_contents = "#";
+                }
+            }
+
+        // note that this can sell way more than necessary to make the
+        // balance positive.  However, since negative balances almost
+        // never happen, it's okay to be sloppy here, for the sake of
+        // correctness.  More complex partial-sales-until-covered logic
+        // would be more bug-prone.
+        
+
+        
+        // should never still be negative here
+        
+        // not even cheating should allow it to be negative
+        
+        // if negative, let it be, but report it, because a server
+        // error will need to be fixed.
+        
+        if( $loot_value + $wife_loot_value < 0 ) {
+            $logMessage = "House loot value negative for user $user_id ".
+                "even after selling all items";
+            
+            cd_log( $logMessage );
+            
+            global $emailAdminOnFatalError, $adminEmail;
+            
+            if( $emailAdminOnFatalError ) {
+                cd_mail( $adminEmail,
+                         "Castle Doctrine negative loot value",
+                         $logMessage );
+                }
+            }
+
+
         $query = "UPDATE $tableNamePrefix"."houses ".
-            "SET edit_checkout = 0 ".
+            "SET edit_checkout = 0, ".
+            "loot_value = '$loot_value', ".
+            "vault_contents = '$vault_contents', ".
+            "backpack_contents = '$backpack_contents' ".
             "WHERE user_id = '$user_id';";
 
         $result = cd_queryDatabase( $query );
@@ -5437,7 +5553,7 @@ function cd_buyAuction() {
     
     // User has enough money (perhaps with extra from resellable items).
     // Note that new_balance may be negative here, if user's last checked
-    // in house had not enough money by resellable items to make up the
+    // in house had not enough money, but resellable items to make up the
     // difference.  In this case, the user is essentially promising that
     // they have sold those items, and that it will be reflected in check-in,
     // or else their check in will fail due to a negative result balance
