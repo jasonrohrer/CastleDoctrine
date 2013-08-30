@@ -112,6 +112,8 @@ void PickerGridPage::actionPerformed( GUIComponent *inTarget ) {
 
 
 void PickerGridPage::makeActive( char inFresh ) {
+    LiveHousePage::makeActive( inFresh );
+    
     mDone = false;
     }
 

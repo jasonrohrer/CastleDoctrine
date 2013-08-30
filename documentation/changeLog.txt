@@ -1,3 +1,12 @@
+Version 19
+
+--Fixed an obscur bug where the tool/tile grid-picker pages could get stuck in
+  a state where they would repeatedly kick you out of your house (thanks Josh
+  Collins).
+
+
+
+
 Version 18   Live Server Fixes
 
 --Gun price up to 1200 to strengthen Pit Bulls somewhat, and Powered Door price
