@@ -16,6 +16,9 @@ Version 18   Live Server Fixes
   diminishing returns as you build with more expensive tiles, and increasing
   the viability of low-end house designs.
 
+--Lowered cost of bypassing an ON electric floor from 400 to 100 to compensate
+  for the fact that it passes power, so it's more powerful than other
+  bottlenecks.
 
 
 
