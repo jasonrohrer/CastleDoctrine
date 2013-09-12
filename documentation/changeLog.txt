@@ -39,6 +39,8 @@ Version 18   Live Server Fixes
 --Reduced minimum salary from 0.50 of max down to 0.10 of max to help
   well-designed starting houses survive the night better.
 
+--Chills now only apply if you die in a house OR use tools in a house.
+
 
 
 

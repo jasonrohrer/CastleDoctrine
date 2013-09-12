@@ -4159,16 +4159,20 @@ function cd_startRobHouse() {
         $house_map = preg_replace( "/#999#/", "#999:2!#", $house_map );
         }
     
+
+    if( $backpack_contents != "#" ) {
+        // user brought tools into this house
+        
+        // a potential chill, if user dies in this house or some other house
+        // soon.  Start timer now.
+        $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+            "SET user_id = '$user_id', ".
+            "house_user_id = '$to_rob_user_id', ".
+            "chill_start_time = CURRENT_TIMESTAMP, chill = 0;";
+        
+        cd_queryDatabase( $query ); 
+        }
     
-    // a potential chill, if user dies in this house or some other house
-    // soon.  Start timer now.
-    $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
-        "SET user_id = '$user_id', ".
-        "house_user_id = '$to_rob_user_id', ".
-        "chill_start_time = CURRENT_TIMESTAMP, chill = 0;";
-
-    cd_queryDatabase( $query ); 
-
     
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
@@ -5004,6 +5008,21 @@ function cd_endRobHouse() {
     if( $success == 0 ) {                
         // starts over as new character, house destroyed
         cd_newHouseForUser( $user_id );
+
+
+        if( ! $ownerDied && $old_backpack_contents == "#" ) {
+            // chill cleared instantly if owner died
+            // chill already pending if robber entered with tools
+
+            // otherwise, user died in this house without tools, no chill
+            // pending.  Start a chill right now.
+            $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+                "SET user_id = '$user_id', ".
+                "house_user_id = '$last_robbed_owner_id', ".
+                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
+            
+            cd_queryDatabase( $query );
+            }
         }
     
 
