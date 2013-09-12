@@ -32,6 +32,9 @@ Version 18   Live Server Fixes
 --Fixed possible negative balance when selling tools to buy paintings but
   quitting the game before house check-in (thanks Colorfusion).
 
+--Added parameter for how many times a vault can be reached before vault
+  salary stops, and upped that parameter from 2 to 4 to increase size of
+  house list.
 
 
 

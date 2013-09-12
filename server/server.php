@@ -1702,8 +1702,9 @@ function cd_checkForFlush() {
         // now pay anyone who needs paying
 
         global $payInterval, $playerPayAmount, $wifePayAmount,
-            $playerStartMoney;
+            $playerStartMoney, $vaultReachLimit;
 
+        $vl = $vaultReachLimit;
 
         // scale pay based on value estimate
         // houses with greater value earn more money, up to a point
@@ -1721,7 +1722,7 @@ function cd_checkForFlush() {
             "loot_value = ".
             "    loot_value + ".
             "    LEAST( $minF + value_estimate / $maxValueThreshold, 1 ) * ".
-            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
+            "    (consecutive_rob_success_count < $vl ) * $playerPayAmount, ".
             // only add to wife money if wife present
             "wife_loot_value = ".
             "    wife_loot_value + ".
@@ -1730,20 +1731,20 @@ function cd_checkForFlush() {
             "value_estimate = ".
             "    value_estimate + ".
             "    LEAST( $minF + value_estimate / $maxValueThreshold, 1 ) * ".
-            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount + ".
+            "    (consecutive_rob_success_count < $vl ) * $playerPayAmount + ".
             "    LEAST( $minF + value_estimate / $maxValueThreshold, 1 ) * ".
             "    wife_present * $wifePayAmount, ".
             "last_pay_check_time = CURRENT_TIMESTAMP, ".
             "payment_count = payment_count + 1, ".
             "you_paid_total = you_paid_total + ".
             "    LEAST( $minF + value_estimate / $maxValueThreshold, 1 ) * ".
-            "    (consecutive_rob_success_count < 2 ) * $playerPayAmount, ".
+            "    (consecutive_rob_success_count < $vl ) * $playerPayAmount, ".
             "wife_paid_total =  wife_paid_total + ".
             "    LEAST( $minF + value_estimate / $maxValueThreshold, 1 ) * ".
             "    wife_present * $wifePayAmount ".
             "WHERE edit_checkout = 0 AND self_test_running = 0 ".
             "AND edit_count != 0 ".
-            "AND ( consecutive_rob_success_count < 2 OR ".
+            "AND ( consecutive_rob_success_count < $vl OR ".
             "      wife_present = 1 ) ".
             "AND last_pay_check_time < ".
             "  SUBTIME( CURRENT_TIMESTAMP, '$payInterval' );";
