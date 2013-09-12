@@ -36,6 +36,10 @@ Version 18   Live Server Fixes
   salary stops, and upped that parameter from 2 to 4 to increase size of
   house list.
 
+--Reduced minimum salary from 0.50 of max down to 0.10 of max to help
+  well-designed starting houses survive the night better.
+
+
 
 
 Version 18   2013-August-27
