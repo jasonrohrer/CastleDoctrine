@@ -13,6 +13,11 @@ global $cd_numBackpackSlots;
 $cd_numBackpackSlots = 8;
 
 
+// override the default Notice and Warning handler 
+set_error_handler( cd_noticeAndWarningHandler, E_NOTICE | E_WARNING );
+
+
+
 // edit settings.php to change server' settings
 include( "settings.php" );
 
@@ -7684,6 +7689,43 @@ function cd_nonFatalError( $message ) {
     cd_log( $logMessage );
     
     die();
+    }
+
+
+
+/**
+ * Custom handler to override default Notice handling.
+ */
+function cd_noticeAndWarningHandler( $errno, $errstr, $errfile, $errline ) {
+
+    $errorName = "Notice";
+
+    if( $errno == E_WARNING ) {
+        $errorName = "Warning";
+        }
+    
+    // copy format of default Notice/Warning message (without HTML):
+    $logMessage =
+        "$errorName:  $errstr in $errfile on line $errline";
+
+
+    echo( $logMessage . "\n" );
+
+
+    cd_log( $logMessage );
+
+
+    // treat notices as reportable failures, because they cause protocol
+    // failures for client
+    global $emailAdminOnFatalError, $adminEmail;
+
+
+    if( $emailAdminOnFatalError ) {
+
+        cd_mail( $adminEmail, "Castle Doctrine $errorName",
+                 $logMessage );
+        
+        }
     }
 
 

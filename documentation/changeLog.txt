@@ -47,6 +47,9 @@ Version 18   Live Server Fixes
   ping_house calls to fail, leading to unfair player death (thanks Joshua
   Collins).
 
+--Added better reporting of server Notices and Warnings which result in
+  client-fuddling unexpected responses from server.
+
 
 
 
