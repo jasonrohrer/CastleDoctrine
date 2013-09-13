@@ -3742,7 +3742,7 @@ function cd_pingHouse() {
     $result = cd_queryDatabase( $query );
 
     
-    if( mysql_affected_rows() == 1 ) {
+    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         echo "OK";
         }
     else {
@@ -3781,7 +3781,7 @@ function cd_startSelfTest() {
     
     $result = cd_queryDatabase( $query );
     
-    if( mysql_affected_rows() == 1 ) {
+    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         echo "OK";
         }
     else {
@@ -3818,7 +3818,7 @@ function cd_endSelfTest() {
     $result = cd_queryDatabase( $query );
 
     
-    if( mysql_affected_rows() == 1 ) {
+    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         echo "OK";
         }
     else {
@@ -7502,6 +7502,35 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
     
 
     return $result;
+    }
+
+
+
+/**
+ * Gets the number of rows MATCHED by the last UPDATE query.
+ *
+ * For UPDATE queries, this will sometimes return a larger value than
+ * mysql_affected_rows(), because some rows may already contain the updated
+ * data values and therefore not be affected by the UPDATE.
+ *
+ * This is especially important in places where a timed-out UPDATE query
+ * might be retried in another thread (the first one might go through, causing
+ * the second one to affect 0 rows).
+ */
+function cd_getMySQLRowsMatchedByUpdate() {
+
+    // format of mysql_info() after UPDATE is string like:
+    // Rows matched: 0 Changed: 0 Warnings: 0
+    // Thus, if we match the first int, we get what we want.
+    $numMatches = preg_match( "/\d+/",
+                              mysql_info(), $matches );
+
+    if( $numMatches != 1 ) {
+        // some kind of error?
+        return 0;
+        }
+        
+    return $matches[0];
     }
 
 

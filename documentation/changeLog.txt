@@ -39,7 +39,14 @@ Version 18   Live Server Fixes
 --Reduced minimum salary from 0.50 of max down to 0.10 of max to help
   well-designed starting houses survive the night better.
 
---Chills now only apply if you die in a house OR use tools in a house.
+--Chills now only apply if you die in a house OR use tools in a house
+  (thanks Jere).
+
+--Fixed bug in way that MySQL UPDATE success was being detected, which
+  occasionally would cause retried start_self_test, end_self_test, and
+  ping_house calls to fail, leading to unfair player death (thanks Joshua
+  Collins).
+
 
 
 
@@ -740,7 +747,7 @@ Version 3   2013-March-8
 --Fixed house pick lists so that tool tips don't linger when mouse leaves.
 
 --Removed down arrow when house pick list has a full page of results but no
-  additional pages ((thanks Jeremiah Reid).
+  additional pages (thanks Jeremiah Reid).
 
 --Water wakes sleeping animals.  Sleeping animals can be killed.  Bricks wake
   sleeping pit bulls.  Bricks kill chihuahuas and cats.
