@@ -315,7 +315,8 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."first_names" ) &&
         cd_doesTableExist( $tableNamePrefix."wife_names" ) &&
         cd_doesTableExist( $tableNamePrefix."son_names" ) &&
-        cd_doesTableExist( $tableNamePrefix."daughter_names" );
+        cd_doesTableExist( $tableNamePrefix."daughter_names" ) &&
+        cd_doesTableExist( $tableNamePrefix."server_stats" );
     
         
     if( $allExist  ) {
@@ -1179,6 +1180,69 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+
+
+
+    $tableName = $tableNamePrefix . "server_stats";
+
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        $query =
+            "CREATE TABLE $tableName(" .
+            "stat_date DATE NOT NULL PRIMARY KEY," .
+            "unique_users INT NOT NULL DEFAULT 0," .
+
+            "edit_count INT NOT NULL DEFAULT 0," .
+
+            "house_tiles_bought INT NOT NULL DEFAULT 0," .
+            "tools_bought INT NOT NULL DEFAULT 0," .
+            "paintings_bought INT NOT NULL DEFAULT 0," .
+
+            "money_spent_houses INT NOT NULL DEFAULT 0," .
+            "money_spent_tools INT NOT NULL DEFAULT 0," .
+            "money_spent_paintings INT NOT NULL DEFAULT 0," .
+
+            "tools_sold INT NOT NULL DEFAULT 0," .
+            "money_earned_tools INT NOT NULL DEFAULT 0," .
+            
+            "robbery_count INT NOT NULL DEFAULT 0," .
+
+            "leave_count INT NOT NULL DEFAULT 0," .
+            "vault_reaches INT NOT NULL DEFAULT 0," .
+            "wives_killed INT NOT NULL DEFAULT 0," .
+            "wives_robbed INT NOT NULL DEFAULT 0," .
+            "any_family_killed_count INT NOT NULL DEFAULT 0," .
+
+            "tools_used INT NOT NULL DEFAULT 0," .
+            "tools_dropped INT NOT NULL DEFAULT 0," .
+
+            "deaths INT NOT NULL DEFAULT 0," .
+
+            "robbery_deaths INT NOT NULL DEFAULT 0," .
+            "robbery_suicides INT NOT NULL DEFAULT 0," .
+
+            "self_test_deaths INT NOT NULL DEFAULT 0," .
+            "home_suicides INT NOT NULL DEFAULT 0," .
+
+            "robbery_timeout_deaths INT NOT NULL DEFAULT 0," .
+            "self_test_timeout_deaths INT NOT NULL DEFAULT 0," .
+            "edit_timeouts INT NOT NULL DEFAULT 0," .
+
+            "tapes_watched INT NOT NULL DEFAULT 0 ) ENGINE = INNODB;";
+        
+
+        $result = cd_queryDatabase( $query );
+
+
+        echo "<B>$tableName</B> table created<BR>";       
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+    
+    
 
     }
 
@@ -2278,7 +2342,8 @@ function cd_startEditHouse() {
         "carried_loot_value, carried_vault_contents, ".
         "carried_gallery_contents, ".
         "edit_count, music_seed, ".
-        "payment_count, you_paid_total, wife_paid_total ".
+        "payment_count, you_paid_total, wife_paid_total, ".
+        "last_owner_visit_time ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND rob_checkout = 0 FOR UPDATE;";
@@ -2316,6 +2381,8 @@ function cd_startEditHouse() {
     $payment_count = $row[ "payment_count" ];
     $you_paid_total = $row[ "you_paid_total" ];
     $wife_paid_total = $row[ "wife_paid_total" ];
+
+    $last_owner_visit_time = $row[ "last_owner_visit_time" ];
     
     
     
@@ -2403,6 +2470,17 @@ function cd_startEditHouse() {
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
 
+    
+    // log potentially unique user today
+    $query = "SELECT CURRENT_DATE != DATE( '$last_owner_visit_time' );";
+    $result = cd_queryDatabase( $query );
+
+    if( mysql_result( $result, 0, 0 ) ) {
+        // last visit of this user was NOT today
+        cd_incrementStat( "unique_users" );
+        }    
+
+    
 
     // now count tapes 
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."robbery_logs ".
@@ -3714,6 +3792,10 @@ function cd_endEditHouse() {
     $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
         "WHERE house_user_id = $user_id;";
     cd_queryDatabase( $query );
+
+    
+    // change counts as an edit
+    cd_incrementStat( "edit_count" );
     
 
     echo "OK";    
@@ -6348,6 +6430,26 @@ function cd_logout() {
     echo "Logged out";
     }
 
+
+
+
+// assumes database connection already open
+// does not commit if a transaction is open
+//
+// increments one column in stat table for today
+// or creates a row of 0's in the stat table for today (if no row exists)
+// and puts a 1 in that one column.
+function cd_incrementStat( $inStatColumnName ) {
+    global $tableNamePrefix;
+    
+    $query = "INSERT INTO $tableNamePrefix"."server_stats ".
+        "SET stat_date = CURRENT_DATE, $inStatColumnName = 1 ".
+        "ON DUPLICATE KEY UPDATE $inStatColumnName = $inStatColumnName + 1";
+
+    cd_queryDatabase( $query );
+    }
+
+    
 
 
 
