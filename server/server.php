@@ -244,6 +244,9 @@ else if( $action == "show_object_report" ) {
 else if( $action == "show_recent_user_emails" ) {
     cd_showRecentUserEmails();
     }
+else if( $action == "show_stats" ) {
+    cd_showStats();
+    }
 else if( $action == "show_detail" ) {
     cd_showDetail();
     }
@@ -6707,7 +6710,9 @@ function cd_generateHeader() {
         "<td>[<a href=\"server.php?action=show_data" .
             "\">Main</a>] ".
             "[<a href=\"server.php?action=show_prices" .
-            "\">Prices</a>]</td>".
+            "\">Prices</a>] ".
+            "[<a href=\"server.php?action=show_stats" .
+            "\">Stats</a>]</td>".
         "<td align=center>$sizeString ($perUserString per user)</td>".
         "<td align=right>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
@@ -7182,6 +7187,58 @@ function cd_showRecentUserEmails() {
     echo "$count users played the game in the past $day_limit days:<br><br>";
 
     echo "$emailList";
+    }
+
+
+
+
+function cd_showStats() {
+    global $tableNamePrefix, $remoteIP;
+
+
+    cd_checkPassword( "show_stats" );
+
+    cd_generateHeader();
+    
+    $query = "SELECT * ".
+        "FROM $tableNamePrefix"."server_stats ORDER BY stat_date;";
+    $result = cd_queryDatabase( $query );
+
+    $numFields = mysql_num_fields( $result );
+    $numRows = mysql_numrows( $result );
+
+
+    echo "<br><table border=1>\n";
+
+    $bgColor = "#EEEEEE";
+    $altBGColor = "#CCCCCC";
+
+
+    echo "<tr>";
+    for( $i=0; $i<$numFields; $i++ ) {
+        $name = mysql_field_name( $result, $i );
+
+        echo "<td><b>$name</b></td>";
+        }
+    echo "</tr>\n";
+    
+        
+    for( $i=0; $i<$numRows; $i++ ) {
+
+        echo "<tr>";
+        for( $j=0; $j<$numFields; $j++ ) {
+            $value = mysql_result( $result, $i, $j );
+
+            echo "<td bgcolor=$bgColor>$value</td>";
+            }
+        echo "</tr>\n";
+        
+        $temp = $bgColor;
+        $bgColor = $altBGColor;
+        $altBGColor = $temp;
+        }
+
+    echo "</table>\n";
     }
 
 
