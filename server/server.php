@@ -3250,7 +3250,9 @@ function cd_endEditHouse() {
     // Do this before totalling cost of house edits, because
     // player may have used money from loot sold to buy house edits
     global $resaleRate;
-    
+
+    $numToolsSold = 0;
+    $incomeFromToolsSold = 0;
     
     
     for( $i=0; $i<$numSold; $i++ ) {
@@ -3275,9 +3277,15 @@ function cd_endEditHouse() {
             return;
             }
 
+
+        
         // items sold back for half their value, rounded down
-        $total_loot_value +=
-            $quantity * floor( $priceArray[ "$id" ] * $resaleRate );
+        $income = $quantity * floor( $priceArray[ "$id" ] * $resaleRate ); 
+
+        $numToolsSold += $quantity;
+        $incomeFromToolsSold += $income;
+        
+        $total_loot_value += $income;    
         }
 
     
@@ -3819,6 +3827,8 @@ function cd_endEditHouse() {
     cd_incrementStat( "money_spent_houses", $costOfTilesBought );
     cd_incrementStat( "money_spent_tools", $costOfToolsBought );
 
+    cd_incrementStat( "tools_sold", $numToolsSold );
+    cd_incrementStat( "money_earned_tools", $incomeFromToolsSold );
     
 
     // house changed
