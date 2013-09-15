@@ -3390,7 +3390,12 @@ function cd_endEditHouse() {
             }
         }
 
-    
+
+    // count total placements and cost
+    $numTilesBought = 0;
+    $costOfTilesBought = 0;
+
+        
     // subtract cost of diff from balance
     foreach( $diffList as $id => $count ) {
         if( ! array_key_exists( "$id", $priceArray ) ) {
@@ -3399,9 +3404,16 @@ function cd_endEditHouse() {
             cd_transactionDeny();
             return;
             }
-        
-        $total_loot_value -= $priceArray[ "$id" ] * $count;
 
+        $cost = $priceArray[ "$id" ] * $count;
+
+        $numTilesBought += $count;
+        $costOfTilesBought += $cost;
+        
+        $total_loot_value -= $cost;
+
+        
+        
         if( $total_loot_value < 0 ) {
             // more edits than they could afford
             cd_log( "House check-in with exceeded player budget denied" );
@@ -3424,6 +3436,12 @@ function cd_endEditHouse() {
     // NEXT:
     // Check that purchases don't exceed loot value,
 
+
+    // count total purchases and cost
+    $numToolsBought = 0;
+    $costOfToolsBought = 0;
+
+    
     
     for( $i=0; $i<$numPurchases; $i++ ) {
         $purchaseParts = preg_split( "/:/", $purchaseArray[$i] );
@@ -3446,8 +3464,14 @@ function cd_endEditHouse() {
             cd_transactionDeny();
             return;
             }
+
+        $cost = $quantity * $priceArray[ "$id" ];
+
+        $numToolsBought += $quantity;
+        $costOfToolsBought += $cost;
+
         
-        $total_loot_value -= $quantity * $priceArray[ "$id" ];
+        $total_loot_value -= $cost;
 
         if( $total_loot_value < 0 ) {
             // more edits than they could afford
@@ -3789,6 +3813,13 @@ function cd_endEditHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    cd_incrementStat( "house_tiles_bought", $numTilesBought );
+    cd_incrementStat( "tools_bought", $numToolsBought );
+
+    cd_incrementStat( "money_spent_houses", $costOfTilesBought );
+    cd_incrementStat( "money_spent_tools", $costOfToolsBought );
+
+    
 
     // house changed
     // clear ignore status
@@ -6442,12 +6473,14 @@ function cd_logout() {
 // increments one column in stat table for today
 // or creates a row of 0's in the stat table for today (if no row exists)
 // and puts a 1 in that one column.
-function cd_incrementStat( $inStatColumnName ) {
+function cd_incrementStat( $inStatColumnName, $inIncrementAmount = 1 ) {
     global $tableNamePrefix;
     
     $query = "INSERT INTO $tableNamePrefix"."server_stats ".
-        "SET stat_date = CURRENT_DATE, $inStatColumnName = 1 ".
-        "ON DUPLICATE KEY UPDATE $inStatColumnName = $inStatColumnName + 1";
+        "SET stat_date = CURRENT_DATE, ".
+        "    $inStatColumnName = $inIncrementAmount ".
+        "ON DUPLICATE KEY UPDATE ".
+        "   $inStatColumnName = $inStatColumnName + $inIncrementAmount;";
 
     cd_queryDatabase( $query );
     }
