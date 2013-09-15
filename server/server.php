@@ -5738,6 +5738,9 @@ function cd_buyAuction() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    cd_incrementStat( "paintings_bought" );
+    cd_incrementStat( "money_spent_paintings", $price );
+    
     echo "$price\n";
     echo "OK";
     }
