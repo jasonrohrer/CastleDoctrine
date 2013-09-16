@@ -50,7 +50,7 @@ Version 18   Live Server Fixes
 --Added better reporting of server Notices and Warnings which result in
   client-fuddling unexpected responses from server.
 
---Started working on daily server stats tracking.
+--Daily stat tracking of various interesting numbers in admin view.
 
 
 

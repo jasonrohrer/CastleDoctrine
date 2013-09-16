@@ -1444,6 +1444,9 @@ function cd_checkForFlush() {
         // commit to free lock before next lock
         cd_queryDatabase( "COMMIT;" );
 
+        cd_incrementStat( "robbery_timeout_deaths", $numRows );
+        cd_queryDatabase( "COMMIT;" );
+
         
 
         // repeat for owner-died shadow table
@@ -1475,6 +1478,9 @@ function cd_checkForFlush() {
         // commit to free lock before next lock
         cd_queryDatabase( "COMMIT;" );
 
+        cd_incrementStat( "robbery_timeout_deaths", $numRows );
+        cd_queryDatabase( "COMMIT;" );
+        
 
         
         // for each owner who quit game mid-self-test, clear checkout
@@ -1510,7 +1516,8 @@ function cd_checkForFlush() {
         // commit to free lock before next lock
         cd_queryDatabase( "COMMIT;" );
 
-
+        cd_incrementStat( "self_test_timeout_deaths", $numRows );
+        cd_queryDatabase( "COMMIT;" );
 
 
         
@@ -1549,7 +1556,8 @@ function cd_checkForFlush() {
         // commit to free lock before next lock
         cd_queryDatabase( "COMMIT;" );
 
-
+        cd_incrementStat( "edit_timeouts", $numRows );
+        cd_queryDatabase( "COMMIT;" );
         
 
         
@@ -1594,6 +1602,9 @@ function cd_checkForFlush() {
         $totalFlushCount += mysql_affected_rows();
 
         // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+        cd_incrementStat( "edit_timeouts", $numRows );
         cd_queryDatabase( "COMMIT;" );
 
 
