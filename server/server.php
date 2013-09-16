@@ -1231,6 +1231,7 @@ function cd_setupDatabase() {
             "robbery_suicides INT NOT NULL DEFAULT 0," .
 
             "self_test_deaths INT NOT NULL DEFAULT 0," .
+            "self_test_suicides INT NOT NULL DEFAULT 0," .
             "home_suicides INT NOT NULL DEFAULT 0," .
 
             "robbery_timeout_deaths INT NOT NULL DEFAULT 0," .
@@ -2959,6 +2960,20 @@ function cd_endEditHouse() {
         cd_queryDatabase( "COMMIT;" );
         cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+        if( $self_test_move_list == "#" ) {
+            cd_incrementStat( "home_suicides" );
+            }
+        else {    
+            cd_incrementStat( "self_test_deaths" );
+
+            $moves = preg_split( "/#/", $self_test_move_list );
+
+            if( $moves[ count( $moves ) - 1 ] == "S" ) {
+                cd_incrementStat( "self_test_suicides" );
+                }
+            }
+        
+        
         
         cd_newHouseForUser( $user_id );
 
