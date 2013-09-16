@@ -5516,6 +5516,8 @@ function cd_getRobberyLog() {
             "WHERE log_id = '$log_id';";
         cd_queryDatabase( $query );
         }
+
+    cd_incrementStat( "tapes_watched" );
     
     echo $robber_name . "\n";    
     echo $victim_name . "\n";    
