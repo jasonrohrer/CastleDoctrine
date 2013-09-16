@@ -6313,12 +6313,14 @@ function cd_newHouseForUser( $user_id ) {
 
 
     $needToClearScoutingCounts = false;
-    
+
+    $deathHappened = false;
     
     if( $numRows > 0 ) {
 
         // user had a house (past life)
-
+        $deathHappened = true;
+        
         // is anyone still robbing it?
         $rob_checkout = mysql_result( $result, 0, "rob_checkout" );
 
@@ -6376,6 +6378,11 @@ function cd_newHouseForUser( $user_id ) {
         cd_queryDatabase( "COMMIT;" );
     
         cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
+
+        // we never get to death counting below if permadead
+        if( $deathHappened ) {
+            cd_incrementStat( "deaths" );
+            }
         
         cd_permadead( $user_id );
         }
@@ -6552,6 +6559,11 @@ function cd_newHouseForUser( $user_id ) {
         "SET lives_left = $lives_left ".
         "WHERE user_id = $user_id;";
     $result = cd_queryDatabase( $query );
+
+    // deaths from all possible causes registered here
+    if( $deathHappened ) {
+        cd_incrementStat( "deaths" );
+        }
     }
 
 
