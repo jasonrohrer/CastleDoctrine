@@ -3511,8 +3511,11 @@ function cd_endEditHouse() {
 
         $cost = $priceArray[ "$id" ] * $count;
 
-        $numTilesBought += $count;
-        $costOfTilesBought += $cost;
+        // ignore unpurchaseable tiles (empty floor, vault, family)
+        if( $id > 0 && $id < 999 ) {    
+            $numTilesBought += $count;
+            $costOfTilesBought += $cost;
+            }
         
         $total_loot_value -= $cost;
 
@@ -3930,8 +3933,12 @@ function cd_endEditHouse() {
     cd_incrementStat( "tools_sold", $numToolsSold );
     cd_incrementStat( "money_earned_tools", $incomeFromToolsSold );
 
-    foreach( $totalPurchaseList as $id => $count ) {    
-        cd_incrementPurchaseCountStat( $id, $priceArray[ "$id"], $count );
+    foreach( $totalPurchaseList as $id => $count ) {
+
+        // avoid out of range ids (empty floor, vault, family) 
+        if( $id > 0 && $id < 999 ) {
+            cd_incrementPurchaseCountStat( $id, $priceArray[ "$id"], $count );
+            }
         }
     
     
