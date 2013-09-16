@@ -319,7 +319,8 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."wife_names" ) &&
         cd_doesTableExist( $tableNamePrefix."son_names" ) &&
         cd_doesTableExist( $tableNamePrefix."daughter_names" ) &&
-        cd_doesTableExist( $tableNamePrefix."server_stats" );
+        cd_doesTableExist( $tableNamePrefix."server_stats" ) &&
+        cd_doesTableExist( $tableNamePrefix."item_purchase_stats" );
     
         
     if( $allExist  ) {
@@ -1239,6 +1240,31 @@ function cd_setupDatabase() {
             "edit_timeouts INT NOT NULL DEFAULT 0," .
 
             "tapes_watched INT NOT NULL DEFAULT 0 ) ENGINE = INNODB;";
+        
+
+        $result = cd_queryDatabase( $query );
+
+
+        echo "<B>$tableName</B> table created<BR>";       
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    
+    $tableName = $tableNamePrefix . "item_purchase_stats";
+
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        $query =
+            "CREATE TABLE $tableName(" .
+            "stat_date DATE NOT NULL," .
+            "object_id INT NOT NULL DEFAULT 0," .
+            "price INT NOT NULL DEFAULT 0," .
+            "purchase_count INT NOT NULL DEFAULT 0, ".
+            "PRIMARY KEY( stat_date, object_id, price ) ) ENGINE = INNODB;";
         
 
         $result = cd_queryDatabase( $query );
@@ -3451,6 +3477,7 @@ function cd_endEditHouse() {
     $numTilesBought = 0;
     $costOfTilesBought = 0;
 
+    $totalPurchaseList = array();
         
     // subtract cost of diff from balance
     foreach( $diffList as $id => $count ) {
@@ -3468,6 +3495,7 @@ function cd_endEditHouse() {
         
         $total_loot_value -= $cost;
 
+        $totalPurchaseList[ $id ] = $count;
         
         
         if( $total_loot_value < 0 ) {
@@ -3525,6 +3553,9 @@ function cd_endEditHouse() {
 
         $numToolsBought += $quantity;
         $costOfToolsBought += $cost;
+
+        
+        $totalPurchaseList[ $id ] = $quantity;
 
         
         $total_loot_value -= $cost;
@@ -3877,6 +3908,11 @@ function cd_endEditHouse() {
 
     cd_incrementStat( "tools_sold", $numToolsSold );
     cd_incrementStat( "money_earned_tools", $incomeFromToolsSold );
+
+    foreach( $totalPurchaseList as $id => $count ) {    
+        cd_incrementPurchaseCountStat( $id, $priceArray[ "$id"], $count );
+        }
+    
     
 
     // house changed
@@ -6621,6 +6657,23 @@ function cd_incrementStat( $inStatColumnName, $inIncrementAmount = 1 ) {
         "    $inStatColumnName = $inIncrementAmount ".
         "ON DUPLICATE KEY UPDATE ".
         "   $inStatColumnName = $inStatColumnName + $inIncrementAmount;";
+
+    cd_queryDatabase( $query );
+    }
+
+
+
+function cd_incrementPurchaseCountStat( $inObjectID, $inPrice,
+                                        $inIncrementAmount = 1 ) {
+    global $tableNamePrefix;
+    
+    $query = "INSERT INTO $tableNamePrefix"."item_purchase_stats ".
+        "SET stat_date = CURRENT_DATE, ".
+        "    object_id = $inObjectID, ".
+        "    price = $inPrice, ".
+        "    purchase_count = $inIncrementAmount ".
+        "ON DUPLICATE KEY UPDATE ".
+        "   purchase_count = purchase_count + $inIncrementAmount;";
 
     cd_queryDatabase( $query );
     }
