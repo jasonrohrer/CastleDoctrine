@@ -1220,6 +1220,9 @@ function cd_setupDatabase() {
             "tools_used INT NOT NULL DEFAULT 0," .
             "tools_dropped INT NOT NULL DEFAULT 0," .
 
+            "money_stolen INT NOT NULL DEFAULT 0," .
+            "tools_stolen_value INT NOT NULL DEFAULT 0," .
+
             "deaths INT NOT NULL DEFAULT 0," .
 
             "robbery_deaths INT NOT NULL DEFAULT 0," .
@@ -4304,7 +4307,8 @@ function cd_startRobHouse() {
         cd_queryDatabase( $query ); 
         }
     
-    
+
+    cd_incrementStat( "robbery_count" );
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
     
@@ -4490,6 +4494,9 @@ function cd_endRobHouse() {
     // contents
     $toolsUsedString = "#";
 
+    // move list ending with S move is suicide
+    $suicide = 0;
+    
     if( $move_list != "" && $move_list != "#" ) {
         
 
@@ -4518,6 +4525,9 @@ function cd_endRobHouse() {
                 else {
                     $toolsUsedArray[ $tool_id ] = 1;
                     }
+                }
+            else if( $move[0] == 'S' ) {
+                $suicide = true;
                 }
             
             $num_moves ++;
@@ -4577,6 +4587,9 @@ function cd_endRobHouse() {
     
     $amountTaken = 0;
     $stuffTaken = $house_vault_contents;
+    // compute later if needed
+    $valueOfStuffTaken = 0;
+    
     $galleryStuffTaken = $house_gallery_contents;
 
     $old_house_map_hash = $row[ "house_map_hash" ];
@@ -4910,8 +4923,10 @@ function cd_endRobHouse() {
         // log robbery
 
         // in log, value_estimate holds true value of stuff taken
-        $total_value_stolen = $amountTaken +
+        $valueOfStuffTaken =
             cd_idQuantityToResaleValue( $stuffTaken, cd_getPriceArray() );
+        $total_value_stolen = $amountTaken + $valueOfStuffTaken;
+            
 
         // log_id auto-assigned
         $query =
@@ -5128,6 +5143,38 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    if( $success == 0 ) {
+        cd_incrementStat( "robbery_deaths" );
+
+        if( $suicide ) {
+            cd_incrementStat( "robbery_suicides" );
+            }
+        }
+    else if( $success == 1 ) {
+        cd_incrementStat( "vault_reaches" );
+
+        cd_incrementStat( "tools_stolen_value", $valueOfStuffTaken );
+        }
+    else if( $success == 2 ) {
+        cd_incrementStat( "leave_count" );
+        }
+
+    if( $wife_killed ) {
+        cd_incrementStat( "wives_killed" );
+        }
+    if( $wife_robbed ) {
+        cd_incrementStat( "wives_robbed" );
+        }
+    if( $any_family_killed ) {
+        cd_incrementStat( "any_family_killed_count" );
+        }
+    
+    if( $success != 0 &&
+        ( $wife_robbed || $success == 1 ) ) {
+        
+        cd_incrementStat( "money_stolen", $amountTaken );    
+        }
+    
     
     // now execute all pending database updates after lock for
     // target house row has been released
