@@ -1221,7 +1221,9 @@ function cd_setupDatabase() {
             "tools_dropped INT NOT NULL DEFAULT 0," .
 
             "money_stolen INT NOT NULL DEFAULT 0," .
+            "tools_stolen_count INT NOT NULL DEFAULT 0," .
             "tools_stolen_value INT NOT NULL DEFAULT 0," .
+            "paintings_stolen INT NOT NULL DEFAULT 0," .
 
             "deaths INT NOT NULL DEFAULT 0," .
 
@@ -2584,7 +2586,7 @@ function cd_startEditHouse() {
 
 
 
-function cd_idQuanityStringToArray( $inIDQuantityString ) {
+function cd_idQuantityStringToArray( $inIDQuantityString ) {
 
     $pairArray = preg_split( "/#/", $inIDQuantityString );
 
@@ -2616,7 +2618,7 @@ function cd_idQuanityStringToArray( $inIDQuantityString ) {
 
 
 
-function cd_idQuanityArrayToString( $inArray ) {
+function cd_idQuantityArrayToString( $inArray ) {
     ksort( $inArray );
     
     $pairArray = array();
@@ -2644,8 +2646,8 @@ function cd_idQuanityArrayToString( $inArray ) {
 
 function cd_idQuantityNormalizeString( $inIDQuantityString ) {
     return
-        cd_idQuanityArrayToString(
-            cd_idQuanityStringToArray( $inIDQuantityString ) );
+        cd_idQuantityArrayToString(
+            cd_idQuantityStringToArray( $inIDQuantityString ) );
     }
 
     
@@ -2656,12 +2658,12 @@ function cd_idQuantityNormalizeString( $inIDQuantityString ) {
 // 101:3#3:10#5:1#102:1
 //
 // And computes a union operation, returning a new string
-// (where the quanity for each ID in the result is the sum of the
+// (where the quantity for each ID in the result is the sum of the
 //  quantities of that ID in A and B)
 function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
 
-    $arrayA = cd_idQuanityStringToArray( $inIDQuantityStringA );
-    $arrayB = cd_idQuanityStringToArray( $inIDQuantityStringB );
+    $arrayA = cd_idQuantityStringToArray( $inIDQuantityStringA );
+    $arrayB = cd_idQuantityStringToArray( $inIDQuantityStringB );
     
     // start with B as base, sum in (or append) ID/quantities from A
     $result = $arrayB;
@@ -2677,7 +2679,7 @@ function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
             }
         }
 
-    return cd_idQuanityArrayToString( $result );
+    return cd_idQuantityArrayToString( $result );
     }
 
 
@@ -2691,8 +2693,8 @@ function cd_idQuantityUnion( $inIDQuantityStringA, $inIDQuantityStringB ) {
 // This may result in negative quanties in the result.
 function cd_idQuantitySubtract( $inIDQuantityStringA, $inIDQuantityStringB ) {
 
-    $arrayA = cd_idQuanityStringToArray( $inIDQuantityStringA );
-    $arrayB = cd_idQuanityStringToArray( $inIDQuantityStringB );
+    $arrayA = cd_idQuantityStringToArray( $inIDQuantityStringA );
+    $arrayB = cd_idQuantityStringToArray( $inIDQuantityStringB );
     
     // start with A as base, subract out (or append negative)
     // ID/quantities from B
@@ -2714,7 +2716,7 @@ function cd_idQuantitySubtract( $inIDQuantityStringA, $inIDQuantityStringB ) {
             }
         }
 
-    return cd_idQuanityArrayToString( $result );
+    return cd_idQuantityArrayToString( $result );
     }
 
 
@@ -2723,7 +2725,7 @@ function cd_idQuantitySubtract( $inIDQuantityStringA, $inIDQuantityStringB ) {
 function cd_idQuantityToResaleValue( $inIDQuantityString, $inPriceArray ) {
     global $resaleRate;
     
-    $quantityArray = cd_idQuanityStringToArray( $inIDQuantityString );
+    $quantityArray = cd_idQuantityStringToArray( $inIDQuantityString );
 
     $totalValue = 0;
 
@@ -2735,6 +2737,23 @@ function cd_idQuantityToResaleValue( $inIDQuantityString, $inPriceArray ) {
     
     return $totalValue;
     }
+
+
+
+// count total sum of quantities in string
+function cd_idQuantityStringCount( $inIDQuantityString ) {
+
+    $quantityArray = cd_idQuantityStringToArray( $inIDQuantityString );
+
+    $totalCount = 0;
+
+    foreach( $quantityArray as $id => $quantity ) {
+        $totalCount += $quantity;
+        }
+    
+    return $totalCount;
+    }
+
 
 
 
@@ -4496,6 +4515,8 @@ function cd_endRobHouse() {
 
     // move list ending with S move is suicide
     $suicide = 0;
+
+    $numToolsUsed = 0;
     
     if( $move_list != "" && $move_list != "#" ) {
         
@@ -4509,6 +4530,8 @@ function cd_endRobHouse() {
             if( $move[0] == 't' ) {
                 // tool use
 
+                $numToolsUsed ++;
+                
                 $parts = preg_split( "/@/", substr( $move, 1 ) );
 
                 if( count( $parts ) != 2 ) {
@@ -4533,7 +4556,7 @@ function cd_endRobHouse() {
             $num_moves ++;
             }
 
-        $toolsUsedString = cd_idQuanityArrayToString( $toolsUsedArray );
+        $toolsUsedString = cd_idQuantityArrayToString( $toolsUsedArray );
         }
 
     
@@ -5153,7 +5176,16 @@ function cd_endRobHouse() {
     else if( $success == 1 ) {
         cd_incrementStat( "vault_reaches" );
 
+        cd_incrementStat( "tools_stolen_count",
+                          cd_idQuantityStringCount( $stuffTaken ) );
         cd_incrementStat( "tools_stolen_value", $valueOfStuffTaken );
+
+        if( $galleryStuffTaken != "#" ) {    
+            cd_incrementStat(
+                "paintings_stolen",
+                count( preg_split( "/#/", $galleryStuffTaken ) ) );
+            }
+        
         }
     else if( $success == 2 ) {
         cd_incrementStat( "leave_count" );
@@ -5174,6 +5206,14 @@ function cd_endRobHouse() {
         
         cd_incrementStat( "money_stolen", $amountTaken );    
         }
+
+    cd_incrementStat( "tools_used", $numToolsUsed );
+
+    if( $backpack_contents != "#" ) {    
+        cd_incrementStat( "tools_dropped",
+                          cd_idQuantityStringCount( $backpack_contents ) );
+        }
+    
     
     
     // now execute all pending database updates after lock for
