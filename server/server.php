@@ -2844,6 +2844,27 @@ function cd_computeValueEstimate( $inLootValue, $inVaultContents ) {
 
 
 
+function cd_getItemNote( $inObjectID ) {
+    global $tableNamePrefix;
+    
+    $query = "SELECT note ".
+        "FROM $tableNamePrefix"."prices WHERE object_id = $inObjectID;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows == 1 ) {
+        return mysql_result( $result, 0, 0 );
+        }
+    else {
+        return "UNKNOWN";
+        }
+    }
+
+
+
+
 // returns array of id=>count pairs
 function cd_countMobiles( $inHouseMapArray ) {
     global $mobileList;
@@ -7455,7 +7476,7 @@ function cd_showStats() {
         for( $j=0; $j<$numFields; $j++ ) {
             $value = mysql_result( $result, $i, $j );
 
-            echo "<td bgcolor=$bgColor>$value</td>";
+            echo "<td bgcolor=$bgColor align=right>$value</td>";
             }
         echo "</tr>\n";
         
@@ -7465,6 +7486,97 @@ function cd_showStats() {
         }
 
     echo "</table>\n";
+
+
+    echo "<br><br><hr><br><br>\n";
+
+    
+
+    // now item purchase stats
+
+    // first, get all possible column headers
+    $query = "SELECT COUNT(*), object_id, price ".
+        "FROM $tableNamePrefix"."item_purchase_stats ".
+        "GROUP BY object_id, price ".
+        "ORDER BY object_id, price;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $columns = array();
+
+    echo "<table border = 1>\n";
+    echo "<tr><td><b>stat_date<b></td>";
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $id = mysql_result( $result, $i, "object_id" );        
+        $price = mysql_result( $result, $i, "price" );
+        
+        $columns[$i] = "$id@$price";
+
+        $note = cd_getItemNote( $id );
+        
+        echo "<td><b>$note</b> (\$$price)</td>";
+        }
+
+    echo "</tr>";
+
+
+    // now get all stats an stick each on in appropriate column bin
+    
+    $query = "SELECT stat_date, object_id, price, purchase_count ".
+        "FROM $tableNamePrefix"."item_purchase_stats ".
+        "ORDER BY stat_date, object_id, price;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $lastDate = "";
+    
+    if( $numRows > 0 ) {
+        $lastDate = mysql_result( $result, 0, "stat_date" );        
+        }
+
+    echo "<tr><td bgcolor=$bgColor>$lastDate</td>";
+
+    $columnNumber = 0;
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $stat_date = mysql_result( $result, $i, "stat_date" );
+
+        if( $stat_date != $lastDate ) {
+            echo "</tr>\n";
+
+            $temp = $bgColor;
+            $bgColor = $altBGColor;
+            $altBGColor = $temp;
+
+            echo "<tr><td bgcolor=$bgColor>$stat_date</td>";
+            $lastDate = $stat_date;
+            }
+        
+        $id = mysql_result( $result, $i, "object_id" );
+        $price = mysql_result( $result, $i, "price" );
+        $purchase_count = mysql_result( $result, $i, "purchase_count" );
+
+        $columnName = "$id@$price";
+
+        // skip columns until we find one that matches
+        // (if we skip, those dates had no purchases of $id at $price)
+        while( $columns[$columnNumber] != $columnName ) {
+            echo "<td align=right bgcolor=$bgColor>0</td>";
+            $columnNumber ++;
+            }
+        echo "<td align=right bgcolor=$bgColor>$purchase_count</td>";
+        $columnNumber ++;
+        }
+
+    echo "</tr>\n";
+    
+
+    echo "</table>";
     }
 
 
