@@ -7556,6 +7556,8 @@ function cd_showStats() {
         if( $stat_date != $lastDate ) {
             echo "</tr>\n";
 
+            $columnNumber = 0;
+            
             $temp = $bgColor;
             $bgColor = $altBGColor;
             $altBGColor = $temp;
