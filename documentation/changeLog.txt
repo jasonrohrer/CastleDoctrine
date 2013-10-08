@@ -52,6 +52,10 @@ Version 18   Live Server Fixes
 
 --Daily stat tracking of various interesting numbers in admin view.
 
+--Fixed bug where the map for a shadow-table house (where the owner has died,
+  but someone is still robbing it) could be deleted from the map cache out
+  from underneath the robber, causing the house check-in to fail when the
+  robbery ends (thanks Joshua Collins).
 
 
 

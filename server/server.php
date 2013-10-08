@@ -1709,6 +1709,7 @@ function cd_checkForFlush() {
         
 
         $housesTable = $tableNamePrefix . "houses";
+        $shadowHousesTable = $tableNamePrefix . "houses_owner_died";
         $mapsTable = $tableNamePrefix . "maps";
         $robLogsTable = $tableNamePrefix . "robbery_logs";
         
@@ -1736,10 +1737,15 @@ function cd_checkForFlush() {
                 "    ( SELECT COUNT(*) FROM $robLogsTable ".
                 "      WHERE house_start_map_hash = '$house_map_hash' ) ".
                 "    + ".
-                "    COUNT(*) FROM $housesTable ".
-                "         WHERE ".
-                "           house_map_hash = '$house_map_hash' OR ".
-                "           self_test_house_map_hash = '$house_map_hash'; ";
+                "    ( SELECT COUNT(*) FROM $housesTable ".
+                "      WHERE ".
+                "      house_map_hash = '$house_map_hash' OR ".
+                "      self_test_house_map_hash = '$house_map_hash' ) ";
+                "    + ".
+                "    ( SELECT COUNT(*) FROM $shadowHousesTable ".
+                "      WHERE ".
+                "      house_map_hash = '$house_map_hash' OR ".
+                "      self_test_house_map_hash = '$house_map_hash' ); ";
         
 
             $countSumResult = cd_queryDatabase( $query );
