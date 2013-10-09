@@ -57,6 +57,12 @@ Version 18   Live Server Fixes
   from underneath the robber, causing the house check-in to fail when the
   robbery ends (thanks Joshua Collins).
 
+--Changed so that remaining backpack tools vanish when running out the door
+  instead of going into the vault to prevent the convenient transfer of tools
+  between two accounts (thanks Largestherb and Joshua Collins).
+
+--Fixed a potential warning print out when server-side simulator is down.
+
 
 
 

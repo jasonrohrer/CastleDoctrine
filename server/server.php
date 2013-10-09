@@ -5102,11 +5102,16 @@ function cd_endRobHouse() {
         }
 
 
+
+    if( $success == 0 || $success == 1 ) {
+        // on death or vault reach (but not on leaving)
+        // drops remaining backpack in this house's vault
+        $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
+                                                    $backpack_contents );
+
+        // on leaving, remaining tools vanish
+        }
     
-    // drops remaining backpack in this house's vault in all cases
-    $house_vault_contents = cd_idQuantityUnion( $house_vault_contents,
-                                                $backpack_contents );
-        
 
     
     
@@ -5976,10 +5981,19 @@ function cd_simulateRobbery( $house_map,
         $errno;
         $errstr;
 
+        // disable WARNING handling temporarily so so that we don't
+        // print a warning on connection refused
+        set_error_handler( "cd_noticeAndWarningHandler", E_NOTICE );
+        
         // 1 second timeout before trying a different client
         $socketFile = @stream_socket_client( "tcp://localhost:$port",
                                              $errno, $errstr, 1 );
 
+        // reenable
+        set_error_handler( "cd_noticeAndWarningHandler",
+                           E_NOTICE | E_WARNING );
+
+        
         if( $socketFile ) {
 
             stream_set_blocking( $socketFile, 0 );
