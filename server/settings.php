@@ -410,13 +410,27 @@ $playerStartMoney = 2000;
 
 
 
+
+// bounty that builds up on a player's current life, given
+// their activities
+
+// Bounty is earned by the house that kills the player.
+$startingBounty = 500;
+
+$theftBountyIncrement = 500;
+
+$murderBountyIncrement = 1000;
+
+
+
+
 // how often absent (house not checked out for edit) player and wife get paid
 //$payInterval = "0 1:00:0.000";
 // originally 1 hour, experimenting with every 10 minutes
 $payInterval = "0 0:10:0.000";
 
-$playerPayAmount = 70;
-$wifePayAmount = 140;
+$playerPayAmount = 0;
+$wifePayAmount = 0;
 
 
 // how many times vault can be reached before player stops earning vault

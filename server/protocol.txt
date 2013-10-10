@@ -499,6 +499,10 @@ OK
 Where:
 character_name and last_robber_name have spaces repaced by "_"
 
+loot_value will start with a "b" (like "b1500") if the robber died and
+the loot_value field actually represents the bounty earned from killing this
+robber.
+
 f is a flag associated with each list item.  It is 0 if the tape has not been
 watched yet, and 1 if the tape has been watched.
 

@@ -4,6 +4,11 @@ Version 19
   a state where they would repeatedly kick you out of your house (thanks Josh
   Collins).
 
+--Added a bounty that builds up on a robber over time to be earned by whatever
+  house finally kills the robber (starting bounty 500, +500 for each theft,
+  +1000 for each instance of murder).  Trying bounties in conjuction with no
+  salaries.
+
 
 
 

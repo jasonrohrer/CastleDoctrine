@@ -24,8 +24,8 @@ extern double frameRateFactor;
 
 static const int linesPerPage = 8;
 static double lineHeight = 0.75;
-static double lineWidthLeft = 7;
-static double lineWidthRight = 7;
+static double lineWidthLeft = 7.25;
+static double lineWidthRight = 7.25;
 
 
 static double topOffset = ( linesPerPage * lineHeight ) / 2 - lineHeight / 2;
@@ -42,9 +42,10 @@ RobPickList::RobPickList( double inX, double inY,
           mWebRequest( -1 ),
           mProgressiveDrawSteps( 0 ),
           mRobberyLog( inRobberyLog ),
+          mSkullSprite( loadSprite( "skull.tga" ) ),
           mHover( false ),
-          mUpButton( "up.tga", 8, 1, 1/16.0 ),
-          mDownButton( "down.tga", 8, -1, 1/16.0 ),
+          mUpButton( "up.tga", 8.25, 1, 1/16.0 ),
+          mDownButton( "down.tga", 8.25, -1, 1/16.0 ),
           mSearchField( mainFontFixed, mainFont, 
                         0, 4,
                         8,
@@ -100,6 +101,8 @@ RobPickList::~RobPickList() {
     clearHouseList();
 
     delete [] mAppliedSearchWords;
+
+    freeSprite( mSkullSprite );
     }
 
 
@@ -395,8 +398,17 @@ void RobPickList::step() {
                                     replaceAll( parts[2], "_", " ", &found ),
                                     lineWidthLeft - 0.125 );
                             
-
-                            sscanf( parts[3], "%d", &( r.lootValue ) );
+                            if( strlen( parts[3] ) > 0 
+                                && parts[3][0] == 'b' ) {
+                                
+                                r.bountyFlag = 1;
+                                sscanf( parts[3], "b%d", &( r.lootValue ) );
+                                }
+                            else {
+                                r.bountyFlag = 0;
+                                sscanf( parts[3], "%d", &( r.lootValue ) );
+                                }
+                            
                             sscanf( parts[4], "%d", &( r.stat.eitherStat ) );
                             sscanf( parts[5], "%d", &( r.robberDeaths ) );
                             
@@ -603,14 +615,24 @@ void RobPickList::draw() {
             if( mRobberyLog ) {
                 nameToDraw = r->lastRobberName;
                 }
+            doublePair drawPos = r->position;
+            drawPos.x -= .25;
+            mainFont->drawString( nameToDraw, drawPos, alignRight );
             
-            mainFont->drawString( nameToDraw, r->position, alignRight );
+
+            if( r->bountyFlag ) {
+                drawPos = r->position;
             
+                drawPos.x += .5;
+                
+                drawSprite( mSkullSprite, drawPos, 1.0 / 16.0 );
+                }
+
 
             char *lootString = autoSprintf( "$%d", r->lootValue );
         
-            doublePair drawPos = r->position;
-            drawPos.x += 1;
+            drawPos = r->position;
+            drawPos.x += 1.25;
         
             mainFont->drawString( lootString, drawPos, alignLeft );
 
@@ -620,7 +642,7 @@ void RobPickList::draw() {
             char *attemptString = autoSprintf( "%d", r->stat.eitherStat );
         
             drawPos = r->position;
-            drawPos.x += 5;
+            drawPos.x += 5.25;
         
             mainFont->drawString( attemptString, drawPos, alignRight );
 
@@ -631,7 +653,7 @@ void RobPickList::draw() {
             char *deathsString = autoSprintf( "%d", r->robberDeaths );
         
             drawPos = r->position;
-            drawPos.x += 6.5;
+            drawPos.x += 6.75;
         
             mainFont->drawString( deathsString, drawPos, alignRight );
 
@@ -709,8 +731,13 @@ void RobPickList::setTip( HouseRecord *inRecord ) {
         
     if( mRobberyLog ) {
         char *lastName = convertToLastName( inRecord->lastRobberName );
+        
+        const char *tipKey = "replayPickListTip";
+        if( inRecord->bountyFlag ) {
+            tipKey = "replayPickListBountyTip";
+            }
 
-        tip = autoSprintf( translate( "replayPickListTip" ), 
+        tip = autoSprintf( translate( tipKey ), 
                            lastName, inRecord->lootValue, 
                            inRecord->stat.robAttempts, 
                            inRecord->robberDeaths );

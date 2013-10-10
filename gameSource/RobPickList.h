@@ -22,6 +22,8 @@ typedef struct HouseRecord {
         // trimmed and spaced name for human display
         char *characterName;
         char *lastRobberName;
+        
+        int bountyFlag;
         int lootValue;
         
 
@@ -108,6 +110,8 @@ class RobPickList : public PageComponent, public ActionListener,
         char mRobberyLog;
 
         SimpleVector<HouseRecord> mHouseList;
+
+        SpriteHandle mSkullSprite;
 
         void clearHouseList();
 

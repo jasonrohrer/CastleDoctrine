@@ -3,10 +3,10 @@
 
 
 global $cd_version;
-$cd_version = "18";
+$cd_version = "19";
 
 global $cd_minClientVersion;
-$cd_minClientVersion = "18";
+$cd_minClientVersion = "19";
 
 
 global $cd_numBackpackSlots;
@@ -833,6 +833,7 @@ function cd_setupDatabase() {
             "payment_count INT NOT NULL,".
             "you_paid_total INT NOT NULL,".
             "wife_paid_total INT NOT NULL,".
+            "bounty INT NOT NULL,".
             "blocked TINYINT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -970,7 +971,10 @@ function cd_setupDatabase() {
             "INDEX( house_user_id ),".
             "loot_value INT NOT NULL," .
             "wife_money INT NOT NULL," .
+            // if robber died in house,
+            // value_estimate is bounty paid to house owner
             "value_estimate INT NOT NULL," .
+            "robber_died TINYINT NOT NULL," .
             "vault_contents LONGTEXT NOT NULL," .
             "gallery_contents LONGTEXT NOT NULL," .
             "music_seed INT NOT NULL," .
@@ -1231,6 +1235,9 @@ function cd_setupDatabase() {
             "robbery_deaths INT NOT NULL DEFAULT 0," .
             "robbery_suicides INT NOT NULL DEFAULT 0," .
 
+            "bounties_accumulated INT NOT NULL DEFAULT 0," .
+            "bounties_paid INT NOT NULL DEFAULT 0," .
+            
             "self_test_deaths INT NOT NULL DEFAULT 0," .
             "self_test_suicides INT NOT NULL DEFAULT 0," .
             "home_suicides INT NOT NULL DEFAULT 0," .
@@ -4575,7 +4582,8 @@ function cd_endRobHouse() {
     // And we can't lock it while target house is locked (deadlock potential).
     $query = "SELECT backpack_contents, ".
         "carried_loot_value, carried_vault_contents, ".
-        "carried_gallery_contents ". 
+        "carried_gallery_contents, ".
+        "bounty ". 
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$user_id' AND blocked='0';";
 
@@ -4598,6 +4606,8 @@ function cd_endRobHouse() {
         mysql_result( $result, 0, "carried_vault_contents" );
     $old_robber_carried_gallery_contents =
         mysql_result( $result, 0, "carried_gallery_contents" );
+
+    $oldBounty = mysql_result( $result, 0, "bounty" );
 
 
 
@@ -4897,7 +4907,33 @@ function cd_endRobHouse() {
     
     $loadout = $old_backpack_contents;
 
+    $robber_died = 0;
 
+    if( $success == 0 ) {
+        $robber_died = 1;
+        }
+
+    $bountyEarned = 0;
+    
+    if( $robber_died ) {
+        // robbber killed
+        // we earn this bounty
+        $bountyEarned = $oldBounty;
+        }
+
+
+    $bountyIncrement = 0;
+
+    global $theftBountyIncrement, $murderBountyIncrement;
+    
+    if( $success == 1 ) {
+        $bountyIncrement += $theftBountyIncrement;
+        }
+    
+    if( $success != 0 && $any_family_killed ) {
+        $bountyIncrement += $murderBountyIncrement;
+        }
+    
     
     
     if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
@@ -4925,12 +4961,19 @@ function cd_endRobHouse() {
             // died or left, stole nothing
             $total_value_stolen = 0;
 
+            if( $robber_died ) {
+                // value estimate shows bounty in this case
+                $total_value_stolen = $bountyEarned;
+                }
+            
+            
             // log_id auto-assigned
             $query =
                 "INSERT INTO $tableNamePrefix"."robbery_logs ".
                 "(log_watched, ".
                 " user_id, house_user_id, loot_value, wife_money, ".
                 " value_estimate, ".
+                " robber_died, ".
                 " vault_contents, gallery_contents, ".
                 " music_seed, ".
                 " rob_attempts, robber_deaths,".
@@ -4945,6 +4988,7 @@ function cd_endRobHouse() {
                 " $user_id, $victim_id, '$vault_loot_value', ".
                 " '$wife_loot_value', ".
                 " '$total_value_stolen', ".
+                " '$robber_died', ".
                 " '$house_vault_contents', '$house_gallery_contents', ".
                 " '$music_seed', ".
                 " '$rob_attempts', '$robber_deaths', ".
@@ -5027,7 +5071,8 @@ function cd_endRobHouse() {
         $query = "UPDATE $tableNamePrefix"."houses SET ".
             "carried_loot_value = $carried_loot_value, ".
             "carried_vault_contents = '$carried_vault_contents', ".
-            "carried_gallery_contents = '$carried_gallery_contents' ".
+            "carried_gallery_contents = '$carried_gallery_contents', ".
+            "bounty = bounty + '$bountyIncrement' ".
             "WHERE user_id = $user_id;";
         $pendingDatabaseUpdateQueries[] = $query;
 
@@ -5045,13 +5090,19 @@ function cd_endRobHouse() {
         $valueOfStuffTaken =
             cd_idQuantityToResaleValue( $stuffTaken, cd_getPriceArray() );
         $total_value_stolen = $amountTaken + $valueOfStuffTaken;
-            
+
+        
+        if( $robber_died ) {
+            // value estimate shows bounty in this case
+            $total_value_stolen = $bountyEarned;
+            }
 
         // log_id auto-assigned
         $query =
             "INSERT INTO $tableNamePrefix"."robbery_logs ".
             "( log_watched, user_id, house_user_id, loot_value, wife_money, ".
-            "value_estimate, ".
+            " value_estimate, ".
+            " robber_died, ".
             " vault_contents, gallery_contents, ".
             " music_seed, ".
             " rob_attempts, robber_deaths,".
@@ -5065,6 +5116,7 @@ function cd_endRobHouse() {
             " 0, $user_id, $victim_id, '$vault_loot_value', ".
             " '$wife_loot_value', ".
             " '$total_value_stolen', ".
+            " '$robber_died', ".
             " '$house_vault_contents', '$house_gallery_contents', ".
             " '$music_seed', ".
             " '$rob_attempts', '$robber_deaths', ".
@@ -5162,7 +5214,7 @@ function cd_endRobHouse() {
         }
     
     
-    
+    $vault_loot_value += $bountyEarned;
     
         
     if( ! $ownerDied ) {
@@ -5267,6 +5319,13 @@ function cd_endRobHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    
+    // commit before posting stats (to avoid deadlock)
+    
+    cd_incrementStat( "bounties_accumulated", $bountyIncrement );
+    cd_incrementStat( "bounties_paid", $bountyEarned );
+    
+    
     if( $success == 0 ) {
         cd_incrementStat( "robbery_deaths" );
 
@@ -5421,7 +5480,7 @@ function cd_listLoggedRobberies() {
     
     $query = "SELECT user_id, house_user_id, ".
         "log_id, log_watched, victim_name, robber_name, ".
-        "value_estimate, num_moves, robber_deaths ".
+        "value_estimate, robber_died, num_moves, robber_deaths ".
         "FROM $tableName ".
         "$whereClause ".
         "ORDER BY rob_time DESC ".
@@ -5440,6 +5499,7 @@ function cd_listLoggedRobberies() {
         $victim_name = mysql_result( $result, $i, "victim_name" );
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
+        $robber_died = mysql_result( $result, $i, "robber_died" );
         $num_moves = mysql_result( $result, $i, "num_moves" );
         $robber_deaths = mysql_result( $result, $i, "robber_deaths" );
         $log_watched = mysql_result( $result, $i, "log_watched" );
@@ -5450,10 +5510,15 @@ function cd_listLoggedRobberies() {
         if( $victim_id == $user_id ) {
             $victim_name = "You";
             }
-        
+
+        $loot_value_string = "$value_estimate";
+
+        if( $robber_died ) {
+            $loot_value_string = "b" . $loot_value_string;
+            }
         
         echo "$log_id#$victim_name#$robber_name".
-            "#$value_estimate#$num_moves#$robber_deaths#$log_watched\n";
+            "#$loot_value_string#$num_moves#$robber_deaths#$log_watched\n";
         }
 
     if( $numRows > $limit ) {
@@ -6537,7 +6602,7 @@ function cd_newHouseForUser( $user_id ) {
         $daughter_name = cd_pickName( "daughter_names" );
         }
 
-    global $playerStartMoney;
+    global $playerStartMoney, $startingBounty;
     
     $loot_value = ceil( $playerStartMoney / 2 );
     $wife_loot_value = floor( $playerStartMoney / 2 );
@@ -6585,6 +6650,7 @@ function cd_newHouseForUser( $user_id ) {
             "payment_count = 0, ".
             "you_paid_total = 0, ".
             "wife_paid_total = 0, ".
+            "bounty = '$startingBounty', ".
             "blocked = 0;";
 
         // bypass our default error handling here so that
@@ -6676,6 +6742,8 @@ function cd_newHouseForUser( $user_id ) {
     if( $deathHappened ) {
         cd_incrementStat( "deaths" );
         }
+
+    cd_incrementStat( "bounties_accumulated", $startingBounty );
     }
 
 
