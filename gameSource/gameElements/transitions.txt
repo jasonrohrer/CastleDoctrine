@@ -303,11 +303,14 @@ wife_shotgun:1 # wife3:1 => 10
 wife_shotgun:1 # wife4:1 => 10
 
 
-wife:1 # wife_shotgun:1  => 2
+wife:1  # wife_shotgun:1  => 2
 wife2:1 # wife_shotgun:1 => 2
 wife3:1 # wife_shotgun:1 => 2
 wife4:1 # wife_shotgun:1 => 2
 
 
-wife:10 # player:1 => 5
+wife:10  # player:1 => 5
+wife2:10 # player:1 => 5
+wife3:10 # player:1 => 5
+wife4:10 # player:1 => 5
 
