@@ -30,7 +30,7 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
         
         virtual ~PickerGridPage();
         
-        // pulls object list and prices from picker
+        // pulls object list and prices and wife name from picker
         void pullFromPicker( HouseObjectPicker *inPicker );
         
         void setLootValue( int inLootValue ) {
@@ -71,6 +71,7 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
         SpriteButton mUpButton;
         SpriteButton mDownButton;
 
+        char *mWifeName;
 
         int mDisplayOffset;
         

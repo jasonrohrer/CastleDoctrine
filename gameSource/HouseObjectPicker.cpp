@@ -46,7 +46,9 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
           mPixWidth( 1/16.0 ),
           mUpButton( "up.tga", -1.25, 1, mPixWidth ), 
           mDownButton( "down.tga", -1.25, -1, mPixWidth ),
-          mGridViewButton( "gridView.tga", 1.25, 1, mPixWidth ) {
+          mGridViewButton( "gridView.tga", 1.25, 1, mPixWidth ),
+          // blank in place for pickers that don't use it (like tool picker)
+          mWifeName( stringDuplicate( "" ) ) {
 
     mUpButton.setVisible( false );
     mDownButton.setVisible( false );
@@ -108,6 +110,9 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
 
 
 HouseObjectPicker::~HouseObjectPicker() {
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
     }
 
 
@@ -118,9 +123,16 @@ void HouseObjectPicker::triggerToolTip() {
         setToolTip( getToolDescription( 
                         mObjectList.getElement( mSelectedIndex )->id ) );
         }
-    else {    
-        setToolTip( getObjectDescription( 
-                        mObjectList.getElement( mSelectedIndex )->id, 0 ) );
+    else {
+        char *description = 
+            getObjectDescription( 
+                mObjectList.getElement( mSelectedIndex )->id, 
+                0,
+                mWifeName );
+        
+        setToolTip( description );
+
+        delete [] description;
         }
     }
 
@@ -382,6 +394,21 @@ void HouseObjectPicker::setPriceList( const char *inPriceList ) {
         delete [] bigParts[i];
         }
     delete [] bigParts;
+    }
+
+
+
+void HouseObjectPicker::setWifeName( const char *inWifeName ) {
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    mWifeName = stringDuplicate( inWifeName );
+    }
+
+
+
+const char *HouseObjectPicker::getWifeName() {
+    return mWifeName;
     }
 
 

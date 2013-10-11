@@ -979,7 +979,7 @@ const char *getObjectName( int inObjectID ) {
 
 
 
-const char *getObjectDescription( int inObjectID, int inState ) {
+static const char *getObjectDescription( int inObjectID, int inState ) {
     houseObjectState *state = getObjectState( inObjectID, inState );
     
     if( state->subDescription != NULL ) {
@@ -993,6 +993,34 @@ const char *getObjectDescription( int inObjectID, int inState ) {
         return r->description;
         }
 
+    }
+
+
+
+char *getObjectDescription( int inObjectID, int inState, 
+                            const char *inWifeName ) {
+    
+    const char *descriptionString = 
+        getObjectDescription( inObjectID, inState );
+    
+    if( isPropertySet( inObjectID, inState, wifeOwns ) ) {
+        char *wifeNamePosessive;
+        
+        if( inWifeName[ strlen(inWifeName) - 1 ] == 's' ) {
+            wifeNamePosessive = autoSprintf( "%s'", inWifeName );
+            }
+        else {
+            wifeNamePosessive = autoSprintf( "%s's", inWifeName );
+            }
+        
+        char *returnString = autoSprintf( descriptionString, 
+                                          wifeNamePosessive );
+        delete [] wifeNamePosessive;
+        return returnString;
+        }
+    else {
+        return stringDuplicate( descriptionString );
+        }
     }
 
 

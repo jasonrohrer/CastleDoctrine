@@ -1296,6 +1296,14 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         inMapMobileStates[ mobIndex ] = checkTransition( mobID, mobState,
                                                          mobOverTileID,
                                                          mobOverTileState );
+
+        // also, reverse:
+        // mobiles can trigger specific reactions in tiles they are standing
+        // on (separate from "mobile" transition for switch plates)
+        // for example:  wife_shotgun (a mobile) can change state of wife
+        inMapStates[ mobIndex ] = checkTransition( mobOverTileID,
+                                                   mobOverTileState,
+                                                   mobID, mobState );
         }
     
 

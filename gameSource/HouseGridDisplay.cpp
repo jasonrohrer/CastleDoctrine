@@ -2530,9 +2530,8 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 }
             
 
-            nonMobileDescription = 
-                stringDuplicate( 
-                    getObjectDescription( id, state ) );
+            nonMobileDescription = getObjectDescription( id, state, 
+                                                         mWifeName );
             
             if( isPropertySet( id, state, wife ) && mWifeName != NULL ) {
 
@@ -2585,8 +2584,8 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 state = mHouseMapMobileToolTipOverrideState[ fullI ];
                 }
 
-            const char *mobileDescription = 
-                getObjectDescription( id, state );
+            char *mobileDescription = getObjectDescription( id, state, 
+                                                            mWifeName );
             
             if( mHouseMapIDs[fullI] != 0 ) {
                 // mobile on top of something
@@ -2601,6 +2600,8 @@ void HouseGridDisplay::pointerOver( float inX, float inY ) {
                 // don't describe empty floor under mobile
                 setToolTip( mobileDescription );
                 }
+
+            delete [] mobileDescription;
             }
         else {
             setToolTip( nonMobileDescription );

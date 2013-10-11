@@ -557,7 +557,9 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             
             int oldIndex = posToIndex( path[progress] );
 
-            if( mHouseMapCellStates[ oldIndex ] != 1 ) {
+            if( isPropertySet( mHouseMapIDs[ oldIndex ],
+                               mHouseMapCellStates[ oldIndex ],
+                               deadFamily ) ) {
                 // killed!
                 // don't move
                     
@@ -621,7 +623,9 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             
                 int oldIndex = posToIndex( path[progress] );
 
-                if( mHouseMapCellStates[ oldIndex ] != 1 ) {
+                if( isPropertySet( mHouseMapIDs[oldIndex],
+                                   mHouseMapCellStates[ oldIndex ], 
+                                   deadFamily ) ) {
                     // killed!
                     // don't move
                     }

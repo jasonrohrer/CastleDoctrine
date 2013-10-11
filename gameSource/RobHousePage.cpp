@@ -316,13 +316,22 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                 delete [] mDeathMessage;
                 }
             
+            char *wifeName = mGridDisplay.getWifeName();
+            
+            char *objectDescription =
+                getObjectDescription( 
+                        mGridDisplay.getDeathSourceID(),
+                        mGridDisplay.getDeathSourceState(),
+                        wifeName );
+            delete [] wifeName;
+            
             mDeathMessage = 
                 autoSprintf( 
                     "%s  %s",
                     translate( "killedBy" ),
-                    getObjectDescription( 
-                        mGridDisplay.getDeathSourceID(),
-                        mGridDisplay.getDeathSourceState() ) );
+                    objectDescription );
+            
+            delete [] objectDescription;
             
             mDoneButton.setLabelText( translate( "doneRobDead" ) );
             mDoneButton.setMouseOverTip( "" );

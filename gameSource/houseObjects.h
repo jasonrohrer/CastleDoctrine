@@ -23,8 +23,13 @@ const char *getObjectName( int inObjectID );
 
 
 // gets the human-readable description, example:  "Wooden Wall"
-const char *getObjectDescription( int inObjectID,
-                                  int inState );
+// inWifeName is inserted into object description if object has wifeOwns 
+// property set
+
+// result destroyed by caller
+char *getObjectDescription( int inObjectID,
+                            int inState,
+                            const char *inWifeName );
 
 
 // returns -1 on failure
@@ -76,6 +81,7 @@ int getObjectID( const char *inName );
     F(playerFacing), \
     F(playerFacingAway), \
     F(interactingWithPlayer), \
+    F(wifeOwns), \
     F(onTopOfPlayer) \
 
                 

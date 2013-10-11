@@ -10,6 +10,7 @@
 PickerGridPage::PickerGridPage( char inTools ) 
         : mUpButton( "up.tga", 7, 1, 1/16.0 ),
           mDownButton( "down.tga", 7, -1, 1/16.0 ),
+          mWifeName( NULL ),
           mDisplayOffset( 0 )  {
     
     doublePair pos = {-4.5, 5};
@@ -60,6 +61,10 @@ PickerGridPage::~PickerGridPage() {
     for( int i=0; i<NUM_SLOTS_PER_PICKER_GRID_PAGE; i++ ) {
         delete mPickerPageSlots[i];
         }
+
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
     }
         
 
@@ -73,6 +78,11 @@ void PickerGridPage::pullFromPicker( HouseObjectPicker *inPicker ) {
 
     mObjectList.push_back( records, numRecords );
     
+    if( mWifeName != NULL ) {
+        delete [] mWifeName;
+        }
+    mWifeName = stringDuplicate( inPicker->getWifeName() );
+
     populateSlots();
     
     delete [] records;
@@ -158,6 +168,8 @@ void PickerGridPage::populateSlots() {
             mObjectList.getElement( i ), 1 );
         
         mPickerPageSlots[slotNumber]->setVisible( true );
+
+        mPickerPageSlots[slotNumber]->setWifeName( mWifeName );
 
         slotNumber++;
         }

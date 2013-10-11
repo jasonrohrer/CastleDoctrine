@@ -132,6 +132,7 @@ EditHousePage::~EditHousePage() {
 
 void EditHousePage::setWifeName( const char *inWifeName ) {
     mGridDisplay.setWifeName( inWifeName );
+    mObjectPicker.setWifeName( inWifeName );
     }
 
 void EditHousePage::setSonName( const char *inSonName ) {

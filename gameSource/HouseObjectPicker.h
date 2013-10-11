@@ -53,6 +53,10 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         virtual void setPrices( ObjectPriceRecord *inRecords, 
                                 int inNumRecords );
 
+        // copied internally
+        virtual void setWifeName( const char *inWifeName );
+
+        virtual const char *getWifeName();
         
         // gets the price list in the original, server-provided order
         virtual ObjectPriceRecord *getPrices( int *outNumPrices );
@@ -106,6 +110,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         SpriteButton mDownButton;
         SpriteButton mGridViewButton;
         
+
+        char *mWifeName;
 
         void triggerToolTip();
         
