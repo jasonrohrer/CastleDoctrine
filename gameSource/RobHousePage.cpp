@@ -323,6 +323,36 @@ void RobHousePage::actionPerformed( GUIComponent *inTarget ) {
                         mGridDisplay.getDeathSourceID(),
                         mGridDisplay.getDeathSourceState(),
                         wifeName );
+
+            if( isPropertySet( mGridDisplay.getDeathSourceID(),
+                               mGridDisplay.getDeathSourceState(),
+                               wife ) ) {
+                char *newDescription = autoSprintf( objectDescription,
+                                                    wifeName );
+                delete [] objectDescription;
+                objectDescription = newDescription;
+                }
+            else if( isPropertySet( mGridDisplay.getDeathSourceID(),
+                                    mGridDisplay.getDeathSourceState(),
+                                    son ) ) {
+                char *sonName = mGridDisplay.getSonName();
+                char *newDescription = autoSprintf( objectDescription,
+                                                    sonName );
+                delete [] sonName;
+                delete [] objectDescription;
+                objectDescription = newDescription;
+                }
+            else if( isPropertySet( mGridDisplay.getDeathSourceID(),
+                                    mGridDisplay.getDeathSourceState(),
+                                    daughter ) ) {
+                char *daughterName = mGridDisplay.getDaughterName();
+                char *newDescription = autoSprintf( objectDescription,
+                                                    daughterName );
+                delete [] daughterName;
+                delete [] objectDescription;
+                objectDescription = newDescription;
+                }
+            
             delete [] wifeName;
             
             mDeathMessage = 

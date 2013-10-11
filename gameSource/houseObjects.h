@@ -64,6 +64,7 @@ int getObjectID( const char *inName );
     F(structural), \
     F(wall), \
     F(deadly), \
+    F(deadlyAdjacent), \
     F(stuck), \
     F(notDamaged), \
     F(powered), \

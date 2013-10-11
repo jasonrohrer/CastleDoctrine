@@ -691,36 +691,73 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
     copyAllIntoSubCells();
 
-    if( isPropertySet( mHouseMapIDs[ mRobberIndex ], 
-                       mHouseMapCellStates[ mRobberIndex ], deadly ) ) {
+
+
+    // check possible sources of death
+    // robber location and four neighbors
+    int xDelta[5] = {  0, 
+                      -1,  1,  0,  0 };
+    int yDelta[5] = {  0,  
+                       0,  0,  -1,  1 };
+
+    // tile/mobile at robber location can only kill robber if it is 'deadly'
+    // neighbors can only kill robber if they are 'deadlyAdjacent'
+    propertyID deathCondition[5] =
+        { deadly, 
+          deadlyAdjacent, deadlyAdjacent, deadlyAdjacent, deadlyAdjacent };
+    
+    int robberX = mRobberIndex % mFullMapD;
+    int robberY = mRobberIndex / mFullMapD;
+            
+    for( int s=0; s<5; s++ ) {
+        int x = robberX + xDelta[s];
+        int y = robberY + yDelta[s];
+            
+        if( x >= 0 && x < mFullMapD &&
+            y >= 0 && y < mFullMapD ) {
+
+            int deathSourceIndex = y * mFullMapD + x;
+
+
+
+            if( isPropertySet( 
+                    mHouseMapIDs[ deathSourceIndex ], 
+                    mHouseMapCellStates[ deathSourceIndex ], 
+                    deathCondition[s] ) ) {
         
-        // robber killed by static object
-        mDead = true;
-        mDeathSourceID = mHouseMapIDs[ mRobberIndex ];
-        mDeathSourceState = mHouseMapCellStates[ mRobberIndex ];
+                // robber killed by static object
+                mDead = true;
+                mDeathSourceID = mHouseMapIDs[ deathSourceIndex ];
+                mDeathSourceState = mHouseMapCellStates[ deathSourceIndex ];
         
-        mRobberState = checkTransition( PLAYER_ID, mRobberState,
-                                        mDeathSourceID,
-                                        mDeathSourceState );
-        mSuccess = 0;
-        processFamilyAndMobilesAtEnd();
+                mRobberState = checkTransition( PLAYER_ID, mRobberState,
+                                                mDeathSourceID,
+                                                mDeathSourceState );
+                mSuccess = 0;
+                processFamilyAndMobilesAtEnd();
+                break;
+                }
+            else if( isPropertySet( 
+                         mHouseMapMobileIDs[ deathSourceIndex ], 
+                         mHouseMapMobileCellStates[ deathSourceIndex ], 
+                         deathCondition[s] ) ) {
+
+                // robber killed by mobile
+                mDead = true;
+                mDeathSourceID = mHouseMapMobileIDs[ deathSourceIndex ];
+                mDeathSourceState = 
+                    mHouseMapMobileCellStates[ deathSourceIndex ];
+
+                mRobberState = checkTransition( PLAYER_ID, mRobberState,
+                                                mDeathSourceID,
+                                                mDeathSourceState );
+                mSuccess = 0;
+                processFamilyAndMobilesAtEnd();
+                break;
+                }
+            }
         }
-    else if( isPropertySet( mHouseMapMobileIDs[ mRobberIndex ], 
-                            mHouseMapMobileCellStates[ mRobberIndex ], 
-                            deadly ) ) {
-
-        // robber killed by mobile
-        mDead = true;
-        mDeathSourceID = mHouseMapMobileIDs[ mRobberIndex ];
-        mDeathSourceState = mHouseMapMobileCellStates[ mRobberIndex ];
-
-        mRobberState = checkTransition( PLAYER_ID, mRobberState,
-                                        mDeathSourceID,
-                                        mDeathSourceState );
-        mSuccess = 0;
-        processFamilyAndMobilesAtEnd();
-        }
-
+    
     
     
     recomputeVisibility();

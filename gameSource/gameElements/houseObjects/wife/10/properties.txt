@@ -3,3 +3,4 @@ family
 wife
 playerFacing
 darkHaloBehind
+deadlyAdjacent

@@ -309,3 +309,5 @@ wife3:1 # wife_shotgun:1 => 2
 wife4:1 # wife_shotgun:1 => 2
 
 
+wife:10 # player:1 => 5
+
