@@ -1238,12 +1238,19 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         // in case of looping, all elements involved in the loop settle
         // down into the lowest-seen state number that they encounter 
         // during execution of the loop
-        
-        // return to start state before running the loop again
-        // (because we may have hit the transition limit above, we
-        // may never have completed a full loop, and we'll hit that
-        // limit again here)
-        memcpy( inMapStates, startStates, numCells * sizeof( int ) );
+
+        if( transitionCount > transitionLimit ) {
+            // hit transition limit without seeing a real loop
+            
+            // return to start state before running the loop again in this
+            // case, because we're going to look for lowest-seen-states
+            // within this transition limit instead of a full loop
+            memcpy( inMapStates, startStates, numCells * sizeof( int ) );
+            }
+        // otherwise, DON'T return to start state, because we use the
+        // current state as a return state for loop detection (and start
+        // state might not actually be part of loop, so may never be returned
+        // to)
 
         // observer the same transition limit here as we look for the 
         // lowest seen state for each cell (in the case of
