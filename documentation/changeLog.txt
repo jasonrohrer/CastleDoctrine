@@ -13,7 +13,12 @@ Version 19
   wife as she walks across it.  Kills robber short range (when adjacent).  Wife
   collects and holds bounty for robbers that she kills.
 
---Fixed corner gap visibility inconsistency by applying simpler algorithm (thanks Joshua Collins).
+--Fixed corner gap visibility inconsistency by applying simpler algorithm 
+  (thanks Joshua Collins).
+
+--Added a 256-step power propagation limit to prevent complex circuits that
+  take many propagations to either loop or settle from potentially freezing
+  the game (thanks Joshua Collins).
 
 
 

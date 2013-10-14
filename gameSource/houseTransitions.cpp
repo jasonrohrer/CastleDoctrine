@@ -1191,11 +1191,26 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     seenStates.push_back( getMapStateChecksum( inMapStates, inMapW, inMapH ) );
     
 
+    // keep track of number of transitions applied.
+    // count as looping if we go too far without seeing a loop
+    // (it's possible to build a circuit that takes thousands of steps to
+    //  eventually loop, and we don't want to simulate that, because it
+    //  effectively freezes the game [noticed by Joshua Collins]).
+    int transitionCount = 0;
+    int transitionLimit = 256;
+        
+    int *startStates = new int[ numCells ];
+        
+    memcpy( startStates, inMapStates, numCells * sizeof( int ) );
+
+
     while( transitionHappened && ! loopDetected ) {
         transitionHappened = 
             applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
 
         if( transitionHappened ) {
+            transitionCount++;
+            
             char *newChecksum = 
                 getMapStateChecksum( inMapStates, inMapW, inMapH );
             
@@ -1206,7 +1221,11 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
                     loopDetected = true;
                     }
                 }
-            
+
+            if( transitionCount > transitionLimit ) {
+                loopDetected = true;
+                }
+
             seenStates.push_back( newChecksum );
             }
         }
@@ -1220,7 +1239,19 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         // down into the lowest-seen state number that they encounter 
         // during execution of the loop
         
-        int numCells = inMapW * inMapH;
+        // return to start state before running the loop again
+        // (because we may have hit the transition limit above, we
+        // may never have completed a full loop, and we'll hit that
+        // limit again here)
+        memcpy( inMapStates, startStates, numCells * sizeof( int ) );
+
+        // observer the same transition limit here as we look for the 
+        // lowest seen state for each cell (in the case of
+        // an incomplete loop, where we've hit the transition limit before
+        // actually looping, we will find the lowest seen state before
+        // the transition limit was hit).
+        transitionCount = 0;
+        
         
         int *lowestSeenStates = new int[ numCells ];
         
@@ -1235,7 +1266,8 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         char *lastChecksum = 
             getMapStateChecksum( inMapStates, inMapW, inMapH );
         
-        while( strcmp( lastChecksum, returnToChecksum ) != 0 ) {
+        while( strcmp( lastChecksum, returnToChecksum ) != 0 &&
+               transitionCount <= transitionLimit ) {
             // a mid-loop state
             
             for( int i=0; i<numCells; i++ ) {
@@ -1250,6 +1282,8 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
             applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
             lastChecksum = 
                 getMapStateChecksum( inMapStates, inMapW, inMapH );
+            
+            transitionCount ++;
             }
 
         // returned to start-of-loop state
@@ -1262,6 +1296,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         }
     
 
+    delete [] startStates;
 
     for( int i=0; i<seenStates.size(); i++ ) {
         delete [] *( seenStates.getElement( i ) );
