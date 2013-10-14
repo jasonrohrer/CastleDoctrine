@@ -13,6 +13,8 @@ Version 19
   wife as she walks across it.  Kills robber short range (when adjacent).  Wife
   collects and holds bounty for robbers that she kills.
 
+--Fixed corner gap visibility inconsistency by applying simpler algorithm (thanks Joshua Collins).
+
 
 
 
