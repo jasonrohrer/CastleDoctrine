@@ -69,6 +69,11 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         char *getMoveList() {
             return mGridDisplay.getMoveList();
             }
+
+
+        char getWifeKilledRobber() {
+            return mGridDisplay.getWifeKilledRobber();
+            }
         
 
         char getWifeKilled() {

@@ -115,6 +115,17 @@ int RobHouseGridDisplay::getDeathSourceState() {
 
 
 
+char RobHouseGridDisplay::getWifeKilledRobber() {
+    if( mDead ) {
+        return isPropertySet( mDeathSourceID, mDeathSourceState, wife );
+        }
+    else {
+        return false;
+        }
+    }
+
+
+
 char RobHouseGridDisplay::getWifeRobbed() {
     return mRobberStoleFromWife;
     }

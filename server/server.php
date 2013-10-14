@@ -4458,6 +4458,7 @@ function cd_endRobHouse() {
     $user_id = cd_getUserID();
 
     $success = cd_requestFilter( "success", "/[012]/" );
+    $wife_killed_robber = cd_requestFilter( "wife_killed_robber", "/[01]/" );
     $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
     $wife_robbed = cd_requestFilter( "wife_robbed", "/[01]/" );
     $any_family_killed = cd_requestFilter( "any_family_kiled", "/[01]/" );
@@ -5213,9 +5214,12 @@ function cd_endRobHouse() {
         $payment_count = 0;
         }
     
-    
-    $vault_loot_value += $bountyEarned;
-    
+    if( $wife_killed_robber ) {
+        $wife_loot_value += $bountyEarned;
+        }
+    else {
+        $vault_loot_value += $bountyEarned;
+        }
         
     if( ! $ownerDied ) {
         if( $wife_killed ) {

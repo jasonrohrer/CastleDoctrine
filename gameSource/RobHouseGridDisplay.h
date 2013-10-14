@@ -29,6 +29,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         int getDeathSourceID();
         int getDeathSourceState();
 
+        char getWifeKilledRobber();
+        
         char getWifeKilled();
         // true if robber killed wife and reached her body
         char getWifeRobbed();

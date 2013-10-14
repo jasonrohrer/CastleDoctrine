@@ -10,7 +10,8 @@ Version 19
   salaries (thanks Joshua Collins).
 
 --Added a shotgun object that can be placed in the house and picked up by the
-  wife as she walks across it.  Kills robber short range (when adjacent).
+  wife as she walks across it.  Kills robber short range (when adjacent).  Wife
+  collects and holds bounty for robbers that she kills.
 
 
 

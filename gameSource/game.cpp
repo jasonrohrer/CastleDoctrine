@@ -1701,6 +1701,9 @@ void drawFrame( char inUpdate ) {
                 robCheckinHousePage->setBackpackContents( backpackContents );
                 robCheckinHousePage->setHouseMap( houseMap );
                 robCheckinHousePage->setSuccess( robHousePage->getSuccess() );
+
+                robCheckinHousePage->setWifeKilledRobber( 
+                    robHousePage->getWifeKilledRobber() );
                               
                 robCheckinHousePage->setWifeKilled( 
                     robHousePage->getWifeKilled() );
