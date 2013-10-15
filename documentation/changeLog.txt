@@ -1,6 +1,6 @@
 Version 19   2013-October-15
 
---Fixed an obscur bug where the tool/tile grid-picker pages could get stuck in
+--Fixed an obscure bug where the tool/tile grid-picker pages could get stuck in
   a state where they would repeatedly kick you out of your house (thanks Josh
   Collins).
 
