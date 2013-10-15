@@ -1470,8 +1470,6 @@ void drawFrame( char inUpdate ) {
                 clearNotes();
                 }
             else if( selfHouseTestPage->getDone() ) {
-                blockQuitting( false );
-
                 char *houseMap = editHousePage->getHouseMap();
                 char *vaultContents = editHousePage->getVaultContents();
                 char *backpackContents = editHousePage->getBackpackContents();
@@ -1506,6 +1504,7 @@ void drawFrame( char inUpdate ) {
                     }
                 else {
                     // back to editing it
+                    blockQuitting( false );
                     
                     // don't SET it again, because we want to keep
                     // track of the fact that it has changed since the
@@ -1529,10 +1528,12 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == checkinHousePage ) {
             if( checkinHousePage->getReturnToMenu() ) {
+                blockQuitting( false );
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
             else if( checkinHousePage->getStartOver() ) {
+                blockQuitting( false );
                 // fresh start, back to editing empty house
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
@@ -1564,6 +1565,7 @@ void drawFrame( char inUpdate ) {
                 HouseRecord *r = menuPage->getSelectedHouse();
                 
                 if( r != NULL ) {
+                    blockQuitting( true );
                     currentGamePage = robCheckoutHousePage;
                     
                     robCheckoutHousePage->setToRobUserID( r->uniqueID );
@@ -1589,6 +1591,7 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == robCheckoutHousePage ) {
             if( robCheckoutHousePage->getReturnToMenu() ) {
+                blockQuitting( false );
                 currentGamePage = menuPage;
                 currentGamePage->base_makeActive( true );
                 }
@@ -1650,7 +1653,6 @@ void drawFrame( char inUpdate ) {
                     robHousePage->setMusicSeed( 
                         robCheckoutHousePage->getMusicSeed() );
 
-                    blockQuitting( true );
                     currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );
                     }
@@ -1693,7 +1695,6 @@ void drawFrame( char inUpdate ) {
                 currentGamePage->base_makeActive( true );
                 }
             else if( robHousePage->getDone() ) {
-                blockQuitting( false );
                 char *houseMap = robHousePage->getHouseMap();
                 char *moveList = robHousePage->getMoveList();
                 char *backpackContents = robHousePage->getBackpackContents();
@@ -1726,10 +1727,12 @@ void drawFrame( char inUpdate ) {
             }
         else if( currentGamePage == robCheckinHousePage ) {
             if( robCheckinHousePage->getReturnToHome() ) {
+                blockQuitting( false );
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );
                 }
             else if( robCheckinHousePage->getStartOver() ) {
+                blockQuitting( false );
                 // fresh start, back to editing empty house
                 currentGamePage = checkoutHousePage;
                 currentGamePage->base_makeActive( true );

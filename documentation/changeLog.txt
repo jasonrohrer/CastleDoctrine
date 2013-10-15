@@ -20,6 +20,9 @@ Version 19
   take many propagations to either loop or settle from potentially freezing
   the game (thanks Joshua Collins).
 
+--Blocked quitting from house check-in/out pages when quitting could kill the
+  player.
+
 
 
 
