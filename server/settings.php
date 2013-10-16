@@ -156,7 +156,7 @@ $smtpPassword = "secret";
 // they can be changed manually later from the admin page
 
 // these can be used to tweak all prices evenly at load time
-$objectPriceTweak = 0.6;
+$objectPriceTweak = 0.4;
 $toolPriceTweak = 1.0;
 $galleryPriceTweak = 1.0;
 
