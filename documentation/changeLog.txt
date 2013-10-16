@@ -1,3 +1,14 @@
+Version 19   Live Server Fixes
+
+--Wired wooden walls brought back to the game.
+
+--Added a price tweak factors on server so that overall tile/tool price ratios
+  can be adjusted more easily.  Started off with tile prices tweaked down to
+  3/5 what they used to be (to allow more house building with the starting
+  budget).
+
+
+
 Version 19   2013-October-15
 
 --Fixed an obscure bug where the tool/tile grid-picker pages could get stuck in

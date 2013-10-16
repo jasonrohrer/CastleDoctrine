@@ -517,6 +517,8 @@ function cd_restoreDefaultPrices() {
 
     
     global $tableNamePrefix, $defaultPrices;
+
+    global $objectPriceTweak, $toolPriceTweak, $galleryPriceTweak;
     
     $tableName = $tableNamePrefix . "prices";
 
@@ -530,8 +532,28 @@ function cd_restoreDefaultPrices() {
     foreach( $defaultPrices as $tuple ) {
         $object_id = $tuple[0];
         $price = $tuple[1];
-        $in_gallery = $tuple[2];
+        $price_type = $tuple[2];
         $note = mysql_real_escape_string( $tuple[3] );
+
+        $in_gallery = 0;
+        if( $price_type == 2 ) {
+            $in_gallery = 1;
+            }
+
+        switch( $price_type ) {
+            case 0:
+                $price = $price * $objectPriceTweak;
+                break;
+            case 1:
+                $price = $price * $toolPriceTweak;
+                break;
+            case 2:
+                $price = $price * $galleryPriceTweak;
+                break;
+            }
+        
+        $price = intval( $price );
+        
         
         $query = "INSERT INTO $tableName ".
             "VALUES ( '$object_id', '$price', '$in_gallery', ".
