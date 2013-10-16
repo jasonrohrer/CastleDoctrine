@@ -1,3 +1,12 @@
+Version 20
+
+--Fixed bug that allowed wife to shoot robber while robber is on welcome mat,
+  allowing robber to strangely recover from death by leaving the house (thanks 
+  Colorfusion).
+
+
+
+
 Version 19   Live Server Fixes
 
 --Wired wooden walls brought back to the game.
