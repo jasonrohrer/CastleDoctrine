@@ -7,6 +7,12 @@ Version 20
 --Fixed tape playback page title text when tape value represents a bounty
   earned.
 
+--Sleeping animals no longer jump back (mysteriously, while sleeping) to their
+  original location after a successful robbery.
+
+--Improved visibility of sleeping animals by bringing them up above wall
+  shadows and giving them dark outlines just like other living mobiles.
+
 
 
 

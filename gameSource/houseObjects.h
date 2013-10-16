@@ -73,6 +73,7 @@ int getObjectID( const char *inName );
     F(conductiveTopToBottom), \
     F(conductiveInternal), \
     F(mobile), \
+    F(sleeping), \
     F(forceUnderShadows), \
     F(noDropShadow), \
     F(darkHaloBehind), \

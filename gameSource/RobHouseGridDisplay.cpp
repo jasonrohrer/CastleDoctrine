@@ -1804,7 +1804,9 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
     for( int i=0; i<mNumMapSpots; i++ ) {
         if( newMobileIDs[i] != 0 && 
             ! isPropertySet( newMobileIDs[i], 
-                             newMobileCellStates[i], stuck ) ) {
+                             newMobileCellStates[i], stuck ) && 
+            ! isPropertySet( newMobileIDs[i], 
+                             newMobileCellStates[i], sleeping ) ) {
             
             // clear out any that aren't stuck
             // to make room for mobiles jumping back to land here
@@ -1817,7 +1819,9 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
     for( int i=0; i<mNumMapSpots; i++ ) {
         if( mHouseMapMobileIDs[i] != 0 && 
             ! isPropertySet( mHouseMapMobileIDs[i], 
-                             mHouseMapMobileCellStates[i], stuck ) ) {
+                             mHouseMapMobileCellStates[i], stuck ) && 
+            ! isPropertySet( mHouseMapMobileIDs[i], 
+                             mHouseMapMobileCellStates[i], sleeping ) ) {
             
             int jumpBackTarget = mHouseMapMobileStartingPositions[i];
             
