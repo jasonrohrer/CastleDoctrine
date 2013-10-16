@@ -4,6 +4,9 @@ Version 20
   allowing robber to strangely recover from death by leaving the house (thanks 
   Colorfusion).
 
+--Fixed tape playback page title text when tape value represents a bounty
+  earned.
+
 
 
 

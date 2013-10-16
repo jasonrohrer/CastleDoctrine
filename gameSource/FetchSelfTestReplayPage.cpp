@@ -178,6 +178,7 @@ void FetchSelfTestReplayPage::step() {
 
 
                         mLogRecord.lootValue = 0;
+                        mLogRecord.isBounty = false;
                         
                         mRecordReady = true;
 

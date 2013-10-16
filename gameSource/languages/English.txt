@@ -288,6 +288,8 @@ startReplay "Play Tape"
 
 
 replayDescription "Security Tape:  %s robbed##%s for $%d"
+replayDescriptionBounty "Security Tape:  %s robbed##%s ($%d bounty)"
+
 
 step "Step"
 play "Play"

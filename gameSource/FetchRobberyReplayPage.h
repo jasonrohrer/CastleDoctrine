@@ -23,6 +23,7 @@ typedef struct RobberyLog {
         int lootValue;
         int wifeMoney;
         int musicSeed;
+        char isBounty;
     } RobberyLog;
 
 

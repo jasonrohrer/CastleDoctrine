@@ -168,8 +168,21 @@ void FetchRobberyReplayPage::step() {
                             *( tokens->getElement( 3 ) );
                         mLogRecord.moveList = *( tokens->getElement( 4 ) );
 
-                        sscanf( *( tokens->getElement( 5 ) ),
-                                "%d", &( mLogRecord.lootValue ) );
+                        char *lootToken = *( tokens->getElement( 5 ) );
+                        
+                        if( lootToken[0] == 'b' ) {
+                            mLogRecord.isBounty = true;
+                            
+                            sscanf( lootToken,
+                                    "b%d", &( mLogRecord.lootValue ) );
+                            }
+                        else {
+                            mLogRecord.isBounty = false;
+                            
+                            sscanf( lootToken,
+                                    "%d", &( mLogRecord.lootValue ) );
+                            }
+                        
                         sscanf( *( tokens->getElement( 6 ) ),
                                 "%d", &( mLogRecord.wifeMoney ) );
                         sscanf( *( tokens->getElement( 7 ) ),

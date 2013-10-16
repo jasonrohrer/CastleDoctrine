@@ -5645,7 +5645,7 @@ function cd_getRobberyLog() {
         "robber_name, victim_name, ".
         "wife_name, son_name, daughter_name, ".
         "house_start_map_hash, loadout, ".
-        "move_list, value_estimate, wife_money, music_seed ".
+        "move_list, value_estimate, robber_died, wife_money, music_seed ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE log_id = '$log_id';";
 
@@ -5694,6 +5694,13 @@ function cd_getRobberyLog() {
         cd_queryDatabase( $query );
         }
 
+    
+    $value_estimate = $row[ "value_estimate" ];
+    
+    if( $row[ "robber_died" ] ) {
+        $value_estimate = "b" . $value_estimate;
+        }
+    
     cd_incrementStat( "tapes_watched" );
     
     echo $robber_name . "\n";    
@@ -5701,7 +5708,7 @@ function cd_getRobberyLog() {
     echo $house_start_map . "\n";    
     echo $row[ "loadout" ] . "\n";    
     echo $row[ "move_list" ] . "\n";
-    echo $row[ "value_estimate" ] . "\n";
+    echo $value_estimate . "\n";
     echo $row[ "wife_money" ] . "\n";
     echo $row[ "music_seed" ] . "\n";
     echo $row[ "wife_name" ] . "\n";

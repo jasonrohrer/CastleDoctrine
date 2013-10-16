@@ -108,7 +108,13 @@ void ReplayRobHousePage::setLog( RobberyLog inLog ) {
         delete [] mDescription;
         }
     
-    mDescription = autoSprintf( translate( "replayDescription" ),
+    const char *descriptionKey = "replayDescription";
+    
+    if( inLog.isBounty ) {
+        descriptionKey = "replayDescriptionBounty";
+        }
+
+    mDescription = autoSprintf( translate( descriptionKey ),
                                 inLog.robberName,
                                 inLog.victimName,
                                 inLog.lootValue );
