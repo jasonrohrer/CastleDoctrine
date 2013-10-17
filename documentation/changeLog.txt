@@ -19,6 +19,8 @@ Version 20
 
 --Added a panic button that can be pressed by family as they run out.
 
+--Moved shotgun up slightly to make it more visible when surrounded by walls.
+
 
 
 
