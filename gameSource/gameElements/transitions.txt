@@ -21,9 +21,6 @@ visible # pitbull:1 => 11
 visible # chihuahua:1 => 11
 visible # cat:1 => 11
 
-notVisible # pitbull:11 => 1
-notVisible # chihuahua:11 => 1
-notVisible # cat:11 => 1
 
 
 floor_electric:2 # pitbull => 3

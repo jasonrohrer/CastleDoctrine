@@ -13,6 +13,9 @@ Version 20
 --Improved visibility of sleeping animals by bringing them up above wall
   shadows and giving them dark outlines just like other living mobiles.
 
+--Returned to v15-style animal movement (animals start following/fleeing when
+  they see you, but continue moving toward/away from you even after you move
+  out of view).
 
 
 
