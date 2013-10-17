@@ -17,6 +17,9 @@ Version 20
   they see you, but continue moving toward/away from you even after you move
   out of view).
 
+--Added a panic button that can be pressed by family as they run out.
+
+
 
 
 Version 19   Live Server Fixes

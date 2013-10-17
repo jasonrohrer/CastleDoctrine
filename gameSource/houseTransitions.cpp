@@ -400,9 +400,25 @@ static char *getMapStateChecksum( int *inMapStates, int inMapW, int inMapH ) {
 
 
 
+// shortcut for checking mobile properties, where it returns false
+// if mobile not present (inID = 0) instead of querying the property database.
+inline static char isMobilePropertySet( int inID, int inState, 
+                                        propertyID inProperty ) {
+    if( inID == 0 ) {
+        return false;
+        }
+    else {
+        return isPropertySet( inID, inState, inProperty );
+        }
+    }
+    
+
+
 // returns power map with (inMapW * inMapH) cells
 static char *propagatePower(  int *inMapIDs, 
-                              int *inMapStates, int inMapW, int inMapH,
+                              int *inMapStates,
+                              int *inMapMobileIDs, int *inMapMobileStates,
+                              int inMapW, int inMapH,
                               char **outTopBottomPowerMap ) {
     
     int numCells = inMapW * inMapH;
@@ -435,7 +451,10 @@ static char *propagatePower(  int *inMapIDs,
     // first, start power at cells that are powered currently
 
     for( int i=0; i<numCells; i++ ) {
-        if( isPropertySet( inMapIDs[i], inMapStates[i], powered ) ) {
+        if( isPropertySet( inMapIDs[i], inMapStates[i], powered ) 
+            ||
+            isMobilePropertySet( inMapMobileIDs[i], inMapMobileStates[i], 
+                             powered ) ) {
             powerMap[i] = true;
             change = true;
             }
@@ -454,7 +473,9 @@ static char *propagatePower(  int *inMapIDs,
                 }
             
 
-            if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ) {
+            if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ||
+                isMobilePropertySet( inMapMobileIDs[i], 
+                                     inMapMobileStates[i], conductive ) ) {
                 // look for neighbors with power
                 // continue as soon as one found
                 
@@ -508,8 +529,11 @@ static char *propagatePower(  int *inMapIDs,
                 }
             else {
                 if( !leftRightPowerMap[i] &&
-                    isPropertySet( inMapIDs[i], inMapStates[i], 
-                                   conductiveLeftToRight ) ) {
+                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                     conductiveLeftToRight ) ||
+                      isMobilePropertySet( inMapMobileIDs[i], 
+                                           inMapMobileStates[i], 
+                                           conductiveLeftToRight ) ) ) {
             
                     // look for left or right neighbor with power
                     int x = i % inMapW;
@@ -538,8 +562,11 @@ static char *propagatePower(  int *inMapIDs,
                 
 
                 if( !topBottomPowerMap[i] &&
-                    isPropertySet( inMapIDs[i], inMapStates[i], 
-                                   conductiveTopToBottom ) ) {
+                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                     conductiveTopToBottom ) ||
+                      isMobilePropertySet( inMapMobileIDs[i], 
+                                           inMapMobileStates[i], 
+                                           conductiveTopToBottom ) ) ) {
             
                     // look for top or bottom neighbor with power
                     int y = i / inMapW;
@@ -570,8 +597,11 @@ static char *propagatePower(  int *inMapIDs,
 
                 if( !powerMap[i] &&
                     !internalPowerMap[i] &&
-                    isPropertySet( inMapIDs[i], inMapStates[i], 
-                                   conductiveInternal ) ) {
+                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveInternal ) ||
+                      isMobilePropertySet( inMapMobileIDs[i], 
+                                           inMapMobileStates[i], 
+                                           conductiveInternal ) ) ) {
             
                     // look for any neighbor with power
                     int x = i % inMapW;
@@ -638,12 +668,24 @@ static char *propagatePower(  int *inMapIDs,
 
 // returns true if something changed, which might require an additional
 // transition step for propagation
+//
+// Mobiles can conduct electricity, but are not affected by power
+// (this allows us to implement a panic button that can be crossed and 
+//  triggered by family members).
+//
+// Also, mobiles in the "powered" state generate power for neighboring tiles.
+//
+// Thus, inMapMobileIDs and inMapMobileStates are NOT changed by this call
 static char applyPowerTransitions( int *inMapIDs, 
-                                   int *inMapStates, int inMapW, int inMapH ) {
+                                   int *inMapStates,
+                                   int *inMapMobileIDs, int *inMapMobileStates,
+                                   int inMapW, int inMapH ) {
     
     
     char *topBottomPowerMap;
-    char *powerMap = propagatePower( inMapIDs, inMapStates, inMapW, inMapH,
+    char *powerMap = propagatePower( inMapIDs, inMapStates,
+                                     inMapMobileIDs, inMapMobileStates, 
+                                     inMapW, inMapH,
                                      &topBottomPowerMap );
     
 
@@ -1178,6 +1220,35 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     int numCells = inMapW * inMapH;
 
     
+    
+    // after moving mobiles around and triggering stuff with their positions
+    // need to figure out if any mobiles have become powered or conductive
+    // because that will change the outcome of the power propagation below
+
+    // still, don't apply other transitions to these mobiles now, because
+    // those transitions may be different later after power has propagated
+    
+    // for now, just focus on changes to mobiles triggered by family members
+    // here
+    for( int i=0; i<numCells; i++ ) {
+        if( inMapMobileIDs[i] != 0 ) {
+            
+            int mobID = inMapMobileIDs[ i ];
+            int mobState = inMapMobileStates[ i ];
+            
+            int mobOverTileID = inMapIDs[ i ];
+            int mobOverTileState = inMapStates[ i ];
+            
+            if( isPropertySet( mobOverTileID, mobOverTileState, family ) ) {
+                
+                inMapMobileStates[ i ] = checkTransition( mobID, mobState,
+                                                          mobOverTileID,
+                                                          mobOverTileState );
+                }
+            }
+        }
+
+
     // now process power transitions
 
     
@@ -1206,7 +1277,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
 
     while( transitionHappened && ! loopDetected ) {
         transitionHappened = 
-            applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+            applyPowerTransitions( inMapIDs, inMapStates, 
+                                   inMapMobileIDs, inMapMobileStates,
+                                   inMapW, inMapH );
 
         if( transitionHappened ) {
             transitionCount++;
@@ -1269,7 +1342,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
             getMapStateChecksum( inMapStates, inMapW, inMapH );
         
 
-        applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+        applyPowerTransitions( inMapIDs, inMapStates, 
+                               inMapMobileIDs, inMapMobileStates,
+                               inMapW, inMapH );
         char *lastChecksum = 
             getMapStateChecksum( inMapStates, inMapW, inMapH );
         
@@ -1286,7 +1361,9 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
                 }
             delete [] lastChecksum;
 
-            applyPowerTransitions( inMapIDs, inMapStates, inMapW, inMapH );
+            applyPowerTransitions( inMapIDs, inMapStates,
+                                   inMapMobileIDs, inMapMobileStates,
+                                   inMapW, inMapH );
             lastChecksum = 
                 getMapStateChecksum( inMapStates, inMapW, inMapH );
             
@@ -1315,39 +1392,39 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     // finally, apply transitions to mobile objects based on where they
     // are standing
 
-    // indices might have changed
-    SimpleVector<int> mobileIndices;
+    // do this after power has been propagated and tile states changed based
+    // on power
 
     for( int i=0; i<numCells; i++ ) {
         if( inMapMobileIDs[i] != 0 ) {
-            mobileIndices.push_back( i );
+            
+            int mobID = inMapMobileIDs[ i ];
+            int mobState = inMapMobileStates[ i ];
+            
+            
+            int mobOverTileID = inMapIDs[ i ];
+            int mobOverTileState = inMapStates[ i ];
+            
+            
+            // already triggered effects of family on mobiles above,
+            // before power transitions
+            if( ! isPropertySet( mobOverTileID, mobOverTileState, family ) ) {
+                
+                inMapMobileStates[ i ] = checkTransition( mobID, mobState,
+                                                          mobOverTileID,
+                                                          mobOverTileState );
+                }
+            
+            // also, reverse:
+            // mobiles can trigger specific reactions in tiles they are 
+            // standing
+            // on (separate from "mobile" transition for switch plates)
+            // for example:  wife_shotgun (a mobile) can change state of wife
+            inMapStates[ i ] = checkTransition( mobOverTileID,
+                                                mobOverTileState,
+                                                mobID, mobState );
             }
         }
-
-    for( int j=0; j<mobileIndices.size(); j++ ) {
-        int mobIndex = *( mobileIndices.getElement( j ) );
-        
-        int mobID = inMapMobileIDs[ mobIndex ];
-        int mobState = inMapMobileStates[ mobIndex ];
-        
-        
-        int mobOverTileID = inMapIDs[ mobIndex ];
-        int mobOverTileState = inMapStates[ mobIndex ];
-
-        
-        inMapMobileStates[ mobIndex ] = checkTransition( mobID, mobState,
-                                                         mobOverTileID,
-                                                         mobOverTileState );
-
-        // also, reverse:
-        // mobiles can trigger specific reactions in tiles they are standing
-        // on (separate from "mobile" transition for switch plates)
-        // for example:  wife_shotgun (a mobile) can change state of wife
-        inMapStates[ mobIndex ] = checkTransition( mobOverTileID,
-                                                   mobOverTileState,
-                                                   mobID, mobState );
-        }
-    
 
 
     }

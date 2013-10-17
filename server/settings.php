@@ -193,6 +193,7 @@ $defaultPrices = array(
     array( 71, 100, 0, "Chihuahua" ),
     array( 72, 20, 0, "Cat" ),
     array( 130, 800, 0, "Wife's Shotgun" ),
+    array( 131, 50, 0, "Panic Button" ),
     
     array( 500, 400, 1, "Saw" ),
     array( 509, 2400, 1, "Crowbar" ),
@@ -372,7 +373,7 @@ $resaleRate = 0.5;
 
 
 // list of all mobile objects (those that don't block family exit)
-$mobileList = array( 70, 71, 72, 130 );
+$mobileList = array( 70, 71, 72, 130, 131 );
 
 // list of all possible objects to use as wife
 $wifeList = array( 1010,

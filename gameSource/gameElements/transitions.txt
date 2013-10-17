@@ -316,3 +316,20 @@ wife2:10 # player:1 => 5
 wife3:10 # player:1 => 5
 wife4:10 # player:1 => 5
 
+
+
+
+wife  # panic_button:1  => 2
+wife2 # panic_button:1  => 2
+wife3 # panic_button:1  => 2
+wife4 # panic_button:1  => 2
+
+son  # panic_button:1  => 2
+son2 # panic_button:1  => 2
+son3 # panic_button:1  => 2
+son4 # panic_button:1  => 2
+
+daughter  # panic_button:1  => 2
+daughter2 # panic_button:1  => 2
+daughter3 # panic_button:1  => 2
+daughter4 # panic_button:1  => 2
