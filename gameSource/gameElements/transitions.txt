@@ -299,10 +299,10 @@ club # daughter4:1 => 7
 
 
 
-wife_shotgun:1 # wife:1  => 10
-wife_shotgun:1 # wife2:1 => 10
-wife_shotgun:1 # wife3:1 => 10
-wife_shotgun:1 # wife4:1 => 10
+wife_shotgun # wife:1  => 10
+wife_shotgun # wife2:1 => 10
+wife_shotgun # wife3:1 => 10
+wife_shotgun # wife4:1 => 10
 
 
 wife:1  # wife_shotgun:1  => 2
