@@ -1,4 +1,4 @@
-Version 20
+Version 20   2013-October-18
 
 --Fixed bug that allowed wife to shoot robber while robber is on welcome mat,
   allowing robber to strangely recover from death by leaving the house (thanks 
