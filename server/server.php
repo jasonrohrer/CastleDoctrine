@@ -3878,7 +3878,7 @@ function cd_endEditHouse() {
                                     &$success,
                                     &$wife_killed,
                                     &$wife_robbed,
-                                    &$any_family_killed,
+                                    &$family_killed_count,
                                     &$end_backpack_contents,
                                     &$end_house_map );
 
@@ -4483,7 +4483,8 @@ function cd_endRobHouse() {
     $wife_killed_robber = cd_requestFilter( "wife_killed_robber", "/[01]/" );
     $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
     $wife_robbed = cd_requestFilter( "wife_robbed", "/[01]/" );
-    $any_family_killed = cd_requestFilter( "any_family_kiled", "/[01]/" );
+    $family_killed_count = cd_requestFilter( "family_killed_count",
+                                             "/[0-9]+/" );
 
     $backpack_contents = cd_requestFilter( "backpack_contents", "/[#0-9:]+/" );
 
@@ -4829,7 +4830,7 @@ function cd_endRobHouse() {
         $sim_success;
         $sim_wife_killed;
         $sim_wife_robbed;
-        $sim_any_family_killed;
+        $sim_family_killed_count;
         $sim_end_backpack_contents;
         $sim_end_house_map;
         
@@ -4843,7 +4844,7 @@ function cd_endRobHouse() {
                                 &$sim_success,
                                 &$sim_wife_killed,
                                 &$sim_wife_robbed,
-                                &$sim_any_family_killed,
+                                &$sim_family_killed_count,
                                 &$sim_end_backpack_contents,
                                 &$sim_end_house_map );
 
@@ -4859,7 +4860,7 @@ function cd_endRobHouse() {
             if( $sim_success != $success ||
                 $sim_wife_killed != $wife_killed ||
                 $sim_wife_robbed != $wife_robbed ||
-                $sim_any_family_killed != $any_family_killed ||
+                $sim_family_killed_count != $family_killed_count ||
                 $sim_end_backpack_contents != $backpack_contents ||
                 $sim_end_house_map != $house_map ) {
 
@@ -4874,7 +4875,8 @@ function cd_endRobHouse() {
                     " success=$success($sim_success) ".
                     " wifeKilled=$wife_killed($sim_wife_killed) ".
                     " wifeRobbed=$wife_robbed($sim_wife_robbed) ".
-                    " anyKilled=$any_family_killed($sim_any_family_killed) ".
+                    " killedCount=".
+                    "$family_killed_count($sim_family_killed_count) ".
                     " backpackMismatch=$backpackMismatch ".
                     " mapMismatch=$mapMismatch)" );
                 
@@ -4953,13 +4955,14 @@ function cd_endRobHouse() {
         $bountyIncrement += $theftBountyIncrement;
         }
     
-    if( $success != 0 && $any_family_killed ) {
-        $bountyIncrement += $murderBountyIncrement;
+    if( $success != 0 && $family_killed_count > 0 ) {
+        $bountyIncrement += $murderBountyIncrement * $family_killed_count;
         }
     
     
     
-    if( !$any_family_killed && ( $success == 0 || $success == 2 ) ) {
+    if( $family_killed_count == 0
+        && ( $success == 0 || $success == 2 ) ) {
         
         // keep original house map, untouched
         $house_map = $old_house_map_untouched;
@@ -5383,8 +5386,8 @@ function cd_endRobHouse() {
     if( $wife_robbed ) {
         cd_incrementStat( "wives_robbed" );
         }
-    if( $any_family_killed ) {
-        cd_incrementStat( "any_family_killed_count" );
+    if( $family_killed_count > 0 ) {
+        cd_incrementStat( "any_family_killed_count", $family_killed_count );
         }
     
     if( $success != 0 &&
@@ -6060,7 +6063,7 @@ function cd_simulateRobbery( $house_map,
                              &$success,
                              &$wife_killed,
                              &$wife_robbed,
-                             &$any_family_killed,
+                             &$family_killed_count,
                              &$end_backpack_contents,
                              &$end_house_map ) {
 
@@ -6138,7 +6141,7 @@ function cd_simulateRobbery( $house_map,
                     
                     $wife_killed = $responseParts[1];
                     $wife_robbed = $responseParts[2];
-                    $any_family_killed = $responseParts[3];
+                    $family_killed_count = $responseParts[3];
                     $end_backpack_contents = $responseParts[4];
                     $end_house_map = $responseParts[5];
                     

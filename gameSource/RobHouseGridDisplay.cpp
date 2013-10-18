@@ -154,16 +154,18 @@ char RobHouseGridDisplay::getWifeKilled() {
 
 
 
-char RobHouseGridDisplay::getAnyFamilyKilled() {
+int RobHouseGridDisplay::getFamilyKilledCount() {
     int numFamily = mFamilyStatus.size();
+    
+    int numKilled = 0;
     
     for( int i=0; i<numFamily; i++ ) {
         if( *( mFamilyStatus.getElement( i ) ) == 0 ) {
             // killed
-            return true;
+            numKilled ++;
             }
         }
-    return false;
+    return numKilled;
     }
 
 

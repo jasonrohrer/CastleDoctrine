@@ -1711,8 +1711,8 @@ void drawFrame( char inUpdate ) {
                 robCheckinHousePage->setWifeRobbed( 
                     robHousePage->getWifeRobbed() );
 
-                robCheckinHousePage->setAnyFamilyKilled( 
-                    robHousePage->getAnyFamilyKilled() );
+                robCheckinHousePage->setFamilyKilledCount( 
+                    robHousePage->getFamilyKilledCount() );
 
                 
                 robCheckinHousePage->setMoveList( moveList );

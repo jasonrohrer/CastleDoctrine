@@ -34,7 +34,7 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char getWifeKilled();
         // true if robber killed wife and reached her body
         char getWifeRobbed();
-        char getAnyFamilyKilled();
+        int getFamilyKilledCount();
 
         // list as a whitespace-free string
         // destroyed by caller

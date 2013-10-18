@@ -21,6 +21,10 @@ Version 20
 
 --Moved shotgun up slightly to make it more visible when surrounded by walls.
 
+--Changed so that murder bounty is based on total number of people killed
+  instead of just counting each murderous outing.
+
+
 
 
 

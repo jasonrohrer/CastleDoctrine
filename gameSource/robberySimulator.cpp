@@ -121,7 +121,7 @@ Returns:
 success
 wife_killed
 wife_robbed
-any_family_killed
+family_killed_count
 end_backpack_contents
 end_house_map
     */
@@ -145,7 +145,7 @@ end_house_map
                          replayCheckerDisplay->getSuccess(),
                          replayCheckerDisplay->getWifeKilled(),
                          replayCheckerDisplay->getWifeRobbed(),
-                         replayCheckerDisplay->getAnyFamilyKilled(),
+                         replayCheckerDisplay->getFamilyKilledCount(),
                          endBackpack,
                          endHouseMap );
 

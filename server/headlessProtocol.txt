@@ -56,7 +56,7 @@ Returns:
 success
 wife_killed
 wife_robbed
-any_family_killed
+family_killed_count
 end_backpack_contents
 end_house_map
 [END_RESPONSE]
@@ -71,7 +71,7 @@ wife_killed = [0(false) or 1(true)]
 
 wife_robbed = [0(false) or 1(true)]
 
-any_family_killed = [0(false) or 1(true)]
+family_killed_count = [number killed]
 
 backpack_contents and end_backpack_contents = [contents as ASCII string]
 
