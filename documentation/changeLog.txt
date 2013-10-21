@@ -1,3 +1,11 @@
+Version 21
+
+--Fixed inconsistency in family movement trigger when house view shifts as
+  robber nears edge of screen (thanks Zed).
+
+
+
+
 Version 20   2013-October-18
 
 --Fixed bug that allowed wife to shoot robber while robber is on welcome mat,
