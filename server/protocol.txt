@@ -664,3 +664,20 @@ Flush removes stale house checkouts, etc.
 check_for_flush will happen automatically at the beginning of all client calls
 (thus being triggered without cron, but slowing down the unlucky client call
 that triggers the flus) if configured that way in settings.php
+
+
+
+
+
+=== Call:
+server.php?action=get_price_list
+
+Returns:
+price_list
+
+Where:
+price_list = ASCII string containing ID@price pairs, like:
+
+1@10#2@20#5@25
+
+This list contains the current prices on the server.

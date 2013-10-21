@@ -6,6 +6,13 @@ Version 21
 
 
 
+Version 20   Live Server Fixes
+
+--Added a get_price_list server public API call (thanks Ukuko).
+
+
+
+
 Version 20   2013-October-18
 
 --Fixed bug that allowed wife to shoot robber while robber is on welcome mat,

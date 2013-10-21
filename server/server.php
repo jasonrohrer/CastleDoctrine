@@ -232,6 +232,10 @@ else if( $action == "check_for_flush" ) {
     cd_checkForFlush();
     echo "OK";
     }
+else if( $action == "get_price_list" ) {
+    $price_list = cd_generatePriceList();
+    echo $price_list;
+    }
 else if( $action == "show_data" ) {
     cd_showData();
     }
@@ -2398,6 +2402,49 @@ function cd_storeHouseMap( $inMap ) {
 
 
 
+// queries price database and generates a
+// object@price#object@price#object@price formatted list for
+// all non-gallery objects
+function cd_generatePriceList() {
+    global $tableNamePrefix;
+    
+    $query = "SELECT object_id, price, in_gallery ".
+        "FROM $tableNamePrefix"."prices ORDER BY order_number;";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    $priceListBody = "";
+
+    $firstRow = true;
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        // leave gallery objects out of price list, because their
+        // prices are just start auction prices, and not current
+        // (and don't want to waste space in price list)
+        $in_gallery = mysql_result( $result, $i, "in_gallery" );
+
+        if( !$in_gallery ) {
+            
+            if( !$firstRow ) {
+                $priceListBody = $priceListBody . "#";
+                }
+            $firstRow = false;
+            
+            $object_id = mysql_result( $result, $i, "object_id" );
+            $price = mysql_result( $result, $i, "price" );
+            
+            $priceListBody = $priceListBody . "$object_id"."@"."$price";
+            }
+        }
+
+    return $priceListBody;
+    }
+
+
+
+
 function cd_startEditHouse() {
     global $tableNamePrefix;
 
@@ -2573,36 +2620,7 @@ function cd_startEditHouse() {
 
     
 
-    $query = "SELECT object_id, price, in_gallery ".
-        "FROM $tableNamePrefix"."prices ORDER BY order_number;";
-
-    $result = cd_queryDatabase( $query );
-
-    $numRows = mysql_numrows( $result );
-
-    $priceListBody = "";
-
-    $firstRow = true;
-    
-    for( $i=0; $i<$numRows; $i++ ) {
-        // leave gallery objects out of price list, because their
-        // prices are just start auction prices, and not current
-        // (and don't want to waste space in price list)
-        $in_gallery = mysql_result( $result, $i, "in_gallery" );
-
-        if( !$in_gallery ) {
-            
-            if( !$firstRow ) {
-                $priceListBody = $priceListBody . "#";
-                }
-            $firstRow = false;
-            
-            $object_id = mysql_result( $result, $i, "object_id" );
-            $price = mysql_result( $result, $i, "price" );
-            
-            $priceListBody = $priceListBody . "$object_id"."@"."$price";
-            }
-        }
+    $priceListBody = cd_generatePriceList();
 
     global $serverSecretKey;
     
