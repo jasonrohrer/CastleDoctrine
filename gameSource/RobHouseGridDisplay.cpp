@@ -615,21 +615,9 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
             char seenRobber = *( mFamilySeenRobber.getElement( i ) );
             
             if( !seenRobber ) {
-                
-                // check if seen this step
-                int status = *( mFamilyStatus.getElement( i ) );
-
-                if( status == 1 ) {
-                    int subIndex = fullToSub( posToIndex( path[progress] ) );
-                    
-                    if( subIndex != -1 && mTileVisibleMap[ subIndex ] ) {
-                        seenRobber = true;
-                        *( mFamilySeenRobber.getElement( i ) ) = seenRobber;
-                        }
-                    }
-                if( !seenRobber ) {
-                    continue;
-                    }
+                // family member hasn't seen robber, not moving yet
+                // skip them
+                continue;
                 }
             
             if( pathLength == 1 || progress < pathLength - 1 ) {
@@ -812,6 +800,38 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                                 fullMapTilesVisible );
 
     delete [] fullMapTilesVisible;
+
+
+
+    // now trigger family members that may have seen robber given
+    // this new visibility map
+    if( ! areMobilesFrozen() ) {
+        int numPaths = mFamilyExitPaths.size();
+        for( int i=0; i<numPaths; i++ ) {
+            int progress = *( mFamilyExitPathProgress.getElement( i ) );
+        
+            GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+
+            char seenRobber = *( mFamilySeenRobber.getElement( i ) );
+            
+            if( !seenRobber ) {
+                
+                // check if seen this step
+                int status = *( mFamilyStatus.getElement( i ) );
+
+                if( status == 1 ) {
+                    int subIndex = fullToSub( posToIndex( path[progress] ) );
+                    
+                    if( subIndex != -1 && mTileVisibleMap[ subIndex ] ) {
+                        seenRobber = true;
+                        *( mFamilySeenRobber.getElement( i ) ) = seenRobber;
+                        }
+                    }
+                }
+            }
+        }
+
+    
     }
 
 
