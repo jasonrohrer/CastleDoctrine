@@ -391,12 +391,12 @@ void RobPickList::step() {
                             r.characterName = 
                                 trimName(
                                     replaceAll( parts[1], "_", " ", &found ),
-                                    lineWidthLeft - 0.125 );
+                                    lineWidthLeft - 0.375 );
                             
                             r.lastRobberName = 
                                 trimName (
                                     replaceAll( parts[2], "_", " ", &found ),
-                                    lineWidthLeft - 0.125 );
+                                    lineWidthLeft - 0.375 );
                             
                             if( strlen( parts[3] ) > 0 
                                 && parts[3][0] == 'b' ) {

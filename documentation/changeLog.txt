@@ -3,6 +3,10 @@ Version 21
 --Fixed inconsistency in family movement trigger when house view shifts as
   robber nears edge of screen (thanks Zed).
 
+--Fixed name trimming overhang glitch given new name spacing (due to bounty
+  icon in v19).
+
+
 
 
 
