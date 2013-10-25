@@ -238,6 +238,9 @@ brick   #   rotary_toggle_switch:2   =>  1
 
 crowbar # power_relay => 3
 crowbar # power_relay_inverted => 3
+crowbar # indicator_light => 3
+crowbar # indicator_light_non_conducting => 3
+crowbar # sticking_switch:2 => 3
 
 
 water # power_source => 2

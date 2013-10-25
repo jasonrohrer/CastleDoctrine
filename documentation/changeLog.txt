@@ -4,6 +4,8 @@ Version 22
   either being drugged or killed).  Now animal presense under a door causes a
   door to be open from the start.
 
+--Lights and sticking switches are now breakable with a crowbar.
+
 
 
 
