@@ -14,7 +14,20 @@ mobile   #   power_door:1  => 3
 noMobile #   power_door:3  => 1
 
 
+
 player   #   door_push   =>  2
+
+pitbull     #   door_push   =>  2
+chihuahua   #   door_push   =>  2
+cat         #   door_push   =>  2
+
+pitbull     #   power_door:1  =>  3
+chihuahua   #   power_door:1  =>  3
+cat         #   power_door:1  =>  3
+pitbull     #   power_door:2  =>  3
+chihuahua   #   power_door:2  =>  3
+cat         #   power_door:2  =>  3
+
 
 
 visible # pitbull:1 => 11
