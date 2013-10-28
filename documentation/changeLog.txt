@@ -4,7 +4,9 @@ Version 22
   either being drugged or killed).  Now animal presense under a door causes a
   door to be open from the start.
 
---Lights and sticking switches are now breakable with a crowbar.
+--Lights and sticking switches are now breakable with a crowbar, and lights are
+  now breakable with brick and club.  This makes crowbar consistently useful
+  for prying and hitting, but club and brick only useful for hitting.
 
 --Fixed bug in family jump-back when walkable house area is extremly tight
   (thanks Joshua Collins).
