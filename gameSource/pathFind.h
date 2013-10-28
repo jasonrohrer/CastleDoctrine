@@ -8,12 +8,13 @@ typedef struct GridPos {
 
 
 // returns true if path found
-// if outNumStepsToGoal = 0, start and goal equal, and outFullPath set to NULL
+// outFullPathLength is grid spots count in path (including start and goal).
+// if outFullPathLength = 0, start and goal equal, and outFullPath set to NULL
 // outFullPath destroyed by caller if not NULL
 // outFullPath contains full path including start and goal
 char pathFind( int inMapH, int inMapW,
                char *inBlockedMap, 
                GridPos inStart, GridPos inGoal, 
-               int *outNumStepsToGoal,
+               int *outFullPathLength,
                GridPos **outFullPath );
 

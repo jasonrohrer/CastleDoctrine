@@ -3693,18 +3693,18 @@ void HouseGridDisplay::checkExitPaths() {
             
             GridPos startPos = { i % mFullMapD, i / mFullMapD };
             
-            int numStepsToGoal;
+            int fullPathLength;
             GridPos *fullPath;
             
             char found = pathFind( mFullMapD, mFullMapD,
                                    blockedMap, 
                                    startPos, goalPos, 
-                                   &numStepsToGoal,
+                                   &fullPathLength,
                                    &fullPath );
             
-            if( found && numStepsToGoal != 0 ) {
+            if( found && fullPathLength != 0 ) {
                 mFamilyExitPaths.push_back( fullPath );
-                mFamilyExitPathLengths.push_back( numStepsToGoal );
+                mFamilyExitPathLengths.push_back( fullPathLength );
                 }
             else {
                 fullPath = new GridPos[1];

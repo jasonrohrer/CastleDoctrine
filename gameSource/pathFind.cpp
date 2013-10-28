@@ -173,14 +173,14 @@ static pathSearchRecord *pullSearchRecord( pathSearchQueue *inQueue,
 char  pathFind( int inMapH, int inMapW,
                 char *inBlockedMap, 
                 GridPos inStart, GridPos inGoal,
-                int *outNumStepsToGoal,
+                int *outFullPathLength,
                 GridPos **outFullPath ) {
 
     // watch for degen case where start and goal are equal
     if( equal( inStart, inGoal ) ) {
         
-        if( outNumStepsToGoal != NULL ) {
-            *outNumStepsToGoal = 0;
+        if( outFullPathLength != NULL ) {
+            *outFullPathLength = 0;
             }
         if( outFullPath != NULL ) {
             *outFullPath = NULL;
@@ -416,8 +416,8 @@ char  pathFind( int inMapH, int inMapW,
         }
 
 
-    if( outNumStepsToGoal != NULL ) {
-        *outNumStepsToGoal = finalPath.size();
+    if( outFullPathLength != NULL ) {
+        *outFullPathLength = finalPath.size();
         }
     if( outFullPath != NULL ) {
         *outFullPath = finalPathReversed.getElementArray();

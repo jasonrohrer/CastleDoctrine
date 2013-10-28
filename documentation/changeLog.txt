@@ -6,6 +6,9 @@ Version 22
 
 --Lights and sticking switches are now breakable with a crowbar.
 
+--Fixed bug in family jump-back when walkable house area is extremly tight
+  (thanks Joshua Collins).
+
 
 
 
@@ -73,7 +76,7 @@ Version 19   Live Server Fixes
 Version 19   2013-October-15
 
 --Fixed an obscure bug where the tool/tile grid-picker pages could get stuck in
-  a state where they would repeatedly kick you out of your house (thanks Josh
+  a state where they would repeatedly kick you out of your house (thanks Joshua
   Collins).
 
 --Added a bounty that builds up on a robber over time to be earned by whatever

@@ -1691,11 +1691,12 @@ void RobHouseGridDisplay::recomputeVisibilityFloat() {
 
 void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
     int numFamily = mFamilyObjects.size();
-    
+
+
+    // first, remove any living ones from house to make room
+    // for family jump-backs
     for( int i=0; i<numFamily; i++ ) {
         int status = *( mFamilyStatus.getElement( i ) );
-        
-        int objectID = *( mFamilyObjects.getElement( i ) );
         
         int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
 
@@ -1718,7 +1719,25 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
                 mHouseMapCellStates[ oldIndex ] = 1;
                 }
             // otherwise, left house
-            
+            }
+        }
+    
+
+    // now that they are all removed from house (or dead, and stuck)
+    // handle family jump-backs
+    for( int i=0; i<numFamily; i++ ) {
+        int status = *( mFamilyStatus.getElement( i ) );
+        
+        int objectID = *( mFamilyObjects.getElement( i ) );
+        
+        int pathLength = *( mFamilyExitPathLengths.getElement( i ) );
+
+        GridPos *path = *( mFamilyExitPaths.getElement( i ) );
+
+
+        if( status != 0 && pathLength > 1 ) {
+            // still alive
+    
             
             // start at their starting positions
             int pathSpot = 0;
