@@ -4184,7 +4184,8 @@ function cd_listHouses() {
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
     $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
-    $add_to_ignore_list = cd_requestFilter( "add_to_ignore_list", "/\d+/" );
+    $add_to_ignore_list = cd_requestFilter( "add_to_ignore_list",
+                                            "/[a-z_]+/i" );
     $clear_ignore_list = cd_requestFilter( "clear_ignore_list", "/[1]/", "0" );
 
     $searchClause = "";
@@ -4202,11 +4203,16 @@ function cd_listHouses() {
         // values in place if they are there
         // Otherwise, create an ignore with default
         // values (started, not forced)
-        $query = "INSERT IGNORE into $tableNamePrefix"."ignore_houses ".
-            "(user_id, house_user_id) ".
-            "VALUES( '$user_id', '$add_to_ignore_list' );";
+        $idToAdd = cd_mapNameToUserID( $add_to_ignore_list );
 
-        $result = cd_queryDatabase( $query );
+        if( $idToAdd != -1 ) {
+        
+            $query = "INSERT IGNORE into $tableNamePrefix"."ignore_houses ".
+                "(user_id, house_user_id) ".
+                "VALUES( '$user_id', '$idToAdd' );";
+
+            $result = cd_queryDatabase( $query );
+            }
         }
     
     if( $clear_ignore_list == "1" ) {
@@ -4371,6 +4377,24 @@ function cd_getBlueprint() {
 
 
 
+// returns -1 if not found
+function cd_mapNameToUserID( $inCharacterName ) {
+    global $tableNamePrefix;
+    
+    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+        "WHERE character_name = '$inCharacterName';";
+
+    $result = cd_queryDatabase( $query );
+
+    $user_id = -1;
+    
+    if( mysql_numrows( $result ) != 0 ) {        
+        $user_id = mysql_result( $result, 0, "user_id" );    
+        }
+    return $user_id;
+    }
+
+
 
 function cd_startRobHouse() {
     global $tableNamePrefix;
@@ -4395,17 +4419,9 @@ function cd_startRobHouse() {
     // (so they can't track identities across lives).
     
     // map the character name that specifies the house into a user_id
-    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
-        "WHERE character_name = '$to_rob_character_name';";
+    $to_rob_user_id = cd_mapNameToUserID( $to_rob_character_name );
 
-    $result = cd_queryDatabase( $query );
-
-    $to_rob_user_id = -1;
-    
-    if( mysql_numrows( $result ) != 0 ) {        
-        $to_rob_user_id = mysql_result( $result, 0, "user_id" );    
-        }
-    else {
+    if( $to_rob_user_id == -1 ) {
         // requested character name gone, assume died and house reclaimed
         echo "RECLAIMED";
         return;

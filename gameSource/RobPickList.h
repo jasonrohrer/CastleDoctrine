@@ -129,7 +129,7 @@ class RobPickList : public PageComponent, public ActionListener,
         char *mAppliedSearchWords;
 
         char mIgnoreSet;
-        int mIgnoreTarget;
+        char *mIgnoreTarget;
 
         char mAnyPossiblyIgnored;
         

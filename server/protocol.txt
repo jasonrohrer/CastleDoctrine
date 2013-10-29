@@ -286,7 +286,7 @@ server.php?action=list_houses&user_id=[id number]
                              &skip=[number]
                              &limit=[number]
                              &name_search=[any+number+of+words]
-                             &add_to_ignore_list=[id number (OPTIONAL)]
+                             &add_to_ignore_list=[character_name (OPTIONAL)]
                              &clear_ignore_list=[1 to clear (OPTIONAL)]
 Returns:
 home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
@@ -314,8 +314,8 @@ Returns at most [limit] houses, skipping the first [skip] houses.
 House owned by user_id is skipped.
 If last_robber is user_id, last_robber_name is set to "You".
 
-add_to_ignore_list is an optional parameter that includes one ID to add
-to the ignored-houses list for this user.
+add_to_ignore_list is an optional parameter that includes one character name 
+to add to the ignored-houses list for this user.
 
 clear_ignore_list, if present and set to 1, clears the ignored-house list
 for this user.

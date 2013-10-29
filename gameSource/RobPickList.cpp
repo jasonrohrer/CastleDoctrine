@@ -62,7 +62,7 @@ RobPickList::RobPickList( double inX, double inY,
                                   translate( "clearIgnoreList" ) ),
           mAppliedSearchWords( stringDuplicate( "" ) ),
           mIgnoreSet( false ),
-          mIgnoreTarget( 0 ),
+          mIgnoreTarget( NULL ),
           mAnyPossiblyIgnored( true ),
           mClearIgnoreListSet( false ){
 
@@ -103,6 +103,10 @@ RobPickList::~RobPickList() {
     delete [] mAppliedSearchWords;
 
     freeSprite( mSkullSprite );
+
+    if( mIgnoreTarget != NULL ) {
+        delete [] mIgnoreTarget;
+        }
     }
 
 
@@ -135,7 +139,11 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         }
     else if( inTarget == &mIgnoreButton ) {
         mIgnoreSet = true;
-        mIgnoreTarget = getSelectedHouse()->uniqueID;
+        if( mIgnoreTarget != NULL ) {
+            delete [] mIgnoreTarget;
+            }
+        mIgnoreTarget = 
+            stringDuplicate( getSelectedHouse()->rawCharacterName );
         
         mAnyPossiblyIgnored = true;
         
@@ -198,7 +206,7 @@ void RobPickList::refreshList( char inPreserveSearch,
     char *ignoreParameter;
     
     if( mIgnoreSet ) {
-        ignoreParameter = autoSprintf( "&add_to_ignore_list=%d",
+        ignoreParameter = autoSprintf( "&add_to_ignore_list=%s",
                                        mIgnoreTarget );
         mIgnoreSet = false;
         }
