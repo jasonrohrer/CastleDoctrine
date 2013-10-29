@@ -911,11 +911,18 @@ function cd_setupDatabase() {
 
         // This maps a user ID to another user ID, where the second
         // ID specifies a house that the first user is ignoring.
+        // Forced ignore status cannot be cleared by user and survives
+        // if the target house changes or if the owner of the target house
+        // starts a new life (ignore status carries over to their new life,
+        // until forced_end_time is reached).
         $query =
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL," .
-            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
+            "PRIMARY KEY( user_id, house_user_id )," .
+            "started TINYINT NOT NULL DEFAULT 1,".
+            "forced TINYINT NOT NULL DEFAULT 0,".
+            "forced_start_time DATETIME NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -1425,7 +1432,7 @@ function cd_clearLog() {
 // check if we should flush stale checkouts from the database
 // do this once every 2 minutes
 function cd_checkForFlush() {
-    global $tableNamePrefix, $chillTimeout;
+    global $tableNamePrefix, $chillTimeout, $forcedIgnoreTimeout;
 
     $tableName = "$tableNamePrefix"."server_globals";
     
@@ -1849,6 +1856,39 @@ function cd_checkForFlush() {
             cd_log( "After flush, $count house chills remain." );
             }
 
+
+
+
+        // check for stale forced ignores
+        $query = "DELETE ".
+            "FROM $tableNamePrefix"."ignore_houses ".
+            "WHERE  forced = 1 and started = 1 and forced_start_time < ".
+            "       SUBTIME( CURRENT_TIMESTAMP, '$forcedIgnoreTimeout' );";
+
+        $result = cd_queryDatabase( $query );
+
+        $staleForcedIgnoresRemoved = mysql_affected_rows();
+
+
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+
+        
+        cd_log( "Flush removed $staleForcedIgnoresRemoved stale ".
+                "forced house ignores." );
+
+        if( $enableLog ) {
+            // count remaining forced ignores for log
+            $query =
+                "SELECT COUNT(*) FROM $tableNamePrefix"."ignore_houses;";
+
+            $result = cd_queryDatabase( $query );
+
+            $count = mysql_result( $result, 0, 0 );
+
+            cd_log( "After flush, $count house forced ignores remain." );
+            }
 
         
 
@@ -3999,7 +4039,7 @@ function cd_endEditHouse() {
     // house changed
     // clear ignore status
     $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-        "WHERE house_user_id = $user_id;";
+        "WHERE house_user_id = $user_id AND forced = 0;";
     cd_queryDatabase( $query );
 
     
@@ -4158,7 +4198,11 @@ function cd_listHouses() {
     
 
     if( $add_to_ignore_list != "" ) {
-        $query = "REPLACE into $tableNamePrefix"."ignore_houses ".
+        // leave existing "forced" and "started" and "forced_end_time"
+        // values in place if they are there
+        // Otherwise, create an ignore with default
+        // values (started, not forced)
+        $query = "INSERT IGNORE into $tableNamePrefix"."ignore_houses ".
             "(user_id, house_user_id) ".
             "VALUES( '$user_id', '$add_to_ignore_list' );";
 
@@ -4167,7 +4211,7 @@ function cd_listHouses() {
     
     if( $clear_ignore_list == "1" ) {
         $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-            "WHERE user_id = '$user_id';";
+            "WHERE user_id = '$user_id' AND forced = 0;";
         $result = cd_queryDatabase( $query );
         }
     
@@ -4206,7 +4250,7 @@ function cd_listHouses() {
         "$searchClause ".
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
-        "  WHERE user_id = $user_id ) ".
+        "  WHERE user_id = $user_id AND started = 1 ) ".
         "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $query_limit;";
 
@@ -5154,7 +5198,7 @@ function cd_endRobHouse() {
         // house changed
         // clear ignore status
         $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-            "WHERE house_user_id = $last_robbed_owner_id;";
+            "WHERE house_user_id = $last_robbed_owner_id AND forced = 0;";
         $pendingDatabaseUpdateQueries[] = $query;
 
         
@@ -5224,7 +5268,15 @@ function cd_endRobHouse() {
             $house_vault_contents = "#";
             $house_gallery_contents = "#";
             }
-        
+
+
+        // a forced ignore waiting to start (if the owner of this house
+        // dies)
+        $query = "REPLACE INTO $tableNamePrefix"."ignore_houses ".
+            "( user_id, house_user_id, started, forced ) ".
+            "VALUES( '$user_id', '$victim_id', 0, 1 );";
+
+        $pendingDatabaseUpdateQueries[] = $query;
         }
 
 
@@ -5369,6 +5421,12 @@ function cd_endRobHouse() {
             " house_user_id = $victim_id;";
         $pendingDatabaseUpdateQueries[] = $query;
 
+
+        // trigger forced ignore starting NOW (because owner has now died)
+        $query = "UPDATE $tableNamePrefix"."ignore_houses ".
+            "SET started = 1, forced_start_time = CURRENT_TIMESTAMP ".
+            "WHERE house_user_id = $victim_id AND forced = 1 AND started = 0;";
+        $pendingDatabaseUpdateQueries[] = $query;
         
         // return any remaining gallery stuff to auction house
         // (this will be an empty return if robbery successful)
@@ -6799,11 +6857,21 @@ function cd_newHouseForUser( $user_id ) {
         }
 
     // house changed (destroyed!)
-    // clear ignore status
+    
+    // clear ignore status on user-chosen ignores
     $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-        "WHERE house_user_id = $user_id;";
+        "WHERE house_user_id = $user_id AND forced = 0;";
     cd_queryDatabase( $query );
 
+    
+    // trigger start of ignore status for any that are forced and waiting
+    // to start (death of target house owner starts the ignore status)
+    $query = "UPDATE $tableNamePrefix"."ignore_houses ".
+        "SET started = 1, forced_start_time = CURRENT_TIMESTAMP ".
+        "WHERE house_user_id = $user_id AND forced = 1 AND started = 0;";
+    cd_queryDatabase( $query );
+
+    
     // clear chills
     $query = "DELETE FROM $tableNamePrefix"."chilling_houses ".
         "WHERE house_user_id = $user_id;";

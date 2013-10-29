@@ -453,6 +453,12 @@ $vaultReachLimit = 4;
 // experimenting with 1 hour
 $chillTimeout = "0 1:00:0.000";
 
+// how long a forced ignore lasts after you rob a given user and that
+// user dies (makes two-account exploits much slower, since you can't just
+// respawn a second account repeatedly and re-rob it).
+// experimenting with 1 hour
+$forcedIgnoreTimeout = "0 1:00:0.000";
+
 
 
 // server shutdown mode
