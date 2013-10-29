@@ -922,6 +922,7 @@ function cd_setupDatabase() {
             "PRIMARY KEY( user_id, house_user_id )," .
             "started TINYINT NOT NULL DEFAULT 1,".
             "forced TINYINT NOT NULL DEFAULT 0,".
+            "forced_pending TINYINT NOT NULL DEFAULT 0,".
             "forced_start_time DATETIME NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -4039,7 +4040,14 @@ function cd_endEditHouse() {
     // house changed
     // clear ignore status
     $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-        "WHERE house_user_id = $user_id AND forced = 0;";
+        "WHERE house_user_id = $user_id ".
+        "AND forced = 0 AND forced_pending = 0;";
+    cd_queryDatabase( $query );
+
+    $query = "UPDATE $tableNamePrefix"."ignore_houses ".
+        "SET started = 0 ".
+        "WHERE house_user_id = $user_id ".
+        "AND forced = 0 AND forced_pending = 1;";
     cd_queryDatabase( $query );
 
     
@@ -4199,7 +4207,7 @@ function cd_listHouses() {
     
 
     if( $add_to_ignore_list != "" ) {
-        // leave existing "forced" and "started" and "forced_end_time"
+        // leave existing "forced" and "forced_pending" and "forced_end_time"
         // values in place if they are there
         // Otherwise, create an ignore with default
         // values (started, not forced)
@@ -4207,17 +4215,28 @@ function cd_listHouses() {
 
         if( $idToAdd != -1 ) {
         
-            $query = "INSERT IGNORE into $tableNamePrefix"."ignore_houses ".
+            $query = "INSERT into $tableNamePrefix"."ignore_houses ".
                 "(user_id, house_user_id) ".
-                "VALUES( '$user_id', '$idToAdd' );";
+                "VALUES( '$user_id', '$idToAdd' ) ".
+                "ON DUPLICATE KEY ".
+                "UPDATE started = 1;";
 
             $result = cd_queryDatabase( $query );
             }
         }
     
     if( $clear_ignore_list == "1" ) {
+        // first, delete any that aren't forced or forced pending
         $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-            "WHERE user_id = '$user_id' AND forced = 0;";
+            "WHERE user_id = '$user_id' AND ".
+            "forced = 0 AND forced_pending = 0;";
+        $result = cd_queryDatabase( $query );
+
+        // then stop any that are forced_pending but have been manually
+        // started (leave them forced_pending)
+        $query = "UPDATE $tableNamePrefix"."ignore_houses ".
+            "SET started = 0 WHERE user_id = '$user_id' AND ".
+            "forced = 0 AND forced_pending = 1;";
         $result = cd_queryDatabase( $query );
         }
     
@@ -5214,7 +5233,13 @@ function cd_endRobHouse() {
         // house changed
         // clear ignore status
         $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-            "WHERE house_user_id = $last_robbed_owner_id AND forced = 0;";
+            "WHERE house_user_id = $last_robbed_owner_id ".
+            "AND forced = 0 AND forced_pending = 0;";
+        $pendingDatabaseUpdateQueries[] = $query;
+
+        $query = "UPDATE $tableNamePrefix"."ignore_houses ".
+            "SET started = 0 WHERE house_user_id = $last_robbed_owner_id ".
+            "AND forced = 0 AND forced_pending = 1;";
         $pendingDatabaseUpdateQueries[] = $query;
 
         
@@ -5288,9 +5313,10 @@ function cd_endRobHouse() {
 
         // a forced ignore waiting to start (if the owner of this house
         // dies)
-        $query = "REPLACE INTO $tableNamePrefix"."ignore_houses ".
-            "( user_id, house_user_id, started, forced ) ".
-            "VALUES( '$user_id', '$victim_id', 0, 1 );";
+        $query = "INSERT INTO $tableNamePrefix"."ignore_houses ".
+            "( user_id, house_user_id, started, forced, forced_pending ) ".
+            "VALUES( '$user_id', '$victim_id', 0, 0, 1 ) ".
+            "ON DUPLICATE KEY UPDATE forced_pending = 1;";
 
         $pendingDatabaseUpdateQueries[] = $query;
         }
@@ -5440,8 +5466,10 @@ function cd_endRobHouse() {
 
         // trigger forced ignore starting NOW (because owner has now died)
         $query = "UPDATE $tableNamePrefix"."ignore_houses ".
-            "SET started = 1, forced_start_time = CURRENT_TIMESTAMP ".
-            "WHERE house_user_id = $victim_id AND forced = 1 AND started = 0;";
+            "SET started = 1, forced = 1, ".
+            "    forced_start_time = CURRENT_TIMESTAMP ".
+            "WHERE house_user_id = $victim_id ".
+            "AND forced = 0 AND forced_pending = 1;";
         $pendingDatabaseUpdateQueries[] = $query;
         
         // return any remaining gallery stuff to auction house
@@ -6876,15 +6904,17 @@ function cd_newHouseForUser( $user_id ) {
     
     // clear ignore status on user-chosen ignores
     $query = "DELETE FROM $tableNamePrefix"."ignore_houses ".
-        "WHERE house_user_id = $user_id AND forced = 0;";
+        "WHERE house_user_id = $user_id ".
+        "AND forced = 0 AND forced_pending = 0;";
     cd_queryDatabase( $query );
 
     
     // trigger start of ignore status for any that are forced and waiting
     // to start (death of target house owner starts the ignore status)
     $query = "UPDATE $tableNamePrefix"."ignore_houses ".
-        "SET started = 1, forced_start_time = CURRENT_TIMESTAMP ".
-        "WHERE house_user_id = $user_id AND forced = 1 AND started = 0;";
+        "SET started = 1, forced = 1, forced_start_time = CURRENT_TIMESTAMP ".
+        "WHERE house_user_id = $user_id ".
+        "AND forced = 0 AND forced_pending = 1;";
     cd_queryDatabase( $query );
 
     
