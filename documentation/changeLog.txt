@@ -23,6 +23,9 @@ Version 22
   house delay-before-listing period (now a fresh house is listed as soon as the
   owner steps out the door).
 
+--Back to only dumping remaining tools in a house when you die there (to make
+  tool passing between accounts more difficult).
+
 
 
 
