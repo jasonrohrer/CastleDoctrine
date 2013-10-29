@@ -16,6 +16,12 @@ Version 22
 
 --Added a warning about idle timeout death during robbery (thanks Awesomebill).
 
+--Added a forced-ignore timer that is triggered after you successfully rob a
+  house and the owner of that house dies (blocking you from seeing their
+  next-life houses until the timer expires).  This slows repeated farming
+  of a second account for starting money and eliminates the need for a fresh
+  house delay-before-listing period (now a fresh house is listed as soon as the
+  owner steps out the door).
 
 
 
