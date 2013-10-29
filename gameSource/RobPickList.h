@@ -14,7 +14,7 @@
 
 
 typedef struct HouseRecord {
-        // might be userID (in case of houses-to-rob list)
+        // might be homeID (in case of houses-to-rob list)
         //       or logID (in the case of a list of past robberies to replay)
         int uniqueID;
         // full name with "_" for spaces as sent by server

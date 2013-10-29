@@ -4239,7 +4239,12 @@ function cd_listHouses() {
             $chill = 0;
             }
 
-        echo "$house_user_id#$character_name#$robber_name".
+        // leave a dummy ID in place of home_id for now
+        // let house be uniquely identified by character name only
+        // (and keep user_id of house hidden from players)
+        $dummy_home_id = 1;
+        
+        echo "$dummy_home_id#$character_name#$robber_name".
             "#$value_estimate#$rob_attempts#$robber_deaths#$chill\n";
         }
     
@@ -4332,11 +4337,36 @@ function cd_startRobHouse() {
 
     $user_id = cd_getUserID();
 
-    $to_rob_user_id = cd_requestFilter( "to_rob_user_id", "/\d+/" );
+    $to_rob_home_id = cd_requestFilter( "to_rob_home_id", "/\d+/" );
     $to_rob_character_name =
         cd_requestFilter( "to_rob_character_name", "/[A-Z_]+/i" );
 
     $map_encryption_key = cd_requestFilter( "map_encryption_key", "/\S+/" );
+
+
+    // ignore home_id as an unused parameter for now
+    // base house identification totally on character name (which is unique)
+
+    // we keep the user_id associated with a house hidden from the players
+    // (so they can't track identities across lives).
+    
+    // map the character name that specifies the house into a user_id
+    $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+        "WHERE character_name = '$to_rob_character_name';";
+
+    $result = cd_queryDatabase( $query );
+
+    $to_rob_user_id = -1;
+    
+    if( mysql_numrows( $result ) != 0 ) {        
+        $to_rob_user_id = mysql_result( $result, 0, "user_id" );    
+        }
+    else {
+        // requested character name gone, assume died and house reclaimed
+        echo "RECLAIMED";
+        return;
+        }
+    
     
 
     // Don't count existing robbery of to_rob_user_id as stale,

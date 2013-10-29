@@ -289,10 +289,10 @@ server.php?action=list_houses&user_id=[id number]
                              &add_to_ignore_list=[id number (OPTIONAL)]
                              &clear_ignore_list=[1 to clear (OPTIONAL)]
 Returns:
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
-user_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
+home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 ....
 more_pages
 OK
@@ -319,6 +319,11 @@ to the ignored-houses list for this user.
 
 clear_ignore_list, if present and set to 1, clears the ignored-house list
 for this user.
+
+
+home_id is an number that may uniquely identify each house, or it may be a 
+non-unique placeholder number (may be unused by the protocol, but may be used
+in the future).
 
 
 
@@ -364,7 +369,7 @@ houseMap = ASCII string representing the house layout
 server.php?action=start_rob_house&user_id=[id number]
                                  &sequence_number=[number]
                                  &ticket_hmac=[hmac-sha1, hex-encoded]
-                                 &to_rob_user_id=[id number]
+                                 &to_rob_home_id=[id number]
 								 &to_rob_character_name=[name]
                                  &map_encryption_key=[ASCII key]
 Returns:

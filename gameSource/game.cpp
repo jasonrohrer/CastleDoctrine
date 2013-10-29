@@ -1568,7 +1568,7 @@ void drawFrame( char inUpdate ) {
                     blockQuitting( true );
                     currentGamePage = robCheckoutHousePage;
                     
-                    robCheckoutHousePage->setToRobUserID( r->uniqueID );
+                    robCheckoutHousePage->setToRobHomeID( r->uniqueID );
                     robCheckoutHousePage->setToRobCharacterName( 
                         r->rawCharacterName );
                     

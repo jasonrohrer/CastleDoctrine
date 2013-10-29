@@ -11,6 +11,9 @@ Version 22
 --Fixed bug in family jump-back when walkable house area is extremly tight
   (thanks Joshua Collins).
 
+--Changed protocol to hide user_id of other player's houses (so that player
+  identity cannot be tracked across multiple lives).
+
 
 
 

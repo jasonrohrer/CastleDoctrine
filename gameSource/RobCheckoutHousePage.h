@@ -16,7 +16,7 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         virtual ~RobCheckoutHousePage();
 
         // must be called before makeActive
-        void setToRobUserID( int inID );
+        void setToRobHomeID( int inID );
         void setToRobCharacterName( const char *inName );
 
         virtual char getReturnToMenu();
@@ -72,7 +72,7 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
 
         char mReturnToMenu;
         
-        int mToRobUserID;
+        int mToRobHomeID;
         char *mToRobCharacterName;
     };
 

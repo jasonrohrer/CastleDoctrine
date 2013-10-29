@@ -102,8 +102,8 @@ RobCheckoutHousePage::~RobCheckoutHousePage() {
 
 
 
-void RobCheckoutHousePage::setToRobUserID( int inID ) {
-    mToRobUserID = inID;
+void RobCheckoutHousePage::setToRobHomeID( int inID ) {
+    mToRobHomeID = inID;
     }
 
 
@@ -366,9 +366,9 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
     
 
     char *fullRequestURL = autoSprintf( 
-        "%s?action=start_rob_house&user_id=%d&to_rob_user_id=%d"
+        "%s?action=start_rob_house&user_id=%d&to_rob_home_id=%d"
         "&to_rob_character_name=%s&map_encryption_key=%s&%s",
-        serverURL, userID, mToRobUserID, mToRobCharacterName, 
+        serverURL, userID, mToRobHomeID, mToRobCharacterName, 
         mMapEncryptionKey, ticketHash );
     delete [] ticketHash;
     
