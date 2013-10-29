@@ -202,7 +202,7 @@ startTileDescription "Welcome Mat"
 wifeHolding "%s (carrying $%d)"
 
 
-robDescription "Robbing %s house:"
+robDescription "Robbing %s house:##(Five stationary minutes is deadly...)"
 
 robBackpack "Backpack:"
 

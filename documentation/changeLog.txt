@@ -14,6 +14,9 @@ Version 22
 --Changed protocol to hide user_id of other player's houses (so that player
   identity cannot be tracked across multiple lives).
 
+--Added a warning about idle timeout death during robbery (thanks Awesomebill).
+
+
 
 
 
