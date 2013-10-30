@@ -26,6 +26,12 @@ Version 22
 --Back to only dumping remaining tools in a house when you die there (to make
   tool passing between accounts more difficult).
 
+--Shortened reach of gun from 16 down to 2 and thrown items from 5 down to 3.
+  Now all items have reach of 1, 2, or 3.  This increases the tactical
+  importance of relative positions (you can no longer just stand in the middle
+  of the screen and shoot everything that you can see, or shoot across wide
+  pits, etc.)
+
 
 
 
