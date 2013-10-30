@@ -313,6 +313,7 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."houses" ) &&
         cd_doesTableExist( $tableNamePrefix."ignore_houses" ) &&
         cd_doesTableExist( $tableNamePrefix."chilling_houses" ) &&
+        cd_doesTableExist( $tableNamePrefix."vault_been_reached" ) &&
         cd_doesTableExist( $tableNamePrefix."houses_owner_died" ) &&
         cd_doesTableExist( $tableNamePrefix."robbery_logs" ) &&
         cd_doesTableExist( $tableNamePrefix."scouting_counts" ) &&
@@ -950,6 +951,30 @@ function cd_setupDatabase() {
             // is the chill in effect yet?  If so, 1, else 0
             // chill starts coming into effect when user dies somewhere
             "chill TINYINT NOT NULL ) ENGINE = INNODB;";
+
+        $result = cd_queryDatabase( $query );
+
+        echo "<B>$tableName</B> table created<BR>";
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
+
+
+    $tableName = $tableNamePrefix . "vault_been_reached";
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // an entry here for each player that has reached a given player's
+        // vault (in their current lives only)
+        // Used for computing vault-reach bounties (bounty only goes up
+        // the first time a player reaches a given vault to prevent bounty
+        // inflation).
+        $query =
+            "CREATE TABLE $tableName(" .
+            "user_id INT NOT NULL," .
+            "house_user_id INT NOT NULL, " .
+            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -4629,6 +4654,17 @@ function cd_endRobHouse() {
     // WHERE clause preventing entire table from locking
     $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
 
+
+
+    // has this user reached this victim's vault before?
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."vault_been_reached ".
+        "WHERE user_id = '$user_id' ".
+        "AND house_user_id = '$last_robbed_owner_id';";
+
+    $result = cd_queryDatabase( $query );
+    $reachedVaultBefore = mysql_result( $result, 0, 0 );
+
+
     
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -5075,8 +5111,16 @@ function cd_endRobHouse() {
 
     global $theftBountyIncrement, $murderBountyIncrement;
     
-    if( $success == 1 ) {
+    if( $success == 1 && ! $reachedVaultBefore ) {
+        // only gain theft bounty on FIRST vault reach in a given house
         $bountyIncrement += $theftBountyIncrement;
+
+        // flag that we've reached the vault the first time now and earned
+        // that first-time vault bounty
+        $query = $query = "INSERT INTO $tableNamePrefix"."vault_been_reached ".
+            "( user_id, house_user_id ) ".
+            "VALUES( '$user_id', '$last_robbed_owner_id' );"; 
+        $pendingDatabaseUpdateQueries[] = $query;
         }
     
     if( $success != 0 && $family_killed_count > 0 ) {
@@ -5460,6 +5504,11 @@ function cd_endRobHouse() {
             " house_user_id = $victim_id;";
         $pendingDatabaseUpdateQueries[] = $query;
 
+        // clear vault-reach flag for every robber
+        $query = "DELETE FROM $tableNamePrefix"."vault_been_reached WHERE ".
+            " house_user_id = $victim_id;";
+        $pendingDatabaseUpdateQueries[] = $query;
+        
 
         // trigger forced ignore starting NOW (because owner has now died)
         $query = "UPDATE $tableNamePrefix"."ignore_houses ".
@@ -6912,8 +6961,21 @@ function cd_newHouseForUser( $user_id ) {
         $query = "DELETE FROM $tableNamePrefix"."scouting_counts WHERE ".
             " house_user_id = $user_id;";
         cd_queryDatabase( $query );
+
+        // also vault reach flags for robbers of this house
+        $query = "DELETE FROM $tableNamePrefix"."vault_been_reached WHERE ".
+            " house_user_id = $user_id;";
+        cd_queryDatabase( $query );
         }
 
+    
+    // also vault reach flags for this player inside any other house
+    // (new life, new chance to accumulate vault-reach bounties)
+    $query = "DELETE FROM $tableNamePrefix"."vault_been_reached WHERE ".
+            " user_id = $user_id;";
+    cd_queryDatabase( $query );
+    
+    
     // house changed (destroyed!)
     
     // clear ignore status on user-chosen ignores

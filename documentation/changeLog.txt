@@ -35,6 +35,10 @@ Version 22
 --Added chill if you reach vault with no tools and then die later (chills used
   to be triggered only by bringing tools into a house).
 
+--Changed so that you only get a bounty increase the first time you reach a
+  given house's vault (to prevent bounty inflation through multiple vault
+  reaches in the same push-over house that is re-edited repeatedly to put half
+  of the wife's money back in the vault).
 
 
 
