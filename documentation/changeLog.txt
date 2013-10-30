@@ -32,6 +32,10 @@ Version 22
   of the screen and shoot everything that you can see, or shoot across wide
   pits, etc.)
 
+--Added chill if you reach vault with no tools and then die later (chills used
+  to be triggered only by bringing tools into a house).
+
+
 
 
 

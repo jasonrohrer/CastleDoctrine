@@ -5578,6 +5578,23 @@ function cd_endRobHouse() {
             cd_queryDatabase( $query );
             }
         }
+    else if( ! $ownerDied &&
+             $success == 1 && $old_backpack_contents == "#" ) {
+        // reached vault with no tools, so no potential chill started
+        // (potential chill only started in startRobHouse if carrying tools)
+
+        // So, count this vault reach as "touching the house" and leaving
+        // a chill too.
+        // a potential chill, if user dies in this house or some other house
+        // soon.  Start timer now.
+        $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+            "SET user_id = '$user_id', ".
+            "house_user_id = '$last_robbed_owner_id', ".
+            "chill_start_time = CURRENT_TIMESTAMP, chill = 0;";
+        
+        cd_queryDatabase( $query );
+        }
+    
     
 
     
