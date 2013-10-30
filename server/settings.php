@@ -460,6 +460,11 @@ $chillTimeout = "0 1:00:0.000";
 $forcedIgnoreTimeout = "0 1:00:0.000";
 
 
+// how long before another bounty can be added to a player for reaching
+// the same house's vault again?
+$vaultBountyTimeout = "0 1:00:0.000";
+
+
 
 // server shutdown mode
 // causes server to respond with SHUTDOWN to most requests

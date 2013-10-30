@@ -968,13 +968,20 @@ function cd_setupDatabase() {
         // an entry here for each player that has reached a given player's
         // vault (in their current lives only)
         // Used for computing vault-reach bounties (bounty only goes up
-        // the first time a player reaches a given vault to prevent bounty
-        // inflation).
+        // the first time a player reaches a given vault in a given time
+        // period to prevent bounty inflation).
+        //
+        // last_bounty_time tracks the last time a bounty was paid
+        // for a vault reach.
+        // We can start paying bounties again for vault reach after a certain
+        // amount of time has passed (thus blocking the bounty-inflation
+        // exploit while still increasing bounties for most real theft).
         $query =
             "CREATE TABLE $tableName(" .
             "user_id INT NOT NULL," .
             "house_user_id INT NOT NULL, " .
-            "PRIMARY KEY( user_id, house_user_id ) ) ENGINE = INNODB;";
+            "PRIMARY KEY( user_id, house_user_id ), ".
+            "last_bounty_time DATETIME NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
 
@@ -4656,13 +4663,16 @@ function cd_endRobHouse() {
 
 
 
-    // has this user reached this victim's vault before?
+    // has this user reached this victim's vault recently?
+    global $vaultBountyTimeout;
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."vault_been_reached ".
         "WHERE user_id = '$user_id' ".
-        "AND house_user_id = '$last_robbed_owner_id';";
+        "AND house_user_id = '$last_robbed_owner_id' ".
+        "AND last_bounty_time > ".
+        "    SUBTIME( CURRENT_TIMESTAMP, '$vaultBountyTimeout' );";
 
     $result = cd_queryDatabase( $query );
-    $reachedVaultBefore = mysql_result( $result, 0, 0 );
+    $reachedVaultRecently = mysql_result( $result, 0, 0 );
 
 
     
@@ -5111,15 +5121,18 @@ function cd_endRobHouse() {
 
     global $theftBountyIncrement, $murderBountyIncrement;
     
-    if( $success == 1 && ! $reachedVaultBefore ) {
+    if( $success == 1 && ! $reachedVaultRecently ) {
         // only gain theft bounty on FIRST vault reach in a given house
         $bountyIncrement += $theftBountyIncrement;
 
-        // flag that we've reached the vault the first time now and earned
-        // that first-time vault bounty
-        $query = $query = "INSERT INTO $tableNamePrefix"."vault_been_reached ".
-            "( user_id, house_user_id ) ".
-            "VALUES( '$user_id', '$last_robbed_owner_id' );"; 
+        // flag that we've reached the vault and paid a bounty again,
+        // which will block subsequent bounty increases for reaching this
+        // same vault until a timeout passes.
+        $query = $query = "REPLACE INTO ".
+            "$tableNamePrefix"."vault_been_reached ".
+            "( user_id, house_user_id, last_bounty_time ) ".
+            "VALUES( '$user_id', '$last_robbed_owner_id', ".
+            "        CURRENT_TIMESTAMP );"; 
         $pendingDatabaseUpdateQueries[] = $query;
         }
     

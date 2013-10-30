@@ -36,9 +36,10 @@ Version 22
   to be triggered only by bringing tools into a house).
 
 --Changed so that you only get a bounty increase the first time you reach a
-  given house's vault (to prevent bounty inflation through multiple vault
-  reaches in the same push-over house that is re-edited repeatedly to put half
-  of the wife's money back in the vault).
+  given house's vault in a given time period (to prevent bounty inflation
+  through multiple, quick-succession  vault reaches in the same push-over house
+  that is re-edited repeatedly to put half of the wife's money back in the 
+  vault).
 
 
 
