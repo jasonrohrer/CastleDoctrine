@@ -1,4 +1,4 @@
-Version 22
+Version 22     2013-October-31
 
 --Fixed closed doors blocking visibility of an animal that starts there (after
   either being drugged or killed).  Now animal presense under a door causes a
