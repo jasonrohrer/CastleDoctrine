@@ -1,4 +1,4 @@
-Version 23
+Version 23     2013-November-1
 
 --Fixed lingering, unnoticed bug in power propagation when a power source is
   placed right above a voltaged-triggered switch (thanks Largestherb).
