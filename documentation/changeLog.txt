@@ -3,6 +3,9 @@ Version 23
 --Fixed lingering, unnoticed bug in power propagation when a power source is
   placed right above a voltaged-triggered switch (thanks Largestherb).
 
+--Increased gun reach from 2 to 3 to prevent unkillable wife configuration
+  (thanks Joshua Collins).
+
 
 
 
