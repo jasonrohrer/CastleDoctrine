@@ -1,3 +1,12 @@
+Version 23
+
+--Fixed lingering, unnoticed bug in power propagation when a power source is
+  placed right above a voltaged-triggered switch (thanks Largestherb).
+
+
+
+
+
 Version 22     2013-October-31
 
 --Fixed closed doors blocking visibility of an animal that starts there (after

@@ -456,6 +456,8 @@ static char *propagatePower(  int *inMapIDs,
             isMobilePropertySet( inMapMobileIDs[i], inMapMobileStates[i], 
                              powered ) ) {
             powerMap[i] = true;
+            leftRightPowerMap[i] = true;
+            topBottomPowerMap[i] = true;
             change = true;
             }
         }
