@@ -1,3 +1,11 @@
+Version 24
+
+--Fixed an obscure bug in frame timing caused by a sudden daylight savings time
+  update while the game is running (next frame tries to wait an hour before
+   being drawn).
+
+
+
 Version 23     2013-November-1
 
 --Fixed lingering, unnoticed bug in power propagation when a power source is
