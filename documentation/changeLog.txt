@@ -2,7 +2,7 @@ Version 24
 
 --Fixed an obscure bug in frame timing caused by a sudden daylight savings time
   update while the game is running (next frame tries to wait an hour before
-   being drawn).
+  being drawn).
 
 
 
@@ -792,7 +792,7 @@ Version 5_serverFixes   2013-May-1
 --Fixed server-side blocking of tool use in self-test move list.
 
 --Fixed bug in tool targets lingering in next robbery if tool use canceled by 
-  walking out the door or current robbery.
+  walking out the door of current robbery.
 
 --Fixed bug in replay with visibility shroud off that showed extra tool 
   targets.
