@@ -15,6 +15,15 @@ Version 24
 
 
 
+Version 23   Live Server Fixes
+
+--Changed server to forbid house check-in after edit with illegal family
+  configuration (multiple wives, missing family members, etc.).
+
+
+
+
+
 Version 23     2013-November-1
 
 --Fixed lingering, unnoticed bug in power propagation when a power source is

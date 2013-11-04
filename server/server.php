@@ -3033,6 +3033,48 @@ function cd_countMobiles( $inHouseMapArray ) {
 
 
 
+// returns an array of two counts for each family member type:  unstuck [0],
+// and stuck [1]
+// wife, son, daughter are 0, 1, and 2
+// result[1][0] is count of unstuck sons
+function cd_countFamily( $inHouseMapArray ) {
+    global $wifeList, $sonList, $daughterList;
+    
+    $count = array( array( 0, 0 ), array( 0, 0 ), array( 0, 0 ) );    
+    
+    foreach( $inHouseMapArray as $cell ) {
+
+        $cellObjects = preg_split( "/,/", $cell );
+
+
+        foreach( $cellObjects as $object ) {
+            $objectParts = preg_split( "/:/", $object );
+            
+            $id = $objectParts[0];
+
+            $stuck = 0;
+            if( count( $objectParts ) > 1 &&
+                strstr( $objectParts[1], "!" ) ) {
+                $stuck = 1;
+                }
+
+            if( array_search( $id, $wifeList ) !== false ) {
+                $count[0][$stuck] ++;
+                }
+            if( array_search( $id, $sonList ) !== false ) {
+                $count[1][$stuck] ++;
+                }
+            if( array_search( $id, $daughterList ) !== false ) {
+                $count[2][$stuck] ++;
+                }
+            }
+        }
+
+    return $count;
+    }
+
+
+
 
 function cd_endEditHouse() {
     global $tableNamePrefix;
@@ -3658,6 +3700,23 @@ function cd_endEditHouse() {
 
     
 
+
+    // living family members must be preserved by edit
+    // dead family members must either be preserved or removed (but not added)
+    $oldFamilyCount = cd_countFamily( $oldHouseArray );
+    $newFamilyCount = cd_countFamily( $newHouseArray );
+
+    for( $f=0; $f<3; $f++ ) {
+        if( $newFamilyCount[$f][0] != $oldFamilyCount[$f][0] ||
+            $newFamilyCount[$f][1] > $oldFamilyCount[$f][1] ) {
+            cd_log( "House check-in with extra or missing, living ".
+                    "family member denied" );
+            cd_transactionDeny();
+            return;
+            }
+        }
+
+    
     
     // Well...
     // if we get here, then we have a valid, edited house map.
