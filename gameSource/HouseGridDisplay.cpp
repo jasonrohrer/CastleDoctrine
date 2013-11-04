@@ -625,6 +625,8 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
             }
         }
     
+    mMandatoryNeedsPlacing = false;
+
     mForbiddenMoveHappened = false;
 
     for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {

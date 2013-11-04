@@ -4,6 +4,15 @@ Version 24
   update while the game is running (next frame tries to wait an hour before
   being drawn).
 
+--Fixed a bug that allowed the placement of multiple wives, kids, or vaults if
+  you happen to be in the process of picking up one of these objects right when
+  you are kicked out of editing your house for 5+ minutes of inactivity.
+  Multiple vaults would result in your house being rejected by the server, but
+  multiple wives or kids would end up being accepted by the server. (thanks 
+  Joshua Collins and Ben Foster).
+
+
+
 
 
 Version 23     2013-November-1
