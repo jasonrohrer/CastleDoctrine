@@ -678,17 +678,39 @@ static char *propagatePower(  int *inMapIDs,
 // Also, mobiles in the "powered" state generate power for neighboring tiles.
 //
 // Thus, inMapMobileIDs and inMapMobileStates are NOT changed by this call
+//
+// if inInit is set to true, then the state of the map is initialize
+// from a "no power anywhere" initializing power condition
 static char applyPowerTransitions( int *inMapIDs, 
                                    int *inMapStates,
                                    int *inMapMobileIDs, int *inMapMobileStates,
-                                   int inMapW, int inMapH ) {
+                                   int inMapW, int inMapH,
+                                   char inInit = false ) {
     
     
     char *topBottomPowerMap;
-    char *powerMap = propagatePower( inMapIDs, inMapStates,
-                                     inMapMobileIDs, inMapMobileStates, 
-                                     inMapW, inMapH,
-                                     &topBottomPowerMap );
+    char *powerMap;
+
+
+    if( inInit ) {
+        // start from a state where nothing has power
+        int numCells = inMapW * inMapH;
+
+        powerMap = new char[ numCells ];
+        memset( powerMap, false, numCells );
+
+        topBottomPowerMap = new char[ numCells ];
+        memset( topBottomPowerMap, false, numCells );
+        }
+    else {
+        // don't reset states to no-powered condition
+        // continue propagating power given current states
+        
+        powerMap = propagatePower( inMapIDs, inMapStates,
+                                   inMapMobileIDs, inMapMobileStates, 
+                                   inMapW, inMapH,
+                                   &topBottomPowerMap );
+        }
     
 
     int numCells = inMapW * inMapH;
@@ -1252,6 +1274,19 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
 
 
     // now process power transitions
+
+
+    // first, clear map of any old power-triggered states from last
+    // global transition
+    // this brings everything back to a consistent starting state
+    // and ensures that power propagation is stateless (by looking at a map
+    // configuration, you can compute all tile states, regarless of what
+    // happened in previous steps)
+    applyPowerTransitions( inMapIDs, inMapStates, 
+                           inMapMobileIDs, inMapMobileStates,
+                           inMapW, inMapH,
+                           // init
+                           true );
 
     
     char transitionHappened = true;

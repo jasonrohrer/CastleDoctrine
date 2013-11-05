@@ -11,6 +11,9 @@ Version 24
   multiple wives or kids would end up being accepted by the server. (thanks 
   Joshua Collins and Ben Foster).
 
+--Changed so that all electronics are memoryless, effectively blocking the
+  construction of latches, counters, clocks, and other confusing circuitry. 
+
 
 
 
