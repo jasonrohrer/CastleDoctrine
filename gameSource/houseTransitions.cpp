@@ -17,6 +17,12 @@
 
 
 
+// set to true to make powered objects reset at the start of every step
+// before applying power propagation and transitions
+static char poweredObjectsAreMemoryless = false;
+
+
+
 static char mobileObjectsFrozen = false;
 
 void freezeMobileObjects( char inFreeze ) {
@@ -1276,17 +1282,21 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     // now process power transitions
 
 
-    // first, clear map of any old power-triggered states from last
-    // global transition
-    // this brings everything back to a consistent starting state
-    // and ensures that power propagation is stateless (by looking at a map
-    // configuration, you can compute all tile states, regarless of what
-    // happened in previous steps)
-    applyPowerTransitions( inMapIDs, inMapStates, 
-                           inMapMobileIDs, inMapMobileStates,
-                           inMapW, inMapH,
-                           // init
-                           true );
+    if( poweredObjectsAreMemoryless ) {
+        
+        // first, clear map of any old power-triggered states from last
+        // global transition
+        // this brings everything back to a consistent starting state
+        // and ensures that power propagation is stateless (by looking at a map
+        // configuration, you can compute all tile states, regarless of what
+        // happened in previous steps)
+        applyPowerTransitions( inMapIDs, inMapStates, 
+                               inMapMobileIDs, inMapMobileStates,
+                               inMapW, inMapH,
+                               // init
+                               true );
+        }
+    
 
     
     char transitionHappened = true;
