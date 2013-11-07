@@ -3857,7 +3857,7 @@ function cd_endEditHouse() {
             $familyLocations[] = $index;
 
             if( array_search( $objectParts[0], $wifeList ) !== false ) {
-                $wife_present = true;
+                $wife_present = 1;
                 }
             }
         
