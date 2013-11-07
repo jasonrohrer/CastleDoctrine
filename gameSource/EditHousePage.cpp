@@ -334,11 +334,7 @@ void EditHousePage::checkIfPlacementAllowed() {
         mSuicideConfirmCheckbox.setVisible( false );
         }
 
-    // can jump to tapes as long as no editing done yet and no purchase/sale
-    // done yet (so nothing will be lost when we abandon the house edit)
-    mJumpToTapesButton.setVisible( mNumberOfTapes > 0 &&
-                                   ! mUndoButton.isVisible() &&
-                                   ! mBackpackOrVaultChanged );
+    checkIfTapesButtonVisible();
     }
 
 
@@ -544,12 +540,37 @@ void EditHousePage::makeActive( char inFresh ) {
     mShowGridObjectPicker = false;
 
     checkIfDoneButtonVisible();
+    checkIfTapesButtonVisible();
 
     mDiffHighlightToggleButton.setToggled( diffHighlightsOff );
     mGridDisplay.toggleTouchedHighlights( ! mMapStartedOutEmpty && 
                                           ! diffHighlightsOff );
     }
-        
+
+
+
+void EditHousePage::step() {
+    LiveHousePage::step();
+    
+    
+    checkIfTapesButtonVisible();
+    }
+
+
+
+
+void EditHousePage::checkIfTapesButtonVisible() {
+    // can jump to tapes as long as no editing done yet and no purchase/sale
+    // done yet (so nothing will be lost when we abandon the house edit)
+    // AND no background requests to server are pending
+    mJumpToTapesButton.setVisible( ! areRequestsPending() && 
+                                   mNumberOfTapes > 0 &&
+                                   ! mUndoButton.isVisible() &&
+                                   ! mBackpackOrVaultChanged );
+    }
+
+
+
 
 extern Font *numbersFontFixed;
 

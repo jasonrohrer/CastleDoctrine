@@ -11,6 +11,11 @@ Version 24
   multiple wives or kids would end up being accepted by the server. (thanks 
   Joshua Collins and Ben Foster).
 
+--Fixed potential death if user left house to view tapes immediately after
+  backing out of a self-test, before the end_self_test was properly executed
+  on the server.  Now Tapes button is hidden if there are pending background
+  requests (thanks Joshua Collins).
+
 
 
 

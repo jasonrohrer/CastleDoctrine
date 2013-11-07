@@ -138,6 +138,12 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         
         virtual void makeActive( char inFresh );
 
+
+        // override from LiveHousePage to block jumping to tapes
+        // when there are LiveHousePage requests pending
+        virtual void step();
+
+
     protected:
 
         // for change detection
@@ -197,7 +203,8 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void checkIfPlacementAllowed();
 
         void checkIfDoneButtonVisible();
-        
+      
+        void checkIfTapesButtonVisible();
 
         void recomputeChangeCost();
         
