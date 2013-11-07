@@ -2270,6 +2270,16 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
             "WHERE user_id = '$last_robbed_owner_id' AND ".
             "robbing_user_id = '$user_id';";
         cd_queryDatabase( $query );
+
+        // user gets a chill for this house, regardless of whether
+        // they were carrying tools or not
+        // start chill right now (this will replace a pending chill)
+        $query = "REPLACE INTO $tableNamePrefix"."chilling_houses ".
+                "SET user_id = '$user_id', ".
+                "house_user_id = '$last_robbed_owner_id', ".
+                "chill_start_time = CURRENT_TIMESTAMP, chill = 1;";
+            
+        cd_queryDatabase( $query );
         }
 
 

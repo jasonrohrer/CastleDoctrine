@@ -20,6 +20,9 @@ Version 23   Live Server Fixes
 --Changed server to forbid house check-in after edit with illegal family
   configuration (multiple wives, missing family members, etc.).
 
+--Fixed to add house chills if user times out while robbing (or pulls the plug)
+  when they were carrying no tools (thanks Ukuko).
+
 
 
 
