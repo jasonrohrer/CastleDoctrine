@@ -2383,16 +2383,26 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         $vaultValue =
             cd_idQuantityToResaleValue( $vault_contents, $priceArray );
 
+        $forceSoldItems = "#";
+        
+        
         if( $loot_value + $wife_loot_value < 0 ) {
 
             // first, try selling backpack
             $loot_value += $backpackValue;
+
+            $forceSoldItems = cd_idQuantityUnion( $forceSoldItems,
+                                                  $backpack_contents );
             $backpack_contents = "#";
+
             
             if( $loot_value + $wife_loot_value < 0 ) {
                 
                 // still negative, try selling vault too
                 $loot_value != $vaultValue;
+
+                $forceSoldItems = cd_idQuantityUnion( $forceSoldItems,
+                                                      $vault_contents );
                 $vault_contents = "#";
                 }
             }
@@ -2414,7 +2424,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         
         if( $loot_value + $wife_loot_value < 0 ) {
             $logMessage = "House loot value negative for user $user_id ".
-                "even after selling all items";
+                "even after selling all items (sold $forceSoldItems)";
             
             cd_log( $logMessage );
             

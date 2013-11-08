@@ -28,6 +28,8 @@ Version 23   Live Server Fixes
 --Fixed to add house chills if user times out while robbing (or pulls the plug)
   when they were carrying no tools (thanks Ukuko).
 
+--Extra info when logging negative balance anomaly.
+
 
 
 
