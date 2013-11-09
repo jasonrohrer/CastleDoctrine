@@ -12,6 +12,9 @@
 #include "minorGems/util/SettingsManager.h"
 
 
+#include "minorGems/io/file/File.h"
+
+
 
 extern Font *mainFont;
 
@@ -599,3 +602,97 @@ void EditHousePage::draw( doublePair inViewCenter,
         }
     
     }
+
+
+
+
+void EditHousePage::keyDown( unsigned char inASCII ) {
+    if( inASCII == '+' ) {
+        // FIXME:  this is crashing, so block it
+        //saveWholeMapImage();
+        }
+    
+    }
+
+
+
+
+static int nextShotNumber = -1;
+static char shotDirExists = false;
+
+
+
+void EditHousePage::saveWholeMapImage() {
+
+    File shotDir( NULL, "mapShots" );
+    
+    if( !shotDirExists && !shotDir.exists() ) {
+        shotDir.makeDirectory();
+        shotDirExists = shotDir.exists();
+        }
+    
+    if( nextShotNumber < 1 ) {
+        if( shotDir.exists() && shotDir.isDirectory() ) {
+        
+            int numFiles;
+            File **childFiles = shotDir.getChildFiles( &numFiles );
+
+            nextShotNumber = 1;
+
+            char *formatString = autoSprintf( "map%%d.tga" );
+
+            for( int i=0; i<numFiles; i++ ) {
+            
+                char *name = childFiles[i]->getFileName();
+                
+                int number;
+                
+                int numRead = sscanf( name, formatString, &number );
+                
+                if( numRead == 1 ) {
+                    
+                    if( number >= nextShotNumber ) {
+                        nextShotNumber = number + 1;
+                        }
+                    }
+                delete [] name;
+                
+                delete childFiles[i];
+                }
+            
+            delete [] formatString;
+            
+            delete [] childFiles;
+            }
+        }
+    
+
+    if( nextShotNumber < 1 ) {
+        return;
+        }
+    
+    char *fileName = autoSprintf( "map%05d.tga", nextShotNumber );
+
+    
+
+    File *file = shotDir.getChildFile( fileName );
+    
+    delete [] fileName;
+
+
+
+    fileName = file->getFullFileName();
+    
+
+    delete file;
+    
+    
+    // FIXME:  this is currently returning NULL!
+    Image *regionImage = getScreenRegion( 0, 0, 300, 300 );
+
+    writeTGAFile( fileName, regionImage );
+    
+    delete [] fileName;
+    delete regionImage;    
+    }
+

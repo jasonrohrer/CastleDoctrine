@@ -144,6 +144,11 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         virtual void step();
 
 
+        // override to handle print-whole-map key
+        virtual void keyDown( unsigned char inASCII );
+
+
+
     protected:
 
         // for change detection
@@ -207,6 +212,9 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void checkIfTapesButtonVisible();
 
         void recomputeChangeCost();
+        
+        
+        void saveWholeMapImage();
         
 
     };
