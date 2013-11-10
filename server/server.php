@@ -2399,7 +2399,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
             if( $loot_value + $wife_loot_value < 0 ) {
                 
                 // still negative, try selling vault too
-                $loot_value != $vaultValue;
+                $loot_value += $vaultValue;
 
                 $forceSoldItems = cd_idQuantityUnion( $forceSoldItems,
                                                       $vault_contents );
