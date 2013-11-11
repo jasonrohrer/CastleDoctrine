@@ -608,8 +608,7 @@ void EditHousePage::draw( doublePair inViewCenter,
 
 void EditHousePage::keyDown( unsigned char inASCII ) {
     if( inASCII == '+' ) {
-        // FIXME:  this is crashing, so block it
-        //saveWholeMapImage();
+        saveWholeMapImage();
         }
     
     }
@@ -672,7 +671,8 @@ void EditHousePage::saveWholeMapImage() {
         }
     
     char *fileName = autoSprintf( "map%05d.tga", nextShotNumber );
-
+    
+    nextShotNumber++;
     
 
     File *file = shotDir.getChildFile( fileName );
@@ -685,14 +685,116 @@ void EditHousePage::saveWholeMapImage() {
     
 
     delete file;
-    
-    
-    // FIXME:  this is currently returning NULL!
-    Image *regionImage = getScreenRegion( 0, 0, 300, 300 );
 
-    writeTGAFile( fileName, regionImage );
+
+    
+
+    int oldXOffset = mGridDisplay.getVisibleOffsetX();
+    int oldYOffset = mGridDisplay.getVisibleOffsetY();
+    
+    mGridDisplay.setVisibleOffset( 0, 0 );
+
+    printf( "Old offset = %d,%d, new = %d,%d\n",
+            oldXOffset, oldYOffset,
+            mGridDisplay.getVisibleOffsetX(),
+            mGridDisplay.getVisibleOffsetY() );
+    
+    
+
+
+    // this is in view space
+    int fullMapD = mGridDisplay.getFullMapD();
+    
+    Image **tileImages = new Image*[ fullMapD * fullMapD ];
+    
+    for( int y=0; y<fullMapD; y++ ) {
+        // buffer away from edge if possible to avoid edge shadows
+        int viewOffsetY = y - 1;
+        
+        if( viewOffsetY < 0 ) {
+            viewOffsetY = 0;
+            }
+        else if( viewOffsetY > fullMapD - HOUSE_D ) {
+            viewOffsetY = fullMapD - HOUSE_D;
+            }
+        
+        for( int x=0; x<fullMapD; x++ ) {
+            int viewOffsetX = x - 1;
+        
+            if( viewOffsetX < 0 ) {
+                viewOffsetX = 0;
+                }
+            else if( viewOffsetX > fullMapD - HOUSE_D ) {
+                viewOffsetX = fullMapD - HOUSE_D;
+                }
+            printf( "Setting offset to %d,%d\n", viewOffsetX, viewOffsetY );
+            mGridDisplay.setVisibleOffset( viewOffsetX, viewOffsetY );
+            
+            mGridDisplay.draw();
+
+            int yDistFromViewEdge = y - viewOffsetY;
+            int xDistFromViewEdge = x - viewOffsetX;
+
+            tileImages[y * fullMapD + x] = 
+                getScreenRegion( -HOUSE_D * TILE_RADIUS + 
+                                 xDistFromViewEdge * TILE_RADIUS * 2,
+                                 -HOUSE_D * TILE_RADIUS +
+                                 yDistFromViewEdge * TILE_RADIUS * 2,
+                                 2 * TILE_RADIUS,
+                                 2 * TILE_RADIUS );
+            if( y * fullMapD + x == 0 ) {
+                //writeTGAFile( fileName, tileImages[0] );
+                //return;
+                }
+            }
+        }
+    
+    
+    int tileD = tileImages[0]->getWidth();
+    
+    int fullImageD = fullMapD * tileD;
+
+    Image *wholeImage = new Image( fullImageD, fullImageD, 3, 0 );
+    
+    double *channels[3];
+    int c;
+    for( c=0; c<3; c++ ) {
+        channels[c] = wholeImage->getChannel( c );
+        }
+    
+
+    for( int y=0; y<fullMapD; y++ ) {
+        for( int x=0; x<fullMapD; x++ ) {
+            // bottom tiles are at y=0
+            int tileY = (fullMapD - y) - 1;
+            Image *tile = tileImages[tileY * fullMapD + x];
+            
+            int xOffset = x * tileD;
+            int yOffset = y * tileD;
+            
+            for( c=0; c<3; c++ ) {
+                double *tileChannel = tile->getChannel( c );
+                
+                for( int ty=0; ty<tileD; ty++ ) {
+                    memcpy( 
+                        &( channels[c][ 
+                               (yOffset + ty) * fullImageD + xOffset ] ), 
+                        &( tileChannel[ 
+                               ty * tileD ] ),
+                        tileD * sizeof( double ) );
+                    }
+                }
+            delete tileImages[tileY * fullMapD + x];
+            }
+        }
+    
+    delete [] tileImages;
+        
+    writeTGAFile( fileName, wholeImage );
     
     delete [] fileName;
-    delete regionImage;    
+    delete wholeImage;    
+    
+    mGridDisplay.setVisibleOffset( oldXOffset, oldYOffset );    
     }
 

@@ -147,6 +147,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
             return mMapStartedOutEmpty;
             }
 
+        int getFullMapD() {
+            return mFullMapD;
+            }
+
         
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
 
