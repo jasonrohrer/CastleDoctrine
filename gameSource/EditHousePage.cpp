@@ -692,22 +692,39 @@ void EditHousePage::saveWholeMapImage() {
     int oldXOffset = mGridDisplay.getVisibleOffsetX();
     int oldYOffset = mGridDisplay.getVisibleOffsetY();
     
-    mGridDisplay.setVisibleOffset( 0, 0 );
-
-    printf( "Old offset = %d,%d, new = %d,%d\n",
-            oldXOffset, oldYOffset,
-            mGridDisplay.getVisibleOffsetX(),
-            mGridDisplay.getVisibleOffsetY() );
-    
+    mGridDisplay.setVisibleOffset( 0, 0 );    
     
 
 
-    // this is in view space
     int fullMapD = mGridDisplay.getFullMapD();
     
-    Image **tileImages = new Image*[ fullMapD * fullMapD ];
+    // for speed, split into blocks of tiles and grab images of entire block
+    int blockD = 1;
     
-    for( int y=0; y<fullMapD; y++ ) {
+    // find largest possible block size that both
+    // A) fits on screen
+    // B) evenly divides the whole map size
+    for( int i=2; i<=HOUSE_D; i++ ) {
+        
+        int candidateNumBlocks = fullMapD / i;
+        
+        if( candidateNumBlocks * i == fullMapD ) {
+            // evenly divides whole map
+            
+            // largest even divisor found so far
+            blockD = i;
+            }
+        }
+
+
+    int numBlockD = fullMapD / blockD;
+
+    Image **blockImages = new Image*[ numBlockD * numBlockD ];
+    
+    for( int yb=0; yb<numBlockD; yb++ ) {
+        // y of first tile in block
+        int y = yb * blockD;
+        
         // buffer away from edge if possible to avoid edge shadows
         int viewOffsetY = y - 1;
         
@@ -718,7 +735,10 @@ void EditHousePage::saveWholeMapImage() {
             viewOffsetY = fullMapD - HOUSE_D;
             }
         
-        for( int x=0; x<fullMapD; x++ ) {
+        for( int xb=0; xb<numBlockD; xb++ ) {
+            // x of first tile in block
+            int x = xb * blockD;
+
             int viewOffsetX = x - 1;
         
             if( viewOffsetX < 0 ) {
@@ -727,7 +747,7 @@ void EditHousePage::saveWholeMapImage() {
             else if( viewOffsetX > fullMapD - HOUSE_D ) {
                 viewOffsetX = fullMapD - HOUSE_D;
                 }
-            printf( "Setting offset to %d,%d\n", viewOffsetX, viewOffsetY );
+            //printf( "Setting offset to %d,%d\n", viewOffsetX, viewOffsetY );
             mGridDisplay.setVisibleOffset( viewOffsetX, viewOffsetY );
             
             mGridDisplay.draw();
@@ -735,13 +755,13 @@ void EditHousePage::saveWholeMapImage() {
             int yDistFromViewEdge = y - viewOffsetY;
             int xDistFromViewEdge = x - viewOffsetX;
 
-            tileImages[y * fullMapD + x] = 
+            blockImages[yb * numBlockD + xb] = 
                 getScreenRegion( -HOUSE_D * TILE_RADIUS + 
                                  xDistFromViewEdge * TILE_RADIUS * 2,
                                  -HOUSE_D * TILE_RADIUS +
                                  yDistFromViewEdge * TILE_RADIUS * 2,
-                                 2 * TILE_RADIUS,
-                                 2 * TILE_RADIUS );
+                                 2 * TILE_RADIUS * blockD,
+                                 2 * TILE_RADIUS * blockD );
             if( y * fullMapD + x == 0 ) {
                 //writeTGAFile( fileName, tileImages[0] );
                 //return;
@@ -750,9 +770,9 @@ void EditHousePage::saveWholeMapImage() {
         }
     
     
-    int tileD = tileImages[0]->getWidth();
+    int blockPixelD = blockImages[0]->getWidth();
     
-    int fullImageD = fullMapD * tileD;
+    int fullImageD = numBlockD * blockPixelD;
 
     Image *wholeImage = new Image( fullImageD, fullImageD, 3, 0 );
     
@@ -763,32 +783,32 @@ void EditHousePage::saveWholeMapImage() {
         }
     
 
-    for( int y=0; y<fullMapD; y++ ) {
-        for( int x=0; x<fullMapD; x++ ) {
+    for( int y=0; y<numBlockD; y++ ) {
+        for( int x=0; x<numBlockD; x++ ) {
             // bottom tiles are at y=0
-            int tileY = (fullMapD - y) - 1;
-            Image *tile = tileImages[tileY * fullMapD + x];
+            int blockY = (numBlockD - y) - 1;
+            Image *block = blockImages[blockY * numBlockD + x];
             
-            int xOffset = x * tileD;
-            int yOffset = y * tileD;
+            int xOffset = x * blockPixelD;
+            int yOffset = y * blockPixelD;
             
             for( c=0; c<3; c++ ) {
-                double *tileChannel = tile->getChannel( c );
+                double *blockChannel = block->getChannel( c );
                 
-                for( int ty=0; ty<tileD; ty++ ) {
+                for( int by=0; by<blockPixelD; by++ ) {
                     memcpy( 
                         &( channels[c][ 
-                               (yOffset + ty) * fullImageD + xOffset ] ), 
-                        &( tileChannel[ 
-                               ty * tileD ] ),
-                        tileD * sizeof( double ) );
+                               (yOffset + by) * fullImageD + xOffset ] ), 
+                        &( blockChannel[ 
+                               by * blockPixelD ] ),
+                        blockPixelD * sizeof( double ) );
                     }
                 }
-            delete tileImages[tileY * fullMapD + x];
+            delete blockImages[blockY * numBlockD + x];
             }
         }
     
-    delete [] tileImages;
+    delete [] blockImages;
         
     writeTGAFile( fileName, wholeImage );
     
