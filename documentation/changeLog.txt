@@ -16,6 +16,9 @@ Version 24
   on the server.  Now Tapes button is hidden if there are pending background
   requests (thanks Joshua Collins).
 
+--Pressing the + key in house edit mode and tape playback mode will now save
+  the entire house map as a TGA image in the mapShots folder.
+
 
 
 

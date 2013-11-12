@@ -216,3 +216,10 @@ void ReplayRobHousePage::makeActive( char inFresh ) {
     }
         
 
+
+void ReplayRobHousePage::keyDown( unsigned char inASCII ) {
+    if( inASCII == '+' ) {
+        mGridDisplay.saveWholeMapImage();
+        }
+    
+    }

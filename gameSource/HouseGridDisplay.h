@@ -150,8 +150,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int getFullMapD() {
             return mFullMapD;
             }
-
         
+        // saves map image to mapShots directory
+        void saveWholeMapImage();
+
+
+
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
 
         virtual int getVisibleOffsetX();

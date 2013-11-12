@@ -214,7 +214,6 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void recomputeChangeCost();
         
         
-        void saveWholeMapImage();
         
 
     };

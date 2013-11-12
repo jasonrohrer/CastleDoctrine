@@ -10,6 +10,8 @@
 
 #include "minorGems/graphics/openGL/KeyboardHandlerGL.h"
 
+#include "minorGems/io/file/File.h"
+
 
 #include <math.h>
 #include <ctype.h>
@@ -3730,3 +3732,204 @@ int HouseGridDisplay::posToIndex( GridPos inPos ) {
     }
 
     
+
+
+
+
+static int nextShotNumber = -1;
+static char shotDirExists = false;
+
+
+
+void HouseGridDisplay::saveWholeMapImage() {
+
+    File shotDir( NULL, "mapShots" );
+    
+    if( !shotDirExists && !shotDir.exists() ) {
+        shotDir.makeDirectory();
+        shotDirExists = shotDir.exists();
+        }
+    
+    if( nextShotNumber < 1 ) {
+        if( shotDir.exists() && shotDir.isDirectory() ) {
+        
+            int numFiles;
+            File **childFiles = shotDir.getChildFiles( &numFiles );
+
+            nextShotNumber = 1;
+
+            char *formatString = autoSprintf( "map%%d.tga" );
+
+            for( int i=0; i<numFiles; i++ ) {
+            
+                char *name = childFiles[i]->getFileName();
+                
+                int number;
+                
+                int numRead = sscanf( name, formatString, &number );
+                
+                if( numRead == 1 ) {
+                    
+                    if( number >= nextShotNumber ) {
+                        nextShotNumber = number + 1;
+                        }
+                    }
+                delete [] name;
+                
+                delete childFiles[i];
+                }
+            
+            delete [] formatString;
+            
+            delete [] childFiles;
+            }
+        }
+    
+
+    if( nextShotNumber < 1 ) {
+        return;
+        }
+    
+    char *fileName = autoSprintf( "map%05d.tga", nextShotNumber );
+    
+    nextShotNumber++;
+    
+
+    File *file = shotDir.getChildFile( fileName );
+    
+    delete [] fileName;
+
+
+
+    fileName = file->getFullFileName();
+    
+
+    delete file;
+
+
+    
+
+    int oldXOffset = getVisibleOffsetX();
+    int oldYOffset = getVisibleOffsetY();
+
+
+    int fullMapD = getFullMapD();
+    
+    // for speed, split into blocks of tiles and grab images of entire block
+    int blockD = 1;
+    
+    // find largest possible block size that both
+    // A) fits on screen
+    // B) evenly divides the whole map size
+    for( int i=2; i<=HOUSE_D; i++ ) {
+        
+        int candidateNumBlocks = fullMapD / i;
+        
+        if( candidateNumBlocks * i == fullMapD ) {
+            // evenly divides whole map
+            
+            // largest even divisor found so far
+            blockD = i;
+            }
+        }
+
+
+    int numBlockD = fullMapD / blockD;
+
+    Image **blockImages = new Image*[ numBlockD * numBlockD ];
+    
+    for( int yb=0; yb<numBlockD; yb++ ) {
+        // y of first tile in block
+        int y = yb * blockD;
+        
+        // buffer away from edge if possible to avoid edge shadows
+        int viewOffsetY = y - 1;
+        
+        if( viewOffsetY < 0 ) {
+            viewOffsetY = 0;
+            }
+        else if( viewOffsetY > fullMapD - HOUSE_D ) {
+            viewOffsetY = fullMapD - HOUSE_D;
+            }
+        
+        for( int xb=0; xb<numBlockD; xb++ ) {
+            // x of first tile in block
+            int x = xb * blockD;
+
+            int viewOffsetX = x - 1;
+        
+            if( viewOffsetX < 0 ) {
+                viewOffsetX = 0;
+                }
+            else if( viewOffsetX > fullMapD - HOUSE_D ) {
+                viewOffsetX = fullMapD - HOUSE_D;
+                }
+            //printf( "Setting offset to %d,%d\n", viewOffsetX, viewOffsetY );
+            setVisibleOffset( viewOffsetX, viewOffsetY );
+            
+            // call OUR draw function, so that even sub classes that add
+            // overlays will use our pure, no-overlay draw function 
+            // when they try to save the entire map
+            HouseGridDisplay::draw();
+
+            int yDistFromViewEdge = y - viewOffsetY;
+            int xDistFromViewEdge = x - viewOffsetX;
+
+            blockImages[yb * numBlockD + xb] = 
+                getScreenRegion( -HOUSE_D * TILE_RADIUS + 
+                                 xDistFromViewEdge * TILE_RADIUS * 2,
+                                 -HOUSE_D * TILE_RADIUS +
+                                 yDistFromViewEdge * TILE_RADIUS * 2,
+                                 2 * TILE_RADIUS * blockD,
+                                 2 * TILE_RADIUS * blockD );
+            }
+        }
+    
+    
+    int blockPixelD = blockImages[0]->getWidth();
+    
+    int fullImageD = numBlockD * blockPixelD;
+
+    Image *wholeImage = new Image( fullImageD, fullImageD, 3, 0 );
+    
+    double *channels[3];
+    int c;
+    for( c=0; c<3; c++ ) {
+        channels[c] = wholeImage->getChannel( c );
+        }
+    
+
+    for( int y=0; y<numBlockD; y++ ) {
+        for( int x=0; x<numBlockD; x++ ) {
+            // bottom tiles are at y=0
+            int blockY = (numBlockD - y) - 1;
+            Image *block = blockImages[blockY * numBlockD + x];
+            
+            int xOffset = x * blockPixelD;
+            int yOffset = y * blockPixelD;
+            
+            for( c=0; c<3; c++ ) {
+                double *blockChannel = block->getChannel( c );
+                
+                for( int by=0; by<blockPixelD; by++ ) {
+                    memcpy( 
+                        &( channels[c][ 
+                               (yOffset + by) * fullImageD + xOffset ] ), 
+                        &( blockChannel[ 
+                               by * blockPixelD ] ),
+                        blockPixelD * sizeof( double ) );
+                    }
+                }
+            delete blockImages[blockY * numBlockD + x];
+            }
+        }
+    
+    delete [] blockImages;
+        
+    writeTGAFile( fileName, wholeImage );
+    
+    delete [] fileName;
+    delete wholeImage;    
+    
+    setVisibleOffset( oldXOffset, oldYOffset );    
+    }

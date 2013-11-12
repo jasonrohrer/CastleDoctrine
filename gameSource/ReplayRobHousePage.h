@@ -41,6 +41,11 @@ class ReplayRobHousePage : public GamePage, public ActionListener {
         
         virtual void makeActive( char inFresh );
 
+
+        // override to handle print-whole-map key
+        virtual void keyDown( unsigned char inASCII );
+
+
     protected:
         
         int mMusicSeed;
