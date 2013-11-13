@@ -34,6 +34,9 @@ Version 23   Live Server Fixes
 --Fixed typo that lead to negative balances when a player sells tools from the
   vault to buy a painting and then quits the game (thanks Tyler Dahl).
 
+--Listing or buying auctions blocked if your house needs fixing (thanks Ben
+  Foster).
+
 
 
 

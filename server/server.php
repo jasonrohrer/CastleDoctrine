@@ -6122,6 +6122,37 @@ function cd_computeAuctionPrice( $start_price, $elapsed_seconds ) {
 
 
 
+// returns true if house has been broken by robber since last edit
+// assumes that transaction has already been verified
+function cd_doesHouseNeedEditing() {
+    $user_id = cd_getUserID();
+
+    global $tableNamePrefix;
+    
+    $query = "SELECT edit_count ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE user_id = '$user_id' AND blocked='0';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+
+    if( $numRows != 1 ) {
+        return false;
+        }
+    
+    $edit_count = mysql_result( $result, 0, "edit_count" );
+
+    if( $edit_count < 0 ) {
+        return true;
+        }
+    else {
+        return false;
+        }
+    }
+
+
+
 function cd_listAuctions() {
     global $tableNamePrefix;
 
@@ -6129,6 +6160,15 @@ function cd_listAuctions() {
         return;
         }
 
+    // make sure that player has edited their broken house if necessary
+    // before even viewing auction
+    // (client should block this, but modded clients may not)
+    if( cd_doesHouseNeedEditing() ) {
+        echo "DENIED";
+        return;
+        }
+    
+    
     $tableName = $tableNamePrefix ."auction";
     
     $query = "SELECT object_id, start_price, ".
@@ -6181,6 +6221,15 @@ function cd_buyAuction() {
         return;
         }
 
+    
+    // make sure that player has edited their broken house if necessary
+    // before buying at auction
+    // (client should block this, but modded clients may not)
+    if( cd_doesHouseNeedEditing() ) {
+        echo "DENIED";
+        return;
+        }
+    
 
     $user_id = cd_getUserID();
 
