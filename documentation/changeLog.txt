@@ -24,6 +24,9 @@ Version 24
 --Position of paintings-stolen display moved down slightly to not overlap with
   end-of-robbery text.
 
+--Fixed flicker in Tapes button after leaving a self-test.
+
+
 
 
 

@@ -1511,9 +1511,10 @@ void drawFrame( char inUpdate ) {
                     // last valid checkin
                     // editHousePage->setHouseMap( houseMap );
                     
+                    editHousePage->endSelfTest();
+
                     currentGamePage = editHousePage;
                     currentGamePage->base_makeActive( true );
-                    editHousePage->endSelfTest();
                     }
                 delete [] houseMap;
                 delete [] vaultContents;
