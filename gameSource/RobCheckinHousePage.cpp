@@ -295,7 +295,7 @@ void RobCheckinHousePage::step() {
                                 }
                             else {
                                 // put right below robbery result text
-                                mGalleryDisplay.setPosition( 0, 4.5 );
+                                mGalleryDisplay.setPosition( 0, 4 );
                                 }
                             
 

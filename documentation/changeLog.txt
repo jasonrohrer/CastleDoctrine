@@ -21,6 +21,8 @@ Version 24
 
 --Auctions button hidden if your house needs fixing (thanks Ben Foster).
 
+--Position of paintings-stolen display moved down slightly to not overlap with
+  end-of-robbery text.
 
 
 
