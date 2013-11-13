@@ -19,6 +19,8 @@ Version 24
 --Pressing the + key in house edit mode and tape playback mode will now save
   the entire house map as a TGA image in the mapShots folder.
 
+--Auctions button hidden if your house needs fixing (thanks Ben Foster).
+
 
 
 

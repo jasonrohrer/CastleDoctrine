@@ -313,6 +313,10 @@ void EditHousePage::setLootValue( int inLootValue ) {
 
 void EditHousePage::setMustSelfTest( char inMustSelfTest ) {
     mMustSelfTest = inMustSelfTest;
+    
+    // if house damaged and needs a self test, don't allow auctions
+    // (server blocks auction activities anyway in this case)
+    mAuctionButton.setVisible( !mMustSelfTest );
     }
 
 
