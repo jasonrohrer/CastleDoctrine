@@ -90,7 +90,11 @@ static NSString *getApplicationName(void)
 		CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
 		CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
 		if (CFURLGetFileSystemRepresentation(url2, true, (UInt8 *)parentdir, MAXPATHLEN)) {
-	        assert ( chdir (parentdir) == 0 );   /* chdir to the binary app's parent */
+	        assert ( chdir (parentdir) == 0 );   /* chdir to the binary app's
+                                                  * parent */
+            printf( "If you're running this from the command line, "
+                    "the working directory is being overridden and set "
+                    "to %s\n\n", parentdir );
 		}
 		CFRelease(url);
 		CFRelease(url2);
@@ -290,7 +294,12 @@ static void CustomApplicationMain (int argc, char **argv)
     int status;
 
     /* Set the working directory to the .app's parent directory */
-    [self setupWorkingDirectory:gFinderLaunch];
+
+    /* in 10.9, can't count on gFinderLaunch to tell the difference
+       between running from Finder and running in Terminal.
+       SO, we have to default to ALWAYS changing the working directory,
+       even if it doesn't make sense to do so when launching from Terminal. */
+    [self setupWorkingDirectory:TRUE];
 
 #if SDL_USE_NIB_FILE
     /* Set the main menu to contain the real app name instead of "SDL App" */

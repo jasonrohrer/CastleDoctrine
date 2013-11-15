@@ -1,3 +1,13 @@
+Version 24b
+OSX-only fix (for 10.9 users)
+
+--Fixed so that working directory is set correctly in 10.9 Mavericks
+  (otherwise, game launches full screen and then crashes).
+
+
+
+
+
 Version 24    2013-November-14
 
 --Fixed an obscure bug in frame timing caused by a sudden daylight savings time
