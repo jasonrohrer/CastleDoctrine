@@ -157,6 +157,11 @@ const char *getWindowTitle() {
     }
 
 
+const char *getAppName() {
+    return "CastleDoctrine";
+    }
+
+
 const char *getFontTGAFileName() {
     return "font_8_16.tga";
     }
