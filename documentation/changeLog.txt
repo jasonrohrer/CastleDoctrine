@@ -1,4 +1,4 @@
-Version 24b
+Version 24b   2013-November-15 
 OSX-only fix (for 10.9 users)
 
 --Fixed so that working directory is set correctly in 10.9 Mavericks
