@@ -1124,6 +1124,9 @@ char *HouseGridDisplay::getFamilyExitPaths() {
         }
 
 
+    // length-1 paths are skipped above, so numPaths might decrease
+    numPaths = mainListAccum.size();
+    
     char **listStrings = mainListAccum.getElementArray();
     
     char *pathsList = join( listStrings, numPaths, "##" );
