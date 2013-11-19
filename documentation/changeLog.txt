@@ -3,6 +3,16 @@ Version 25
 --Fixed crash if player commits suicides from the edit screen while some living
   family members have blocked exit paths (thanks Seth Scott).
 
+
+
+
+
+Version 24   Live Server Fixes
+
+--Reduced starting bounty (when no crimes have been commited yet) down from
+  500 to 100 (thanks Joshua Collins).
+
+
  
 
 
