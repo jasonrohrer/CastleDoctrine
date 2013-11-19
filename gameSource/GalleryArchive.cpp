@@ -133,13 +133,27 @@ char *GalleryArchive::getContentsString() {
 
 
     SimpleVector<char *> parts;
-    
+
+    // hold selected object and keep it to add at end of list
+    // this allows selected object to be remembered server-side
+    // (the last object added, from the end of the list, ends up selected
+    //  when loaded from the server later)    
     for( int i=0; i<mObjectList.size(); i++ ) {
-        int id = *( mObjectList.getElement( i ) );
         
-        parts.push_back( autoSprintf( "%d", id ) );
+        if( mSelectedIndex != i ) {
+            int id = *( mObjectList.getElement( i ) );
+            
+            parts.push_back( autoSprintf( "%d", id ) );
+            }
         }    
     
+    if( mSelectedIndex != -1 ) {
+        int id = *( mObjectList.getElement( mSelectedIndex ) );
+            
+        parts.push_back( autoSprintf( "%d", id ) );
+        }
+    
+
 
     char **partsArray = parts.getElementArray();
     

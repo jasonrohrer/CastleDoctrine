@@ -18,6 +18,9 @@ Version 25
   start moving.  Now their vision is properly blocked by the diagonal gap
   (thanks Iceman).
 
+--What you put at the top of your gallery archive (the visible painting) is
+  now remembered (thanks Gyuri).
+
 
 
 
