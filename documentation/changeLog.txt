@@ -3,6 +3,8 @@ Version 25
 --Fixed crash if player commits suicides from the edit screen while some living
   family members have blocked exit paths (thanks Seth Scott).
 
+--Fixed drag-to-place glitch (stubborn tile that won't change) if player moves
+  to shift the screen during the drag (thanks Colorfusion).
 
 
 

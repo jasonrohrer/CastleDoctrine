@@ -2710,7 +2710,6 @@ void HouseGridDisplay::pointerDrag( float inX, float inY ) {
 
     if( index != -1 && 
         mPointerDownIndex != -1 &&
-        index != mPointerDownIndex &&
         mPointerDownObjectID != -1 &&
         ! isSubMapPropertySet( index, permanent ) &&
         ! isSubMapPropertySet( index, mandatory ) ) {
