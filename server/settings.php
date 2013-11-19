@@ -201,7 +201,7 @@ $defaultPrices = array(
     array( 502, 1200, 1, "S-W Model 36" ),
     array( 503, 150, 1, "Brick" ),
     array( 512, 200, 1, "Club" ),
-    array( 505, 1200, 1, "Doorstop" ),
+    array( 505, 200, 1, "Doorstop" ),
     array( 506, 400, 1, "Wire Cutters" ),
     array( 507, 1200, 1, "Ammonium Nitrate Diesel Bomb" ),
     array( 508, 100, 1, "Drugged Meat" ),

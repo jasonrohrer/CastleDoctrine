@@ -12,6 +12,8 @@ Version 24   Live Server Fixes
 --Reduced starting bounty (when no crimes have been commited yet) down from
   500 to 100 (thanks Joshua Collins).
 
+--Reduced cost of doorstop from $1200 down to $200 (thanks Joshual Collins and
+  Colorfusion).
 
  
 
