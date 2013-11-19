@@ -3813,7 +3813,10 @@ void HouseGridDisplay::saveWholeMapImage() {
 
     int oldXOffset = getVisibleOffsetX();
     int oldYOffset = getVisibleOffsetY();
-
+    int oldHighlightIndex = mHighlightIndex;
+    
+    // temporarily disable highlight during map image
+    mHighlightIndex = -1;
 
     int fullMapD = getFullMapD();
     
@@ -3933,5 +3936,8 @@ void HouseGridDisplay::saveWholeMapImage() {
     delete [] fileName;
     delete wholeImage;    
     
-    setVisibleOffset( oldXOffset, oldYOffset );    
+
+    // restore position and highlight
+    setVisibleOffset( oldXOffset, oldYOffset );
+    mHighlightIndex = oldHighlightIndex;
     }

@@ -6,6 +6,8 @@ Version 25
 --Fixed drag-to-place glitch (stubborn tile that won't change) if player moves
   to shift the screen during the drag (thanks Colorfusion).
 
+--Fixed mouse hover visual glitch in whole map saved images (thanks
+  Colorfusion).
 
 
 
