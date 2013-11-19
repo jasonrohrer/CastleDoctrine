@@ -9,6 +9,12 @@ Version 25
 --Fixed mouse hover visual glitch in whole map saved images (thanks
   Colorfusion).
 
+--Added a back button on object/tool picker grid screens (to leave picker
+  without picking anything).  The lack of a way to go back was confusing to
+  new users.
+
+
+
 
 
 Version 24   Live Server Fixes

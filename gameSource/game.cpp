@@ -1395,8 +1395,10 @@ void drawFrame( char inUpdate ) {
                 
                 int newObject = objectPickerGridPage->getSelectedObject();
                 
-                editHousePage->getObjectPicker()->
-                    setSelectedObject( newObject );
+                if( newObject != -1 ) {    
+                    editHousePage->getObjectPicker()->
+                        setSelectedObject( newObject );
+                    }
                 
                 // back to editing
                 currentGamePage = editHousePage;
@@ -1413,8 +1415,10 @@ void drawFrame( char inUpdate ) {
                 
                 int newTool = toolPickerGridPage->getSelectedObject();
                 
-                loadBackpackPage->getToolPicker()->
-                    setSelectedObject( newTool );
+                if( newTool != -1 ) {    
+                    loadBackpackPage->getToolPicker()->
+                        setSelectedObject( newTool );
+                    }
                 
                 // back to loading backpack
                 currentGamePage = loadBackpackPage;

@@ -5,10 +5,17 @@
 
 #include "minorGems/util/stringUtils.h"
 
+#include "minorGems/game/Font.h"
+#include "minorGems/game/game.h"
+
+
+extern Font *mainFont;
+
 
 
 PickerGridPage::PickerGridPage( char inTools ) 
-        : mUpButton( "up.tga", 7, 1, 1/16.0 ),
+        : mBackButton( mainFont, 8, -4, translate( "pickerBack" ) ),
+          mUpButton( "up.tga", 7, 1, 1/16.0 ),
           mDownButton( "down.tga", 7, -1, 1/16.0 ),
           mWifeName( NULL ),
           mDisplayOffset( 0 )  {
@@ -48,9 +55,13 @@ PickerGridPage::PickerGridPage( char inTools )
     mUpButton.setPosition( upPosition.x, upPosition.y );
     mDownButton.setPosition( downPosition.x, downPosition.y );
     
+    addComponent( &mBackButton );
     addComponent( &mUpButton );
     addComponent( &mDownButton );
     
+    mBackButton.setMouseOverTip( "" );
+
+    mBackButton.addActionListener( this );
     mUpButton.addActionListener( this );
     mDownButton.addActionListener( this );
     }
@@ -107,6 +118,10 @@ void PickerGridPage::actionPerformed( GUIComponent *inTarget ) {
         populateSlots();
         return;
         }
+    else if( inTarget == &mBackButton ) {
+        mSelectedObject = -1;
+        mDone = true;
+        }
         
     for( int i=0; i<NUM_SLOTS_PER_PICKER_GRID_PAGE; i++ ) {
         if( inTarget == mPickerPageSlots[i] ) {
@@ -125,6 +140,7 @@ void PickerGridPage::makeActive( char inFresh ) {
     LiveHousePage::makeActive( inFresh );
     
     mDone = false;
+    mSelectedObject = -1;
     }
 
 

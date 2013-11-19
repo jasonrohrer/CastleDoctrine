@@ -1,5 +1,6 @@
 #include "LiveHousePage.h"
 
+#include "TextButton.h"
 #include "SpriteButton.h"
 
 #include "HouseObjectPicker.h"
@@ -42,6 +43,7 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
             return mDone;
             }
         
+        // can be -1 if nothing selected (back hit)
         virtual int getSelectedObject();
 
 
@@ -68,6 +70,7 @@ class PickerGridPage : public LiveHousePage, public ActionListener {
         
         HouseObjectPicker *mPickerPageSlots[ NUM_SLOTS_PER_PICKER_GRID_PAGE ];
         
+        TextButton mBackButton;
         SpriteButton mUpButton;
         SpriteButton mDownButton;
 
