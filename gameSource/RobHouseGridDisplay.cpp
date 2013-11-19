@@ -1592,7 +1592,16 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 
                 // at least one sub-area of tile is visible
                 
-                mTileVisibleMap[ mapI ] = true;
+                // HOWEVER, if tile itself is vision blocking, don't
+                // mark it as visible here
+                // Count it as blocking visibility of things that are
+                // also in this spot (for example, a mobile standing behind
+                // a diagonal gap---their tile may have some visibile
+                // sub-areas, but the mobile itself shouldn't be
+                // visibility triggered).
+                if( !blockingMap[ mapI ] ) {
+                    mTileVisibleMap[ mapI ] = true;
+                    }
                 }
             
             i++;

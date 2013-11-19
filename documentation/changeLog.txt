@@ -13,6 +13,12 @@ Version 25
   without picking anything).  The lack of a way to go back was confusing to
   new users.
 
+--Fixed a visibility glitch for mobile objects and family members when
+  positioned behind a diagonal gap.  Before, they could see the robber and
+  start moving.  Now their vision is properly blocked by the diagonal gap
+  (thanks Iceman).
+
+
 
 
 
