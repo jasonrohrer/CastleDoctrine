@@ -652,11 +652,11 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState,
         int state = mHouseMapCellStates[i];
         
         char isStuck = isPropertySet( id, state, stuck );
-        
-        if( inForceUnstuck || ! isStuck ) {
+        char isNoAutoRevert = isPropertySet( id, state, noAutoRevert );
+
+        if( inForceUnstuck || ! ( isStuck || isNoAutoRevert ) ) {
             
-            if( isStuck && ! isPropertySet( id, state, deadFamily )
-                && ! isPropertySet( id, state, notDamaged ) ) {
+            if( isStuck && ! isPropertySet( id, state, deadFamily ) ) {
                 mHouseMapToolTipOverrideOn[i] = true;
                 mHouseMapToolTipOverrideState[i] = mHouseMapCellStates[i];
                 }
@@ -668,9 +668,13 @@ void HouseGridDisplay::resetToggledStatesInternal( int inTargetState,
         isStuck = isPropertySet( mHouseMapMobileIDs[i], 
                                  mHouseMapMobileCellStates[i], stuck );
         
+        isNoAutoRevert = isPropertySet( mHouseMapMobileIDs[i], 
+                                        mHouseMapMobileCellStates[i], 
+                                        noAutoRevert );
+        
         if( mHouseMapMobileIDs[i] != 0 
             &&
-            ( inForceUnstuck || ! isStuck ) ) {
+            ( inForceUnstuck || ! ( isStuck || isNoAutoRevert ) ) ) {
             
             if( isStuck ) {
                 mHouseMapMobileToolTipOverrideOn[i] = true;

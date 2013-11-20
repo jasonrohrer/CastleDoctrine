@@ -23,6 +23,11 @@ Version 25
 
 --Server-side simulator now checks wife_killed_robber status.
 
+--Changed so that a closed trapdoor at the end of a robbery is no longer stuck
+  (where replacing it is billed) but instead it has a new property
+  (noAutoRevert) that keeps it closed in edit mode (in case an animal is on
+  top of it, and should not be seen floating over an open trapdoor in edit
+  mode).  Got rid of redundant notDamaged property as a result (thanks Iceman).
 
 
 
