@@ -21,6 +21,8 @@ Version 25
 --What you put at the top of your gallery archive (the visible painting) is
   now remembered (thanks Gyuri).
 
+--Server-side simulator now checks wife_killed_robber status.
+
 
 
 

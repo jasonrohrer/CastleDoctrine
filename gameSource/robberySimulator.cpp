@@ -140,9 +140,11 @@ end_house_map
                          "%d\n"
                          "%d\n"
                          "%d\n"
+                         "%d\n"
                          "%s\n"
                          "%s",
                          replayCheckerDisplay->getSuccess(),
+                         replayCheckerDisplay->getWifeKilledRobber(),
                          replayCheckerDisplay->getWifeKilled(),
                          replayCheckerDisplay->getWifeRobbed(),
                          replayCheckerDisplay->getFamilyKilledCount(),

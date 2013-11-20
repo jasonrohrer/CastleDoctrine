@@ -4046,6 +4046,7 @@ function cd_endEditHouse() {
                                     0,
                                     
                                     &$success,
+                                    &$wife_killed_robber,
                                     &$wife_killed,
                                     &$wife_robbed,
                                     &$family_killed_count,
@@ -5077,6 +5078,7 @@ function cd_endRobHouse() {
     if( $checkRobberiesWithHeadlessClient ) {
 
         $sim_success;
+        $sim_wife_killed_robber;
         $sim_wife_killed;
         $sim_wife_robbed;
         $sim_family_killed_count;
@@ -5091,6 +5093,7 @@ function cd_endRobHouse() {
                                 $wife_loot_value,
                                     
                                 &$sim_success,
+                                &$sim_wife_killed_robber,
                                 &$sim_wife_killed,
                                 &$sim_wife_robbed,
                                 &$sim_family_killed_count,
@@ -5107,6 +5110,7 @@ function cd_endRobHouse() {
             // sim finished
 
             if( $sim_success != $success ||
+                $sim_wife_killed_robber != $wife_killed_robber ||
                 $sim_wife_killed != $wife_killed ||
                 $sim_wife_robbed != $wife_robbed ||
                 $sim_family_killed_count != $family_killed_count ||
@@ -5122,6 +5126,8 @@ function cd_endRobHouse() {
                     "Robbery end with submitted results that don't".
                     " match simulation results denied ".
                     " success=$success($sim_success) ".
+                    " wifeKilledRobber=".
+                        "$wife_killed_robber($sim_wife_killed_robber) ".
                     " wifeKilled=$wife_killed($sim_wife_killed) ".
                     " wifeRobbed=$wife_robbed($sim_wife_robbed) ".
                     " killedCount=".
@@ -6415,6 +6421,7 @@ function cd_simulateRobbery( $house_map,
                              $wife_money,
                              
                              &$success,
+                             &$wife_killed_robber,
                              &$wife_killed,
                              &$wife_robbed,
                              &$family_killed_count,
@@ -6489,15 +6496,16 @@ function cd_simulateRobbery( $house_map,
                 
                 $responseParts = preg_split( "/\s+/", $response );
 
-                if( count( $responseParts ) == 7 ) {
+                if( count( $responseParts ) == 8 ) {
                     
                     $success = $responseParts[0];
                     
-                    $wife_killed = $responseParts[1];
-                    $wife_robbed = $responseParts[2];
-                    $family_killed_count = $responseParts[3];
-                    $end_backpack_contents = $responseParts[4];
-                    $end_house_map = $responseParts[5];
+                    $wife_killed_robber = $responseParts[1];
+                    $wife_killed = $responseParts[2];
+                    $wife_robbed = $responseParts[3];
+                    $family_killed_count = $responseParts[4];
+                    $end_backpack_contents = $responseParts[5];
+                    $end_house_map = $responseParts[6];
                     
                     return 1;
                     }

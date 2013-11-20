@@ -54,6 +54,7 @@ wife_money
 
 Returns:
 success
+wife_killed_robber
 wife_killed
 wife_robbed
 family_killed_count
@@ -66,6 +67,8 @@ end_house_map
 Where:
 
 success = [0(die) or 1(hit vault) or 2(leave)]
+
+wife_killed_robber = [0(false) or 1(true)]
 
 wife_killed = [0(false) or 1(true)]
 
