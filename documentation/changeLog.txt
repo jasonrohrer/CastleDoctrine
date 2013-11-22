@@ -29,6 +29,9 @@ Version 25
   top of it, and should not be seen floating over an open trapdoor in edit
   mode).  Got rid of redundant notDamaged property as a result (thanks Iceman).
 
+--Fixed a bug where the game could get stuck on the pause screen on certain
+  platforms after ALT-TABing out and back in (thanks Joshua Collins).
+
 
 
 
