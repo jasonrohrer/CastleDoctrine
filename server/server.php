@@ -89,6 +89,15 @@ if( get_magic_quotes_gpc() ) {
 //sleep( rand( 1, 5 ) );
 
 
+
+// keep track of touched map hashes during this action OUTSIDE
+// of MySQL (to avoid deadlocks updating the maps table in the middle
+// of a query)
+global $touchedHouseMapHashes;
+$touchedHouseMapHashes = array();
+
+
+
 // all calls need to connect to DB, so do it once here
 cd_connectToDatabase();
 
@@ -355,7 +364,15 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
 // done processing
 // only function declarations below
 
+// final steps after actions:
+// update touched timestamps in database for maps
+cd_processTouchedMaps();
+
+// close database
 cd_closeDatabase();
+
+
+
 
 
 
@@ -775,8 +792,10 @@ function cd_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "house_map_hash CHAR(40) NOT NULL PRIMARY KEY," .
-            "last_insert_date DATETIME NOT NULL," .
-            "INDEX( last_insert_date ),".
+            "last_touch_date DATETIME NOT NULL," .
+            "INDEX( last_touch_date ),".
+            "delete_flag TINYINT NOT NULL," .
+            "INDEX( delete_flag ),".
             "house_map LONGTEXT NOT NULL ) ENGINE = INNODB;";
 
         $result = cd_queryDatabase( $query );
@@ -1477,9 +1496,16 @@ function cd_checkForFlush() {
     $staleTimeout = "0 0:05:0.000";
     $staleLogTimeout = "10 0:00:0.000";
     $staleLogTimeoutDeadOwners = "5 0:00:0.000";
+
+    // how long to keep maps in cache after they are flagged for deletion
+    // this gives us a chance to catch a map that was flagged accidentally
+    // (concurrency issue?) but is still referenced in database
+    $staleFlaggedMapTimeout = "0 0:20:0.000";
+    
     // for testing:
     //$flushInterval = "0 0:00:30.000";
     //$staleTimeout = "0 0:01:0.000";
+    //$staleFlaggedMapTimeout = "0 0:02:0.000";
     
     
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
@@ -1786,21 +1812,22 @@ function cd_checkForFlush() {
         $mapsTable = $tableNamePrefix . "maps";
         $robLogsTable = $tableNamePrefix . "robbery_logs";
         
-        // delete unused maps from map cache
+        // mark for deletion:  unused maps from map cache
 
         // avoid deadlock here by breaking this operation into
         // separate transactions (one for each query)
         cd_queryDatabase( "SET AUTOCOMMIT = 1;" );
 
         $query = "SELECT house_map_hash FROM $mapsTable ".
-            "WHERE last_insert_date < ".
+            "WHERE delete_flag = 0 AND last_touch_date < ".
             "    SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ); ";
         
         $result = cd_queryDatabase( $query );
 
         $numRows = mysql_numrows( $result );
 
-        $staleMapsRemoved = 0;
+        $staleMapsFlagged = 0;
+        $staleMapList = array();
         
         for( $i=0; $i<$numRows; $i++ ) {
             $house_map_hash = mysql_result( $result, $i, "house_map_hash" );
@@ -1829,29 +1856,138 @@ function cd_checkForFlush() {
 
                 // double-check update date here, just
                 // in case map was re-stored since we checked above
-                $query = "DELETE FROM $mapsTable WHERE ".
+                $query = "UPDATE $mapsTable SET delete_flag = 1 WHERE ".
                     "house_map_hash = '$house_map_hash' AND ".
-                    "last_insert_date < ".
+                    "last_touch_date < ".
                     "    SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ); ";
 
                 cd_queryDatabase( $query );
 
-                $staleMapsRemoved ++;
+                $numFlagged = mysql_affected_rows();
+
+                if( $numFlagged > 0 ) {
+                    $staleMapsFlagged ++;
+
+                    $staleMapList[] = $house_map_hash;
+                    }
+                
                 }
             }
 
         
-        cd_log( "Flush removed $staleMapsRemoved unused maps." );
+        $staleMapListString = join( ", ", $staleMapList );
+        
+        cd_log( "Flush flagged $staleMapsFlagged unused maps:  ".
+                "$staleMapListString" );
 
+
+
+        
+        // finally, delete any maps that have been flagged for deletion
+        // AND haven't been touched for a long time
+
+        // but double check for each of these too
+        $query = "SELECT house_map_hash FROM $mapsTable ".
+            "WHERE delete_flag = 1 AND last_touch_date < ".
+            "    SUBTIME( CURRENT_TIMESTAMP, '$staleFlaggedMapTimeout' ); ";
+        
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+
+        $staleMapsDeleted = 0;
+        $staleMapList = array();
+        
+        for( $i=0; $i<$numRows; $i++ ) {
+            $house_map_hash = mysql_result( $result, $i, "house_map_hash" );
+            
+            $query =
+                "SELECT ".
+                "    ( SELECT COUNT(*) FROM $robLogsTable ".
+                "      WHERE house_start_map_hash = '$house_map_hash' ) ".
+                "    + ".
+                "    ( SELECT COUNT(*) FROM $housesTable ".
+                "      WHERE ".
+                "      house_map_hash = '$house_map_hash' OR ".
+                "      self_test_house_map_hash = '$house_map_hash' ) ";
+                "    + ".
+                "    ( SELECT COUNT(*) FROM $shadowHousesTable ".
+                "      WHERE ".
+                "      house_map_hash = '$house_map_hash' OR ".
+                "      self_test_house_map_hash = '$house_map_hash' ); ";
+        
+
+            $countSumResult = cd_queryDatabase( $query );
+
+            $countSum = mysql_result( $countSumResult, 0, 0 );
+
+            if( $countSum == 0 ) {
+
+                $query = "DELETE FROM $mapsTable WHERE ".
+                    "house_map_hash = '$house_map_hash'; ";
+
+                cd_queryDatabase( $query );
+
+                $numDeleted = mysql_affected_rows();
+
+                if( $numDeleted > 0 ) {
+                    $staleMapsDeleted ++;
+
+                    $staleMapList[] = $house_map_hash;
+                    }
+                
+                }
+            else {
+                // problem:
+                // map flagged for deletion incorrectly, since
+                // it's still referenced in database
+
+                $logMessage =
+                    "$inHash incorrectly flagged for deletion"; 
+        
+                global $adminEmail, $emailAdminOnFatalError;
+                if( $emailAdminOnFatalError ) {    
+                    cd_mail( $adminEmail, "Castle Doctrine map cache problem",
+                             $logMessage );
+                    }
+                
+                cd_log( $logMessage );
+                
+                // unflag it
+                $query = "UPDATE $mapsTable SET delete_flag = 0 WHERE ".
+                    "house_map_hash = '$house_map_hash'; ";
+
+                cd_queryDatabase( $query );
+                } 
+            }
+
+        
+        $staleMapListString = join( ", ", $staleMapList );
+        
+        cd_log( "Flush deleted $staleMapsDeleted flagged maps:  ".
+                "$staleMapListString" );
+        
+        
         if( $enableLog ) {
             // count remaining games for log
-            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."maps;";
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."maps ".
+                "WHERE delete_flag = 0;";
 
             $result = cd_queryDatabase( $query );
 
-            $count = mysql_result( $result, 0, 0 );
+            $countUnflagged = mysql_result( $result, 0, 0 );
 
-            cd_log( "After flush, $count maps remain." );
+            
+            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."maps ".
+                "WHERE delete_flag = 1;";
+
+            $result = cd_queryDatabase( $query );
+
+            $countFlagged = mysql_result( $result, 0, 0 );
+
+            
+            cd_log( "After flush, [$countUnflagged unflagged] ".
+                    "and [$countFlagged flagged] maps remain." );
             }
 
 
@@ -2463,13 +2599,51 @@ function cd_getHouseMap( $inHash ) {
     $numRows = mysql_numrows( $result );
 
     if( $numRows == 0 ) {
-        cd_log(
-            "Failed to find house map for hash $inHash, returning default" );
+
+        $logMessage =
+            "Failed to find house map for hash $inHash, returning default"; 
+        
+        global $adminEmail, $emailAdminOnFatalError;
+        if( $emailAdminOnFatalError ) {    
+            cd_mail( $adminEmail, "Castle Doctrine map cache miss",
+                     $logMessage );
+            }
+        
+        cd_log( $logMessage );
+            
         return cd_getDefaultHouseMap();
+        }
+
+    global $touchedHouseMapHashes;
+
+    if( array_search( $inHash,  $touchedHouseMapHashes ) === false ) {
+        // not already on list
+        // add it to list of touched
+        $touchedHouseMapHashes[] = $inHash;
         }
         
     return mysql_result( $result, 0, "house_map" );
     }
+
+
+
+// call this after transactions are ended to update last_touch_date for
+// all touched maps in the database
+function cd_processTouchedMaps() {
+    global $touchedHouseMapHashes, $tableNamePrefix;
+
+    cd_queryDatabase( "SET AUTOCOMMIT=1" ); 
+
+    foreach( $touchedHouseMapHashes as $hash ) {
+        $query = "UPDATE $tableNamePrefix"."maps ".
+            "SET last_touch_date = CURRENT_TIMESTAMP, delete_flag = 0 ".
+            "WHERE house_map_hash = '$hash';";
+        
+        $result = cd_queryDatabase( $query );
+        }
+    }
+
+
 
 
 
@@ -2484,8 +2658,8 @@ function cd_storeHouseMap( $inMap ) {
     $house_map_hash = mysql_result( $result, 0, 0 );
 
     $query = "REPLACE INTO $tableNamePrefix"."maps ".
-        "( house_map_hash, last_insert_date, house_map ) ".
-        "VALUES(  '$house_map_hash', CURRENT_TIMESTAMP, '$inMap' );";
+        "( house_map_hash, last_touch_date, delete_flag, house_map ) ".
+        "VALUES(  '$house_map_hash', CURRENT_TIMESTAMP, 0, '$inMap' );";
 
     $result = cd_queryDatabase( $query );
 

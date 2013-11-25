@@ -32,6 +32,10 @@ Version 25
 --Fixed a bug where the game could get stuck on the pause screen on certain
   platforms after ALT-TABing out and back in (thanks Joshua Collins).
 
+--Added precautions in server code against deleting maps from the map cache
+  that are still being referenced elsewhere in the database (thanks Kevin
+  Allen).
+
 
 
 
