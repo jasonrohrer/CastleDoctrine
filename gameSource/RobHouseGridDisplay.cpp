@@ -1592,14 +1592,18 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 
                 // at least one sub-area of tile is visible
                 
-                // HOWEVER, if tile itself is vision blocking, don't
-                // mark it as visible here
-                // Count it as blocking visibility of things that are
-                // also in this spot (for example, a mobile standing behind
-                // a diagonal gap---their tile may have some visibile
-                // sub-areas, but the mobile itself shouldn't be
-                // visibility triggered).
-                if( !blockingMap[ mapI ] ) {
+                // If tile is marked as blocking, it may be a "fill-in"
+                // blocking tile on the back side of a diagonal gap.
+                // In that case, don't mark whatever is standing there
+                // as visible.
+
+                // BUT, make sure that true vision blocking tiles 
+                // (like walls) are marked as visible if at least part
+                // of them can be seen (otherwise, we can never mouse over 
+                // walls and see tool tips, even if we are standing right
+                // next to them). 
+                if( ! blockingMap[ mapI ] || 
+                    isSubMapPropertySet( mapI, visionBlocking ) ) {
                     mTileVisibleMap[ mapI ] = true;
                     }
                 }
