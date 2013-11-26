@@ -426,7 +426,7 @@ $playerStartMoney = 2000;
 // their activities
 
 // Bounty is earned by the house that kills the player.
-$startingBounty = 100;
+$startingBounty = 200;
 
 $theftBountyIncrement = 500;
 

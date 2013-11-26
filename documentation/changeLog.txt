@@ -51,6 +51,8 @@ Version 24   Live Server Fixes
 --Reduced cost of doorstop from $1200 down to $200 (thanks Joshual Collins and
   Colorfusion).
 
+--Increased starting bounty back up from 100 to 200 to increase speed of game.
+
  
 
 
