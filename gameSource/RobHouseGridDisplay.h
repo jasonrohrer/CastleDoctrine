@@ -121,9 +121,20 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         unsigned char mVisibleMap[ 
             VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
+        // same type of 0-255 values, but for core under-slip shroud
+        unsigned char mVisibleUnderSlipMap[ 
+            VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+
+        
+
         // true/false for whether each spot wants to move towards visibility
         // (for smooth transitions)
         char mTargetVisibleMap[ VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+        
+        // a shrunken area that shrouds only the core of the non-visible areas
+        char mTargetVisibleUnderSlipMap[ 
+            VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+
 
         // for each tile, true if (even partly) visible
         // false if completely invisible
@@ -156,9 +167,21 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         //
         // inVisibleMap and inTargetVisibleMap both must have
         // ( HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP ) elements.
+        //
+        // inBorderFill is the alpha value (0-255) to fill the border,
+        // outside the game image, but still in the shroud sprite, with
+        // BEFORE applying the blur filter.  This will leak into the edge
+        // of the image due to the blur.
+        //
+        // Note that this border area will be clear in the final sprite
+        // no matter what value is filled there before the blur  
         SpriteHandle generateVisibilityShroudSprite(
             unsigned char *inVisibleMap, char *inTargetVisibleMap,
-            int inBlowUpFactor );
+            int inBlowUpFactor,
+            unsigned char inBorderFill,
+            int inChangeRateReveal,
+            int inChangeRateHide,
+            int inNumBlurRounds );
         
 
 

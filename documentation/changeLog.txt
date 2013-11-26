@@ -39,6 +39,8 @@ Version 25
 --Changed useLargestWindow behavior to fill at most 85% of screen instead of
   80% (thanks Jim Fingal). 
 
+--Improved visibility shrouding to better hide things behind walls.
+
 
 
 

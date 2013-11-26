@@ -54,6 +54,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
 
     for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
+        mVisibleUnderSlipMap[i] = 0;
         }
     }
 
@@ -431,7 +432,9 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         mVisibleMap[i] = 255;
+        mVisibleUnderSlipMap[i] = 255;
         mTargetVisibleMap[i] = false;
+        mTargetVisibleUnderSlipMap[i] = false;
         }
 
     // initial transitions (like for power that starts out on, etc)
@@ -841,7 +844,11 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
 SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
     unsigned char *inVisibleMap, char *inTargetVisibleMap,
-    int inBlowUpFactor ) {
+    int inBlowUpFactor,
+    unsigned char inBorderFill,
+    int inChangeRateReveal,
+    int inChangeRateHide,
+    int inNumBlurRounds ) {
     
     // decay each frame
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
@@ -855,9 +862,10 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
             if( inVisibleMap[i] != 0 ) {
                 unsigned char oldValue = inVisibleMap[i];
 
-                // revealing new areas happens faster than shrouding
-                // no-longer-seen areas
-                inVisibleMap[i] -= lrint( 10 * frameRateFactor );
+                // revealing new areas happens at a different rate 
+                // than shrouding no-longer-seen areas
+                inVisibleMap[i] -= 
+                    lrint( 2 * inChangeRateReveal * frameRateFactor );
                 
                 // watch for wrap-around!
                 if( inVisibleMap[i] > oldValue ) {
@@ -873,7 +881,7 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
                 
                 unsigned char oldValue = inVisibleMap[i];
 
-                inVisibleMap[i] += lrint( 5 * frameRateFactor );
+                inVisibleMap[i] += lrint( inChangeRateHide * frameRateFactor );
                 
                 // watch for wrap-around!
                 if( inVisibleMap[i] < oldValue ) {
@@ -910,7 +918,7 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
 
     int numTouched = 0;
 
-    memset( fullGridChannelsBlownUpAlpha, 255, numBlowupPixels );
+    memset( fullGridChannelsBlownUpAlpha, inBorderFill, numBlowupPixels );
 
     
     for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
@@ -945,9 +953,10 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
                         numTouched++;
                         }
                     else {
-                        // set all border pixels to black
+                        // set all border pixels to inBorderFill
                         // and don't apply blur filter to those
-                        fullGridChannelsBlownUpAlpha[ imageIndex ] = 255;
+                        fullGridChannelsBlownUpAlpha[ imageIndex ] = 
+                            inBorderFill;
                         }
                     }
                 }
@@ -957,7 +966,7 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
     
     FastBoxBlurFilter filter2;
 
-    for( int f=0; f<10; f++ ) {
+    for( int f=0; f<inNumBlurRounds; f++ ) {
         
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                                 touchIndices,
@@ -1022,7 +1031,17 @@ void RobHouseGridDisplay::draw() {
     
     SpriteHandle visSprite = 
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
-                                        blowUpFactor );
+                                        blowUpFactor, 255, 
+                                        10, 5,
+                                        20 );
+    
+    // slip changes twice as fast to avoid reducing fluidity of main shroud
+    SpriteHandle visSlipSprite = 
+        generateVisibilityShroudSprite( mVisibleUnderSlipMap, 
+                                        mTargetVisibleUnderSlipMap,
+                                        blowUpFactor, 0,
+                                        30, 1,
+                                        7 );
         
 
 
@@ -1031,11 +1050,17 @@ void RobHouseGridDisplay::draw() {
     setDrawColor( 0, 0, 0, 1 );
 
     toggleLinearMagFilter( true );
+
     drawSprite( visSprite, spritePos, 
                 1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
+    drawSprite( visSlipSprite, spritePos, 
+                1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
+    
+        
     toggleLinearMagFilter( false );
     
     freeSprite( visSprite );
+    freeSprite( visSlipSprite );
 
 
     disableScissor();
@@ -1307,12 +1332,17 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
     int yExtra = inYOffset - mSubMapOffsetY;
     
     if( xExtra != 0 || yExtra != 0 ) {        
-        // slide values in visibility map
+        // slide values in visibility maps
         unsigned char *mNewVisibleMap = new unsigned char[ 
+            VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
+
+        unsigned char *mNewVisibleUnderSlipMap = new unsigned char[ 
             VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
         // leave black in excess area
         memset( mNewVisibleMap, 255, 
+                VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
+        memset( mNewVisibleUnderSlipMap, 255, 
                 VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
 
         int visXDelta = -xExtra * VIS_BLOWUP;
@@ -1328,9 +1358,15 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
                     int destX = x + visXDelta;
                     
                     if( destX >= 0 && destX < VIS_BLOWUP * HOUSE_D ) {
+
+                        int i = y * VIS_BLOWUP * HOUSE_D + x;
+                        int destI = destY * VIS_BLOWUP * HOUSE_D + destX;
                         
-                        mNewVisibleMap[ destY * VIS_BLOWUP * HOUSE_D + destX ]
-                            = mVisibleMap[ y * VIS_BLOWUP * HOUSE_D + x ];
+                            
+                        mNewVisibleMap[ destI ]
+                            = mVisibleMap[ i ];
+                        mNewVisibleUnderSlipMap[ destI ]
+                            = mVisibleUnderSlipMap[ i ];
                         }
                     }
                 }
@@ -1339,7 +1375,10 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
         // now replace old with new
         memcpy( mVisibleMap, mNewVisibleMap, 
                 VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
+        memcpy( mVisibleUnderSlipMap, mNewVisibleUnderSlipMap, 
+                VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
         delete [] mNewVisibleMap;
+        delete [] mNewVisibleUnderSlipMap;
         }
     
     HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
@@ -1361,6 +1400,7 @@ void RobHouseGridDisplay::recomputeVisibility() {
         // nothing visible
         for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
             mTargetVisibleMap[i] = false;
+            mTargetVisibleUnderSlipMap[i] = false;
             }
         return;
         }
@@ -1628,6 +1668,53 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     
 
     delete [] blockingMap;
+
+    
+    int visD = VIS_BLOWUP * HOUSE_D;
+    
+    int numVisCells = visD * visD;
+    
+    memcpy( mTargetVisibleUnderSlipMap, mTargetVisibleMap, numVisCells );
+
+    char *newSlipMap = 
+        new char [ numVisCells ];
+    
+    int shrinkRounds = 1;
+    for( int r=0; r<shrinkRounds; r++ ) {
+        
+        memset( newSlipMap, false, numVisCells );
+
+        int numTrueCells = 0;
+        
+        for( int i=0; i<numVisCells; i++ ) {
+            // expand each visible area to make slip smaller
+
+            if( mTargetVisibleUnderSlipMap[i] ) {
+                numTrueCells++;
+                
+                newSlipMap[i] = true;
+                
+                int y = i / visD;
+                int x = i % visD;
+                
+                if( y > 0 ) {
+                    newSlipMap[i - visD] = true;
+                    }
+                if( y < visD - 1 ) {
+                    newSlipMap[i + visD] = true;
+                    }
+                if( x > 0 ) {
+                    newSlipMap[i - 1] = true;
+                    }
+                if( x < visD - 1 ) {
+                    newSlipMap[i + 1] = true;
+                    }
+                }
+            }
+        memcpy( mTargetVisibleUnderSlipMap, newSlipMap, numVisCells );
+        }
+
+    delete [] newSlipMap;
     }
 
 
