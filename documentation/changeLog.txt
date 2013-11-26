@@ -36,6 +36,9 @@ Version 25
   that are still being referenced elsewhere in the database (thanks Kevin
   Allen).
 
+--Changed useLargestWindow behavior to fill at most 85% of screen instead of
+  80% (thanks Jim Fingal). 
+
 
 
 
