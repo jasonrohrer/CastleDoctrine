@@ -839,49 +839,29 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
 
 
-
-
-
-
-
-
-
-    
-
-void RobHouseGridDisplay::draw() {
-    HouseGridDisplay::draw();
-
-    
-    // apply same scissor region to visibility overlay
-    enableScissor( -HOUSE_D * mTileRadius,
-                   -HOUSE_D * mTileRadius,
-                   2 * ( HOUSE_D * mTileRadius ),
-                   2 * ( HOUSE_D * mTileRadius ) );
-    
-
-    
-
-
+SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
+    unsigned char *inVisibleMap, char *inTargetVisibleMap,
+    int inBlowUpFactor ) {
     
     // decay each frame
     for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
         if( mRobberIndex == mGoalIndex ) {
             // robber hit vault
             // instantly black out, because robber on vault looks weird
-            mVisibleMap[i] = 255;
+            inVisibleMap[i] = 255;
             }
-        else if( mTargetVisibleMap[i] ) {
+        else if( inTargetVisibleMap[i] ) {
             // wants to move toward visible
-            if( mVisibleMap[i] != 0 ) {
-                unsigned char oldValue = mVisibleMap[i];
+            if( inVisibleMap[i] != 0 ) {
+                unsigned char oldValue = inVisibleMap[i];
 
                 // revealing new areas happens faster than shrouding
                 // no-longer-seen areas
-                mVisibleMap[i] -= lrint( 10 * frameRateFactor );
+                inVisibleMap[i] -= lrint( 10 * frameRateFactor );
                 
                 // watch for wrap-around!
-                if( mVisibleMap[i] > oldValue ) {
-                    mVisibleMap[i] = 0;
+                if( inVisibleMap[i] > oldValue ) {
+                    inVisibleMap[i] = 0;
                     }
 
                 }
@@ -889,22 +869,22 @@ void RobHouseGridDisplay::draw() {
         else {
             // wants to move toward invisible
             
-            if( mVisibleMap[i] != 255 ) {
+            if( inVisibleMap[i] != 255 ) {
                 
-                unsigned char oldValue = mVisibleMap[i];
+                unsigned char oldValue = inVisibleMap[i];
 
-                mVisibleMap[i] += lrint( 5 * frameRateFactor );
+                inVisibleMap[i] += lrint( 5 * frameRateFactor );
                 
                 // watch for wrap-around!
-                if( mVisibleMap[i] < oldValue ) {
-                    mVisibleMap[i] = 255;
+                if( inVisibleMap[i] < oldValue ) {
+                    inVisibleMap[i] = 255;
                     }
                 }
             }
         }
 
 
-    int blowUpFactor = 2;
+    int blowUpFactor = inBlowUpFactor;
     int blownUpSize = HOUSE_D * VIS_BLOWUP * blowUpFactor;
 
     double log2size = log( blownUpSize ) / log( 2 );
@@ -938,7 +918,7 @@ void RobHouseGridDisplay::draw() {
         for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
             
             unsigned char alphaValue = 
-                mVisibleMap[ y * HOUSE_D * VIS_BLOWUP + x ];
+                inVisibleMap[ y * HOUSE_D * VIS_BLOWUP + x ];
 
             for( int blowUpY= y * blowUpFactor; 
                  blowUpY< y * blowUpFactor + blowUpFactor; 
@@ -1011,6 +991,40 @@ void RobHouseGridDisplay::draw() {
     
     delete [] fullGridChannelsBlownUpAlpha;
     delete [] touchIndices;
+
+    return visSprite;
+    }
+
+
+
+
+
+
+
+
+
+    
+
+void RobHouseGridDisplay::draw() {
+    HouseGridDisplay::draw();
+
+    
+    // apply same scissor region to visibility overlay
+    enableScissor( -HOUSE_D * mTileRadius,
+                   -HOUSE_D * mTileRadius,
+                   2 * ( HOUSE_D * mTileRadius ),
+                   2 * ( HOUSE_D * mTileRadius ) );
+    
+
+    
+
+    int blowUpFactor = 2;
+    
+    SpriteHandle visSprite = 
+        generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
+                                        blowUpFactor );
+        
+
 
     doublePair spritePos = { 0, 0 };
     

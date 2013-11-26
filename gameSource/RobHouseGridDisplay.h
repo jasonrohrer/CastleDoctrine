@@ -151,6 +151,17 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void recomputeVisibilityFloat();
         
 
+        // performs a frame step on inVisibleMap and
+        // returns the resulting visibility shroud sprite
+        //
+        // inVisibleMap and inTargetVisibleMap both must have
+        // ( HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP ) elements.
+        SpriteHandle generateVisibilityShroudSprite(
+            unsigned char *inVisibleMap, char *inTargetVisibleMap,
+            int inBlowUpFactor );
+        
+
+
         void applyTransitionsAndProcess();
 
         void applyCurrentTool( int inTargetFullIndex );
