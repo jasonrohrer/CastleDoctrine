@@ -1033,7 +1033,7 @@ void RobHouseGridDisplay::draw() {
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
                                         blowUpFactor, 255, 
                                         10, 5,
-                                        20 );
+                                        10 );
     
     // slip changes twice as fast to avoid reducing fluidity of main shroud
     SpriteHandle visSlipSprite = 
@@ -1679,7 +1679,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     char *newSlipMap = 
         new char [ numVisCells ];
     
-    int shrinkRounds = 1;
+    int shrinkRounds = 2;
     for( int r=0; r<shrinkRounds; r++ ) {
         
         memset( newSlipMap, false, numVisCells );
