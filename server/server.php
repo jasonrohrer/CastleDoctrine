@@ -8126,6 +8126,8 @@ function cd_showRecentUserEmails() {
     echo "$count users played the game in the past $day_limit days:<br><br>";
 
     echo "$emailList";
+
+    echo "\n\nEND";
     }
 
 
