@@ -1041,7 +1041,7 @@ void RobHouseGridDisplay::draw() {
                                         mTargetVisibleUnderSlipMap,
                                         blowUpFactor, 0,
                                         30, 1,
-                                        7 );
+                                        6 );
         
 
 
@@ -1679,7 +1679,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     char *newSlipMap = 
         new char [ numVisCells ];
     
-    int shrinkRounds = 2;
+    int shrinkRounds = 3;
     for( int r=0; r<shrinkRounds; r++ ) {
         
         memset( newSlipMap, false, numVisCells );
