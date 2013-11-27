@@ -1006,6 +1006,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                     
                         if( better && 
                             inMapMobileIDs[destI] == 0 &&
+                            destI != inStartIndex &&
                             ! deadMobilePresentAdjacent[destI] &&
                             ! isPropertySet( inMapIDs[destI], 
                                              inMapStates[destI],
@@ -1052,6 +1053,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 
                     if( inMapMobileIDs[destI] == 0 &&
                         ! blockedByDead &&
+                        destI != inStartIndex &&
                         ! isPropertySet( inMapIDs[destI], 
                                          inMapStates[destI],
                                          blocking ) &&

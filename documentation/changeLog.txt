@@ -41,6 +41,9 @@ Version 25
 
 --Improved visibility shrouding to better hide things behind walls.
 
+--Cat no longer gets stuck in front of welcome mat if it is fleeing toward the
+  mat (thanks Colorfusion).
+
 
 
 
