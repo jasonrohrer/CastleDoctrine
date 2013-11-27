@@ -8105,7 +8105,7 @@ function cd_showRecentUserEmails() {
 
     $day_limit = cd_requestFilter( "day_limit", "/\d+/", 7 );
     
-    $query = "set group_concat_max_len=10000;";
+    $query = "set group_concat_max_len=100000;";
 
     cd_queryDatabase( $query );
     
@@ -8127,7 +8127,7 @@ function cd_showRecentUserEmails() {
 
     echo "$emailList";
 
-    echo "\n\nEND";
+    echo "<br><br>END";
     }
 
 
