@@ -1,4 +1,4 @@
-Version 25
+Version 25   2013-November-27 
 
 --Fixed crash if player commits suicides from the edit screen while some living
   family members have blocked exit paths (thanks Seth Scott).
