@@ -1,3 +1,14 @@
+Version 26
+
+--Fixed newly-broken visibility toggle in tape playback.  Also, improved the
+  way view jump-back looks when visibility shroud turned back on after panning
+  around the house in a paused tape.
+
+
+
+
+
+
 Version 25   2013-November-27 
 
 --Fixed crash if player commits suicides from the edit screen while some living

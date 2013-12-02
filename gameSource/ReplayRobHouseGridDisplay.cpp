@@ -443,7 +443,7 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
             for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
 
                 mTargetVisibleMap[i] = true;
-
+                mTargetVisibleUnderSlipMap[i] = true;
                 i++;
                 }
             }
@@ -456,10 +456,34 @@ void ReplayRobHouseGridDisplay::recomputeVisibility() {
 
 void ReplayRobHouseGridDisplay::endPanning() {
     if( mPanning ) {
+
+        char actuallyJumping = false;
+        if( mSubMapOffsetX != mSavedVisibleOffsetX ||
+            mSubMapOffsetY != mSavedVisibleOffsetY ) {
+            actuallyJumping = true;
+            }
+        
         // jump back
         setVisibleOffset( mSavedVisibleOffsetX, mSavedVisibleOffsetY );
-
+        
         mPanning = false;
+        
+        if( actuallyJumping ) {
+            
+            // black out actual visibility to avoid weird
+            // overlapping effects as our view window jumps back
+            // let visibility fade to desired visibility from all black
+            for( int i=0; 
+                 i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; 
+                 i++ ) {
+            
+                mVisibleMap[i] = 255;
+                mVisibleUnderSlipMap[i] = 255;
+                }
+
+            // DON'T black out if we're not actually jumping anywhere
+            // to preserve the nice fade-in of shroud in that case.
+            }
         }
     }
 
