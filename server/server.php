@@ -8685,6 +8685,93 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
                     "Database query failed:<BR>$inQueryString<BR><BR>" .
                     mysql_error() );
             }
+        else if( $errorNumber == 1205 ) {
+            // lock wait timeout exceeded
+            // probably some wayward process
+
+
+            $logMessage = mysql_error() .
+                " for query:<br>\n$inQueryString<br><br>\n\n";
+
+
+            $result = mysql_query( "SELECT connection_id();", $cd_mysqlLink );
+
+            $ourID = mysql_result( $result, 0, 0 );
+
+            $logMessage = $logMessage .
+                "Our process ID: $ourID<br><br>\n\n";
+
+            $logMessage = $logMessage .
+                "Process list:<br>\n";
+
+            
+            $result = mysql_query( "SHOW PROCESSLIST;", $cd_mysqlLink );
+
+            $numRows = mysql_numrows( $result );
+            
+            $slowestID = -1;
+            $slowestTime = 0;
+    
+            for( $i=0; $i<$numRows; $i++ ) {
+                $id = mysql_result( $result, $i,
+                                    "id" );
+                $time = mysql_result( $result, $i,
+                                      "time" );
+                $info = mysql_result( $result, $i,
+                                      "info" );
+
+                $logMessage = $logMessage .
+                    "ID: $id   Time: $time   Info: $info<br>\n";
+
+                if( $id == $ourID ) {
+                    }
+                else if( $id != $ourID &&
+                         $time > $slowestTime ) {
+                    $slowestTime = $time;
+                    $slowestID = $id;
+                    }
+                }
+
+
+            $shouldRestartQuery = false;
+            
+            if( $slowestID != -1 ) {
+
+                $logMessage = $logMessage .
+                    "<br><br>\n\nKilling longest running process $slowestID";
+                
+                $result = mysql_query( "KILL $slowestID;", $cd_mysqlLink );
+                
+
+                $logMessage = $logMessage . "<br><br>\n\nRestarting query";
+                
+                $shouldRestartQuery = true;
+                }
+            else {
+                $logMessage = $logMessage .
+                    "<br><br>\n\nNo process but this one?  Giving up.";
+                }
+            
+                    
+            cd_log( $logMessage );
+
+            
+            global $adminEmail, $emailAdminOnFatalError;
+
+            if( $emailAdminOnFatalError ) {    
+                cd_mail( $adminEmail, "Castle Doctrine lock wait timeout",
+                         $logMessage );
+                }
+
+            if( $shouldRestartQuery ) {
+                // call self again
+                // if we lock wait timeout again, we'll kill the next slowest
+                // process and try again, until none are left, if necessary
+
+                return cd_queryDatabase( $inQueryString, $inDeadlockFatal );
+                }
+            
+            }
         else if( $inDeadlockFatal == 0 && $errorNumber == 1213 ) {
             // deadlock detected, but it's not a fatal error
             // caller will handle it
@@ -8694,7 +8781,8 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
             // some other error (we're still connected, so we can
             // add log messages to database
             cd_fatalError( "Database query failed:<BR>$inQueryString<BR><BR>" .
-                           mysql_error() );
+                           mysql_error() .
+                           "<br>(error number $errorNumber)<br>" );
             }
         }
     

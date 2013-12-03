@@ -8,6 +8,15 @@ Version 26
 
 
 
+Version 25   Live Server Fixes
+
+--Added work-around for rare MySQL lock wait timeout issue (assuming that some
+  other MySQL process has runaway and killing that other process to force it to
+  release the lock).
+
+
+
+
 
 Version 25   2013-November-27 
 
