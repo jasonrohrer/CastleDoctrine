@@ -4,6 +4,7 @@
 header('Cache-Control: no-store, no-cache, must-revalidate');
 header('Cache-Control: post-check=0, pre-check=0', FALSE);
 header('Pragma: no-cache');
+header('Location: http://thecastledoctrine.net/index.php');
 
 error_reporting( E_ALL );
 
