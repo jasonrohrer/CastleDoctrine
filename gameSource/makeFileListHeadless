@@ -11,6 +11,8 @@ LINK_AGAINST_LIBPNG = no
 LINK_HEADLESS = yes
 
 APP_NAME = CastleDoctrineHeadless
+ROOT_PATH = ../..
+
 
 
 LAYER_SOURCE = \

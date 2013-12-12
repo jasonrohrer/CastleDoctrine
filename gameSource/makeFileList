@@ -9,6 +9,8 @@ LINK_AGAINST_LIBJPEG = no
 LINK_AGAINST_LIBPNG = no
 
 APP_NAME = CastleDoctrine
+ROOT_PATH = ../..
+
 
 
 LAYER_SOURCE = \
