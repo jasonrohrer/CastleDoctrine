@@ -210,6 +210,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapMobileCellStates;
 
 
+        // fade applied to non-wall tiles
+        float *mHouseMapCellFades;
+        
+
         // for overriding tool tips on certain cells
         // (used when resetToggledStates overrides stuck states)
         char *mHouseMapToolTipOverrideOn;
@@ -405,11 +409,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         static SpriteHandle sDropShadowSprite;
 
 
-        void drawDropShadow( doublePair inPosition );
+        void drawDropShadow( doublePair inPosition, float inFade = 1.0f );
         
         void drawDarkHaloBehind( int inObjectID, int inOrientation,
                                  int inState, 
-                                 doublePair inPosition );
+                                 doublePair inPosition,
+                                 float inFade = 1.0f );
         
         void drawRobber( doublePair inPosition );
 

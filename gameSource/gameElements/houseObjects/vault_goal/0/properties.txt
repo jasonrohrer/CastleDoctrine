@@ -1,4 +1,4 @@
-shadowMaking
+structural
 blocking
 mandatory
 darkHaloBehind
