@@ -1,1 +1,3 @@
 blocking
+wall
+structural

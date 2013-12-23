@@ -7,6 +7,10 @@ Version 26
 --Improved orientation of vault when it is surrounded by a mix of wall and
   structural tiles so that it faces out through the non-wall tiles.
 
+--Gave pits the 'wall' and 'structural' properties so that other objects orient
+  themselves around them (for example, a vault surrounded by three pits will
+  face the opening).
+
 
 
 
