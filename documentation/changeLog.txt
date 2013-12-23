@@ -4,6 +4,8 @@ Version 26
   way view jump-back looks when visibility shroud turned back on after panning
   around the house in a paused tape.
 
+--Improved orientation of vault when it is surrounded by a mix of wall and
+  structural tiles so that it faces out through the non-wall tiles.
 
 
 

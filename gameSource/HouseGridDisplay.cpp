@@ -1371,6 +1371,73 @@ int HouseGridDisplay::getTileNeighborHasProperty( int inFullIndex,
 
 
 
+
+
+int HouseGridDisplay::computeBlockedOrientation( int inFullIndex,
+                                                 propertyID inBlockingProperty,
+                                                 char *outCompletelyBlocked ) {
+    
+    int numBlockedNeighbors = 0;
+
+    char neighborsBlocked[4] = { false, false, false, false };
+                
+    int oneBlockedIndex = 0;
+
+    for( int n=0; n<4; n++ ) {
+        if( getTileNeighborHasProperty( inFullIndex, n, 
+                                        inBlockingProperty ) ) {
+            numBlockedNeighbors ++;
+                        
+            neighborsBlocked[n] = true;
+                        
+            oneBlockedIndex = n;
+            }
+        }
+                
+    *outCompletelyBlocked = ( numBlockedNeighbors == 4 );
+
+
+    if( numBlockedNeighbors == 0 || numBlockedNeighbors == 4 ) {
+        // default to left-facing when none/all are blocked
+        return 3;
+        }
+    else if( numBlockedNeighbors == 1 ) {
+        // face away from only blockage
+        switch( oneBlockedIndex ) {
+            case 0:
+                return 2;
+                break;
+            case 1:
+                return 3;
+                break;
+            case 2:
+                return 0;
+                break;
+            case 3:
+                return 1;
+                break;
+            }                            
+        }
+    else {
+        // blocked on multiple sides
+        // face whatever direction is open
+                    
+        for( int n=0; n<4; n++ ) {
+            if( !neighborsBlocked[n] ) {
+                return n;
+                }
+            }
+        }
+
+    // we'll never get here because of cases above, but satisfy the compiler
+    return 3;
+    }
+
+    
+
+
+
+
 int HouseGridDisplay::getOrientationIndex( int inFullIndex, 
                                            int inTileID, int inTileState ) {
     int numOrientations = 0;
@@ -1410,53 +1477,6 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
         }
     else if( numOrientations == 4 ) {
                 
-        int numBlockedNeighbors = 0;
-
-        char neighborsBlocked[4] = { false, false, false, false };
-                
-        int oneBlockedIndex = 0;
-
-        for( int n=0; n<4; n++ ) {
-            if( getTileNeighborHasProperty( inFullIndex, n, structural ) ) {
-                numBlockedNeighbors ++;
-                        
-                neighborsBlocked[n] = true;
-                        
-                oneBlockedIndex = n;
-                }
-            }
-                
-        if( numBlockedNeighbors == 0 || numBlockedNeighbors == 4 ) {
-            // default to left-facing when none/all are blocked
-            orientationIndex = 3;
-            }
-        else if( numBlockedNeighbors == 1 ) {
-            // face away from only blockage
-            switch( oneBlockedIndex ) {
-                case 0:
-                    orientationIndex = 2;
-                    break;
-                case 1:
-                    orientationIndex = 3;
-                    break;
-                case 2:
-                    orientationIndex = 0;
-                    break;
-                case 3:
-                    orientationIndex = 1;
-                    break;
-                }                            
-            }
-        else {
-            // blocked on multiple sides
-            // face whatever direction is open
-                    
-            for( int n=0; n<4; n++ ) {
-                if( !neighborsBlocked[n] ) {
-                    orientationIndex = n;
-                    }
-                }
-            }
 
 
 
@@ -1511,7 +1531,30 @@ int HouseGridDisplay::getOrientationIndex( int inFullIndex,
                     }
                 }
             }
+        else {
+            // not player-facing
+            // orient based on structures and walls
 
+            char completelyBlocked;
+            
+            // first, look for direction to face based on holes
+            // in structural objects
+            orientationIndex = 
+                computeBlockedOrientation( inFullIndex,
+                                           structural,
+                                           &completelyBlocked );
+            if( completelyBlocked ) {
+                // completely surrounded by strutural objects
+                // defer to walls instead.
+                // (for example, if we have 3 wall and 1 non-wall neighbor,
+                //  we should face out through the non-wall neighbor)
+                orientationIndex = 
+                    computeBlockedOrientation( inFullIndex,
+                                               wall,
+                                               &completelyBlocked );
+                }
+            }
+        
 
         }
     else if( numOrientations == 2 ) {

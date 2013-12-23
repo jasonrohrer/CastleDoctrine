@@ -334,6 +334,12 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int getTileNeighborHasProperty( int inFullIndex, int inNeighbor,
                                         propertyID inProperty );
         
+        // for four-orientation tiles, computes orientation based on structural
+        // and wall neighbor tiles, trying to face out through gaps.
+        int computeBlockedOrientation( int inFullIndex,
+                                       propertyID inBlockingProperty,
+                                       char *outCompletelyBlocked );
+
         
         // inFullIndex is tile's full-map index
         // inTileID might be different from what's actually in the map
