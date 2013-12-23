@@ -436,6 +436,10 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         mTargetVisibleMap[i] = false;
         mTargetVisibleUnderSlipMap[i] = false;
         }
+    
+    for( int i=0; i<mFullMapD * mFullMapD; i++ ) {
+        mHouseMapCellFades[i] = 0;
+        }
 
     // initial transitions (like for power that starts out on, etc)
     freezeMobileObjects( true );
@@ -1029,10 +1033,14 @@ void RobHouseGridDisplay::draw() {
 
     int blowUpFactor = 2;
     
+    int mainShroudRevealRate =  20;
+    int mainShroudHideRate = 5;
+
     SpriteHandle visSprite = 
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
                                         blowUpFactor, 255, 
-                                        20, 5,
+                                        mainShroudRevealRate, 
+                                        mainShroudHideRate,
                                         10 );
     
     // slip changes much faster to avoid reducing fluidity of main shroud
@@ -1042,6 +1050,39 @@ void RobHouseGridDisplay::draw() {
                                         blowUpFactor, 0,
                                         60, 1,
                                         6 );
+    
+
+    // set tile fade at same rate as main vis shroud sprite so that 
+    // non-visible tiles disappear (and are not peeking out) under shroud
+    int numScreenTiles = HOUSE_D * HOUSE_D;
+    float fadeRevealStep = mainShroudRevealRate * frameRateFactor / 255.0f;
+    float fadeHideStep = mainShroudHideRate * frameRateFactor / 255.0f;
+    
+    for( int i=0; i<numScreenTiles; i++ ) {
+        int fullIndex = subToFull( i );
+        char shouldBeVisible = mTileVisibleMap[i];
+        
+        if( shouldBeVisible && 
+            mHouseMapCellFades[ fullIndex ] != 1 ) {
+            
+            mHouseMapCellFades[ fullIndex ] += fadeRevealStep;
+
+            if( mHouseMapCellFades[ fullIndex ] > 1 ) {
+                mHouseMapCellFades[ fullIndex ] =  1;
+                }
+            }
+        else if( ! shouldBeVisible && 
+            mHouseMapCellFades[ fullIndex ] != 0 ) {
+            
+            mHouseMapCellFades[ fullIndex ] -= fadeHideStep;
+
+            if( mHouseMapCellFades[ fullIndex ] < 0 ) {
+                mHouseMapCellFades[ fullIndex ] =  0;
+                }
+            }
+        }
+    
+        
         
 
 
@@ -1382,6 +1423,32 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
         }
     
     HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
+    
+    
+    // set tile fade to 0 for all parts of map that are outside our 
+    // screen window 
+    for( int y=0; y<mSubMapOffsetY; y++ ) {
+        for( int x=0; x<mFullMapD; x++ ) {
+            mHouseMapCellFades[y * mFullMapD + x] = 0;
+            }
+        }
+    for( int y=mSubMapOffsetY+HOUSE_D; y<mFullMapD; y++ ) {
+        for( int x=0; x<mFullMapD; x++ ) {
+            mHouseMapCellFades[y * mFullMapD + x] = 0;
+            }
+        }
+    for( int x=0; x<mSubMapOffsetX; x++ ) {
+        for( int y=0; y<mFullMapD; y++ ) {
+            mHouseMapCellFades[y * mFullMapD + x] = 0;
+            }
+        }
+    for( int x =mSubMapOffsetX+HOUSE_D; x<mFullMapD; x++ ) {
+        for( int y=0; y<mFullMapD; y++ ) {
+            mHouseMapCellFades[y * mFullMapD + x] = 0;
+            }
+        }
+
+    
     }
 
 
