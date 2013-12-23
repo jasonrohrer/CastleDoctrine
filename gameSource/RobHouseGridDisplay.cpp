@@ -865,7 +865,7 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
                 // revealing new areas happens at a different rate 
                 // than shrouding no-longer-seen areas
                 inVisibleMap[i] -= 
-                    lrint( 2 * inChangeRateReveal * frameRateFactor );
+                    lrint( inChangeRateReveal * frameRateFactor );
                 
                 // watch for wrap-around!
                 if( inVisibleMap[i] > oldValue ) {
@@ -1032,15 +1032,15 @@ void RobHouseGridDisplay::draw() {
     SpriteHandle visSprite = 
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
                                         blowUpFactor, 255, 
-                                        10, 5,
+                                        20, 5,
                                         10 );
     
-    // slip changes twice as fast to avoid reducing fluidity of main shroud
+    // slip changes much faster to avoid reducing fluidity of main shroud
     SpriteHandle visSlipSprite = 
         generateVisibilityShroudSprite( mVisibleUnderSlipMap, 
                                         mTargetVisibleUnderSlipMap,
                                         blowUpFactor, 0,
-                                        30, 1,
+                                        60, 1,
                                         6 );
         
 
