@@ -51,6 +51,7 @@ wall
 :: first-tier orientation effects (for stuff like windows and doors that
    change orientation based on the objects around them).  If walls are adjacent
    to these objects, they orient to walls first.
+   Also, all wall tiles automatically have the neverFade property.
 
 
 structural
@@ -58,6 +59,14 @@ structural
    objects, but are dominated by walls first.  For example, if a window
    is sandwiched between two walls on W and E sides, and two doors on N and S
    sides, it will orient to span W-E between the walls.
+
+
+neverFade
+:: non-wall objects fade to transparent when they are under the visibility 
+   shroud.  However, this looks weird for other inter-connected objects that 
+   link with neighbors of the same type (like wiring).  They end up looking
+   strangely cut off at the edge of the shroud.  neverFade marks these objects
+   to always be drawn at full opacity, even under the shroud.
 
 
 deadly

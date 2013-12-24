@@ -1720,8 +1720,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             int houseTileState = mHouseSubMapCellStates[i];
             
             
-            float nonWallFade = mHouseMapCellFades[fullI];            
-            char isWall = isSubMapPropertySet( i, wall );
+            float houseTileFade = mHouseMapCellFades[fullI];            
+            char isNeverFade = isSubMapPropertySet( i, neverFade ) ||
+                isSubMapPropertySet( i, wall );
  
 
             char touched = mHouseMapSpotsTouched[fullI];
@@ -1764,11 +1765,11 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int orientationIndex = 
                         getOrientationIndex( fullI, 
                                              houseTile, houseTileState );
-                    if( isWall ) {
+                    if( isNeverFade ) {
                         setDrawColor( 1, 1, 1, 1 );
                         }
                     else {
-                        setDrawColor( 1, 1, 1, nonWallFade );
+                        setDrawColor( 1, 1, 1, houseTileFade );
                         }
                     
                     
@@ -1831,11 +1832,11 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( isBehindSpritePresent( houseTile, 
                                            houseTileState ) ) {
                     
-                    if( isWall ) {
+                    if( isNeverFade ) {
                         setDrawColor( 1, 1, 1, 1 );
                         }
                     else {
-                        setDrawColor( 1, 1, 1, nonWallFade );
+                        setDrawColor( 1, 1, 1, houseTileFade );
                         }
                     
                     
@@ -1874,8 +1875,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 // now draw tile itself, on top of floor
                 float fade = 1.0f;
-                if( ! isWall ) {
-                    fade = nonWallFade;
+                if( ! isNeverFade ) {
+                    fade = houseTileFade;
                     }
 
 
@@ -1950,16 +1951,16 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
                         
                         drawDarkHaloBehind( mobID, mobOrientation, mobState,
-                                            tilePos, nonWallFade );
+                                            tilePos, houseTileFade );
                         }
 
                     if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
                         // first drop shadow
-                        drawDropShadow( tilePos, nonWallFade );
+                        drawDropShadow( tilePos, houseTileFade );
                         }
                         
                     // mobiles are never walls, always fade with non-walls
-                    setDrawColor( 1, 1, 1, nonWallFade );
+                    setDrawColor( 1, 1, 1, houseTileFade );
                 
                     SpriteHandle sprite = 
                         getObjectSprite( mobID, 
@@ -2002,13 +2003,13 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                         drawDarkHaloBehind( houseTile, orientationIndex,
                                             houseTileState,
                                             tilePos,
-                                            nonWallFade );
+                                            houseTileFade );
                         }
                         
-                    drawDropShadow( tilePos, nonWallFade );
+                    drawDropShadow( tilePos, houseTileFade );
                     
                     // family fades with non-walls
-                    setDrawColor( 1, 1, 1, nonWallFade );
+                    setDrawColor( 1, 1, 1, houseTileFade );
                     
                     SpriteHandle sprite = getObjectSprite( houseTile, 
                                                            orientationIndex, 
@@ -2048,8 +2049,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // now draw blocking objects on top of floor
                 
                 float fade = 1.0f;
-                if( ! isWall ) {
-                    fade = nonWallFade;
+                if( ! isNeverFade ) {
+                    fade = houseTileFade;
                     }
 
                 if( isSubMapPropertySet( i, darkHaloBehind ) ) {
