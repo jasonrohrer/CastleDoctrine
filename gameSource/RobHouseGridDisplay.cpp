@@ -659,6 +659,15 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                         mHouseMapIDs[oldIndex] = 0;
                         mHouseMapCellStates[oldIndex] = 1;
 
+                        if( mHouseMapCellFades[newIndex] < 
+                            mHouseMapCellFades[oldIndex] ) {
+                            // copy old visibility fade so that family member
+                            // doesn't blink out of existence
+                            // (instead, they will fade out at new location)
+                            mHouseMapCellFades[newIndex] = 
+                                mHouseMapCellFades[oldIndex];
+                            }
+                        
                         *( mFamilyExitPathProgress.getElement( i ) ) = 
                             progress;
                         }    
