@@ -702,6 +702,7 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
     applyTransitions( mHouseMapIDs, mHouseMapCellStates, 
                       mHouseMapMobileIDs, mHouseMapMobileCellStates,
                       mHouseMapMobileStartingPositions,
+                      mHouseMapMobileCellFades,
                       mFullMapD, mFullMapD,
                       mRobberIndex,
                       mLastRobberIndex,

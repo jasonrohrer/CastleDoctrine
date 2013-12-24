@@ -837,6 +837,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                                     int *inMapMobileIDs, 
                                     int *inMapMobileStates,
                                     int *inMapMobileStartingPositions,
+                                    float *inMapMobileCellFades,
                                     int inMapW, int inMapH,
                                     int inRobberIndex,
                                     int inLastRobberIndex,
@@ -1091,6 +1092,15 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 inMapMobileStates[i] = 0;
                 inMapMobileStartingPositions[i] = -1;
 
+                if( inMapMobileCellFades[destI] <
+                    inMapMobileCellFades[i] ) {
+                    // moving to a more-faded cell
+                    // copy visibility to new cell so that mobile
+                    // doesn't blink out of existence
+                    // (will fade out at new location instead)
+                    inMapMobileCellFades[destI] = inMapMobileCellFades[i];
+                    }
+
                 // don't keep moving it if we encounter it later in loop
                 moveHappened[destI] = true;
                 }
@@ -1235,6 +1245,7 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
 void applyTransitions( int *inMapIDs, int *inMapStates, 
                        int *inMapMobileIDs, int *inMapMobileStates,
                        int *inMapMobileStartingPositions,
+                       float *inMapMobileCellFades,
                        int inMapW, int inMapH,
                        int inRobberIndex,
                        int inLastRobberIndex,
@@ -1244,6 +1255,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         applyMobileTransitions( inMapIDs, inMapStates,
                                 inMapMobileIDs, inMapMobileStates,
                                 inMapMobileStartingPositions,
+                                inMapMobileCellFades,
                                 inMapW, inMapH, inRobberIndex,
                                 inLastRobberIndex,
                                 inStartIndex );

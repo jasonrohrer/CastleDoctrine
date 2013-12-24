@@ -1995,20 +1995,21 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int mobOrientation = getOrientationIndex( fullI, mobID,
                                                               mobState );
                     
+                    // mobiles are never walls, always fade
+                    float fade = mHouseMapMobileCellFades[fullI];
+                    
                     if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
                         
                         drawDarkHaloBehind( mobID, mobOrientation, mobState,
-                                            tilePos, houseTileFade );
+                                            tilePos, fade );
                         }
 
                     if( ! isPropertySet( mobID, mobState, noDropShadow ) ) {
                         // first drop shadow
-                        drawDropShadow( tilePos, houseTileFade );
+                        drawDropShadow( tilePos, fade );
                         }
                         
-                    // mobiles are never walls, always fade
-                    
-                    setDrawColor( 1, 1, 1, mHouseMapMobileCellFades[fullI] );
+                    setDrawColor( 1, 1, 1, fade );
                 
                     SpriteHandle sprite = 
                         getObjectSprite( mobID, 
