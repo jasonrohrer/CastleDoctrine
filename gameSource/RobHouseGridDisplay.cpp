@@ -439,6 +439,7 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     
     for( int i=0; i<mFullMapD * mFullMapD; i++ ) {
         mHouseMapCellFades[i] = 0;
+        mHouseMapMobileCellFades[i] = 0;
         }
 
     // initial transitions (like for power that starts out on, etc)
@@ -1093,6 +1094,26 @@ void RobHouseGridDisplay::draw() {
                 mHouseMapCellFades[ fullIndex ] =  0;
                 }
             }
+
+        if( shouldBeVisible && 
+            mHouseMapMobileCellFades[ fullIndex ] != 1 ) {
+            
+            mHouseMapMobileCellFades[ fullIndex ] += fadeRevealStep;
+
+            if( mHouseMapMobileCellFades[ fullIndex ] > 1 ) {
+                mHouseMapMobileCellFades[ fullIndex ] =  1;
+                }
+            }
+        else if( ! shouldBeVisible && 
+            mHouseMapMobileCellFades[ fullIndex ] != 0 ) {
+            
+            mHouseMapMobileCellFades[ fullIndex ] -= fadeHideStep;
+
+            if( mHouseMapMobileCellFades[ fullIndex ] < 0 ) {
+                mHouseMapMobileCellFades[ fullIndex ] =  0;
+                }
+            }
+
         }
     
         
@@ -1443,21 +1464,25 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
     for( int y=0; y<mSubMapOffsetY; y++ ) {
         for( int x=0; x<mFullMapD; x++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int y=mSubMapOffsetY+HOUSE_D; y<mFullMapD; y++ ) {
         for( int x=0; x<mFullMapD; x++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int x=0; x<mSubMapOffsetX; x++ ) {
         for( int y=0; y<mFullMapD; y++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int x =mSubMapOffsetX+HOUSE_D; x<mFullMapD; x++ ) {
         for( int y=0; y<mFullMapD; y++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
 

@@ -210,9 +210,14 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         int *mHouseMapMobileCellStates;
 
 
-        // fade applied to non-wall tiles
+        // fade applied to tiles (for sub classes that have visibility)
+        // respects tile neighbor continuity for 16-orientation tiles
+        // (never heavily-fading a tile that is connected to a less-faded
+        //  neighbor)
         float *mHouseMapCellFades;
-        
+        // fade applied to mobiles
+        float *mHouseMapMobileCellFades;
+
 
         // for overriding tool tips on certain cells
         // (used when resetToggledStates overrides stuck states)

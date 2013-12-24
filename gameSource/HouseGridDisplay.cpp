@@ -58,6 +58,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMapMobileIDs( NULL ),
           mHouseMapMobileCellStates( NULL ),
           mHouseMapCellFades( NULL ),
+          mHouseMapMobileCellFades( NULL ),
           mHouseMapToolTipOverrideOn( NULL ),
           mHouseMapToolTipOverrideState( NULL ),
           mHouseMapMobileToolTipOverrideOn( NULL ),
@@ -241,6 +242,9 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mHouseMapCellFades != NULL ) {
         delete [] mHouseMapCellFades;
         }
+    if( mHouseMapMobileCellFades != NULL ) {
+        delete [] mHouseMapMobileCellFades;
+        }
 
 
     if( mHouseMapToolTipOverrideOn != NULL ) {
@@ -378,6 +382,9 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     if( mHouseMapCellFades != NULL ) {        
         delete [] mHouseMapCellFades;
         }
+    if( mHouseMapMobileCellFades != NULL ) {        
+        delete [] mHouseMapMobileCellFades;
+        }
 
     if( mHouseMapToolTipOverrideOn != NULL ) {
         delete [] mHouseMapToolTipOverrideOn;
@@ -462,6 +469,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mHouseMapMobileIDs = new int[ mNumMapSpots ];
     mHouseMapMobileCellStates = new int[ mNumMapSpots ];
     mHouseMapCellFades = new float[ mNumMapSpots ];
+    mHouseMapMobileCellFades = new float[ mNumMapSpots ];
     mHouseMapNoiseTileIndices = new int[ mNumMapSpots ];
     
     mHouseMapToolTipOverrideOn = new char[ mNumMapSpots ];
@@ -478,6 +486,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         mHouseMapMobileCellStates[i] = 0;
         
         mHouseMapCellFades[i] = 1.0f;
+        mHouseMapMobileCellFades[i] = 1.0f;
 
         mHouseMapToolTipOverrideOn[i] = false;
         mHouseMapMobileToolTipOverrideOn[i] = false;
@@ -1997,8 +2006,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                         drawDropShadow( tilePos, houseTileFade );
                         }
                         
-                    // mobiles are never walls, always fade with non-walls
-                    setDrawColor( 1, 1, 1, houseTileFade );
+                    // mobiles are never walls, always fade
+                    
+                    setDrawColor( 1, 1, 1, mHouseMapMobileCellFades[fullI] );
                 
                     SpriteHandle sprite = 
                         getObjectSprite( mobID, 
