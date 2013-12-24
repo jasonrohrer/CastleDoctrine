@@ -1070,18 +1070,34 @@ void RobHouseGridDisplay::draw() {
     // set tile fade at same rate as main vis shroud sprite so that 
     // non-visible tiles disappear (and are not peeking out) under shroud
     int numScreenTiles = HOUSE_D * HOUSE_D;
-    float fadeRevealStep = slipShroudRevealRate * frameRateFactor / 255.0f;
+    float fadeRevealStep = mainShroudRevealRate * frameRateFactor / 255.0f;
+    
+    // connected tiles show seams when given a slower reveal fade-in
+    // to avoid this, make them pop in at the faster underslip reveal rate
+    float fadeRevealStepConnectedTiles = 
+        slipShroudRevealRate * frameRateFactor / 255.0f;
+
+    // hide everything slowly as it is consumed by shroud.  This looks great.
     float fadeHideStep = slipShroudHideRate * frameRateFactor / 255.0f;
     
     for( int i=0; i<numScreenTiles; i++ ) {
         int fullIndex = subToFull( i );
         char shouldBeVisible = mTileVisibleMap[i];
         
+        char isTileConnected = 
+            ( getNumOrientations( mHouseMapIDs[fullIndex], 0 ) == 16 );
+
         if( shouldBeVisible && 
             mHouseMapCellFades[ fullIndex ] != 1 ) {
             
-            mHouseMapCellFades[ fullIndex ] += fadeRevealStep;
-
+            if( isTileConnected ) {
+                mHouseMapCellFades[ fullIndex ] += 
+                    fadeRevealStepConnectedTiles;
+                }
+            else {
+                mHouseMapCellFades[ fullIndex ] += fadeRevealStep;
+                }
+            
             if( mHouseMapCellFades[ fullIndex ] > 1 ) {
                 mHouseMapCellFades[ fullIndex ] =  1;
                 }
