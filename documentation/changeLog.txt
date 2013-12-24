@@ -11,6 +11,9 @@ Version 26
   themselves around them (for example, a vault surrounded by three pits will
   face the opening).
 
+--Fixed so that family objects along bottom overhang row have proper dark
+  outlines.
+
 
 
 

@@ -2460,6 +2460,15 @@ void HouseGridDisplay::draw() {
                                                             houseTileState );
 
                 doublePair tilePos = getTilePosFull( fullI );
+
+                if( isPropertySet( houseTile, houseTileState, 
+                                   darkHaloBehind ) ) {
+                        
+                    drawDarkHaloBehind( houseTile, orientationIndex,
+                                        houseTileState,
+                                        tilePos,
+                                        1 );
+                    }
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
@@ -2518,6 +2527,15 @@ void HouseGridDisplay::draw() {
                                                             houseTileState );
 
                 doublePair tilePos = getTilePosFull( fullI );
+
+                if( isPropertySet( houseTile, houseTileState, 
+                                   darkHaloBehind ) ) {
+                        
+                    drawDarkHaloBehind( houseTile, orientationIndex,
+                                        houseTileState,
+                                        tilePos,
+                                        1 );
+                    }
                 
                 setDrawColor( 1, 1, 1, 1 );
                 
