@@ -1722,20 +1722,45 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             float houseTileFade = mHouseMapCellFades[fullI];            
             
-            // avoid fading tiles that connect with their neighbors
-            // (because they look strange and cut-off
+            // In general, avoid fading tiles that connect with their neighbors
+            // (because they look strange and cut-off)
             char doNotFade = ( getNumOrientations( houseTile, 0 ) == 16 ); 
             
-            /*  FIXME
             if( doNotFade && houseTileFade < 1 ) {
                 // marked not to fade, but wants to fade
+                
+                
+                // never be more faded than our most visible non-obstructing
+                // neighbor
+                float brightestNonObstructingNeighbor = houseTileFade;
 
-                // okay to fade as long as same-type (or group-with)
-                // neighbors are faded too (or this tile has no group-with
-                // neighbors)
+                for( int n=0; n<4; n++ ) {
+            
+                    int neighborIndex = getTileNeighbor( fullI, n );
 
+                    if( neighborIndex != -1 
+                        &&
+                        mHouseMapCellFades[neighborIndex] > 
+                            brightestNonObstructingNeighbor
+                        &&
+                        ( ! isMapPropertySet( neighborIndex, 
+                                              visionBlocking ) 
+                          ||
+                          isInGroup( houseTile, 
+                                     mHouseMapIDs[neighborIndex] ) ) ) {
+                        brightestNonObstructingNeighbor =
+                            mHouseMapCellFades[neighborIndex];
+                        }
+                    }
+                
+                if( brightestNonObstructingNeighbor < 1 ) {
+                    // no visible or connected neighbor is fully visible
+                    // we can fade out with it.
+                    doNotFade = false;
+                    houseTileFade = brightestNonObstructingNeighbor;
+                    }
                 }
-            */
+            
             char touched = mHouseMapSpotsTouched[fullI];
             
             if( ! mTouchedHighlightOn || 

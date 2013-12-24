@@ -1036,6 +1036,9 @@ void RobHouseGridDisplay::draw() {
     int mainShroudRevealRate =  20;
     int mainShroudHideRate = 5;
 
+    int slipShroudRevealRate =  60;
+    int slipShroudHideRate = 1;
+
     SpriteHandle visSprite = 
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
                                         blowUpFactor, 255, 
@@ -1048,15 +1051,16 @@ void RobHouseGridDisplay::draw() {
         generateVisibilityShroudSprite( mVisibleUnderSlipMap, 
                                         mTargetVisibleUnderSlipMap,
                                         blowUpFactor, 0,
-                                        60, 1,
+                                        slipShroudRevealRate,
+                                        slipShroudHideRate,
                                         6 );
     
 
     // set tile fade at same rate as main vis shroud sprite so that 
     // non-visible tiles disappear (and are not peeking out) under shroud
     int numScreenTiles = HOUSE_D * HOUSE_D;
-    float fadeRevealStep = mainShroudRevealRate * frameRateFactor / 255.0f;
-    float fadeHideStep = mainShroudHideRate * frameRateFactor / 255.0f;
+    float fadeRevealStep = slipShroudRevealRate * frameRateFactor / 255.0f;
+    float fadeHideStep = slipShroudHideRate * frameRateFactor / 255.0f;
     
     for( int i=0; i<numScreenTiles; i++ ) {
         int fullIndex = subToFull( i );
