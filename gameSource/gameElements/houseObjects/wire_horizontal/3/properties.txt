@@ -1,3 +1,2 @@
 conductiveLeftToRight
 stuck
-neverFade

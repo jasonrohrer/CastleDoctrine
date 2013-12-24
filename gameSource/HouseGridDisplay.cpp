@@ -1721,10 +1721,21 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             
             float houseTileFade = mHouseMapCellFades[fullI];            
-            char isNeverFade = isSubMapPropertySet( i, neverFade ) ||
-                isSubMapPropertySet( i, wall );
- 
+            
+            // avoid fading tiles that connect with their neighbors
+            // (because they look strange and cut-off
+            char doNotFade = ( getNumOrientations( houseTile, 0 ) == 16 ); 
+            
+            /*  FIXME
+            if( doNotFade && houseTileFade < 1 ) {
+                // marked not to fade, but wants to fade
 
+                // okay to fade as long as same-type (or group-with)
+                // neighbors are faded too (or this tile has no group-with
+                // neighbors)
+
+                }
+            */
             char touched = mHouseMapSpotsTouched[fullI];
             
             if( ! mTouchedHighlightOn || 
@@ -1765,7 +1776,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int orientationIndex = 
                         getOrientationIndex( fullI, 
                                              houseTile, houseTileState );
-                    if( isNeverFade ) {
+                    if( doNotFade ) {
                         setDrawColor( 1, 1, 1, 1 );
                         }
                     else {
@@ -1832,7 +1843,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( isBehindSpritePresent( houseTile, 
                                            houseTileState ) ) {
                     
-                    if( isNeverFade ) {
+                    if( doNotFade ) {
                         setDrawColor( 1, 1, 1, 1 );
                         }
                     else {
@@ -1875,7 +1886,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 
                 // now draw tile itself, on top of floor
                 float fade = 1.0f;
-                if( ! isNeverFade ) {
+                if( ! doNotFade ) {
                     fade = houseTileFade;
                     }
 
@@ -2049,7 +2060,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // now draw blocking objects on top of floor
                 
                 float fade = 1.0f;
-                if( ! isNeverFade ) {
+                if( ! doNotFade ) {
                     fade = houseTileFade;
                     }
 

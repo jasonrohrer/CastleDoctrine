@@ -63,7 +63,6 @@ int getObjectID( const char *inName );
     F(underLayerShaded), \
     F(structural), \
     F(wall), \
-    F(neverFade), \
     F(deadly), \
     F(deadlyAdjacent), \
     F(stuck), \
