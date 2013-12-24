@@ -1726,7 +1726,9 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             // (because they look strange and cut-off)
             char doNotFade = ( getNumOrientations( houseTile, 0 ) == 16 ); 
             
-            if( doNotFade && houseTileFade < 1 ) {
+            char isNeverFade = isSubMapPropertySet( i, neverFade );
+
+            if( (!isNeverFade) && doNotFade && houseTileFade < 1 ) {
                 // marked not to fade, but wants to fade
                 
                 

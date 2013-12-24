@@ -4,3 +4,4 @@ shadowMaking
 structural
 wall
 permanent
+neverFade

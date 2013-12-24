@@ -60,6 +60,12 @@ structural
    sides, it will orient to span W-E between the walls.
 
 
+neverFade
+:: Most objects fade out to transparent when under the visibility shroud.
+   neverFade overrides this behavior, always drawing the object at full 
+   opacity.
+
+
 deadly
 :: kills player if player on same grid space as this object.
 
