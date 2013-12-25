@@ -1,4 +1,4 @@
-Version 26
+Version 26   2013-December-25
 
 --Fixed newly-broken visibility toggle in tape playback.  Also, improved the
   way view jump-back looks when visibility shroud turned back on after panning
@@ -22,6 +22,7 @@ Version 26
   objects under the shroud to transparent.  Now a single thickness of walls
   fully obscures what's behind it, no matter what monitor gamma settings are
   used.
+
 
 
 
