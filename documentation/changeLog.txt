@@ -14,6 +14,15 @@ Version 26
 --Fixed so that family objects along bottom overhang row have proper dark
   outlines.
 
+--Fixed so that non-wall objects don't appear in the bottom overhang row during
+  robbery (which would give their off-screen location away, even though they
+  are not actually visible)
+
+--Finally dealt with the "see through one wall" issue by fading out invisible
+  objects under the shroud to transparent.  Now a single thickness of walls
+  fully obscures what's behind it, no matter what monitor gamma settings are
+  used.
+
 
 
 
