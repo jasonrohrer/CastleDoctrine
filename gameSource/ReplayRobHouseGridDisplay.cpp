@@ -423,6 +423,7 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         endPanning();
         mVisibilityToggle = ! mVisibilityToggle;
         mForceAllTileToolTips = mVisibilityToggle;
+        mBlockVisibilityFading = mVisibilityToggle;
         recomputeVisibility();
         }
     }

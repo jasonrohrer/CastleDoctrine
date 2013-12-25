@@ -46,6 +46,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mSafeLeftSprite( loadSprite( "moveLeft.tga" ) ),
           mSafeDownSprite( loadSprite( "moveDown.tga" ) ),
           mSafeRightSprite( loadSprite( "moveRight.tga" ) ),
+          mBlockVisibilityFading( false ),
           mForceAllTileToolTips( false ),
           mHouseMapMobileStartingPositions( NULL ),
           mHouseMapMobileFinalIDs( NULL ),
@@ -1084,7 +1085,9 @@ void RobHouseGridDisplay::draw() {
     
     for( int i=0; i<numScreenTiles; i++ ) {
         int fullIndex = subToFull( i );
-        char shouldBeVisible = mTileVisibleMap[i];
+
+        // if block on, all tiles should move toward visible
+        char shouldBeVisible = mBlockVisibilityFading || mTileVisibleMap[i];
         
         char isTileConnected = 
             ( getNumOrientations( mHouseMapIDs[fullIndex], 0 ) == 16 );

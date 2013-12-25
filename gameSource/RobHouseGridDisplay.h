@@ -140,6 +140,11 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         // false if completely invisible
         char mTileVisibleMap[ HOUSE_D * HOUSE_D ];
         
+        // defaults to false (invisible tiles are faded out)
+        // subclasses can override (example:  visibility toggle)
+        char mBlockVisibilityFading;
+        
+        
 
         // set to true to force tool tips for all tiles, even if shrouded
         char mForceAllTileToolTips;
