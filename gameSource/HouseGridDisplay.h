@@ -218,6 +218,14 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // fade applied to mobiles
         float *mHouseMapMobileCellFades;
 
+        // we draw one last row of tiles, from off the bottom edge of the
+        // screen, to complete overhangs on top of the last row.
+        // should bottom row "overhang" tiles that are from non-connected
+        // objects be faded out?  Default behavior is false (can be overridden
+        // by sub classes that are manipulating visibility fades)
+        char mBottomRowNonConnectedFaded;
+        
+
 
         // for overriding tool tips on certain cells
         // (used when resetToggledStates overrides stuck states)

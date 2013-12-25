@@ -59,6 +59,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMapMobileCellStates( NULL ),
           mHouseMapCellFades( NULL ),
           mHouseMapMobileCellFades( NULL ),
+          mBottomRowNonConnectedFaded( false ),
           mHouseMapToolTipOverrideOn( NULL ),
           mHouseMapToolTipOverrideState( NULL ),
           mHouseMapMobileToolTipOverrideOn( NULL ),
@@ -2456,28 +2457,37 @@ void HouseGridDisplay::draw() {
                 int houseTile = mHouseMapIDs[ fullI ];
                 int houseTileState = mHouseMapCellStates[ fullI ];
                 
-                int orientationIndex = getOrientationIndex( fullI, houseTile,
-                                                            houseTileState );
-
-                doublePair tilePos = getTilePosFull( fullI );
-
-                if( isPropertySet( houseTile, houseTileState, 
-                                   darkHaloBehind ) ) {
-                        
-                    drawDarkHaloBehind( houseTile, orientationIndex,
-                                        houseTileState,
-                                        tilePos,
-                                        1 );
-                    }
-                
-                setDrawColor( 1, 1, 1, 1 );
-                
-                
-                SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                       orientationIndex, 
-                                                       houseTileState );
+                int numOrientations = getNumOrientations( houseTile, 0 );
             
-                drawSprite( sprite, tilePos, 1.0/32.0 );
+                if( numOrientations == 16 // connected object
+                    || // or bottom row unfaded
+                    ! mBottomRowNonConnectedFaded ) { 
+
+                    int orientationIndex = 
+                        getOrientationIndex( fullI, 
+                                             houseTile,
+                                             houseTileState );
+
+                    doublePair tilePos = getTilePosFull( fullI );
+                    
+                    if( isPropertySet( houseTile, houseTileState, 
+                                       darkHaloBehind ) ) {
+                        
+                        drawDarkHaloBehind( houseTile, orientationIndex,
+                                            houseTileState,
+                                            tilePos,
+                                            1 );
+                        }
+                    
+                    setDrawColor( 1, 1, 1, 1 );
+                    
+                    
+                    SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                           orientationIndex, 
+                                                           houseTileState );
+                    
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
                 }
             }
         }
@@ -2523,28 +2533,37 @@ void HouseGridDisplay::draw() {
                 int houseTile = mHouseMapIDs[ fullI ];
                 int houseTileState = mHouseMapCellStates[ fullI ];
                 
-                int orientationIndex = getOrientationIndex( fullI, houseTile,
-                                                            houseTileState );
-
-                doublePair tilePos = getTilePosFull( fullI );
-
-                if( isPropertySet( houseTile, houseTileState, 
-                                   darkHaloBehind ) ) {
-                        
-                    drawDarkHaloBehind( houseTile, orientationIndex,
-                                        houseTileState,
-                                        tilePos,
-                                        1 );
-                    }
-                
-                setDrawColor( 1, 1, 1, 1 );
-                
-                
-                SpriteHandle sprite = getObjectSprite( houseTile, 
-                                                       orientationIndex, 
-                                                       houseTileState );
+                int numOrientations = getNumOrientations( houseTile, 0 );
             
-                drawSprite( sprite, tilePos, 1.0/32.0 );
+                if( numOrientations == 16 // connected object
+                    || // or bottom row unfaded
+                    ! mBottomRowNonConnectedFaded ) { 
+
+                
+                    int orientationIndex = 
+                        getOrientationIndex( fullI, houseTile,
+                                             houseTileState );
+                    
+                    doublePair tilePos = getTilePosFull( fullI );
+                    
+                    if( isPropertySet( houseTile, houseTileState, 
+                                       darkHaloBehind ) ) {
+                        
+                        drawDarkHaloBehind( houseTile, orientationIndex,
+                                            houseTileState,
+                                            tilePos,
+                                            1 );
+                        }
+                
+                    setDrawColor( 1, 1, 1, 1 );
+                
+                
+                    SpriteHandle sprite = getObjectSprite( houseTile, 
+                                                           orientationIndex, 
+                                                           houseTileState );
+                    
+                    drawSprite( sprite, tilePos, 1.0/32.0 );
+                    }
                 }
             }
         }

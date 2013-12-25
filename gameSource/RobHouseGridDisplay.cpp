@@ -56,6 +56,8 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
         mVisibleMap[i] = 0;
         mVisibleUnderSlipMap[i] = 0;
         }
+    
+    mBottomRowNonConnectedFaded = true;
     }
 
 
