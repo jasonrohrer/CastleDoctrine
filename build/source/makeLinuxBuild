@@ -16,6 +16,7 @@ cd $sourceBundleDir
 cd ..
 
 buildDir="CastleDoctrine_$1"
+finalTarball="CastleDoctrine_$1_Linux.tar.gz"
 
 rm -rf $buildDir $buildDir_Linux.tar.gz
 
@@ -25,4 +26,4 @@ cd $sourceBundleDir
 cp -r CastleDoctrineApp gameElements graphics languages language.txt no_copyright.txt Readme.txt settings ../$buildDir
 
 cd ..
-tar czf $buildDir_Linux.tar.gz $buildDir
+tar czf $finalTarball $buildDir
