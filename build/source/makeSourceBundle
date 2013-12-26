@@ -8,6 +8,8 @@ fi
 
 bundleDir="CastleDoctrine_$1_UnixSource"
 
+rm -rf $bundleDir $bundleDir.tar.gz
+
 mkdir $bundleDir
 
 cd $bundleDir
