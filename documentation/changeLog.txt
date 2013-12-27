@@ -1,4 +1,4 @@
-Version 27
+Version 27   2013-December-27
 
 --Tweaked visibility object fades to only fade objects that are fully-obscured
   (like completely behind walls or doors) and not objects that are peeking out
