@@ -344,9 +344,18 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
 
 
         // inFullIndex is tile's full-map index
-        // inNeighbor pick LBRT neighbor, in that order (L=0, T=3)
+        // inNeighbor pick BRTL neighbor, in that order (B=0, L=3)
         // returns neighbor full map index, or -1 if out of bounds
         int getTileNeighbor( int inFullIndex, int inNeighbor );
+
+        // 8-direction version (includes diagonal neighbors
+        // inFullIndex is tile's full-map index
+        // inNeighbor pick B,BR,R,TR,T,TL,L,BL neighbor, in that order 
+        //(B=0, BL=7)
+        // returns neighbor full map index, or -1 if out of bounds
+        int getTileNeighborEight( int inFullIndex, int inNeighbor );
+
+
         // checks property of neighbor
         int getTileNeighborHasProperty( int inFullIndex, int inNeighbor,
                                         propertyID inProperty );

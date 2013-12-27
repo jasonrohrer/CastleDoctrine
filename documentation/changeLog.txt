@@ -1,3 +1,14 @@
+Version 27
+
+--Tweaked visibility object fades to only fade objects that are fully-obscured
+  (like completely behind walls or doors) and not objects that are peeking out
+  from behind corners.  This eliminates jarring object pop-in and other weird
+  side-effects while still solving the original motivating problem:  vision
+  through a single layer of solid walls is blocked (thanks Joshua Collins).
+
+
+
+
 Version 26   2013-December-25
 
 --Fixed newly-broken visibility toggle in tape playback.  Also, improved the

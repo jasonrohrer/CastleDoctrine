@@ -1362,6 +1362,32 @@ int HouseGridDisplay::getTileNeighbor( int inFullIndex, int inNeighbor ) {
 
 
 
+int HouseGridDisplay::getTileNeighborEight( int inFullIndex, int inNeighbor ) {
+    
+    int fullY = inFullIndex / mFullMapD;
+    int fullX = inFullIndex % mFullMapD;
+    
+    int dX[8] = { 0, 1, 1,  1,  0, -1, -1, -1 };
+    int dY[8] = { 1, 1, 0, -1, -1, -1,  0,  1 };
+
+    int nY = fullY + dY[ inNeighbor ];
+
+    int nX = fullX + dX[ inNeighbor ];
+    
+    
+    if( nY < 0 || nY >= mFullMapD
+        ||
+        nX < 0 || nX >= mFullMapD ) {
+        
+        // out of bounds
+        return -1;
+        }
+
+    return nY * mFullMapD + nX;
+    }
+
+
+
 
 int HouseGridDisplay::getTileNeighborHasProperty( int inFullIndex, 
                                                   int inNeighbor,
@@ -1732,45 +1758,77 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             float houseTileFade = mHouseMapCellFades[fullI];            
             
-            // In general, avoid fading tiles that connect with their neighbors
-            // (because they look strange and cut-off)
-            char doNotFade = ( getNumOrientations( houseTile, 0 ) == 16 ); 
-            
             char isNeverFade = isSubMapPropertySet( i, neverFade );
 
-            if( (!isNeverFade) && doNotFade && houseTileFade < 1 ) {
-                // marked not to fade, but wants to fade
+            if( isNeverFade ) {
+                houseTileFade = 1;
+                }
+
+            if( houseTileFade < 1 ) {
+                // Wants to fade
                 
+                // make sure that we don't have unfaded neighbors
+                // (drawing a faded tile next to a non-faded one looks
+                //  jarring, with things popping into view as the player
+                //  moves around and the fades change)
                 
+                // use 8-direction neighbors here, because it 
+                // matches visibility under shroud better (to avoid pop-in)
+                // (for sub-classes that use a shroud)
+
                 // never be more faded than our most visible non-obstructing
                 // neighbor
                 float brightestNonObstructingNeighbor = houseTileFade;
 
-                for( int n=0; n<4; n++ ) {
+                // special case for walls:
+                // consider vision blocking neighbors too, as long
+                // as they aren't walls (walls block sight of other walls
+                // and doors, but doors do not block sight of walls)
+                char isWall = isSubMapPropertySet( i, wall );
+                
+                for( int n=0; n<8; n++ ) {
             
-                    int neighborIndex = getTileNeighbor( fullI, n );
+                    int neighborIndex = getTileNeighborEight( fullI, n );
 
-                    if( neighborIndex != -1 
+                    if( neighborIndex != -1
                         &&
                         mHouseMapCellFades[neighborIndex] > 
-                            brightestNonObstructingNeighbor
-                        &&
-                        ( ! isMapPropertySet( neighborIndex, 
-                                              visionBlocking ) 
-                          ||
-                          isInGroup( houseTile, 
-                                     mHouseMapIDs[neighborIndex] ) ) ) {
-                        brightestNonObstructingNeighbor =
-                            mHouseMapCellFades[neighborIndex];
+                            brightestNonObstructingNeighbor ) {
+                        
+                        if( isInGroup( houseTile, 
+                                       mHouseMapIDs[neighborIndex] ) ) {
+                            // consider brightness of connected neighbors
+                            // no matter what
+                            brightestNonObstructingNeighbor =
+                                mHouseMapCellFades[neighborIndex];
+                            }
+                        else {
+                            // not connected with neighbor
+
+                            if( isWall &&
+                                ! isMapPropertySet( neighborIndex, wall ) ) {
+                                // for walls,
+                                // consider brightness of non-wall neighbors
+                                // which don't fully block vision of 
+                                // walls
+                                brightestNonObstructingNeighbor =
+                                    mHouseMapCellFades[neighborIndex];
+                                }
+                            else if( ! isMapPropertySet( neighborIndex, 
+                                                         visionBlocking ) ) {
+                                // for non-walls,
+                                // only consider brightness of
+                                // non-vision-blocking neighbors
+                                brightestNonObstructingNeighbor =
+                                    mHouseMapCellFades[neighborIndex];
+                                }
+                            }
                         }
                     }
                 
-                if( brightestNonObstructingNeighbor < 1 ) {
-                    // no visible or connected neighbor is fully visible
-                    // we can fade out with it.
-                    doNotFade = false;
-                    houseTileFade = brightestNonObstructingNeighbor;
-                    }
+
+                // fade in and out with our brightest visible neighbor
+                houseTileFade = brightestNonObstructingNeighbor;
                 }
             
             char touched = mHouseMapSpotsTouched[fullI];
@@ -1813,12 +1871,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     int orientationIndex = 
                         getOrientationIndex( fullI, 
                                              houseTile, houseTileState );
-                    if( doNotFade ) {
-                        setDrawColor( 1, 1, 1, 1 );
-                        }
-                    else {
-                        setDrawColor( 1, 1, 1, houseTileFade );
-                        }
+                    
+                    setDrawColor( 1, 1, 1, houseTileFade );
                     
                     
                     SpriteHandle sprite = 
@@ -1880,12 +1934,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 if( isBehindSpritePresent( houseTile, 
                                            houseTileState ) ) {
                     
-                    if( doNotFade ) {
-                        setDrawColor( 1, 1, 1, 1 );
-                        }
-                    else {
-                        setDrawColor( 1, 1, 1, houseTileFade );
-                        }
+                    
+                    setDrawColor( 1, 1, 1, houseTileFade );
                     
                     
                     SpriteHandle sprite = 
@@ -1922,27 +1972,22 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 houseTile != 0 ) {
                 
                 // now draw tile itself, on top of floor
-                float fade = 1.0f;
-                if( ! doNotFade ) {
-                    fade = houseTileFade;
-                    }
-
 
                 if( isSubMapPropertySet( i, darkHaloBehind ) ) {
                     
                     drawDarkHaloBehind( houseTile, orientationIndex,
                                         houseTileState,
-                                        tilePos, fade );
+                                        tilePos, houseTileFade );
                     }
 
                 if( isSubMapPropertySet( i, mobile ) &&
                     ! isSubMapPropertySet( i, noDropShadow ) ) {
                     // drop shadow
-                    drawDropShadow( tilePos, fade );
+                    drawDropShadow( tilePos, houseTileFade );
                     }
                 
 
-                setDrawColor( 1, 1, 1, fade );
+                setDrawColor( 1, 1, 1, houseTileFade );
                 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
                                                        orientationIndex, 
@@ -2058,7 +2103,6 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                         
                     drawDropShadow( tilePos, houseTileFade );
                     
-                    // family fades with non-walls
                     setDrawColor( 1, 1, 1, houseTileFade );
                     
                     SpriteHandle sprite = getObjectSprite( houseTile, 
@@ -2098,20 +2142,15 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                      && houseTile != 0 ) {
                 // now draw blocking objects on top of floor
                 
-                float fade = 1.0f;
-                if( ! doNotFade ) {
-                    fade = houseTileFade;
-                    }
-
                 if( isSubMapPropertySet( i, darkHaloBehind ) ) {
                     
                     drawDarkHaloBehind( houseTile, orientationIndex,
                                         houseTileState,
-                                        tilePos, fade );
+                                        tilePos, houseTileFade );
                     }
 
 
-                setDrawColor( 1, 1, 1, fade );
+                setDrawColor( 1, 1, 1, houseTileFade );
                 
 
                 SpriteHandle sprite = getObjectSprite( houseTile, 
