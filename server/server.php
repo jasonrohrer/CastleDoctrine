@@ -3,10 +3,10 @@
 
 
 global $cd_version;
-$cd_version = "26";
+$cd_version = "27";
 
 global $cd_minClientVersion;
-$cd_minClientVersion = "26";
+$cd_minClientVersion = "27";
 
 
 global $cd_numBackpackSlots;
