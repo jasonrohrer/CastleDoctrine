@@ -1,3 +1,13 @@
+Version 28
+
+--Fixed pits so they are not marked as walls (so they allow true walls to
+  dominate the orientation of windows and doors) and are forced under the
+  shadows (to avoid having them drawn on top of player or mobiles) (thanks
+  Arakira).
+
+ 
+
+
 Version 27   2013-December-27
 
 --Tweaked visibility object fades to only fade objects that are fully-obscured
