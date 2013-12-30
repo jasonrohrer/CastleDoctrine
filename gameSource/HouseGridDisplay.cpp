@@ -1786,6 +1786,13 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                 // and doors, but doors do not block sight of walls)
                 char isWall = isSubMapPropertySet( i, wall );
                 
+                // tiles with 16 orientations connect with their same-type
+                // (and in-group type) neighbors and look weird if cut off
+                // due to visibility
+                char isConnectable = 
+                    ( getNumOrientations( houseTile, 0 ) == 16 );
+                
+
                 for( int n=0; n<8; n++ ) {
             
                     int neighborIndex = getTileNeighborEight( fullI, n );
@@ -1795,7 +1802,8 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                         mHouseMapCellFades[neighborIndex] > 
                             brightestNonObstructingNeighbor ) {
                         
-                        if( isInGroup( houseTile, 
+                        if( isConnectable && 
+                            isInGroup( houseTile, 
                                        mHouseMapIDs[neighborIndex] ) ) {
                             // consider brightness of connected neighbors
                             // no matter what

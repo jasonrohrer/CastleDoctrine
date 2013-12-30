@@ -5,6 +5,9 @@ Version 28
   shadows (to avoid having them drawn on top of player or mobiles) (thanks
   Arakira).  This also makes pits invisible behind doors (thanks Simoon).
 
+--Fixed so that doors can't be seen behind doors (thanks Simoon).
+
+
  
 
 
