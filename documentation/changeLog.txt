@@ -3,7 +3,7 @@ Version 28
 --Fixed pits so they are not marked as walls (so they allow true walls to
   dominate the orientation of windows and doors) and are forced under the
   shadows (to avoid having them drawn on top of player or mobiles) (thanks
-  Arakira).
+  Arakira).  This also makes pits invisible behind doors (thanks Simoon).
 
  
 
