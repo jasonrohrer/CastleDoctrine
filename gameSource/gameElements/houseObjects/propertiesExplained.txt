@@ -122,7 +122,7 @@ sleeping
 
 forceUnderShadows
 :: forces objects that are normally above wall-footprint shadows (like player 
-   and mobiles to be drawn under the shadows).
+   and mobiles) to be drawn under the shadows.
 
 
 noDropShadow
