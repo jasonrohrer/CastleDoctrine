@@ -7,6 +7,9 @@ Version 28
 
 --Fixed so that doors can't be seen behind doors (thanks Simoon).
 
+--Rewrote visibility fading code, fixing many visual inconsistencies.
+  Connected walls are now never cut off, and unconnected walls are now no
+  longer visible behind doors.
 
  
 

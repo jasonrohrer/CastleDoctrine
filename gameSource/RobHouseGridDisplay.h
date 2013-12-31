@@ -145,6 +145,12 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         char mBlockVisibilityFading;
         
         
+        // Working values so that we can maintain gradual visibility fade
+        // transitions.
+        // We further process these and pass them in to mHouseMapCellFades
+        // that are used for drawing in HouseGridDisplay
+        float *mHouseMapCellFadesWorking;
+
 
         // set to true to force tool tips for all tiles, even if shrouded
         char mForceAllTileToolTips;
@@ -166,6 +172,34 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         virtual void recomputeVisibilityInt();
         virtual void recomputeVisibilityFloat();
         
+        
+        // propagates visibility fades on screen portion of map
+        // so that no tile is more faded than its least-faded 
+        // neighbor (or least-faded, same-type connected tile)
+        //
+        // Also copies working fade values into main fade values for
+        // HouseGridDisplay for drawing. 
+        //
+        // In general, propagation results in less-faded stuff
+        // though sometimes, propagation can be cut-off abruptly (like
+        // when a door closes), resulting in the un-propagatation-affected
+        // value for the tile taking over.  In this case, the last
+        // propagation-affected value smoothly transitions down based
+        // on inFadeHideStep to avoid pop-out.
+        //
+        // Pop-in can happen when propagation suddenly turns on from
+        // already visible tiles (door opens).  In that case, the reveal
+        // step is used.
+        virtual void propagateVisibilityFades( float inFadeRevealStep,
+                                               float inFadeHideStep );
+
+        // recursively traces connected tiles and propagates
+        // visibility fades
+        virtual void setConnectedFadeRecursive(
+            float inTargetFadeValue, int inStartTileID,
+            int inCurrentIndex, char *inVisitedFlags );
+        
+
 
         // performs a frame step on inVisibleMap and
         // returns the resulting visibility shroud sprite

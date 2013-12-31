@@ -47,6 +47,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mSafeDownSprite( loadSprite( "moveDown.tga" ) ),
           mSafeRightSprite( loadSprite( "moveRight.tga" ) ),
           mBlockVisibilityFading( false ),
+          mHouseMapCellFadesWorking( NULL ),
           mForceAllTileToolTips( false ),
           mHouseMapMobileStartingPositions( NULL ),
           mHouseMapMobileFinalIDs( NULL ),
@@ -82,6 +83,10 @@ RobHouseGridDisplay::~RobHouseGridDisplay() {
         }
     if( mHouseMapMobileFinalCellStates != NULL ) {
         delete [] mHouseMapMobileFinalCellStates;
+        }
+
+    if( mHouseMapCellFadesWorking != NULL ) {
+        delete [] mHouseMapCellFadesWorking;
         }
     }
 
@@ -402,6 +407,12 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         }
     
 
+    if( mHouseMapCellFadesWorking != NULL ) {
+        delete [] mHouseMapCellFadesWorking;
+        }
+    mHouseMapCellFadesWorking = new float[ mNumMapSpots ];
+    
+
 
     mFamilyExitPathProgress.deleteAll();
     mFamilyObjects.deleteAll();
@@ -440,9 +451,10 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         mTargetVisibleUnderSlipMap[i] = false;
         }
     
-    for( int i=0; i<mFullMapD * mFullMapD; i++ ) {
+    for( int i=0; i<mNumMapSpots; i++ ) {
         mHouseMapCellFades[i] = 0;
         mHouseMapMobileCellFades[i] = 0;
+        mHouseMapCellFadesWorking[i] = 0;
         }
 
     // initial transitions (like for power that starts out on, etc)
@@ -663,13 +675,13 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
                         mHouseMapIDs[oldIndex] = 0;
                         mHouseMapCellStates[oldIndex] = 1;
 
-                        if( mHouseMapCellFades[newIndex] < 
-                            mHouseMapCellFades[oldIndex] ) {
+                        if( mHouseMapCellFadesWorking[newIndex] < 
+                            mHouseMapCellFadesWorking[oldIndex] ) {
                             // copy old visibility fade so that family member
                             // doesn't blink out of existence
                             // (instead, they will fade out at new location)
-                            mHouseMapCellFades[newIndex] = 
-                                mHouseMapCellFades[oldIndex];
+                            mHouseMapCellFadesWorking[newIndex] = 
+                                mHouseMapCellFadesWorking[oldIndex];
                             }
                         
                         *( mFamilyExitPathProgress.getElement( i ) ) = 
@@ -796,9 +808,9 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
     // now trigger transitions based on the new visibility
     
-    char *fullMapTilesVisible = new char[ mFullMapD * mFullMapD ];
+    char *fullMapTilesVisible = new char[ mNumMapSpots ];
 
-    memset( fullMapTilesVisible, false, mFullMapD * mFullMapD );
+    memset( fullMapTilesVisible, false, mNumMapSpots );
     
     for( int y=0; y<HOUSE_D; y++ ) {
         int bigY = y + mSubMapOffsetY;
@@ -1025,6 +1037,205 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
 
 
 
+void RobHouseGridDisplay::setConnectedFadeRecursive(
+    float inTargetFadeValue, int inStartTileID,
+    int inCurrentIndex, char *inVisitedFlags ) {
+    
+
+    for( int n=0; n<4; n++ ) {
+        int nIndex = getTileNeighbor( inCurrentIndex, n );
+        
+        if( nIndex != -1 && 
+            fullToSub( nIndex ) != -1 &&
+            ! inVisitedFlags[ nIndex ] ) {
+            // on visible map
+            
+            if( mHouseMapCellFades[nIndex] < inTargetFadeValue &&
+                isInGroup( inStartTileID, 
+                           mHouseMapIDs[nIndex] ) ) {
+                
+                mHouseMapCellFades[nIndex] = inTargetFadeValue;
+                inVisitedFlags[nIndex] = true;
+                
+                setConnectedFadeRecursive( inTargetFadeValue,
+                                           inStartTileID,
+                                           nIndex,
+                                           inVisitedFlags );
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+void RobHouseGridDisplay::propagateVisibilityFades( float inFadeRevealStep, 
+                                                    float inFadeHideStep ) {
+    
+    char *beenSteppedDown = new char[ mNumMapSpots ];
+    memset( beenSteppedDown, false, mNumMapSpots );
+
+    for( int i=0; i<mNumMapSpots; i++ ) {
+        
+        float target = mHouseMapCellFadesWorking[i];
+
+        if( mHouseMapCellFades[i] <= target ) {
+            // we can safely jump right up to our target value
+            // (because the working values are already smoothly adjusted up)
+            mHouseMapCellFades[i] = target;
+            }
+        else {
+            // if our target is lower, fade gradually down to it
+            // because our propagated value can drop out from underneath
+            // us (like if a door closes), and we can't abruptly jump
+            // down to our target
+            mHouseMapCellFades[i] -= inFadeHideStep;
+            beenSteppedDown[i] = true;
+            if( mHouseMapCellFades[i] < target ) {
+                mHouseMapCellFades[i] = target;
+                }
+            }
+        
+        }
+
+    
+    char *alreadySteppedUp = new char[ mNumMapSpots ];
+    char *alreadySteppedUpMobile = new char[ mNumMapSpots ];
+    memset( alreadySteppedUp, false, mNumMapSpots );
+    memset( alreadySteppedUpMobile, false, mNumMapSpots );
+    
+    
+    int numScreenTiles = HOUSE_D * HOUSE_D;
+
+    // first pass:
+    // propagate visibility to neighbors if non-vision blocking
+    for( int i=0; i<numScreenTiles; i++ ) {
+        int fullIndex = subToFull( i );
+        
+        float fade = mHouseMapCellFadesWorking[fullIndex];
+        
+        if( fade > 0 ) {
+            
+            if( ! isMapPropertySet( fullIndex, 
+                                    visionBlocking ) ) {
+            
+                // we're not vision blocking, 
+                // so make sure neighbors aren't more faded
+
+                for( int n=0; n<8; n++ ) {
+                    int nIndex = getTileNeighborEight( fullIndex, n );
+                    
+                    if( nIndex != -1 && 
+                        ( !alreadySteppedUp[ nIndex ] ||
+                          !alreadySteppedUpMobile[ nIndex ] ) ) {
+                        
+                        char neighborMatchFade = false;
+                        
+                        if( n % 2 == 0 ) {
+                            // cardinal NSEW neighbors always match our fade
+                            neighborMatchFade = true;
+                            }
+                        else {
+                            // odd neighbors are diagonal
+                            // if diagonal neighbor not -1, we know that
+                            // adjacent cardinal neighbors are in-bounds too
+
+                            // only pass fade to diagonal neighbors
+                            // if adjacent cardinal neighbors are 
+                            // not both vision blocking
+                            // this prevents seeing through diagonal gaps
+                            
+                            int nA = n - 1;
+                            int nB = (n+1)%8;
+                            
+                            if( isMapPropertySet( 
+                                    getTileNeighborEight( fullIndex, nA ),
+                                    visionBlocking ) &&
+                                isMapPropertySet( 
+                                    getTileNeighborEight( fullIndex, nB ),
+                                    visionBlocking ) ) {
+                                
+                                neighborMatchFade = false;
+                                }
+                            else {
+                                neighborMatchFade = true;
+                                }
+                            }
+                        
+                        // we're jumping up above our smoothly-faded
+                        // target
+                        // So we need to smoothly-fade this jump ourselves
+
+                        if( neighborMatchFade ) {
+                            if( !alreadySteppedUp[nIndex] &&
+                                mHouseMapCellFades[nIndex] < fade ) {
+                                mHouseMapCellFades[nIndex] += 
+                                    inFadeRevealStep;
+                                if( beenSteppedDown[nIndex ] ) {
+                                    // counter-act the stepping down
+                                    // that already happened above
+                                    mHouseMapCellFades[nIndex] += 
+                                        inFadeHideStep;
+                                    }
+                                if( mHouseMapCellFades[nIndex] > fade ) {
+                                    mHouseMapCellFades[nIndex] = fade;
+                                    }
+                                alreadySteppedUp[nIndex] = true;
+                                }
+                            if( !alreadySteppedUpMobile[nIndex] &&
+                                mHouseMapMobileCellFades[nIndex] < fade ) {
+                                mHouseMapMobileCellFades[nIndex] += 
+                                    inFadeRevealStep;
+                                if( mHouseMapMobileCellFades[nIndex] > fade ) {
+                                    mHouseMapMobileCellFades[nIndex] = fade;
+                                    }
+                                alreadySteppedUpMobile[nIndex] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+
+    // second pass:
+    // propagate through chains of connected tiles
+    char *visitedFlags = new char[ mNumMapSpots];
+
+    for( int i=0; i<numScreenTiles; i++ ) {
+        int fullIndex = subToFull( i );
+        
+        float newFade = mHouseMapCellFades[fullIndex];
+        if( newFade > 0 ) {
+            // tile is visible or became visible because of immediate,
+            // non-blocking neighbors
+        
+            // pass its visibility on to any connected neighbors
+            int houseMapTile = mHouseMapIDs[fullIndex];
+            
+            char isConnectable = 
+                ( getNumOrientations( houseMapTile, 0 ) == 16 );
+
+            if( isConnectable ) {
+                
+                memset( visitedFlags, false, mNumMapSpots );
+
+                visitedFlags[fullIndex] = true;
+                
+                setConnectedFadeRecursive( newFade, houseMapTile,
+                                           fullIndex, visitedFlags );
+                }
+            }
+        }
+
+    delete [] visitedFlags;
+    delete [] alreadySteppedUp;
+    delete [] alreadySteppedUpMobile;
+    delete [] beenSteppedDown;
+    }
 
 
 
@@ -1093,27 +1304,27 @@ void RobHouseGridDisplay::draw() {
             ( getNumOrientations( mHouseMapIDs[fullIndex], 0 ) == 16 );
 
         if( shouldBeVisible && 
-            mHouseMapCellFades[ fullIndex ] != 1 ) {
+            mHouseMapCellFadesWorking[ fullIndex ] != 1 ) {
             
             if( isTileConnected ) {
-                mHouseMapCellFades[ fullIndex ] += 
+                mHouseMapCellFadesWorking[ fullIndex ] += 
                     fadeRevealStepConnectedTiles;
                 }
             else {
-                mHouseMapCellFades[ fullIndex ] += fadeRevealStep;
+                mHouseMapCellFadesWorking[ fullIndex ] += fadeRevealStep;
                 }
             
-            if( mHouseMapCellFades[ fullIndex ] > 1 ) {
-                mHouseMapCellFades[ fullIndex ] =  1;
+            if( mHouseMapCellFadesWorking[ fullIndex ] > 1 ) {
+                mHouseMapCellFadesWorking[ fullIndex ] =  1;
                 }
             }
         else if( ! shouldBeVisible && 
-            mHouseMapCellFades[ fullIndex ] != 0 ) {
+            mHouseMapCellFadesWorking[ fullIndex ] != 0 ) {
             
-            mHouseMapCellFades[ fullIndex ] -= fadeHideStep;
+            mHouseMapCellFadesWorking[ fullIndex ] -= fadeHideStep;
 
-            if( mHouseMapCellFades[ fullIndex ] < 0 ) {
-                mHouseMapCellFades[ fullIndex ] =  0;
+            if( mHouseMapCellFadesWorking[ fullIndex ] < 0 ) {
+                mHouseMapCellFadesWorking[ fullIndex ] =  0;
                 }
             }
 
@@ -1138,6 +1349,8 @@ void RobHouseGridDisplay::draw() {
 
         }
     
+    propagateVisibilityFades( fadeRevealStep, fadeHideStep );
+
         
         
 
@@ -1481,29 +1694,40 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
     HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
     
     
+    if( mHouseMapCellFadesWorking == NULL ) {
+        // skip the fade shift below, because our house
+        // map hasn't been fully set yet, and all fades will 
+        // be set to 0 by the end of RobHouseGridDisplay::setHouseMap anyway
+        return;
+        }
+    
     // set tile fade to 0 for all parts of map that are outside our 
     // screen window 
     for( int y=0; y<mSubMapOffsetY; y++ ) {
         for( int x=0; x<mFullMapD; x++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapCellFadesWorking[y * mFullMapD + x] = 0;
             mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int y=mSubMapOffsetY+HOUSE_D; y<mFullMapD; y++ ) {
         for( int x=0; x<mFullMapD; x++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapCellFadesWorking[y * mFullMapD + x] = 0;
             mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int x=0; x<mSubMapOffsetX; x++ ) {
         for( int y=0; y<mFullMapD; y++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapCellFadesWorking[y * mFullMapD + x] = 0;
             mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
     for( int x =mSubMapOffsetX+HOUSE_D; x<mFullMapD; x++ ) {
         for( int y=0; y<mFullMapD; y++ ) {
             mHouseMapCellFades[y * mFullMapD + x] = 0;
+            mHouseMapCellFadesWorking[y * mFullMapD + x] = 0;
             mHouseMapMobileCellFades[y * mFullMapD + x] = 0;
             }
         }
