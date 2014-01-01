@@ -1157,7 +1157,17 @@ void RobHouseGridDisplay::propagateVisibilityFades( float inFadeRevealStep,
                                     getTileNeighborEight( fullIndex, nB ),
                                     visionBlocking ) ) {
                                 
-                                neighborMatchFade = false;
+                                if( isMapPropertySet( nIndex, 
+                                                      visionBlocking ) ) {
+                                    // if diagonal neighbor is itself
+                                    // vision blocking, then let it show
+                                    // through here, because sometimes
+                                    // it is actually visible through
+                                    // the gap, so make it always visible
+                                    // instead of having it jump in and out
+                                    // as robber line of sight changes
+                                    neighborMatchFade = true;
+                                    }
                                 }
                             else {
                                 neighborMatchFade = true;
