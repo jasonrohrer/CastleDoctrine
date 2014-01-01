@@ -1092,12 +1092,12 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 inMapMobileStates[i] = 0;
                 inMapMobileStartingPositions[i] = -1;
 
-                if( inMapMobileCellFades[destI] <
+                if( inMapMobileCellFades[destI] !=
                     inMapMobileCellFades[i] ) {
-                    // moving to a more-faded cell
+                    // moving to a differently-faded cell
                     // copy visibility to new cell so that mobile
-                    // doesn't blink out of existence
-                    // (will fade out at new location instead)
+                    // doesn't blink in/out of existence
+                    // (will fade in/out at new location instead)
                     inMapMobileCellFades[destI] = inMapMobileCellFades[i];
                     }
 

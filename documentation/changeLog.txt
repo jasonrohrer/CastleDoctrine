@@ -11,7 +11,11 @@ Version 28
   Connected walls are now never cut off, and unconnected walls are now no
   longer visible behind doors.
 
+--Family and mobiles now fade both in and out when they step from invisible
+  region to visible region or vice versa (no pop-out or pop-in).
  
+
+
 
 
 Version 27   2013-December-27
