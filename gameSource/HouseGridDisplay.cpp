@@ -3387,6 +3387,20 @@ int HouseGridDisplay::fullToSub( int inFullCellIndex ) {
 
 void HouseGridDisplay::copySubCellBack( int inSubCellIndex ) {
     int bigIndex = subToFull( inSubCellIndex );
+
+    if( isPropertySet( mHouseSubMapIDs[ inSubCellIndex ],
+                       mHouseSubMapCellStates[ inSubCellIndex ],
+                       mobile ) ) {
+        // force all mobile objects into mobile layer as they are
+        // placed
+        mHouseMapMobileIDs[bigIndex] = mHouseSubMapIDs[ inSubCellIndex ];
+        mHouseMapMobileCellStates[bigIndex] = 
+            mHouseSubMapCellStates[ inSubCellIndex ];
+        
+        mHouseSubMapIDs[ inSubCellIndex ] = 0;
+        mHouseSubMapCellStates[ inSubCellIndex ] = 0;
+        }
+
     
     mHouseMapIDs[ bigIndex ] = 
         mHouseSubMapIDs[ inSubCellIndex ];

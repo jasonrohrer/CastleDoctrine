@@ -14,7 +14,10 @@ Version 28
 --Family and mobiles now fade both in and out when they step from invisible
   region to visible region or vice versa (no pop-out or pop-in).
  
-
+--Changed to push placed mobile objects instantly into the mobile layer during
+  editing to correct visual differences between placed main-layer mobile
+  objects in edit mode and those that have already been moved into the mobile
+  layer by check-in.
 
 
 
