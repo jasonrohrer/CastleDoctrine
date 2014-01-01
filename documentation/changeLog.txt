@@ -19,6 +19,12 @@ Version 28
   objects in edit mode and those that have already been moved into the mobile
   layer by check-in.
 
+--Moved vertically oriented animal sprites up to avoid having them stick out
+  under the feet of family members that are standing on the same tile.  Their
+  positions relative to other objects look better now in general.
+
+
+
 
 
 Version 27   2013-December-27
