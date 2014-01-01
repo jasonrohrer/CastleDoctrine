@@ -1941,7 +1941,12 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
 
 
     int backToMapFactor = highResFactor * VIS_BLOWUP;
+    
 
+    // how many sub squares are visible on each tile?
+    unsigned char *hitCountMap = new unsigned char[ HOUSE_D * HOUSE_D ];
+    memset( hitCountMap, 0, HOUSE_D * HOUSE_D );
+    
 
     int i = 0;
     
@@ -2005,6 +2010,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 }
             else {
                 mTargetVisibleMap[i] = true;
+                hitCountMap[ mapI ] ++;
                 
                 // at least one sub-area of tile is visible
                 
@@ -2030,6 +2036,62 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     
 
     delete [] blockingMap;
+
+
+    // process visibility map to remove visible "island" sub-squares that
+    // have no visible neighbors
+
+    int visMapLimit = HOUSE_D * VIS_BLOWUP;
+    
+    for( int y=0; y<visMapLimit; y++ ) {
+
+        for( int x=0; x<visMapLimit; x++ ) {
+            int i = y * visMapLimit + x;
+            
+            if( mTargetVisibleMap[i] ) {
+
+                if( x > 0 && mTargetVisibleMap[i-1] ) {
+                    continue;
+                    }
+                if( x < visMapLimit - 1 && mTargetVisibleMap[i+1] ) {
+                    continue;
+                    }
+                if( y > 0 && mTargetVisibleMap[i-visMapLimit] ) {
+                    continue;
+                    }
+                if( y < visMapLimit - 1 && mTargetVisibleMap[i+visMapLimit] ) {
+                    continue;
+                    }
+                
+                // get here, no neighbors visible
+                // a visibility island
+                mTargetVisibleMap[i] = false;
+                    
+                int flipY = HOUSE_D * VIS_BLOWUP - y - 1;
+                
+                int mapY = flipY / VIS_BLOWUP;
+                int mapX = x / VIS_BLOWUP;
+                
+                int mapI = mapY * HOUSE_D + mapX;
+                
+                if( mTileVisibleMap[mapI] ) {
+                    
+                    
+                    hitCountMap[mapI] --;
+                    
+                    if( hitCountMap[ mapI ] == 0 ) {
+                        // through removing islands, all visible sub-squares on
+                        // a visible tile have been turned non-visible
+                        // Thus, the tile becomes non-visible too
+                        mTileVisibleMap[mapI] =  false;
+                        }
+                    }
+                }
+            }
+        }
+    
+
+    delete [] hitCountMap;
 
     
     int visD = VIS_BLOWUP * HOUSE_D;

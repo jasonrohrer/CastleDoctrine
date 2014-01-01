@@ -23,6 +23,10 @@ Version 28
   under the feet of family members that are standing on the same tile.  Their
   positions relative to other objects look better now in general.
 
+--Fixed barely-visible stuff through narrow gaps so that it's actually not
+  counted as visible by the game by patching up the shroud and visibility map
+  to remove visibility islands (thanks Pottage).
+
 
 
 
