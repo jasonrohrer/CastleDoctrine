@@ -133,6 +133,7 @@ sellHalfSlotTip "Sell %d %s for $%d"
 sellMode "Sell Mode"
 sellHalf "Sell Half"
 sellOne  "Sell One"
+sellAll  "Sell All"
 
 buyMode "Buy Mode"
 moveHalf "Move Half"
@@ -144,6 +145,7 @@ buyModeTip "Switch to buying tools"
 
 sellHalfTip "Switch to selling half of the items in a slot"
 sellOneTip "Switch to selling one item at a time"
+sellAllTip "Sell everything in backpack and vault for $%d"
 
 moveHalfTip "Switch to moving half of the items in a slot"
 moveOneTip "Switch to moving one item at a time"

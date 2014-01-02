@@ -23,6 +23,15 @@ typedef struct PurchaseHistoryRecord {
         // 1 for vault
         int targetSlotType;
 
+
+        // set to true if this purchase/sale was part of a bulk action
+        // (a series of purchases/sales that all happened together as one
+        //  action, like "sell all")
+        // They should be undone together as one action
+        // If true, this action is grouped with the action before it
+        // (and maybe the action before that one, if the chain continues).
+        char chainedAction;
+
     } PurchaseHistoryRecord;
 
 
@@ -110,6 +119,7 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         TextButton mSellModeButton;
         TextButton mSellHalfButton;
         TextButton mSellOneButton;
+        TextButton mSellAllButton;
 
         TextButton mBuyModeButton;
 
@@ -139,6 +149,9 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         SimpleVector<PurchaseHistoryRecord> mPurchaseHistory;
         
 
+
+        void undoActionOrActionGroup();
+        
         void checkBuyButtonStatus();
         void checkUndoStatus();
         

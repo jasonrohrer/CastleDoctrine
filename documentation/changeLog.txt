@@ -27,6 +27,9 @@ Version 28
   counted as visible by the game by patching up the shroud and visibility map
   to remove visibility islands (thanks Pottage).
 
+--Added an undoable Sell All button to the backpack screen that allows you to
+  quickly convert all of your tools to cash, perhaps as a way of checking your
+  house's value (thanks Arakira).
 
 
 
