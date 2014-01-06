@@ -1,3 +1,11 @@
+Version 28   Live Server Fixes
+
+--Fixed a security hole in download code exchange between game server and
+  ticket server (thanks Der).
+
+
+
+
 Version 28   2014-January-2
 
 --Fixed pits so they are not marked as walls (so they allow true walls to
