@@ -79,6 +79,7 @@ ViewBlueprintPage.cpp \
 FetchBlueprintPage.cpp \
 sha1Encryption.cpp \
 EyedropperStatusDisplay.cpp \
+secureString.cpp \
 
 
 

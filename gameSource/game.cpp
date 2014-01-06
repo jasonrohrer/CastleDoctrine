@@ -83,6 +83,8 @@ CustomRandomSource randSource( 34957197 );
 
 #include "nameProcessing.h"
 
+#include "secureString.h"
+
 
 
 GamePage *currentGamePage = NULL;
@@ -1611,7 +1613,7 @@ void drawFrame( char inUpdate ) {
                 if( houseMap != NULL ) {
 
                     robHousePage->setHouseMap( houseMap );
-                    delete [] houseMap;
+                    clearString( houseMap );
 
                     char *wifeName = robCheckoutHousePage->getWifeName();
                     robHousePage->setWifeName( wifeName );
@@ -1729,7 +1731,7 @@ void drawFrame( char inUpdate ) {
 
                 delete [] backpackContents;
                 delete [] moveList;
-                delete [] houseMap;
+                clearString( houseMap );
                 
                 currentGamePage = robCheckinHousePage;
                 currentGamePage->base_makeActive( true );

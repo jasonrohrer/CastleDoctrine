@@ -8,6 +8,8 @@
 
 #include "sha1Encryption.h"
 
+#include "secureString.h"
+
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 
@@ -65,7 +67,7 @@ void RobCheckoutHousePage::clearDataMembers() {
     mOwnerName = NULL;
     
     if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
+        clearString( mHouseMap );
         }
     mHouseMap = NULL;
     
@@ -159,7 +161,11 @@ char *RobCheckoutHousePage::getHouseMap() {
         return NULL;
         }
     else {
-        return stringDuplicate( mHouseMap );
+        char *returnValue = stringDuplicate( mHouseMap );
+        clearString( mHouseMap );
+        mHouseMap = NULL;
+        
+        return returnValue;
         }
     }
 

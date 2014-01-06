@@ -199,7 +199,7 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         char *mDaughterName;
         
 
-        char *mHouseMap;
+        char mHouseMapSet;
         
         int mNumMapSpots;
         int *mHouseMapIDs;

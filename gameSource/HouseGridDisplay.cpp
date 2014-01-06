@@ -52,7 +52,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mWifeName( NULL ),
           mSonName( NULL ),
           mDaughterName( NULL ),
-          mHouseMap( NULL ), 
+          mHouseMapSet( false ),
           mHouseMapIDs( NULL ),
           mHouseMapCellStates( NULL ),
           mHouseMapMobileIDs( NULL ),
@@ -223,9 +223,6 @@ HouseGridDisplay::~HouseGridDisplay() {
     if( mDaughterName != NULL ) {
         delete [] mDaughterName;
         }
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
     if( mHouseMapIDs != NULL ) {
         delete [] mHouseMapIDs;
         }
@@ -356,13 +353,10 @@ void HouseGridDisplay::setDaughterName( const char *inDaughterName ) {
 
 
 void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
-    if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
-        }
-    mHouseMap = stringDuplicate( inHouseMap );
-
+    mHouseMapSet = true;
+    
     int numTokens;
-    char **tokens = split( mHouseMap, "#", &numTokens );
+    char **tokens = split( inHouseMap, "#", &numTokens );
     
     if( mHouseMapIDs != NULL ) {
         delete [] mHouseMapIDs;
@@ -758,7 +752,7 @@ char *HouseGridDisplay::getDaughterName() {
 
 
 char *HouseGridDisplay::getHouseMap() {
-    if( mHouseMap == NULL ) {
+    if( !mHouseMapSet ) {
         return NULL;
         }
     else {
@@ -847,9 +841,7 @@ char *HouseGridDisplay::getHouseMap() {
                 }
             }
         
-        delete [] mHouseMap;
-        
-        mHouseMap = join( parts, mNumMapSpots, "#" );
+        char *houseMap = join( parts, mNumMapSpots, "#" );
         
         for( int i=0; i<mNumMapSpots; i++ ) {
             delete [] parts[i];
@@ -857,7 +849,7 @@ char *HouseGridDisplay::getHouseMap() {
         delete [] parts;
         
 
-        return stringDuplicate( mHouseMap );
+        return houseMap;
         }
     }
 
@@ -2334,7 +2326,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
 
 
 void HouseGridDisplay::draw() {
-    if( mHouseMap == NULL ) {
+    if( !mHouseMapSet ) {
         return;
         }
 

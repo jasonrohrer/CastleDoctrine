@@ -32,6 +32,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         virtual char *getOwnerName();
 
         // destroyed by caller if not NULL
+        // can only be called once per checkout (because this
+        // call destroys/clears the internal house map)
         virtual char *getHouseMap();
         
         // destroyed by caller if not NULL

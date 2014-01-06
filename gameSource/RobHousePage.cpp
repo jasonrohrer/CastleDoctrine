@@ -38,8 +38,7 @@ RobHousePage::RobHousePage()
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
           mDescription( NULL ),
-          mDeathMessage( NULL ),
-          mStartHouseMap( NULL ) {    
+          mDeathMessage( NULL ) {    
 
     addComponent( &mBlueprintButton );
     addComponent( &mDoneButton );
@@ -110,10 +109,6 @@ RobHousePage::~RobHousePage() {
     if( mDeathMessage != NULL ) {
         delete [] mDeathMessage;
         }
-
-    if( mStartHouseMap != NULL ) {
-        delete [] mStartHouseMap;
-        }
     
 
     for( int i=0; i<NUM_PACK_SLOTS; i++ ) {
@@ -152,11 +147,6 @@ void RobHousePage::setDaughterName( const char *inDaughterName ) {
 
 
 void RobHousePage::setHouseMap( char *inHouseMap ) {
-    if( mStartHouseMap != NULL ) {
-        delete [] mStartHouseMap;
-        }
-    mStartHouseMap = stringDuplicate( inHouseMap );
-    
     mGridDisplay.setHouseMap( inHouseMap );
     
     mGallery.instantFadeOut( mGridDisplay.getAboutToLeave() );
@@ -176,7 +166,8 @@ char *RobHousePage::getHouseMap() {
 
 
 char *RobHousePage::getBlueprintMap() {
-    return stringDuplicate( mStartHouseMap );
+    // deprecated
+    return NULL;
     }
 
 

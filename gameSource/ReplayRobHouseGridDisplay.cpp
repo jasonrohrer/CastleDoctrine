@@ -40,6 +40,7 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
           mJustRestarted( false ),
           mToolIDJustPicked( -1 ),
           mPanning( false ),
+          mOriginalHouseMap( NULL ),
           mOriginalWifeMoney( 0 ),
           mOriginalMoveList( NULL ) {
 
@@ -72,6 +73,10 @@ ReplayRobHouseGridDisplay::ReplayRobHouseGridDisplay( double inX, double inY )
 
         
 ReplayRobHouseGridDisplay::~ReplayRobHouseGridDisplay() {
+    if( mOriginalHouseMap != NULL ) {
+        delete [] mOriginalHouseMap;
+        }
+
     if( mOriginalMoveList != NULL ) {
         delete [] mOriginalMoveList;
         }
@@ -86,6 +91,18 @@ void ReplayRobHouseGridDisplay::clearReplayMoveList() {
         }
     mReplayMoveList.deleteAll();
     }
+
+
+
+void ReplayRobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
+    if( mOriginalHouseMap != NULL ) {
+        delete [] mOriginalHouseMap;
+        }
+    mOriginalHouseMap = stringDuplicate( inHouseMap );
+    
+    RobHouseGridDisplay::setHouseMap( inHouseMap );
+    }
+
 
 
 void ReplayRobHouseGridDisplay::setWifeMoney( int inMoney ) {
@@ -397,7 +414,7 @@ void ReplayRobHouseGridDisplay::actionPerformed( GUIComponent *inTarget ) {
         takeStep();
         }
     else if( inTarget == &mRestartButton ) {
-        char *newHouseMap = stringDuplicate( mHouseMap );
+        char *newHouseMap = stringDuplicate( mOriginalHouseMap );
         setHouseMap( newHouseMap );
         delete [] newHouseMap;
         

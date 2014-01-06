@@ -1,7 +1,7 @@
 
 # Can change flags here
 # See minorGems/game/platforms/SDL/Makefile.common for flags
-#DEBUG_FLAG = ${DEBUG_OFF_FLAG}
+DEBUG_FLAG = ${DEBUG_OFF_FLAG}
 
 PROFILE_FLAG = ${PROFILE_OFF_FLAG}
 
@@ -75,6 +75,7 @@ ViewBlueprintPage.cpp \
 FetchBlueprintPage.cpp \
 sha1Encryption.cpp \
 EyedropperStatusDisplay.cpp \
+secureString.cpp \
 
 
 
