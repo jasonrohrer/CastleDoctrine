@@ -1252,7 +1252,10 @@ void RobHouseGridDisplay::propagateVisibilityFades( float inFadeRevealStep,
 
 
 
-    
+char drawUnderSlip = true;
+
+int underSlipBlur = 6;
+
 
 void RobHouseGridDisplay::draw() {
     HouseGridDisplay::draw();
@@ -1289,7 +1292,7 @@ void RobHouseGridDisplay::draw() {
                                         blowUpFactor, 0,
                                         slipShroudRevealRate,
                                         slipShroudHideRate,
-                                        6 );
+                                        underSlipBlur );
     
 
     // set tile fade at same rate as main vis shroud sprite so that 
@@ -1374,7 +1377,7 @@ void RobHouseGridDisplay::draw() {
 
     drawSprite( visSprite, spritePos, 
                 1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
-    drawSprite( visSlipSprite, spritePos, 
+    if( drawUnderSlip )drawSprite( visSlipSprite, spritePos, 
                 1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
     
         
@@ -1525,6 +1528,9 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 
 
+int slipShrinkRounds = 3;
+
+
 void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {    
     if( mSafeMoveMode && mSafeMoveProposed ) {
         
@@ -1534,6 +1540,24 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
             moveRobber( mSafeMoveIndex );
             }
         }
+    if( inASCII == 'o' ) {
+        drawUnderSlip = !drawUnderSlip;
+        }
+    if( inASCII == ']' ) {
+        slipShrinkRounds ++;
+        recomputeVisibility();
+        }
+    if( inASCII == '[' && slipShrinkRounds > 0 ) {
+        slipShrinkRounds --;
+        recomputeVisibility();
+        }
+    if( inASCII == '}' ) {
+        underSlipBlur ++;
+        }
+    if( inASCII == '{' && underSlipBlur > 0 ) {
+        underSlipBlur --;
+        }
+    
     
     HouseGridDisplay::keyDown( inASCII );
     }
@@ -1805,6 +1829,22 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     int robberY = robSubIndex / HOUSE_D;
 
 
+    // is robber sandwitched between walls on opposite sides?
+    // if so, this makes shroud too dark around robber, so we
+    // need to compensate
+    char robberBetweenWalls = false;
+    
+    // robber NEVER at edge of screen
+    if( isSubMapPropertySet( robSubIndex - 1, visionBlocking ) &&
+        isSubMapPropertySet( robSubIndex + 1, visionBlocking ) ) {
+        robberBetweenWalls = true;
+        }
+    if( isSubMapPropertySet( robSubIndex - HOUSE_D, visionBlocking ) &&
+        isSubMapPropertySet( robSubIndex + HOUSE_D, visionBlocking ) ) {
+        robberBetweenWalls = true;
+        }
+
+
     char *blockingMap = new char[ HOUSE_D * HOUSE_D ];    
 
     memset( blockingMap, 0, HOUSE_D * HOUSE_D );
@@ -2023,11 +2063,42 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 // (like walls) are marked as visible if at least part
                 // of them can be seen (otherwise, we can never mouse over 
                 // walls and see tool tips, even if we are standing right
-                // next to them). 
+                // next to them).
+                char isVisionBlocking = 
+                    isSubMapPropertySet( mapI, visionBlocking );
+                
                 if( ! blockingMap[ mapI ] || 
-                    isSubMapPropertySet( mapI, visionBlocking ) ) {
+                    isVisionBlocking ) {
                     mTileVisibleMap[ mapI ] = true;
                     }
+                if( blockingMap[mapI] ) {
+                    
+                    // only care about this if robber sandwitched
+                    char robberNextToThisWall = false;
+                    
+                    
+                    if( robberBetweenWalls && isVisionBlocking ) {    
+                        if( mapY - robberY <= 1 
+                            &&
+                            mapY - robberY >= -1 
+                            &&
+                            mapX - robberX <= 1 
+                            &&
+                            mapX - robberX >= -1 ) {
+                            robberNextToThisWall = true;
+                            }
+                        }
+                    
+                        
+                    // leave walls adjacent to robber partly unshrouded
+                    if( !robberNextToThisWall ) {    
+                        mTargetVisibleMap[i] = false;
+                        hitCountMap[ mapI ] --;
+                        }
+                    
+                    }
+                
+                    
                 }
             
             i++;
@@ -2037,6 +2108,52 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
 
     delete [] blockingMap;
 
+
+    // process visible tile flags to remove tile "islands" that have
+    // no non-blocking, visible neighbors
+    // This should only happen for walls that end up being visible
+    // through diagonal gaps
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            int mapI = y * HOUSE_D + x;
+
+            if( mTileVisibleMap[mapI] && 
+                isSubMapPropertySet( mapI,
+                                     visionBlocking ) ) {
+                
+                if( y > 0 &&
+                    mTileVisibleMap[mapI - HOUSE_D] &&
+                    ! isSubMapPropertySet( mapI - HOUSE_D, 
+                                             visionBlocking ) ) {
+                    continue;
+                    }
+                if( y < HOUSE_D - 1 &&
+                    mTileVisibleMap[mapI + HOUSE_D] &&
+                    ! isSubMapPropertySet( mapI + HOUSE_D, 
+                                           visionBlocking ) ) {
+                    continue;
+                    }
+                if( x > 0 &&
+                    mTileVisibleMap[mapI - 1] &&
+                    ! isSubMapPropertySet( mapI - 1, 
+                                           visionBlocking ) ) {
+                    continue;
+                    }
+                if( x < HOUSE_D - 1 &&
+                    mTileVisibleMap[mapI + 1] &&
+                    ! isSubMapPropertySet( mapI + 1, 
+                                           visionBlocking ) ) {
+                    continue;
+                    }
+                    
+                    
+                // all neighbors are either invisible or vision blocking
+                mTileVisibleMap[mapI] = false;
+                }
+            }
+        }
+    
+    
 
     // process visibility map to remove visible "island" sub-squares that
     // have no visible neighbors
@@ -2093,17 +2210,130 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
 
     delete [] hitCountMap;
 
+
+    
+    // process vis map to push back shroud at end of narrow corridors
+    // so that the corridor end cap isn't too hard to see
+    //
+    //  We can recognize this case by the following configuration
+    //
+    //   XXX
+    //   VYW
+    //   VYW
+    //   XXX
+    // X and Y are shrouded spots.  If either V or W spots are not
+    // shrouded, we should make Y spots unshrouded too.
+
+
+    int numVisCells = visMapLimit * visMapLimit;
+    char *tweakedVisMap = new char[numVisCells];
+    
+    memcpy( tweakedVisMap, mTargetVisibleMap, numVisCells );
+
+    for( int y=1; y<visMapLimit - VIS_BLOWUP - 1; y++ ) {
+
+        for( int x=1; x<visMapLimit - VIS_BLOWUP - 1; x++ ) {
+            int i = y * visMapLimit + x;
+            
+
+            if( // top cap of I
+                ! mTargetVisibleMap[i-1] && 
+                ! mTargetVisibleMap[i] && 
+                ! mTargetVisibleMap[i+1] &&
+                // bottom cap of I
+                ! mTargetVisibleMap[i-1 + visMapLimit*( VIS_BLOWUP + 1 ) ] && 
+                ! mTargetVisibleMap[i   + visMapLimit*( VIS_BLOWUP + 1 ) ] && 
+                ! mTargetVisibleMap[i+1 + visMapLimit*( VIS_BLOWUP + 1 ) ]  ) {
+                
+                
+
+                char invisibleVertLine = true;
+                char leftOrRightVisible = true;
+                for( int yd=1; yd <= VIS_BLOWUP; yd++ ) {    
+                    if( mTargetVisibleMap[ i + yd * visMapLimit ] ) {
+                        invisibleVertLine = false;
+                        break;
+                        }
+                    if( ! mTargetVisibleMap[ i + yd * visMapLimit - 1 ]
+                        &&
+                        ! mTargetVisibleMap[ i + yd * visMapLimit + 1 ] ) {
+                        leftOrRightVisible = false;
+                        break;
+                        }
+                
+                    }
+
+                if( invisibleVertLine && leftOrRightVisible ) {
+                    // spine of I invisible, has visible tiles to left
+                    // or right
+                    // make it visible too
+                    for( int yd=1; yd <= VIS_BLOWUP; yd++ ) {    
+                        tweakedVisMap[ i + yd * visMapLimit ] = true;
+                        }
+                    }
+                }
+            if( // left cap of sideways I
+                ! mTargetVisibleMap[i - visMapLimit] && 
+                ! mTargetVisibleMap[i] && 
+                ! mTargetVisibleMap[i + visMapLimit] &&
+                // right cap of sideways I
+                ! mTargetVisibleMap[i - visMapLimit + VIS_BLOWUP + 1 ] && 
+                ! mTargetVisibleMap[i + VIS_BLOWUP + 1 ] && 
+                ! mTargetVisibleMap[i + visMapLimit + VIS_BLOWUP + 1 ] ) {
+                
+                
+
+                char invisibleHorLine = true;
+                char upOrDownVisible = true;
+                for( int xd=1; xd <= VIS_BLOWUP; xd++ ) {    
+                    if( mTargetVisibleMap[ i + xd ] ) {
+                        invisibleHorLine = false;
+                        break;
+                        }
+                    if( ! mTargetVisibleMap[ i + xd - visMapLimit ]
+                        &&
+                        ! mTargetVisibleMap[ i + xd + visMapLimit ] ) {
+                        upOrDownVisible = false;
+                        break;
+                        }
+                
+                    }
+
+                if( invisibleHorLine && upOrDownVisible ) {
+                    // spine of sideways I invisible, has visible tiles
+                    // above or below
+                    // make it visible too
+                    for( int xd=1; xd <= VIS_BLOWUP; xd++ ) {    
+                        tweakedVisMap[ i + xd ] = true;
+                        }
+                    }
+                }
+            }
+        }
+    
+    
+    memcpy( mTargetVisibleMap, tweakedVisMap, numVisCells );
+    delete [] tweakedVisMap;
+
+
+    // shift shroud up so that it lines up with tops of wall tiles
+    for( int y=0; y<visMapLimit-1; y++ ) {
+        memcpy( &( mTargetVisibleMap[ y * visMapLimit ] ), 
+                &( mTargetVisibleMap[ (y+1) * visMapLimit ] ),
+                visMapLimit );
+        }
+
+
+
     
     int visD = VIS_BLOWUP * HOUSE_D;
-    
-    int numVisCells = visD * visD;
     
     memcpy( mTargetVisibleUnderSlipMap, mTargetVisibleMap, numVisCells );
 
     char *newSlipMap = 
         new char [ numVisCells ];
     
-    int shrinkRounds = 3;
+    int shrinkRounds = slipShrinkRounds;
     for( int r=0; r<shrinkRounds; r++ ) {
         
         memset( newSlipMap, false, numVisCells );
