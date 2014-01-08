@@ -2106,81 +2106,198 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
         }
     
 
-    delete [] blockingMap;
 
+    // make sure there are no orphaned visible tiles that aren't
+    // connected to the robber by a contiguous, non-vision blocking visible
+    // blob
+    // (this also deals will walls that are visible through diagonal gaps)
+    char *reachableMap = new char[ HOUSE_D * HOUSE_D ];
 
-    // process visible tile flags to remove tile "islands" that have
-    // no non-blocking, visible neighbors
-    // This should only happen for walls that end up being visible
-    // through diagonal gaps
-    for( int y=0; y<HOUSE_D; y++ ) {
-        for( int x=0; x<HOUSE_D; x++ ) {
-            int mapI = y * HOUSE_D + x;
+    memset( reachableMap, 0, HOUSE_D * HOUSE_D );
+    reachableMap[ robSubIndex ] = true;
+    SimpleVector<int> frontier;
+    frontier.push_back( robSubIndex );
+    
+    while( frontier.size() > 0 ) {
+        
+        int nextI = *( frontier.getElement( frontier.size() - 1 ) );
+        frontier.deleteElement( frontier.size() - 1 );
 
-            if( mTileVisibleMap[mapI] && 
-                isSubMapPropertySet( mapI,
-                                     visionBlocking ) ) {
+        int nextY = nextI / HOUSE_D;
+        int nextX = nextI % HOUSE_D;
+        
+        if( nextY > 0 ) {
+            int nI = nextI - HOUSE_D;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
                 
-                if( y > 0 &&
-                    mTileVisibleMap[mapI - HOUSE_D] &&
-                    ! isSubMapPropertySet( mapI - HOUSE_D, 
-                                             visionBlocking ) ) {
-                    continue;
-                    }
-                if( y < HOUSE_D - 1 &&
-                    mTileVisibleMap[mapI + HOUSE_D] &&
-                    ! isSubMapPropertySet( mapI + HOUSE_D, 
-                                           visionBlocking ) ) {
-                    continue;
-                    }
-                if( x > 0 &&
-                    mTileVisibleMap[mapI - 1] &&
-                    ! isSubMapPropertySet( mapI - 1, 
-                                           visionBlocking ) ) {
-                    continue;
-                    }
-                if( x < HOUSE_D - 1 &&
-                    mTileVisibleMap[mapI + 1] &&
-                    ! isSubMapPropertySet( mapI + 1, 
-                                           visionBlocking ) ) {
-                    continue;
-                    }
+                if( mTileVisibleMap[nI] &&
+                    !blockingMap[nI] &&
+                    !isSubMapPropertySet( nI, visionBlocking ) ) {
                     
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextY < HOUSE_D - 1 ) {
+            int nI = nextI + HOUSE_D;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTileVisibleMap[nI] &&
+                    !blockingMap[nI] &&
+                    !isSubMapPropertySet( nI, visionBlocking ) ) {
                     
-                // all neighbors are either invisible or vision blocking
-                mTileVisibleMap[mapI] = false;
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextX > 0 ) {
+            int nI = nextI - 1;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTileVisibleMap[nI] &&
+                    !blockingMap[nI] &&
+                    !isSubMapPropertySet( nI, visionBlocking ) ) {
+                    
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextX < HOUSE_D - 1 ) {
+            int nI = nextI + 1;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTileVisibleMap[nI] &&
+                    !blockingMap[nI] &&
+                    !isSubMapPropertySet( nI, visionBlocking ) ) {
+                    
+                    frontier.push_back( nI );
+                    }
                 }
             }
         }
     
+    for( int i=0; i< HOUSE_D * HOUSE_D; i++ ) {
+        if( mTileVisibleMap[i] && ! reachableMap[i] ) {
+            
+            mTileVisibleMap[i] = false;
+            printf( "Darkening i = %d\n", i );
+           
+
+            // blacken coresponding region of vis overlay
+            int mapY = i / HOUSE_D;
+            int mapX = i % HOUSE_D;
+
+            // flip
+            int visY = (HOUSE_D - mapY - 1) * VIS_BLOWUP;
+            int visX = mapX * VIS_BLOWUP;
+            
+            for( int vY=visY; vY < visY + VIS_BLOWUP; vY ++ ) {
+                
+                for( int vX=visX; vX < visX + VIS_BLOWUP; vX ++ ) {
+                    int vI = vY * HOUSE_D * VIS_BLOWUP + vX;
+                    mTargetVisibleMap[vI] = false;
+                    }
+                }
+            }
+        }
+    delete [] reachableMap;
     
 
-    // process visibility map to remove visible "island" sub-squares that
-    // have no visible neighbors
+    delete [] blockingMap;
+
+
+
+
+
+    // make sure there are no orphaned visible sub-squares that aren't
+    // connected to the robber by a contiguous visible blob
+    reachableMap = new char[ HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP ];
+
+    memset( reachableMap, 0, HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP );
+
+    int robberVisY = (HOUSE_D - robberY) * VIS_BLOWUP - 1;
+    int robberVisX = robberX * VIS_BLOWUP;
+    int robberVisI = robberVisY * HOUSE_D * VIS_BLOWUP + robberVisX;
+    printf( "RobberVisI = %d\n", robberVisI );
+    
+    reachableMap[ robberVisI ] = true;
+    // frontier empty from last loop
+    frontier.push_back( robberVisI );
+    
+    while( frontier.size() > 0 ) {
+        
+        int nextI = *( frontier.getElement( frontier.size() - 1 ) );
+        frontier.deleteElement( frontier.size() - 1 );
+
+        int nextY = nextI / (HOUSE_D * VIS_BLOWUP);
+        int nextX = nextI % (HOUSE_D * VIS_BLOWUP);
+        
+        if( nextY > 0 ) {
+            int nI = nextI - (HOUSE_D * VIS_BLOWUP);
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTargetVisibleMap[nI] ) {
+                    
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextY < HOUSE_D * VIS_BLOWUP - 1 ) {
+            int nI = nextI + (HOUSE_D * VIS_BLOWUP);
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTargetVisibleMap[nI] ) {
+                    
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextX > 0 ) {
+            int nI = nextI - 1;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTargetVisibleMap[nI] ) {
+                    
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        if( nextX < HOUSE_D * VIS_BLOWUP - 1 ) {
+            int nI = nextI + 1;
+            if( !reachableMap[nI] ) {
+                reachableMap[nI] = true;
+                
+                if( mTargetVisibleMap[nI] ) {
+                    
+                    frontier.push_back( nI );
+                    }
+                }
+            }
+        }
+
+
+
+    
+
+    // process visibility map to remove visible "island" sub-squares 
+    // that aren'tr eachable from robber through visible squares
 
     int visMapLimit = HOUSE_D * VIS_BLOWUP;
     
-    for( int y=0; y<visMapLimit; y++ ) {
+    if( true )for( int y=0; y<visMapLimit; y++ ) {
 
         for( int x=0; x<visMapLimit; x++ ) {
             int i = y * visMapLimit + x;
             
-            if( mTargetVisibleMap[i] ) {
+            if( mTargetVisibleMap[i] && ! reachableMap[i] ) {
 
-                if( x > 0 && mTargetVisibleMap[i-1] ) {
-                    continue;
-                    }
-                if( x < visMapLimit - 1 && mTargetVisibleMap[i+1] ) {
-                    continue;
-                    }
-                if( y > 0 && mTargetVisibleMap[i-visMapLimit] ) {
-                    continue;
-                    }
-                if( y < visMapLimit - 1 && mTargetVisibleMap[i+visMapLimit] ) {
-                    continue;
-                    }
-                
-                // get here, no neighbors visible
                 // a visibility island
                 mTargetVisibleMap[i] = false;
                     
@@ -2207,7 +2324,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
             }
         }
     
-
+    delete [] reachableMap;
     delete [] hitCountMap;
 
 
