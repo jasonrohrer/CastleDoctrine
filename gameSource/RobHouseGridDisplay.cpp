@@ -1963,6 +1963,10 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     unsigned char *hitCountMap = new unsigned char[ HOUSE_D * HOUSE_D ];
     memset( hitCountMap, 0, HOUSE_D * HOUSE_D );
     
+    // mark wall sub-cells to be tweeked to visible later
+    // (do it later so as not to affect the underslip)
+    SimpleVector<int> tweakToVisibleLater;
+    
 
     int i = 0;
     
@@ -2066,10 +2070,12 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                         }
                     
                         
-                    // leave walls adjacent to robber partly unshrouded
-                    if( !robberNextToThisWall ) {    
-                        mTargetVisibleMap[i] = false;
-                        hitCountMap[ mapI ] --;
+                    mTargetVisibleMap[i] = false;
+                    hitCountMap[ mapI ] --;
+                    if( robberNextToThisWall ) {
+                        // leave walls adjacent to robber partly unshrouded
+                        // but not in underslip
+                        tweakToVisibleLater.push_back( i );
                         }
                     
                     }
@@ -2401,18 +2407,11 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 }
             }
         }
+    // wait to apply tweak until AFTER underslip generated
+    // so that tweak doesn't shrink underslip)
     
     
-    memcpy( mTargetVisibleMap, tweakedVisMap, numVisCells );
-    delete [] tweakedVisMap;
 
-
-    // shift shroud up so that it lines up with tops of wall tiles
-    for( int y=0; y<visMapLimit-1; y++ ) {
-        memcpy( &( mTargetVisibleMap[ y * visMapLimit ] ), 
-                &( mTargetVisibleMap[ (y+1) * visMapLimit ] ),
-                visMapLimit );
-        }
 
 
 
@@ -2460,6 +2459,33 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
         }
 
     delete [] newSlipMap;
+
+
+
+    // apply tweaks now, after underslip has been generated from our
+    // untweaked shroud
+
+    memcpy( mTargetVisibleMap, tweakedVisMap, numVisCells );
+    delete [] tweakedVisMap;
+    
+    for( int i=0; i<tweakToVisibleLater.size(); i++ ) {
+        int index = *( tweakToVisibleLater.getElement( i ) );
+        
+        mTargetVisibleMap[index] = true;
+        }
+    
+
+
+    // shift both shrouds up so that it lines up with tops of wall tiles
+    for( int y=0; y<visMapLimit-1; y++ ) {
+        memcpy( &( mTargetVisibleMap[ y * visMapLimit ] ), 
+                &( mTargetVisibleMap[ (y+1) * visMapLimit ] ),
+                visMapLimit );
+        memcpy( &( mTargetVisibleUnderSlipMap[ y * visMapLimit ] ), 
+                &( mTargetVisibleUnderSlipMap[ (y+1) * visMapLimit ] ),
+                visMapLimit );
+        }
+
     }
 
 
