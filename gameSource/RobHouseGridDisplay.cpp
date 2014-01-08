@@ -2160,7 +2160,6 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
         if( mTileVisibleMap[i] && ! reachableMap[i] ) {
             
             mTileVisibleMap[i] = false;
-            printf( "Darkening i = %d\n", i );
            
 
             // blacken coresponding region of vis overlay
@@ -2198,7 +2197,6 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     int robberVisY = (HOUSE_D - robberY) * VIS_BLOWUP - 1;
     int robberVisX = robberX * VIS_BLOWUP;
     int robberVisI = robberVisY * HOUSE_D * VIS_BLOWUP + robberVisX;
-    printf( "RobberVisI = %d\n", robberVisI );
     
     reachableMap[ robberVisI ] = true;
     // frontier empty from last loop
