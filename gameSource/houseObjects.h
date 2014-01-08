@@ -85,7 +85,8 @@ int getObjectID( const char *inName );
     F(playerFacingAway), \
     F(interactingWithPlayer), \
     F(wifeOwns), \
-    F(onTopOfPlayer) \
+    F(onTopOfPlayer), \
+    F(thinShroud) \
 
                 
 

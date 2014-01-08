@@ -169,3 +169,10 @@ wifeOwns
 onTopOfPlayer
 :: for an object that is usually drawn beneath the player's sprite, drawn it
    on top instead.
+
+
+thinShroud
+:: for a wall edge, thins the visibiliy shroud by one sub-block, making this
+   wall always shrouded as if the player was standing next to it (where the
+   shroud is pushed back slightly).  Useful for walls that have internal
+   details that need to be more visible.

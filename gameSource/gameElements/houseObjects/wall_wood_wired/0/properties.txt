@@ -4,3 +4,4 @@ shadowMaking
 structural
 wall
 conductive
+thinShroud

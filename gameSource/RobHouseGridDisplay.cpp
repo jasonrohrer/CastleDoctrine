@@ -2074,7 +2074,11 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                     hitCountMap[ mapI ] --;
                     if( robberNextToThisWall ) {
                         // leave walls adjacent to robber partly unshrouded
-                        // but not in underslip
+                        // but not in underslip, so apply later
+                        tweakToVisibleLater.push_back( i );
+                        }
+                    else if( isSubMapPropertySet( mapI, thinShroud ) ) {
+                        // same for thin shroud walls
                         tweakToVisibleLater.push_back( i );
                         }
                     

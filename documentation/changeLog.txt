@@ -7,6 +7,10 @@ Version 29
 --Fixed some more narrow-gap visibility issues, forbidding islands of
   visibility surrounded by invisible areas.
 
+--Pulled shroud back slightly on wired walls to make their internals more
+  visible (thanks Hippasus).
+
+
 
 
 
