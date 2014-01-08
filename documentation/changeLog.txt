@@ -10,6 +10,10 @@ Version 29
 --Pulled shroud back slightly on wired walls to make their internals more
   visible (thanks Hippasus).
 
+--Changed what can be reached by throws to not be obstructed by intervening
+  objects, assuming that the target is both visible and reachable (thanks
+  Arakira).
+
 
 
 

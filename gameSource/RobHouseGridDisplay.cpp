@@ -233,6 +233,12 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
                 
                 int index = *( hitSquares.getElement( j ) );
                 
+                if( isMapPropertySet( index, blocking ) ) {
+                    // blocking objects can be reached by a tool, but
+                    // they can't pass reachability through to their neighbors
+                    continue;
+                    }
+
                 int y = index / mFullMapD;
                 int x = index % mFullMapD;
                 
@@ -295,51 +301,6 @@ void RobHouseGridDisplay::startUsingTool( int inToolID ) {
                 i--;
                 }
             }
-
-        
-        // finally, filter out those which have target lines that cross
-        // blocking objects
-        doublePair robberPos = getTilePosFull( mRobberIndex );
-        for( int i=0; i<hitSquares.size(); i++ ) {
-            int targetIndex = fullToSub( *( hitSquares.getElement( i ) ) );
-            doublePair targetPos = getTilePos( targetIndex );
-
-            char crossesBlocked = false;
-            
-            doublePair vector = sub( targetPos, robberPos );
-            
-            doublePair step = mult( normalize( vector ), 0.5 );
-            
-            doublePair currentPosition = robberPos;
-            
-            int maxSteps = lrint( length( vector ) / length( step ) );
-
-            int stepCount = 0;
-            
-            int currentIndex = 
-                getTileIndex( currentPosition.x, currentPosition.y );
-            
-            while( currentIndex != targetIndex && 
-                   stepCount < maxSteps ) {
-                
-                if( isSubMapPropertySet( currentIndex, blocking ) ) {
-                    crossesBlocked = true;
-                    break;
-                    }
-                currentPosition = add( currentPosition, step );
-                currentIndex = 
-                    getTileIndex( currentPosition.x, currentPosition.y );
-                
-                stepCount++;
-                }
-            
-
-            if( crossesBlocked ) {
-                hitSquares.deleteElement( i );
-                i--;
-                }
-            }
-        
         
 
         setTargetHighlights( &hitSquares );
