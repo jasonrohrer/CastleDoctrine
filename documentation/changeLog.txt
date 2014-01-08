@@ -1,3 +1,15 @@
+Version 29
+
+--Improved shroud by thickening it over walls and moving it north to line up
+  with the tops of walls instead of the bottoms of walls.  Obscures objects
+  around corners much better now.
+
+--Fixed some more narrow-gap visibility issues, forbidding islands of
+  visibility surrounded by invisible areas.
+
+
+
+
 Version 28   Live Server Fixes
 
 --Fixed a security hole in download code exchange between game server and
