@@ -1252,10 +1252,7 @@ void RobHouseGridDisplay::propagateVisibilityFades( float inFadeRevealStep,
 
 
 
-char drawUnderSlip = true;
-
-int underSlipBlur = 6;
-
+    
 
 void RobHouseGridDisplay::draw() {
     HouseGridDisplay::draw();
@@ -1292,7 +1289,7 @@ void RobHouseGridDisplay::draw() {
                                         blowUpFactor, 0,
                                         slipShroudRevealRate,
                                         slipShroudHideRate,
-                                        underSlipBlur );
+                                        6 );
     
 
     // set tile fade at same rate as main vis shroud sprite so that 
@@ -1377,7 +1374,7 @@ void RobHouseGridDisplay::draw() {
 
     drawSprite( visSprite, spritePos, 
                 1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
-    if( drawUnderSlip )drawSprite( visSlipSprite, spritePos, 
+    drawSprite( visSlipSprite, spritePos, 
                 1.0 * 2 * mTileRadius / ( blowUpFactor * VIS_BLOWUP ) );
     
         
@@ -1528,9 +1525,6 @@ void RobHouseGridDisplay::pointerUp( float inX, float inY ) {
 
 
 
-int slipShrinkRounds = 3;
-
-
 void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {    
     if( mSafeMoveMode && mSafeMoveProposed ) {
         
@@ -1540,24 +1534,6 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
             moveRobber( mSafeMoveIndex );
             }
         }
-    if( inASCII == 'o' ) {
-        drawUnderSlip = !drawUnderSlip;
-        }
-    if( inASCII == ']' ) {
-        slipShrinkRounds ++;
-        recomputeVisibility();
-        }
-    if( inASCII == '[' && slipShrinkRounds > 0 ) {
-        slipShrinkRounds --;
-        recomputeVisibility();
-        }
-    if( inASCII == '}' ) {
-        underSlipBlur ++;
-        }
-    if( inASCII == '{' && underSlipBlur > 0 ) {
-        underSlipBlur --;
-        }
-    
     
     HouseGridDisplay::keyDown( inASCII );
     }
@@ -2291,7 +2267,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
 
     int visMapLimit = HOUSE_D * VIS_BLOWUP;
     
-    if( true )for( int y=0; y<visMapLimit; y++ ) {
+    for( int y=0; y<visMapLimit; y++ ) {
 
         for( int x=0; x<visMapLimit; x++ ) {
             int i = y * visMapLimit + x;
@@ -2450,7 +2426,7 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     char *newSlipMap = 
         new char [ numVisCells ];
     
-    int shrinkRounds = slipShrinkRounds;
+    int shrinkRounds = 3;
     for( int r=0; r<shrinkRounds; r++ ) {
         
         memset( newSlipMap, false, numVisCells );
