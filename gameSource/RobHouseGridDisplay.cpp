@@ -2190,9 +2190,6 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
             }
         }
     delete [] reachableMap;
-    
-
-    delete [] blockingMap;
 
 
 
@@ -2480,6 +2477,61 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
     
 
 
+    // pull shroud edge down by one block on all non-walled areas
+    // thus, shifting up below will only affect walled areas
+    // So, shroud should line up with wall tops where there are walls,
+    // but line up with floor tiles elsewhere
+    tweakedVisMap = new char[numVisCells];
+    
+    memcpy( tweakedVisMap, mTargetVisibleMap, numVisCells );
+
+    i = 0;
+    
+    for( int y=0; y<HOUSE_D * VIS_BLOWUP; y++ ) {
+
+        int flipY = HOUSE_D * VIS_BLOWUP - y - 1;
+
+
+        int mapY = flipY / VIS_BLOWUP;
+
+        for( int x=0; x<HOUSE_D * VIS_BLOWUP; x++ ) {
+            int mapX = x / VIS_BLOWUP;
+
+            int mapI = mapY * HOUSE_D + mapX;
+            
+            if( !blockingMap[mapI] && !mTargetVisibleMap[i] ) {
+                // a black shroud spot
+                // over a non-blocking area
+           
+                if( y > 0 ) {
+                    int northN = i - HOUSE_D * VIS_BLOWUP;
+                    if( mTargetVisibleMap[northN] ) {
+                        // white to north
+                        
+                        // make this pixel white (move shroud down)
+                        tweakedVisMap[i] = true;
+                        }
+                    }
+                if( y < HOUSE_D * VIS_BLOWUP - 1 ) {
+                    int southN = i + HOUSE_D * VIS_BLOWUP;
+                    if( mTargetVisibleMap[southN] ) {
+                        // white to sounth
+                        
+                        // make south pixel black (move shroud down)
+                        tweakedVisMap[southN] = false;
+                        }
+                    }
+                }
+            
+
+            i++;
+            }
+        }
+    
+    memcpy( mTargetVisibleMap, tweakedVisMap, numVisCells );
+    delete [] tweakedVisMap;
+
+
     // shift both shrouds up so that it lines up with tops of wall tiles
     for( int y=0; y<visMapLimit-1; y++ ) {
         memcpy( &( mTargetVisibleMap[ y * visMapLimit ] ), 
@@ -2489,6 +2541,10 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
                 &( mTargetVisibleUnderSlipMap[ (y+1) * visMapLimit ] ),
                 visMapLimit );
         }
+
+        
+
+    delete [] blockingMap;
 
     }
 
