@@ -415,14 +415,15 @@ encrypted_house_map = base64 ASCII encrypted string representing the house
 
 
 Encryption based on SHA1 hash, where keystream is produced as follows, 
-where . means "concatonate":
+where . means "concatonate" and shared_secret is secret string known to both
+the client and the server:
 
 
-sha1( "0" . map_encryption_key . "0" ) . 
-sha1( "1" . map_encryption_key . "1" ) . 
-sha1( "2" . map_encryption_key . "2" ) . 
+sha1( "0" . map_encryption_key . shared_secret . "0" ) . 
+sha1( "1" . map_encryption_key . shared_secret . "1" ) . 
+sha1( "2" . map_encryption_key . shared_secret . "2" ) . 
 ...
-sha1( "N" . map_encryption_key . "N" )
+sha1( "N" . map_encryption_key . shared_secret . "N" )
 
 Where N is chosen so that N * 20 > length( house_map ).
 

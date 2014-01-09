@@ -18,6 +18,10 @@ Version 29
   prevent unfairly modded clients from connecting to the server without the
   modder realizing the implications (thanks Zed).
 
+--Changed to included shared secret in map encryption for maps sent with
+  start_rob_house.
+
+
 
 
 

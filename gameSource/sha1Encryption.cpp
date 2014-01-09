@@ -1,4 +1,5 @@
 #include "sha1Encryption.h"
+#include "sharedServerSecret.h"
 
 #include "minorGems/formats/encodingUtils.h"
 #include "minorGems/crypto/hashes/sha1.h"
@@ -20,7 +21,10 @@ char *sha1Decrypt( const char *inKey, const char *inEncryptedDataBase64 ) {
     
     while( keyStream.size() < encryptedLength ) {
         
-        char *stringToHash = autoSprintf( "%d%s%d", counter, inKey, counter );
+        char *stringToHash = autoSprintf( "%d%s%s%d", 
+                                          counter, 
+                                          inKey, sharedServerSecret,
+                                          counter );
         
         unsigned char *hashData = computeRawSHA1Digest( stringToHash );
         

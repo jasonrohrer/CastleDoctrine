@@ -9380,7 +9380,11 @@ function cd_hexDecodeToBitString( $inHexString ) {
 // returns resulting encrypted data in MIME base64 format
 // Also, rather slow, but fast enough (500 map-length encryptions per second
 // on an old machine)
+//
+// uses $sharedClientSecret along with $inKey
 function cd_sha1Encrypt( $inKey, $inDataString ) {
+    global $sharedClientSecret;
+    
     $dataLength = strlen( $inDataString );
 
     $keyStream = "";
@@ -9390,7 +9394,9 @@ function cd_sha1Encrypt( $inKey, $inDataString ) {
     
     while( $keyStreamLength < $dataLength ) {
         // another 20 bytes of raw SHA1 data
-        $keyStream = $keyStream . sha1( "$counter" . $inKey . "$counter",
+        $keyStream = $keyStream . sha1( "$counter" .
+                                        $inKey . $sharedClientSecret .
+                                        "$counter",
                                         true );
         
         $keyStreamLength += 20;
@@ -9406,8 +9412,10 @@ function cd_sha1Encrypt( $inKey, $inDataString ) {
 
 
 
-
+// uses $sharedClientSecret along with $inKey
 function cd_sha1Decrypt( $inKey, $inEncryptedDataBase64 ) {
+    global $sharedClientSecret;
+
     $encryptedData = base64_decode( $inEncryptedDataBase64 );
     
     $dataLength = strlen( $encryptedData );
@@ -9419,7 +9427,9 @@ function cd_sha1Decrypt( $inKey, $inEncryptedDataBase64 ) {
     
     while( $keyStreamLength < $dataLength ) {
         // another 20 bytes of raw SHA1 data
-        $keyStream = $keyStream . sha1( "$counter" . $inKey . "$counter",
+        $keyStream = $keyStream . sha1( "$counter" .
+                                        $inKey . $sharedClientSecret .
+                                        "$counter",
                                         true );
         
         $keyStreamLength += 20;
