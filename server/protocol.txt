@@ -20,14 +20,14 @@ on the server.  Client should immediately inform user of this condition.
 server.php?action=check_user&email=[signup email address]
 
 Returns:
-minVersionNumber
+requiredVersionNumber
 userID
 sequenceNumber
 adminStatus
 OK
 
 Where:
-minVersionNumber = minimum client version number compatible with this server
+requiredVersionNumber = client version number compatible with this server
 userID = unique user ID number
 sequenceNumber = sequence number for hmac-sha1 secure hashing of download keys
                  to sign future transactions.  Any transactions using
@@ -41,10 +41,14 @@ To verify the identity of the user making each transaction, a hash of
 that user's original download ticket ID is included with the transaction call.
 That hash is constructed in the following way:
 
-  HMAC_SHA1( download_ticket_id, sequence_number )
+  HMAC_SHA1( download_ticket_id, 
+             sequence_number . client_version_number . shared_secret )
 
-Where the two inputs are the download ticket ID and the ascii, base-10 
-representation of the sequence number.
+Where the two inputs are the download ticket ID (hex-encoded and all caps, with
+hyphens removed) and the ascii, base-10 representation of the sequence number,
+concatonated with the ascii, base-10 representation of the version number, and
+finally concatonated with the shared secret string known both to the server and
+the client.
 
 Each transaction updates the sequence number associated with the user on
 the server.  Each subsequent transaction must use a new sequence number to
@@ -52,7 +56,9 @@ thwart replay attacks.
 
 Thus, the ticket ID is never sent from the client to the server, yet the
 server can verify that the client making the transaction is indeed in 
-possession of the ticket ID (which only one person in the world should have).
+possession of the ticket ID (which only one person in the world should have),
+as well as the proper version number and the proper shared secret.
+
 
 
 

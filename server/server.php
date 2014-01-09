@@ -5,9 +5,6 @@
 global $cd_version;
 $cd_version = "28";
 
-global $cd_minClientVersion;
-$cd_minClientVersion = "28";
-
 
 global $cd_numBackpackSlots;
 $cd_numBackpackSlots = 8;
@@ -2334,9 +2331,9 @@ function cd_checkUser() {
             }
         }
 
-    global $cd_minClientVersion;
+    global $cd_version;
     
-    echo "$cd_minClientVersion $user_id $sequence_number $admin OK";
+    echo "$cd_version $user_id $sequence_number $admin OK";
     }
 
 
@@ -6844,7 +6841,12 @@ function cd_verifyTransaction() {
     $ticket_id = $row[ "ticket_id" ];
 
 
-    $correct_ticket_hmac = cd_hmac_sha1( $ticket_id, "$sequence_number" );
+    global $sharedClientSecret, $cd_version;
+    
+    $correct_ticket_hmac = cd_hmac_sha1( $ticket_id,
+                                         "$sequence_number" .
+                                         "$cd_version" .
+                                         $sharedClientSecret );
 
 
     if( strtoupper( $correct_ticket_hmac ) !=

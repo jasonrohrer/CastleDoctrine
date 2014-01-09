@@ -1,4 +1,6 @@
 #include "ticketHash.h"
+#include "sharedServerSecret.h"
+
 
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/crypto/hashes/sha1.h"
@@ -6,6 +8,7 @@
 
 extern char *downloadCode;
 extern int serverSequenceNumber;
+extern int versionNumber;
 
 
 char *getTicketHash() {
@@ -31,7 +34,10 @@ char *getTicketHash() {
 
 
 
-    char *toHash = autoSprintf( "%d", serverSequenceNumber );
+    char *toHash = autoSprintf( "%d%d%s", 
+                                serverSequenceNumber,
+                                versionNumber,
+                                sharedServerSecret );
     
     char *hash = hmac_sha1( pureCode, toHash );
     

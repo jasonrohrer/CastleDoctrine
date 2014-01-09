@@ -94,6 +94,13 @@ $accessPasswords = array( "6616d4211911cc5aa4d30adcf5af54c2814b6508",
 
 
 
+// a secret known to the client that is used by the server to verify
+// that valid clients are connecting.  People building clients using
+// this key are aware of how clients are supposed to behave.
+$sharedClientSecret = "This is an example secret.  You probably cannot connect to the main server without replacing this.";
+
+
+
 // Default behavior is NOT to depend on a cron job to call check_for_flush
 // periodically.  With default config, some unlucky client call triggers the
 // flush and waits for it to finish before that client is served.

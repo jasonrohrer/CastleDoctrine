@@ -14,6 +14,10 @@ Version 29
   objects, assuming that the target is both visible and reachable (thanks
   Arakira).
 
+--Added a publicly known shared secret between the client and the server to
+  prevent unfairly modded clients from connecting to the server without the
+  modder realizing the implications (thanks Zed).
+
 
 
 
