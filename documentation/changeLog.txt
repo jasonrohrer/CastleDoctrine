@@ -29,6 +29,8 @@ Version 29
 --Added a blockSubInfo property that prevents an object state from having a
   state-specific tool tip.
 
+--Added signatures for all object state properties.txt files.
+
 
 
 

@@ -4,6 +4,9 @@ writeFailed "Error:  game folder is read-only"
 loading "Loading..."
 
 
+badPropertiesSignature "Bad properties signature in"
+
+
 
 pauseMessage1 "Press ENTER to resume"
 

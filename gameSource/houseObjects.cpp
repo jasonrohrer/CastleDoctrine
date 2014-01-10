@@ -1,6 +1,26 @@
+// if you're updating object properties, you need to set this flag to true
+// and run the game once to generate signatures for each properties.txt file.
+// After doing this once, you can set the flag back to false and recompile.
+// (or leave it at false if you don't want the game to check signatures at
+//  all).
+// Please don't abuse this in clients that connect to the main server (don't
+// give yourself the power to see through walls or see when wires are on, for
+// example).
+//
+// If you change object properties without regenerating signatures,
+// loading will fail.
+static char regeneratePropertySignatures = false;
+
+static const char *propertySignatureKey = "Please don't abuse this key.";
+
+
+
+
 #include "houseObjects.h"
 
 #include "gameElements.h"
+
+#include "minorGems/game/game.h"
 
 #include "minorGems/util/SimpleVector.h"
 
@@ -103,6 +123,34 @@ static int idSpaceSize = 0;
 
 // some may be -1
 static int *idToIndexMap = NULL;
+
+
+
+#include "minorGems/crypto/hashes/sha1.h"
+
+// sha1 digest of properties as an ascii bit string of '1' and '0' concatonated
+// with the key above
+static char *computePropertiesSignature( houseObjectState *inState ) {
+    char propertyString[endPropertyID + 1];
+    
+    for( int p=0; p<endPropertyID; p++ ) {
+        if( inState->properties[p] ) {
+            propertyString[p] = '1';
+            }
+        else {
+            propertyString[p] = '0';
+            }
+        }
+    propertyString[ endPropertyID ] = '\0';
+    
+    char *bitsPlusKey = concatonate( propertyString, propertySignatureKey );
+
+    char *sig = computeSHA1Digest( bitsPlusKey );
+
+    delete [] bitsPlusKey;
+    
+    return sig;
+    }
 
 
 
@@ -474,6 +522,7 @@ static houseObjectState readState( File *inStateDir ) {
     char *underTgaPath = NULL;
     char *underShadeMapTgaPath = NULL;
     char *propertiesContents = NULL;
+    char *propertiesSigContents = NULL;
     char *subInfoContents = NULL;
 
 
@@ -524,6 +573,12 @@ static houseObjectState readState( File *inStateDir ) {
                 delete [] propertiesContents;
                 }
             propertiesContents = f->readFileContents();
+            }
+        else if( strcmp( name, "propertiesSignature.txt" ) == 0 ) {
+            if( propertiesSigContents != NULL ) {
+                delete [] propertiesSigContents;
+                }
+            propertiesSigContents = f->readFileContents();
             }
         else if( strcmp( name, "subInfo.txt" ) == 0 ) {
             if( subInfoContents != NULL ) {
@@ -576,6 +631,55 @@ static houseObjectState readState( File *inStateDir ) {
 
         delete [] propertiesContents;
         }
+
+
+    char propertiesSigOK = true;
+    
+    if( regeneratePropertySignatures ) {
+        // ignore propertiesSignature.txt and generate a new one
+        char *newSig = computePropertiesSignature( &state );
+        
+        File *childFile = 
+            inStateDir->getChildFile( "propertiesSignature.txt" );
+        if( childFile != NULL ) {
+            childFile->writeToFile( newSig );
+            delete childFile;
+            }
+        delete [] newSig;
+        }
+    else if( propertiesSigContents == NULL ) {
+        propertiesSigOK = false;
+        }
+    else {
+        // else check it
+        char *sig = trimWhitespace( propertiesSigContents );
+        
+        char *trueSig = computePropertiesSignature( &state );
+        
+        if( strcmp( trueSig, sig ) != 0 ) {
+            propertiesSigOK = false;
+            }
+        delete [] sig;
+        delete [] trueSig;
+        }
+    
+    if( propertiesSigContents != NULL ) {
+        delete [] propertiesSigContents;
+        }
+    
+
+
+    if( !propertiesSigOK ) {
+        char *dirName = inStateDir->getFullFileName();
+        char *message = autoSprintf( "%s\n%s",
+                                     translate( "badPropertiesSignature" ),
+                                     dirName );
+        delete [] dirName;
+        
+        loadingFailed( message );
+        delete [] message;
+        }
+    
 
 
 
