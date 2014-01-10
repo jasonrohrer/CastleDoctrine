@@ -2095,7 +2095,7 @@ char getUsesSound() {
 
 
 
-void drawString( const char *inString ) {
+void drawString( const char *inString, char inForceCenter ) {
     
     setDrawColor( 1, 1, 1, 0.75 );
 
@@ -2103,7 +2103,7 @@ void drawString( const char *inString ) {
 
     TextAlignment align = alignCenter;
     
-    if( initDone ) {
+    if( initDone && !inForceCenter ) {
         // transparent message
         setDrawColor( 1, 1, 1, 0.75 );
 
