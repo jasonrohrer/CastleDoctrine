@@ -176,3 +176,9 @@ thinShroud
    wall always shrouded as if the player was standing next to it (where the
    shroud is pushed back slightly).  Useful for walls that have internal
    details that need to be more visible.
+
+
+blockSubInfo
+:: prevents this object's state from using any subInfo.txt file that is
+   present.  Forces this object's state tool tip to match the main info.txt
+   tip.

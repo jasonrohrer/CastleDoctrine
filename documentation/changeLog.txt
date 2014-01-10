@@ -26,6 +26,9 @@ Version 29
 
 --Fixed so that text of robbery house map is never left lingering in freed RAM.
 
+--Added a blockSubInfo property that prevents an object state from having a
+  state-specific tool tip.
+
 
 
 

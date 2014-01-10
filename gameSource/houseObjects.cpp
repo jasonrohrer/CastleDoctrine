@@ -578,6 +578,14 @@ static houseObjectState readState( File *inStateDir ) {
         }
 
 
+
+    if( state.properties[ blockSubInfo ] ) {
+        if( subInfoContents != NULL  ) {
+            delete [] subInfoContents;
+            subInfoContents = NULL;
+            }
+        }
+    
     
     if( subInfoContents != NULL ) {
         char *info = subInfoContents;
