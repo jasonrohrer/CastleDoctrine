@@ -35,6 +35,8 @@ Version 29
 
 --Added signature for transitions.txt file.
 
+--Added support for signing certain sprites (like wires).
+
 
 
 

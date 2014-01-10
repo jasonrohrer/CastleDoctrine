@@ -87,7 +87,8 @@ int getObjectID( const char *inName );
     F(wifeOwns), \
     F(onTopOfPlayer), \
     F(thinShroud), \
-    F(blockSubInfo) \
+    F(blockSubInfo), \
+    F(signedSprite) \
 
                 
 

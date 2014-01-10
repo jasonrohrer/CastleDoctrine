@@ -182,3 +182,10 @@ blockSubInfo
 :: prevents this object's state from using any subInfo.txt file that is
    present.  Forces this object's state tool tip to match the main info.txt
    tip.
+
+
+signedSprite
+:: indicates that a signature must be present for this state's main sprite,
+   preventing the sprite from being modded without recompiling the game.
+   Most sprites can be modded without compromising the core game rules, but
+   some cannot.

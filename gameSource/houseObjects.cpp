@@ -528,6 +528,7 @@ static houseObjectState readState( File *inStateDir, int inObjectID,
     char *underShadeMapTgaPath = NULL;
     char *propertiesContents = NULL;
     char *propertiesSigContents = NULL;
+    char *spriteSigContents = NULL;
     char *subInfoContents = NULL;
 
 
@@ -584,6 +585,12 @@ static houseObjectState readState( File *inStateDir, int inObjectID,
                 delete [] propertiesSigContents;
                 }
             propertiesSigContents = f->readFileContents();
+            }
+        else if( strcmp( name, "spriteSignature.txt" ) == 0 ) {
+            if( spriteSigContents != NULL ) {
+                delete [] spriteSigContents;
+                }
+            spriteSigContents = f->readFileContents();
             }
         else if( strcmp( name, "subInfo.txt" ) == 0 ) {
             if( subInfoContents != NULL ) {
@@ -727,9 +734,79 @@ static houseObjectState readState( File *inStateDir, int inObjectID,
 
 
     if( tgaPath == NULL ) {
+        if( spriteSigContents != NULL ) {
+            delete [] spriteSigContents;
+            }
+        
         return state;
         }
+
+
+
+    if( state.properties[ signedSprite ] ) {
+        char sigOK = true;
+
+        File tgaFile( NULL, tgaPath );
+        
+        int length;
+        unsigned char *tgaBytes = tgaFile.readFileContents( &length );
+
+        char *sig = NULL;
+        
+        if( tgaBytes != NULL ) {
+            char *fileHash = computeSHA1Digest( tgaBytes, length );
+            
+            char *fullString = autoSprintf( "%s %s",
+                                            fileHash, propertySignatureKey );
+            delete [] fileHash;
+            
+            sig = computeSHA1Digest( fullString );
+            delete [] fullString;
+
+            delete [] tgaBytes;
+            }
+        
+            
+        if( regeneratePropertySignatures ) {
+            File *childFile = 
+                inStateDir->getChildFile( "spriteSignature.txt" );
+            if( childFile != NULL ) {
+                childFile->writeToFile( sig );
+                delete childFile;
+                }
+            }
+        else if( spriteSigContents == NULL ) {
+            sigOK = false;
+            }
+        else {
+            char *savedSig = trimWhitespace( spriteSigContents );
+        
+            if( strcmp( sig, savedSig ) != 0 ) {
+                sigOK = false;
+                }
+            delete [] savedSig;
+            }
+   
+
+        if( sig != NULL ) {
+            delete [] sig;
+            }
+
+        if( !sigOK ) {
+            char *dirName = inStateDir->getFullFileName();
+            char *message = autoSprintf( "%s\n%s",
+                                         translate( "badSpriteSignature" ),
+                                         dirName );
+            delete [] dirName;
+            
+            loadingFailed( message );
+            delete [] message;
+            }
+        }
     
+    if( spriteSigContents != NULL ) {
+        delete [] spriteSigContents;
+        }
 
     
     //printf( "Trying to read tga from %s\n", tgaPath );
