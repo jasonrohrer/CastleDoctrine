@@ -81,6 +81,7 @@ sha1Encryption.cpp \
 EyedropperStatusDisplay.cpp \
 secureString.cpp \
 sharedServerSecret.cpp \
+mapEncryptionKey.cpp \
 
 
 

@@ -446,7 +446,8 @@ server.php?action=end_rob_house&user_id=[id number]
 							   &family_killed_count=[number killed]
 							   $backpack_contents=[contents as ASCII string]
                                &move_list=[move list as ASCII string]
-                               &house_map=[house map ASCII string]
+                               &map_encryption_key=[ASCII key]
+                               &encrypted_house_map=[encrypted ASCII string]
 Returns:
 money_taken
 stuff_taken
@@ -483,6 +484,9 @@ start_edit_house)
 
 gallery_stuff_taken is ASCII encoded gallery object list (see gallery_contents
 for start_edit_house)
+
+encrypted_house_map is the result map from the robbery in same encrypted format
+as house map returned by start_rob_house.
 
 Note:
 money_taken    is "0" on failure

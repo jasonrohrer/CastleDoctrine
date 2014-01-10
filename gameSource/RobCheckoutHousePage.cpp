@@ -10,6 +10,9 @@
 
 #include "secureString.h"
 
+#include "mapEncryptionKey.h"
+
+
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
 
@@ -333,9 +336,7 @@ void RobCheckoutHousePage::step() {
     }
 
 
-// use these for unguessable data (key generation)
-extern int mouseDataBufferSize;
-extern float mouseDataBuffer[];
+
 
 
         
@@ -355,19 +356,7 @@ void RobCheckoutHousePage::makeActive( char inFresh ) {
         delete [] mMapEncryptionKey;
         }
 
-    SimpleVector<char> keyGenCharacters;
-    
-    for( int b=0; b<mouseDataBufferSize; b++ ) {
-        char *dataString = autoSprintf( "%f", mouseDataBuffer[b] );
-        keyGenCharacters.push_back( dataString, strlen( dataString ) );
-        delete [] dataString;
-        }
-    
-    char *keyGenString = keyGenCharacters.getElementString();
-
-    mMapEncryptionKey = computeSHA1Digest( keyGenString );
-    
-    delete [] keyGenString;
+    mMapEncryptionKey = getMapEncryptionKey();
 
     
 

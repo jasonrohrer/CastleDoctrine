@@ -21,7 +21,8 @@ Version 29
 --Changed to included shared secret in map encryption for maps sent with
   start_rob_house.
 
-
+--Changed to encrypt robbery end maps sent back by client through end_rob_house
+  so that raw robbery maps never appear in protocol.
 
 
 

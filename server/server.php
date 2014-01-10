@@ -5145,10 +5145,15 @@ function cd_endRobHouse() {
     
 
     
-    
-    
-    $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
+    $map_encryption_key = cd_requestFilter( "map_encryption_key", "/\S+/" );
+    // in base64
+    $encrypted_house_map = cd_requestFilter( "encrypted_house_map",
+                                             "/[A-Za-z0-9\/+=]+/" );
 
+    $house_map = cd_sha1Decrypt( $map_encryption_key, $encrypted_house_map );
+    
+    
+    
     $vault_loot_value = $row[ "loot_value" ];
     $wife_loot_value = $row[ "wife_loot_value" ];
     $house_value_estimate = $row[ "value_estimate" ];

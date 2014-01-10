@@ -4,6 +4,11 @@
 
 #include "serialWebRequests.h"
 
+#include "sha1Encryption.h"
+
+#include "secureString.h"
+
+#include "mapEncryptionKey.h"
 
 #include "minorGems/game/Font.h"
 #include "minorGems/game/game.h"
@@ -85,7 +90,7 @@ RobCheckinHousePage::~RobCheckinHousePage() {
         delete [] mBackpackContents;
         }
     if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
+        clearString( mHouseMap );
         }
     if( mMoveList != NULL ) {
         delete [] mMoveList;
@@ -121,7 +126,7 @@ void RobCheckinHousePage::setBackpackContents( char *inBackpackContents ) {
 
 void RobCheckinHousePage::setHouseMap( char *inHouseMap ) {
     if( mHouseMap != NULL ) {
-        delete [] mHouseMap;
+        clearString( mHouseMap );
         }
     mHouseMap = stringDuplicate( inHouseMap );
     }
@@ -333,7 +338,14 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     
     // send back to server            
     char *ticketHash = getTicketHash();    
-            
+
+    char *mapEncryptionKey = getMapEncryptionKey();
+    
+    char *encryptedMap = sha1Encrypt( mapEncryptionKey, mHouseMap );
+
+    clearString( mHouseMap );
+    mHouseMap = NULL;
+    
     
     char *actionString = autoSprintf( 
         "action=end_rob_house&user_id=%d"
@@ -345,14 +357,19 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         "&family_killed_count=%d"
         "&backpack_contents=%s"
         "&move_list=%s"
-        "&house_map=%s",
+        "&map_encryption_key=%s"
+        "&encrypted_house_map=%s",
         userID, ticketHash, 
         mSuccess, mWifeKilledRobber, 
         mWifeKilled, mWifeRobbed, mFamilyKilledCount,
         mBackpackContents, 
-        mMoveList, mHouseMap );
+        mMoveList, 
+        mapEncryptionKey, encryptedMap );
     delete [] ticketHash;
-            
+ 
+    delete [] mapEncryptionKey;
+    delete [] encryptedMap;
+    
     
     mWebRequest = startWebRequestSerial( "POST", 
                                    serverURL, 
