@@ -56,9 +56,11 @@ static int *idToIndexMap = NULL;
 
 #include "minorGems/crypto/hashes/sha1.h"
 
-// sha1 digest of reach ascii base-10 number concatonated with the key above
+// sha1 digest of ascii base-10 tool id and reach concatonated with the 
+// key above
 static char *computeReachSignature( toolRecord *inRecord ) {
-    char *reachString = autoSprintf( "%d%s", 
+    char *reachString = autoSprintf( "%d %d %s", 
+                                     inRecord->id,
                                      inRecord->reach, reachSignatureKey );
     
     char *sig = computeSHA1Digest( reachString );

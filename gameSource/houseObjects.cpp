@@ -128,9 +128,11 @@ static int *idToIndexMap = NULL;
 
 #include "minorGems/crypto/hashes/sha1.h"
 
-// sha1 digest of properties as an ascii bit string of '1' and '0' concatonated
+// sha1 digest ascii base-10 ID and state number concatonated with
+// properties as an ascii bit string of '1' and '0' concatonated
 // with the key above
-static char *computePropertiesSignature( houseObjectState *inState ) {
+static char *computePropertiesSignature( int inObjectID, int inStateNumber,
+                                         houseObjectState *inState ) {
     char propertyString[endPropertyID + 1];
     
     for( int p=0; p<endPropertyID; p++ ) {
@@ -143,11 +145,13 @@ static char *computePropertiesSignature( houseObjectState *inState ) {
         }
     propertyString[ endPropertyID ] = '\0';
     
-    char *bitsPlusKey = concatonate( propertyString, propertySignatureKey );
+    char *fullString = autoSprintf( "%d %d %s %s",
+                                    inObjectID, inStateNumber, propertyString,
+                                    propertySignatureKey );
 
-    char *sig = computeSHA1Digest( bitsPlusKey );
+    char *sig = computeSHA1Digest( fullString );
 
-    delete [] bitsPlusKey;
+    delete [] fullString;
     
     return sig;
     }
@@ -510,7 +514,8 @@ int readShadeMappedSprites( char *inTgaPath, char *inShadeMapTgaPath,
 
 
 
-static houseObjectState readState( File *inStateDir ) {
+static houseObjectState readState( File *inStateDir, int inObjectID,
+                                   int inStateNumber ) {
     
     int numChildFiles;
     File **childFiles = inStateDir->getChildFiles( &numChildFiles );
@@ -637,7 +642,8 @@ static houseObjectState readState( File *inStateDir ) {
     
     if( regeneratePropertySignatures ) {
         // ignore propertiesSignature.txt and generate a new one
-        char *newSig = computePropertiesSignature( &state );
+        char *newSig = computePropertiesSignature( inObjectID, inStateNumber,
+                                                   &state );
         
         File *childFile = 
             inStateDir->getChildFile( "propertiesSignature.txt" );
@@ -654,7 +660,8 @@ static houseObjectState readState( File *inStateDir ) {
         // else check it
         char *sig = trimWhitespace( propertiesSigContents );
         
-        char *trueSig = computePropertiesSignature( &state );
+        char *trueSig = computePropertiesSignature( inObjectID, inStateNumber,
+                                                    &state );
         
         if( strcmp( trueSig, sig ) != 0 ) {
             propertiesSigOK = false;
@@ -930,7 +937,7 @@ void initHouseObjects() {
                     
                     if( stateDir->exists() && stateDir->isDirectory() ) {
                         
-                        r.states[s] = readState( stateDir );
+                        r.states[s] = readState( stateDir, r.id, s );
                         }
 
                     delete stateDir;
