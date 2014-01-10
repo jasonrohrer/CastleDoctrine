@@ -1,3 +1,20 @@
+// if you're updating transitions, you need to set this flag to true
+// and run the game once to generate a signature for transitions.txt.
+// After doing this once, you can set the flag back to false and recompile.
+// (or leave it at false if you don't want the game to check signatures at
+//  all).
+// Please don't abuse this in clients that connect to the main server (don't
+// give yourself the power to cut through concrete walls with water, for
+// example).
+//
+// If you change transitions without regenerating signatures,
+// loading will fail.
+static char regenerateTransitionSignatures = false;
+
+static const char *transitionSignatureKey = "Please don't abuse this key.";
+
+
+
 #include "houseTransitions.h"
 
 
@@ -8,6 +25,7 @@
 
 #include "minorGems/util/SimpleVector.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/game/game.h"
 
 #include "minorGems/io/file/File.h"
 
@@ -121,6 +139,40 @@ static int getTriggerID( char *inTriggerName ) {
         }
     }
 
+
+
+#include "minorGems/crypto/hashes/sha1.h"
+
+// sha1 digest of reach ascii base-10 numbers in each transition concatonated
+// together in the order in which the transitions were parsed, concatonated
+// with the key from above
+static char *computeTransitionSignature( 
+    SimpleVector<TransitionRecord> *inRecords ) {
+    
+    SimpleVector<char> stringBuffer;
+    
+    for( int i=0; i<inRecords->size(); i++ ) {
+        TransitionRecord r = *( inRecords->getElement( i ) );
+        
+        char *rString = autoSprintf( "%d %d %d %d %d ",
+                                     r.triggerID,
+                                     r.triggerState,
+                                     r.targetID,
+                                     r.targetStartState,
+                                     r.targetEndState );
+        stringBuffer.appendElementString( rString );
+        delete [] rString;
+        }
+    stringBuffer.appendElementString( transitionSignatureKey );
+
+    char *transitionString = stringBuffer.getElementString();
+    
+    char *sig = computeSHA1Digest( transitionString );
+
+    delete [] transitionString;
+    
+    return sig;
+    }
 
 
 
@@ -368,6 +420,64 @@ void initHouseTransitions() {
         
         triggerRecord->numFilled ++;
         }
+
+
+
+    // sig check
+    File *transitionsSigFile = 
+        elementsDir.getChildFile( "transitionsSignature.txt" );
+    char *transitionsSigContents = NULL;
+                
+    if( transitionsSigFile->exists() ) {
+        transitionsSigContents = transitionsSigFile->readFileContents();    
+        }       
+
+    char transitionsSigOK = true;
+    
+    if( regenerateTransitionSignatures ) {
+        // ignore transitionsSignature.txt and generate a new one
+        char *newSig = computeTransitionSignature( &parsedRecords );
+                    
+        transitionsSigFile->writeToFile( newSig );
+        delete [] newSig;
+        }
+    else if( transitionsSigContents == NULL ) {
+        transitionsSigOK = false;
+        }
+    else {
+        // else check it
+        char *sig = trimWhitespace( transitionsSigContents );
+        
+        char *trueSig = computeTransitionSignature( &parsedRecords );
+        
+        if( strcmp( trueSig, sig ) != 0 ) {
+            transitionsSigOK = false;
+            }
+        delete [] sig;
+        delete [] trueSig;
+        }
+                
+    if( transitionsSigContents != NULL ) {
+        delete [] transitionsSigContents;
+        }
+    
+    
+    delete transitionsSigFile;
+         
+                
+                
+    if( !transitionsSigOK ) {
+        char *dirName = elementsDir.getFullFileName();
+        char *message = autoSprintf( 
+            "%s\n%s",
+            translate( "badTransitionSignature" ),
+            dirName );
+        delete [] dirName;
+                    
+        loadingFailed( message );
+        delete [] message;
+        }
+
     
 
     }
