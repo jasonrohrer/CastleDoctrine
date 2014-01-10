@@ -841,11 +841,32 @@ char *HouseGridDisplay::getHouseMap() {
                 }
             }
         
-        char *houseMap = join( parts, mNumMapSpots, "#" );
-        
+        // don't use join here because it leaves result lingering
+        // in freed memory 
+        //char *houseMap = join( parts, mNumMapSpots, "#" );
+
+        int resultLength = 0;
         for( int i=0; i<mNumMapSpots; i++ ) {
-            delete [] parts[i];
+            resultLength += strlen( parts[i] );
             }
+        // also space for # separators
+        resultLength += ( mNumMapSpots - 1 );
+        
+        char *houseMap = new char[ resultLength + 1];
+        int pos = 0;
+        for( int i=0; i<mNumMapSpots; i++ ) {
+            if( i != 0 ) {
+                houseMap[pos] = '#';
+                pos++;
+                }
+            int partLength = strlen( parts[i] );
+            memcpy( &( houseMap[pos] ), parts[i], partLength );
+            
+            delete [] parts[i];
+            
+            pos += partLength;
+            }
+        houseMap[resultLength] = '\0';
         delete [] parts;
         
 

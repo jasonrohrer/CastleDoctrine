@@ -24,6 +24,8 @@ Version 29
 --Changed to encrypt robbery end maps sent back by client through end_rob_house
   so that raw robbery maps never appear in protocol.
 
+--Fixed so that text of robbery house map is never left lingering in freed RAM.
+
 
 
 
