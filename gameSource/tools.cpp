@@ -1,9 +1,30 @@
+// if you're updating tool reaches, you need to set this flag to true
+// and run the game once to generate signatures for each reach.txt file.
+// After doing this once, you can set the flag back to false and recompile.
+// (or leave it at false if you don't want the game to check signatures at
+//  all).
+// Please don't abuse this in clients that connect to the main server (don't
+// give yourself the power to club dogs from across the room, for
+// example).
+//
+// If you change reaches without regenerating signatures,
+// loading will fail.
+static char regenerateReachSignatures = false;
+
+static const char *reachSignatureKey = "Please don't abuse this key.";
+
+
+
 #include "tools.h"
 
 
 #include "gameElements.h"
 
 #include "houseObjects.h"
+
+#include "minorGems/util/stringUtils.h"
+#include "minorGems/game/game.h"
+
 
 
 
@@ -29,6 +50,24 @@ static int idSpaceSize = 0;
 
 // some may be -1
 static int *idToIndexMap = NULL;
+
+
+
+
+#include "minorGems/crypto/hashes/sha1.h"
+
+// sha1 digest of reach ascii base-10 number concatonated with the key above
+static char *computeReachSignature( toolRecord *inRecord ) {
+    char *reachString = autoSprintf( "%d%s", 
+                                     inRecord->reach, reachSignatureKey );
+    
+    char *sig = computeSHA1Digest( reachString );
+
+    delete [] reachString;
+    
+    return sig;
+    }
+
 
 
 
@@ -109,6 +148,68 @@ void initTools() {
                 
                 delete reachFile;
                 
+
+                
+                File *reachSigFile = f->getChildFile( "reachSignature.txt" );
+                char *reachSigContents = NULL;
+                
+                if( reachSigFile->exists() ) {
+                    reachSigContents = reachSigFile->readFileContents();    
+                    }
+                delete reachSigFile;
+                
+
+                char reachSigOK = true;
+    
+                if( regenerateReachSignatures ) {
+                    // ignore reachSignature.txt and generate a new one
+                    char *newSig = computeReachSignature( &r );
+                    
+                    File *childFile = 
+                        f->getChildFile( "reachSignature.txt" );
+                    if( childFile != NULL ) {
+                        childFile->writeToFile( newSig );
+                        delete childFile;
+                        }
+                    delete [] newSig;
+                    }
+                else if( reachSigContents == NULL ) {
+                    reachSigOK = false;
+                    }
+                else {
+                    // else check it
+                    char *sig = trimWhitespace( reachSigContents );
+        
+                    char *trueSig = computeReachSignature( &r );
+        
+                    if( strcmp( trueSig, sig ) != 0 ) {
+                        reachSigOK = false;
+                        }
+                    delete [] sig;
+                    delete [] trueSig;
+                    }
+                
+                if( reachSigContents != NULL ) {
+                    delete [] reachSigContents;
+                    }
+    
+                
+                
+                if( !reachSigOK ) {
+                    char *dirName = f->getFullFileName();
+                    char *message = autoSprintf( 
+                        "%s\n%s",
+                        translate( "badReachSignature" ),
+                        dirName );
+                    delete [] dirName;
+                    
+                    loadingFailed( message );
+                    delete [] message;
+                    }
+
+
+
+
                 
                 // look for sprite TGA
                 int numChildFiles;

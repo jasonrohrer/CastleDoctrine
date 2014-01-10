@@ -5,6 +5,7 @@ loading "Loading..."
 
 
 badPropertiesSignature "Bad properties signature in"
+badReachSignature      "Bad tool reach signature in"
 
 
 

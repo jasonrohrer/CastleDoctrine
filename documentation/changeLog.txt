@@ -31,6 +31,8 @@ Version 29
 
 --Added signatures for all object state properties.txt files.
 
+--Added signatures for all tool reach.txt files.
+
 
 
 
