@@ -10,6 +10,11 @@ global $cd_numBackpackSlots;
 $cd_numBackpackSlots = 8;
 
 
+
+global $cd_flushInterval;
+$cd_flushInterval = "0 0:02:0.000";
+
+
 // override the default Notice and Warning handler 
 set_error_handler( cd_noticeAndWarningHandler, E_NOTICE | E_WARNING );
 
@@ -1489,7 +1494,8 @@ function cd_checkForFlush() {
         return;
         }
 
-    $flushInterval = "0 0:02:0.000";
+    global $cd_flushInterval;
+    
     $staleTimeout = "0 0:05:0.000";
     $staleLogTimeout = "10 0:00:0.000";
     $staleLogTimeoutDeadOwners = "5 0:00:0.000";
@@ -1500,7 +1506,7 @@ function cd_checkForFlush() {
     $staleFlaggedMapTimeout = "0 0:20:0.000";
     
     // for testing:
-    //$flushInterval = "0 0:00:30.000";
+    //$cd_flushInterval = "0 0:00:30.000";
     //$staleTimeout = "0 0:01:0.000";
     //$staleFlaggedMapTimeout = "0 0:02:0.000";
     
@@ -1510,7 +1516,7 @@ function cd_checkForFlush() {
     
     $query = "SELECT last_flush_time FROM $tableName ".
         "WHERE last_flush_time < ".
-        "SUBTIME( CURRENT_TIMESTAMP, '$flushInterval' ) ".
+        "SUBTIME( CURRENT_TIMESTAMP, '$cd_flushInterval' ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
@@ -1522,16 +1528,35 @@ function cd_checkForFlush() {
         // update it now, to unlock that row and let other requests
         // go through
 
-        // note that if flushes start taking longer than $flushInterval
+        // note that if flushes start taking longer than $cd_flushInterval
         // this will become a problem
 
+        // so, we kick it forward a bit, to be safe and make
+        // sure we don't end up running two flushes in parallel
+
+        // note that if this flush fails and never updates its end
+        // time in the database, the next flush won't happen until
+        // 2 x $cd_flushInterval from now.  This is okay, because if
+        // a flush fails, this is a huge problem anyway, and we probably
+        // want to give other queries time before we try flushing again
+
+        // (for example, a flush can fail to complete because it holds its
+        //  locks too long, which causes other critical queries that are trying
+        //  to get through to kill it---in that case, we REALLY don't
+        //  want another flush starting up right away).
         $query = "UPDATE $tableName SET " .
-            "last_flush_time = CURRENT_TIMESTAMP;";
+            "last_flush_time = ".
+            "ADDTIME( ".
+            "         ADDTIME( CURRENT_TIMESTAMP, '$cd_flushInterval' ), ".
+            "         '$cd_flushInterval' );";
     
         $result = cd_queryDatabase( $query );
 
         cd_queryDatabase( "COMMIT;" );
 
+
+        cd_log( "Flush operation starting up." );
+        cd_queryDatabase( "COMMIT;" );
         
 
         global $tableNamePrefix;
@@ -2119,7 +2144,14 @@ function cd_checkForFlush() {
 
         
 
-    
+        // flush done
+        
+        cd_log( "Flush operation completed." );
+        
+        $query = "UPDATE $tableName SET " .
+            "last_flush_time =  CURRENT_TIMESTAMP;";
+        
+        $result = cd_queryDatabase( $query );
         }
 
     cd_queryDatabase( "COMMIT;" );
@@ -8713,12 +8745,11 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
                 "Process list:<br>\n";
 
             
-            $result = mysql_query( "SHOW PROCESSLIST;", $cd_mysqlLink );
+            $result = mysql_query( "SHOW FULL PROCESSLIST;", $cd_mysqlLink );
 
             $numRows = mysql_numrows( $result );
             
-            $slowestID = -1;
-            $slowestTime = 0;
+            $oldestID = $ourID;
     
             for( $i=0; $i<$numRows; $i++ ) {
                 $id = mysql_result( $result, $i,
@@ -8734,30 +8765,45 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
                 if( $id == $ourID ) {
                     }
                 else if( $id != $ourID &&
-                         $time > $slowestTime ) {
-                    $slowestTime = $time;
-                    $slowestID = $id;
+                         $id < $oldestID ) {
+                    $oldestID = $id;
                     }
                 }
 
 
             $shouldRestartQuery = false;
             
-            if( $slowestID != -1 ) {
+            if( $oldestID != $ourID ) {
 
                 $logMessage = $logMessage .
-                    "<br><br>\n\nKilling longest running process $slowestID";
+                    "<br><br>\n\nKilling oldest process $oldestID";
                 
-                $result = mysql_query( "KILL $slowestID;", $cd_mysqlLink );
-                
+                $result = mysql_query( "KILL $oldestID;", $cd_mysqlLink );
 
+                
+                // just to be safe, kick next flush forward by two intervals
+                $logMessage = $logMessage . "<br><br>\n\nDelaying next flush";
+                
+                global $cd_flushInterval;
+                $query = "UPDATE $tableName SET " .
+                    "last_flush_time = ".
+                    "ADDTIME( ".
+                    "         ADDTIME( CURRENT_TIMESTAMP, ".
+                    "                  '$cd_flushInterval' ), ".
+                    "         '$cd_flushInterval' );";
+    
+                $result = cd_queryDatabase( $query );
+                cd_queryDatabase( "COMMIT;" );
+
+
+                
                 $logMessage = $logMessage . "<br><br>\n\nRestarting query";
                 
                 $shouldRestartQuery = true;
                 }
             else {
                 $logMessage = $logMessage .
-                    "<br><br>\n\nNo process but this one?  Giving up.";
+                    "<br><br>\n\nOldest process is this one?  Giving up.";
                 }
             
                     
@@ -8773,7 +8819,7 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
 
             if( $shouldRestartQuery ) {
                 // call self again
-                // if we lock wait timeout again, we'll kill the next slowest
+                // if we lock wait timeout again, we'll kill the next oldest
                 // process and try again, until none are left, if necessary
 
                 return cd_queryDatabase( $inQueryString, $inDeadlockFatal );
@@ -8995,7 +9041,8 @@ function cd_noticeAndWarningHandler( $errno, $errstr, $errfile, $errline ) {
     
     // copy format of default Notice/Warning message (without HTML):
     $logMessage =
-        "$errorName:  $errstr in $errfile on line $errline";
+        "$errorName:  $errstr in $errfile on line $errline\n" .
+        cd_getBacktrace();
 
 
     echo( $logMessage . "\n" );

@@ -37,6 +37,15 @@ Version 29
 
 --Added support for signing certain sprites (like wires).
 
+--Added backtraces to server warning log messages.
+
+--Improved handling of server lock timeouts by killing the oldest process
+  instead of the one with the longest running query (because the process
+  holding the lock might not be running a query currently).
+
+--Improved handling of server lock timeouts by pushing back the next flush, to
+  ensure that multiple flushes aren't running in parallel or starting up during
+  timeout recovery.
 
 
 
