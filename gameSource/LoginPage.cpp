@@ -438,7 +438,7 @@ void LoginPage::startLogin( char inFreshLogin ) {
         
     char *email = mEmailField.getText();
 
-    char *encodedEmail = URLUtils::hexEncode( email );
+    char *encodedEmail = URLUtils::urlEncode( email );
     delete [] email;
 
     char *fullRequestURL;

@@ -14,6 +14,7 @@
 #include "minorGems/game/game.h"
 
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/network/web/URLUtils.h"
 
 
 extern Font *mainFont;
@@ -343,6 +344,9 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
     
     char *encryptedMap = sha1Encrypt( mapEncryptionKey, mHouseMap );
 
+    char *encryptedMapForURL = URLUtils::urlEncode( encryptedMap );
+    delete [] encryptedMap;
+
     clearString( mHouseMap );
     mHouseMap = NULL;
     
@@ -364,11 +368,11 @@ void RobCheckinHousePage::makeActive( char inFresh ) {
         mWifeKilled, mWifeRobbed, mFamilyKilledCount,
         mBackpackContents, 
         mMoveList, 
-        mapEncryptionKey, encryptedMap );
+        mapEncryptionKey, encryptedMapForURL );
     delete [] ticketHash;
  
     delete [] mapEncryptionKey;
-    delete [] encryptedMap;
+    delete [] encryptedMapForURL;
     
     
     mWebRequest = startWebRequestSerial( "POST", 
