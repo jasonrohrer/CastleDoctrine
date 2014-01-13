@@ -47,6 +47,10 @@ Version 29
   ensure that multiple flushes aren't running in parallel or starting up during
   timeout recovery.
 
+--Changed so that chill and force-ignore timers don't tick while the house is
+  being edited or robbed (so they only tick when the house is possibly visible
+  to all players on the main house list).  This prevents camping in a house
+  until these timeouts pass.
 
 
 

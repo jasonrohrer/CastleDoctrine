@@ -3309,6 +3309,12 @@ function cd_endEditHouse() {
 
     $user_id = cd_getUserID();
 
+
+    // ping one more time
+    // ensures that a dovetailed flush won't kick us out
+    // also updates chill and force-ignore start times one more time
+    cd_pingHouseInternal( $user_id );
+    
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
 
@@ -4377,6 +4383,73 @@ function cd_endEditHouse() {
 
 
 
+// pings a house checked out by $user_id (either in edit or robbery)
+// returns true if pinging succeeded
+function cd_pingHouseInternal( $user_id ) {
+    global $tableNamePrefix;
+    
+    // automatically ignore blocked users and houses not checked out
+
+    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+    
+
+    $whereClause =
+        "WHERE (    ( user_id         = $user_id AND edit_checkout = 1 ) ".
+        "        OR ( user_id = $last_robbed_owner_id AND ".
+        "             robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
+        "AND blocked='0' ";
+    
+
+    
+    $query = "SELECT user_id, last_ping_time FROM $tableNamePrefix"."houses ".
+        "$whereClause;";
+
+    $result = cd_queryDatabase( $query );
+
+    if( mysql_numrows( $result ) == 1 ) {
+        $house_user_id = mysql_result( $result, 0, "user_id" );
+        $last_ping_time = mysql_result( $result, 0, "last_ping_time" );
+
+        // any chills on this house have their expiration postponed
+        $query = "UPDATE $tableNamePrefix"."chilling_houses  SET ".
+            "chill_start_time = ".
+            "ADDTIME( chill_start_time, ".
+            "         TIMEDIFF( CURRENT_TIMESTAMP, '$last_ping_time' ) ) ".
+            "WHERE house_user_id = $house_user_id ".
+            "      AND chill = 1;";
+        $result = cd_queryDatabase( $query );
+
+        // any force-ignore on this house have their expiration postponed
+        $query = "UPDATE $tableNamePrefix"."ignore_houses  SET ".
+            "forced_start_time = ".
+            "ADDTIME( forced_start_time, ".
+            "         TIMEDIFF( CURRENT_TIMESTAMP, '$last_ping_time' ) ) ".
+            "WHERE house_user_id = $house_user_id ".
+            "      AND forced = 1 AND started = 1;";
+        $result = cd_queryDatabase( $query );
+        }
+    
+    
+
+    $query = "UPDATE $tableNamePrefix"."houses SET ".
+        "last_ping_time = CURRENT_TIMESTAMP ".
+        "$whereClause;";
+    
+    $result = cd_queryDatabase( $query );
+
+    
+    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
+        return true;
+        }
+    else {
+        cd_log( "Ping failed" );
+        
+        return false;
+        }
+    }
+
+
+
 function cd_pingHouse() {
     global $tableNamePrefix;
 
@@ -4386,28 +4459,10 @@ function cd_pingHouse() {
 
     $user_id = cd_getUserID();
 
-    
-    // automatically ignore blocked users and houses not checked out
-
-    $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
-    
-
-    $query = "UPDATE $tableNamePrefix"."houses SET ".
-        "last_ping_time = CURRENT_TIMESTAMP ".
-        "WHERE (    ( user_id         = $user_id AND edit_checkout = 1 ) ".
-        "        OR ( user_id = $last_robbed_owner_id AND ".
-        "             robbing_user_id = $user_id AND rob_checkout  = 1 ) ) ".
-        "AND blocked='0';";
-    
-    $result = cd_queryDatabase( $query );
-
-    
-    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
+    if( cd_pingHouseInternal( $user_id ) ) {
         echo "OK";
         }
     else {
-        cd_log( "Ping failed" );
-        
         echo "FAILED";
         }
     }
@@ -4919,6 +4974,12 @@ function cd_endRobHouse() {
 
     $user_id = cd_getUserID();
 
+    // ping one more time
+    // ensures that a dovetailed flush won't kick us out
+    // also updates chill and force-ignore start times one more time
+    cd_pingHouseInternal( $user_id );
+
+    
     $success = cd_requestFilter( "success", "/[012]/" );
     $wife_killed_robber = cd_requestFilter( "wife_killed_robber", "/[01]/" );
     $wife_killed = cd_requestFilter( "wife_killed", "/[01]/" );
