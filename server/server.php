@@ -4823,6 +4823,15 @@ function cd_startRobHouse() {
     // the player mistakenly.
     cd_processStaleCheckouts( $user_id, $to_rob_user_id );
 
+
+    // starting a new robbery.
+    // obviously no longer need cached robbery response
+    // (and don't want to return it by accident for THIS robbery)
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET last_robbery_response = '' ".
+        "WHERE user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+    
     
     // check if house chilled
     $query = "SELECT chill FROM $tableNamePrefix"."chilling_houses ".

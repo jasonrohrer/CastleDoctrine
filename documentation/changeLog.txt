@@ -52,6 +52,9 @@ Version 29
   to all players on the main house list).  This prevents camping in a house
   until these timeouts pass.
 
+--Fixed so that stale robbery responses aren't played back by server when house
+  checkin fails.
+
 
 
 Version 28   Live Server Fixes
