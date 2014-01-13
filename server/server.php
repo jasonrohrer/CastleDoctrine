@@ -8784,8 +8784,8 @@ function cd_queryDatabase( $inQueryString, $inDeadlockFatal=1 ) {
                 // just to be safe, kick next flush forward by two intervals
                 $logMessage = $logMessage . "<br><br>\n\nDelaying next flush";
                 
-                global $cd_flushInterval;
-                $query = "UPDATE $tableName SET " .
+                global $cd_flushInterval, $tableNamePrefix;
+                $query = "UPDATE $tableNamePrefix"."server_globals SET " .
                     "last_flush_time = ".
                     "ADDTIME( ".
                     "         ADDTIME( CURRENT_TIMESTAMP, ".
