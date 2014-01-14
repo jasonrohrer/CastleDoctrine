@@ -2412,6 +2412,13 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
     global $tableNamePrefix;
 
 
+    $result = cd_queryDatabase( "SELECT @@SESSION.AUTOCOMMIT" );
+
+    $oldAutocommit = mysql_result( $result, 0, 0 );
+
+    cd_queryDatabase( "SET AUTOCOMMIT=1" );
+    
+
     // first find stale robbery
 
 
@@ -2419,26 +2426,135 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
     $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
     
 
-    
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+    // for update here to ensure that at most one robbery tape is saved,
+    // even if client retries request that is causing the processStaleCheckouts
+    $query = "SELECT house_map_hash, loot_value, wife_loot_value, ".
+        "vault_contents, gallery_contents, rob_attempts, robber_deaths,".
+        "music_seed, character_name, wife_name, son_name, daughter_name ".
+        "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = '$last_robbed_owner_id' AND ".
         "user_id != '$house_id_to_skip' AND ".
-        "rob_checkout = 1 AND robbing_user_id = '$user_id';";
+        "rob_checkout = 1 AND robbing_user_id = '$user_id' FOR UPDATE;";
     $result = cd_queryDatabase( $query );
 
-    $staleRobberyCount = mysql_result( $result, 0, 0 );
+    $staleRobberyCount = mysql_numrows( $result );
 
-    if( $staleRobberyCount ) {
-        // clear all the robberies themselves
+    if( $staleRobberyCount > 0) {
 
+        
+        $house_map_hash = mysql_result( $result, 0, "house_map_hash" );
+        $loot_value = mysql_result( $result, 0, "loot_value" );
+        $wife_loot_value = mysql_result( $result, 0, "wife_loot_value" );
+        $vault_contents = mysql_result( $result, 0, "vault_contents" );
+        $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
+        $rob_attempts = mysql_result( $result, 0, "rob_attempts" );
+        $robber_deaths = mysql_result( $result, 0, "robber_deaths" );
+        $music_seed = mysql_result( $result, 0, "music_seed" );
+        $victim_name = mysql_result( $result, 0, "character_name" );
+        $wife_name = mysql_result( $result, 0, "wife_name" );
+        $son_name = mysql_result( $result, 0, "son_name" );
+        $daughter_name = mysql_result( $result, 0, "daughter_name" );
+        
+        
+        // pay bounty and give owner robber's full backpack
+        $query = "SELECT backpack_contents, bounty, character_name ". 
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE user_id = '$user_id' AND blocked='0';";
+
+        $result = cd_queryDatabase( $query );
+        
+        $backpack_contents = mysql_result( $result, 0, "backpack_contents" );
+        $bounty = mysql_result( $result, 0, "bounty" );
+        $robber_name = mysql_result( $result, 0, "character_name" );
+
+        
+        $new_vault_contents = cd_idQuantityUnion( $vault_contents,
+                                                  $backpack_contents );
+        $loot_value += $bounty;
+
+        $value_estimate = cd_computeValueEstimate( $loot_value +
+                                                   $wife_loot_value,
+                                                   $vault_contents );
+        
+        
         // each abandonned robbery counts as a death that occurred in that
         // house
         $query = "UPDATE $tableNamePrefix"."houses SET ".
-            "rob_checkout = 0, robber_deaths = robber_deaths + 1 ".
+            "rob_checkout = 0, robber_deaths = robber_deaths + 1, ".
+            "vault_contents = '$new_vault_contents', ".
+            "value_estimate = '$value_estimate', ".
+            "loot_value = '$loot_value', ".
+            "wife_loot_value = '$wife_loot_value' ".
             "WHERE user_id = '$last_robbed_owner_id' AND ".
             "robbing_user_id = '$user_id';";
         cd_queryDatabase( $query );
 
+        cd_queryDatabase( "COMMIT;" );
+        // restore autocommit for caller
+        cd_queryDatabase( "SET AUTOCOMMIT=$oldAutocommit" );
+
+        
+        // save tape showing robber committing suicide on doorstep
+        $move_list = "S";
+        $num_moves = 1;
+
+
+        // scouting counts for robbery log
+        $query = "SELECT count, last_scout_time ".
+            "FROM $tableNamePrefix"."scouting_counts ".
+            "WHERE robbing_user_id = '$user_id' ".
+            "AND house_user_id = '$last_robbed_owner_id';";
+        
+        $result = cd_queryDatabase( $query );
+        
+        $numRows = mysql_numrows( $result );
+        
+        $scouting_count = 0;
+        $last_scout_time = cd_getMySQLTimestamp();
+        
+        if( $numRows == 1 ) {
+            $scouting_count = mysql_result( $result, 0, "count" );
+            $last_scout_time = mysql_result( $result, 0, "last_scout_time" );
+            }
+
+        
+        // value estimate is bounty paid
+        // log_id auto-assigned
+        $query =
+            "INSERT INTO $tableNamePrefix"."robbery_logs ".
+            "(log_watched, ".
+            " user_id, house_user_id, loot_value, wife_money, ".
+            " value_estimate, ".
+            " robber_died, ".
+            " vault_contents, gallery_contents, ".
+            " music_seed, ".
+            " rob_attempts, robber_deaths,".
+            " robber_name, victim_name,".
+            " wife_name, son_name, daughter_name,".
+            " owner_now_dead, rob_time,".
+            " scouting_count, last_scout_time, ".
+            " house_start_map_hash, loadout, move_list, ".
+            " num_moves ) ".
+            "VALUES(" .
+            " 0, ".
+            " $user_id, $last_robbed_owner_id, '$loot_value', ".
+            " '$wife_loot_value', ".
+            " '$bounty', ".
+            " '1', ".
+            " '$vault_contents', '$gallery_contents', ".
+            " '$music_seed', ".
+            " '$rob_attempts', '$robber_deaths', ".
+            " '$robber_name', '$victim_name',".
+            " '$wife_name', '$son_name', '$daughter_name',".
+            " '0', CURRENT_TIMESTAMP,".
+            " '$scouting_count', '$last_scout_time', ".
+            " '$house_map_hash', '$backpack_contents', '$move_list', ".
+            " '$num_moves' );";
+
+        cd_queryDatabase( $query );
+
+        
+        
         // user gets a chill for this house, regardless of whether
         // they were carrying tools or not
         // start chill right now (this will replace a pending chill)
@@ -2451,6 +2567,10 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         }
 
 
+    // restore autocommit for caller
+    cd_queryDatabase( "SET AUTOCOMMIT=$oldAutocommit" );
+
+    
 
     // next find all stale robberies in shadow table (for houses
     // where owner died)

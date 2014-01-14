@@ -62,6 +62,13 @@ Version 29
 
 --Blocks quitting from Edit page if end_self_test is still pending.
 
+--Added a 10-minute time limit for all robberies, with a counter shown in the
+  client during the last 60 seconds.
+
+--Fixed so that abandonned robberies (and timed out robberies) leave a tape,
+  all carried tools, and a bounty for the owner.
+
+
 
 
 
