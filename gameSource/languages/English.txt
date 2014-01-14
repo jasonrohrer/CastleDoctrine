@@ -255,6 +255,8 @@ killedBy "You were killed by:"
 
 deathMessage "You died."
 
+leaveOutOfTime "The cops shoot you as you leave the house."
+
 startOver "Fresh Start"
 
 

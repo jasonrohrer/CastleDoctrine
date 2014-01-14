@@ -247,6 +247,7 @@ void RobCheckoutHousePage::step() {
                 clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mMenuButton.setVisible( true );
+                blockQuitting( false );
                 break;
             case 1: {
                 char *result = getWebResultSerial( mWebRequest );
@@ -259,16 +260,19 @@ void RobCheckoutHousePage::step() {
                     mStatusError = true;
                     mStatusMessageKey = "houseBeingRobbedOrEdited";
                     mMenuButton.setVisible( true );
+                    blockQuitting( false );
                     }
                 else if( strstr( result, "RECLAIMED" ) != NULL ) {
                     mStatusError = true;
                     mStatusMessageKey = "houseReclaimed";
                     mMenuButton.setVisible( true );
+                    blockQuitting( false );
                     }
                 else if( strstr( result, "CHILLING" ) != NULL ) {
                     mStatusError = true;
                     mStatusMessageKey = "houseChilling";
                     mMenuButton.setVisible( true );
+                    blockQuitting( false );
                     }
                 else {
                     // house checked out!

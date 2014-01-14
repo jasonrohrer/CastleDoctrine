@@ -57,6 +57,8 @@ Version 29
 
 --Fixed bug in house ping during robbery if owner of house has died.
 
+--Changed to not block quitting on checking pages after checkin operation
+  complete (or when error is displayed).
 
 
 

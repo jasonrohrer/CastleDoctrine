@@ -200,6 +200,7 @@ void RobCheckinHousePage::step() {
                 clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mHomeButton.setVisible( true );
+                blockQuitting( false );
                 break;
             case 1: {
                 char *result = getWebResultSerial( mWebRequest );
@@ -212,6 +213,13 @@ void RobCheckinHousePage::step() {
                     mStatusError = true;
                     mStatusMessageKey = "houseCheckInFailed";
                     mHomeButton.setVisible( true );
+                    blockQuitting( false );
+                    }
+                else if( strstr( result, "OUT_OF_TIME" ) != NULL ) {
+                    mStatusError = true;
+                    mStatusMessageKey = "leaveOutOfTime";
+                    mStartOverButton.setVisible( true );
+                    blockQuitting( false );
                     }
                 else {
                     // house checked in!
@@ -223,7 +231,7 @@ void RobCheckinHousePage::step() {
                         strcmp( *( tokens->getElement( 3 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
-                        mHomeButton.setVisible( true );                    
+                        mHomeButton.setVisible( true );   
                         }
                     else {
                         sscanf( *( tokens->getElement( 0 ) ), 
@@ -312,7 +320,7 @@ void RobCheckinHousePage::step() {
                             mStatusMessageKey = "deathMessage";
                             mStartOverButton.setVisible( true );
                             }
-                        
+                        blockQuitting( false );
                         }
 
                     for( int i=0; i<tokens->size(); i++ ) {

@@ -5071,6 +5071,29 @@ function cd_endRobHouse() {
     // also updates chill and force-ignore start times one more time
     cd_pingHouseInternal( $user_id );
 
+
+    // short circuit the process if out of time
+    // it's as if the robbery never happened
+    // (because we don't want to save ANY changes, like family deaths)
+    // and we don't want to save a tape showing these actions to the owner
+
+    // just leave robbery active, and let it get caught by the next flush
+    // OR this user's next action (like editing their house)
+    // To be dealt with like any stale robbery.
+    $query = "SELECT ".
+        "TIME_TO_SEC( TIMEDIFF( last_robbery_deadline, ".
+        "                       CURRENT_TIMESTAMP ) ) ".
+        "FROM $tableNamePrefix"."users ".
+        "WHERE user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+    $secondsLeft = mysql_result( $result, 0, 0 );
+
+    if( $secondsLeft <= 0 ) {
+        echo "OUT_OF_TIME";
+        return;
+        }
+    
+
     
     $success = cd_requestFilter( "success", "/[012]/" );
     $wife_killed_robber = cd_requestFilter( "wife_killed_robber", "/[01]/" );

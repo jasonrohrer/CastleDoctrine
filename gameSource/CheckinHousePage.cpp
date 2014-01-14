@@ -253,6 +253,7 @@ void CheckinHousePage::step() {
                 clearWebRequestSerial( mWebRequest );
                 mWebRequest = -1;
                 mMenuButton.setVisible( true );
+                blockQuitting( false );
                 break;
             case 1: {
                 char *result = getWebResultSerial( mWebRequest );
@@ -273,12 +274,14 @@ void CheckinHousePage::step() {
                         mStatusError = true;
                         mStatusMessageKey = "deathMessage";
                         mStartOverButton.setVisible( true );
+                        blockQuitting( false );
                         }
                     }
                 else {
                     mStatusError = true;
                     mStatusMessageKey = "houseCheckInFailed";
                     mMenuButton.setVisible( true );
+                    blockQuitting( false );
                     }
                 
                         
