@@ -136,7 +136,10 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         
         int mMusicSeed;
 
+        char mShowTimeAtEnd;
         time_t mEndTime;
+        float mTimeMessageFade;
+        float mTimeMessageFadeDirection;
         
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];

@@ -37,6 +37,7 @@ RobHousePage::RobHousePage()
                                  8, -2.5, 1/16.0 ),
           mGallery( mainFont, -8, -1 ),
           mMusicSeed( 0 ),
+          mShowTimeAtEnd( false ),
           mDescription( NULL ),
           mDeathMessage( NULL ) {    
 
@@ -216,6 +217,9 @@ void RobHousePage::setMusicSeed( int inMusicSeed ) {
 
 void RobHousePage::setMaxSeconds( int inMaxSeconds ) {
     mEndTime = game_time(NULL) + inMaxSeconds;
+    mTimeMessageFade = 0.0f;
+    mTimeMessageFadeDirection = 1.0f;
+    mShowTimeAtEnd = true;
     }
 
 
@@ -448,6 +452,9 @@ void RobHousePage::step() {
 
 
 
+extern double frameRateFactor;
+
+
 void RobHousePage::draw( doublePair inViewCenter, 
                          double inViewSize ) {
      
@@ -474,17 +481,59 @@ void RobHousePage::draw( doublePair inViewCenter,
         drawMessage( "robBackpack", labelPos );
         }
 
+
+
+    if( !mShowTimeAtEnd ) {
+        return;
+        }
+
     int timeLeft = mEndTime - game_time( NULL );
     
-    if( timeLeft < 60 ) {
-        doublePair labelPos = { 8, 7 };
-        drawMessage( "robCops", labelPos, true );
+    if( timeLeft < 0 ) {
+        timeLeft = 0;
+        }
 
+    if( timeLeft < 60 ) {
+
+        if( timeLeft > 10 ) {
+            if( mTimeMessageFade < 1 ) {
+                // fade in the first time
+                mTimeMessageFade += 
+                    mTimeMessageFadeDirection * 0.0166 * frameRateFactor;
+                if( mTimeMessageFade > 1 ) {
+                    mTimeMessageFadeDirection = -1;
+                    mTimeMessageFade = 1;
+                    }
+                }
+            }
+        else {
+            mTimeMessageFade += 
+                mTimeMessageFadeDirection * 0.0166 * frameRateFactor;
+        
+            if( mTimeMessageFade < 0.5 && mTimeMessageFadeDirection < 0 ) {
+                mTimeMessageFadeDirection = 1;
+                mTimeMessageFade = 0.5;
+                }
+            else if( mTimeMessageFade > 1 ) {
+                mTimeMessageFadeDirection = -1;
+                mTimeMessageFade = 1;
+                }
+            }
+        
+
+        doublePair labelPos = { 8, 7 };
+
+        drawMessage( "robCops", labelPos, true, mTimeMessageFade );
+
+        labelPos.y -= 0.75;
+        labelPos.x -= 0.5;
         char *timeString = autoSprintf( "0:%02d", timeLeft );
         
-        labelPos.y -= 0.75;
-        
-        drawMessage( timeString, labelPos, true );
+        setDrawColor( 1, 0, 0, mTimeMessageFade );
+
+        mainFont->drawString( timeString, 
+                              labelPos, alignLeft );
+
         delete [] timeString;
         }
     }
