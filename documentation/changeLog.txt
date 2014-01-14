@@ -60,6 +60,9 @@ Version 29
 --Changed to not block quitting on checking pages after checkin operation
   complete (or when error is displayed).
 
+--Blocks quitting from Edit page if end_self_test is still pending.
+
+
 
 
 Version 28   Live Server Fixes

@@ -549,6 +549,8 @@ void EditHousePage::makeActive( char inFresh ) {
     checkIfDoneButtonVisible();
     checkIfTapesButtonVisible();
 
+    blockQuitting( areRequestsPending() );
+
     mDiffHighlightToggleButton.setToggled( diffHighlightsOff );
     mGridDisplay.toggleTouchedHighlights( ! mMapStartedOutEmpty && 
                                           ! diffHighlightsOff );
@@ -561,6 +563,8 @@ void EditHousePage::step() {
     
     
     checkIfTapesButtonVisible();
+    
+    blockQuitting( areRequestsPending() );
     }
 
 
