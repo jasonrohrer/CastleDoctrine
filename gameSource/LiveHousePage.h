@@ -28,6 +28,10 @@ class LiveHousePage : public GamePage {
         virtual char didStartTestFail() {
             return mStartTestFailed;
             }
+
+        virtual char isOutOfTime() {
+            return mOutOfTime;
+            }
         
         // tells server that owner is self testing house
         virtual void startSelfTest();
@@ -68,6 +72,10 @@ class LiveHousePage : public GamePage {
         // becomes true when a ping fails
         char mCheckoutStale;
         
+        // futher marks stale checkout as an out-of-time
+        char mOutOfTime;
+        
+
         // true if starting a self test failed
         char mStartTestFailed;
         

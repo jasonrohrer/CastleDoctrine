@@ -4473,6 +4473,51 @@ function cd_pingHouse() {
     $user_id = cd_getUserID();
 
     if( cd_pingHouseInternal( $user_id ) ) {
+
+        // is this a robbery?
+        $isRobbery = false;
+        
+        $last_robbed_owner_id = cd_getLastOwnerRobbedByUser( $user_id );
+
+        $query = "SELECT robbing_user_id FROM $tableNamePrefix"."houses ".
+            "WHERE user_id = $last_robbed_owner_id AND ".
+            "      robbing_user_id = $user_id AND rob_checkout = 1;";
+        $result = cd_queryDatabase( $query );
+
+        if( mysql_numrows( $result ) == 1 ) {
+            $isRobbery = true;
+            }
+        else {
+            // try shadow table
+            $query = "SELECT robbing_user_id FROM $tableNamePrefix".
+                "houses_owner_died ".
+                "WHERE user_id = $last_robbed_owner_id AND ".
+                "      robbing_user_id = $user_id AND rob_checkout = 1;";
+            $result = cd_queryDatabase( $query );
+
+            if( mysql_numrows( $result ) == 1 ) {
+                $isRobbery = true;
+                }
+            }
+
+        if( $isRobbery ) {
+            // make sure user is not out of time
+
+            $query = "SELECT ".
+                "TIME_TO_SEC( TIMEDIFF( last_robbery_deadline, ".
+                "                       CURRENT_TIMESTAMP ) ) ".
+                "FROM $tableNamePrefix"."users ".
+                "WHERE user_id = '$user_id';";
+            $result = cd_queryDatabase( $query );
+            $secondsLeft = mysql_result( $result, 0, 0 );
+
+            if( $secondsLeft <= 0 ) {
+                echo "OUT_OF_TIME";
+                return;
+                }
+            }
+        
+        
         echo "OK";
         }
     else {

@@ -31,6 +31,7 @@ SimpleVector<const char *> LiveHousePage::sPendingTestRequests;
 LiveHousePage::LiveHousePage()
         : mLastActionTime( game_time( NULL ) ),
           mCheckoutStale( false ),
+          mOutOfTime( false ),
           mStartTestFailed( false ),
           mCurrentRequestForStartTest( false ) {
     
@@ -65,6 +66,7 @@ void LiveHousePage::makeActive( char inFresh ) {
     // this page becoming active is an action
     mLastActionTime = game_time( NULL );
     mCheckoutStale = false;
+    mOutOfTime = false;
     mStartTestFailed = false;
     mCurrentRequestForStartTest = false;
     }
@@ -116,6 +118,10 @@ void LiveHousePage::step() {
                         mCheckoutStale = true;
                         if( mCurrentRequestForStartTest ) {
                             mStartTestFailed = true;
+                            }
+                        
+                        if( strstr( response, "OUT_OF_TIME" ) != NULL ) {
+                            mOutOfTime = true;
                             }
                         }
 

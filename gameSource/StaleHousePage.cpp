@@ -14,10 +14,17 @@ StaleHousePage::StaleHousePage( char inDead )
                        translate( 
                            ( inDead ? "startOver" : "doneStale" ) ) ),
           mDone( false ),
-          mDead( inDead ) {    
+          mDead( inDead ),
+          mOutOfTime( false ) {    
 
     addComponent( &mDoneButton );
     mDoneButton.addActionListener( this );
+    }
+
+
+
+void StaleHousePage::setOutOfTime( char inOutOfTime ) {
+    mOutOfTime = inOutOfTime;
     }
 
 
@@ -46,7 +53,13 @@ void StaleHousePage::makeActive( char inFresh ) {
     mStatusError = true;
 
     if( mDead ) {
-        mStatusMessageKey = "houseStaleDead";
+        
+        if( mOutOfTime ) {
+            mStatusMessageKey = "houseStaleOutOfTime";
+            }
+        else {
+            mStatusMessageKey = "houseStaleDead";
+            }
         }
     else {
         mStatusMessageKey = "houseStale";

@@ -12,6 +12,10 @@ class StaleHousePage : public GamePage, public ActionListener {
         
         StaleHousePage( char inDead );
         
+
+        void setOutOfTime( char inOutOfTime );
+        
+        
         virtual char getDone();
         
 
@@ -29,5 +33,7 @@ class StaleHousePage : public GamePage, public ActionListener {
         char mDone;
         
         char mDead;
+        
+        char mOutOfTime;
     };
 

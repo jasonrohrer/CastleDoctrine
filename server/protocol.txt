@@ -272,6 +272,8 @@ Returns:
 OK
 or
 FAILED  (in the case of a house that has gone stale and can't be pinged)
+or
+OUT_OF_TIME (in the case that the robbery time limit was exceeded)
 
 Note:
 Proves that house is still being actively edited or robbed, keeping the

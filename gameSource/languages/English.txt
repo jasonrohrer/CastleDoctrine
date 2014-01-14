@@ -283,6 +283,7 @@ houseChilling "Something about this house gives you the chills.##You can't bear 
 houseStale "You left the house due to inactivity."
 
 houseStaleDead "You died due to inactivity."
+houseStaleOutOfTime "You were killed by the cops."
 
 
 blueprintNotFound "Failed to find the requested blueprint."

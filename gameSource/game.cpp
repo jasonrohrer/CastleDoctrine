@@ -1477,6 +1477,8 @@ void drawFrame( char inUpdate ) {
                 // player died from letting the self test go stale
                 blockQuitting( false );
                 currentGamePage = staleHouseDeadPage;
+                staleHouseDeadPage->setOutOfTime( false );
+                
                 currentGamePage->base_makeActive( true );
                 clearNotes();
                 }
@@ -1677,6 +1679,9 @@ void drawFrame( char inUpdate ) {
             if( robHousePage->isStale() ) {
                 blockQuitting( false );
                 currentGamePage = staleHouseDeadPage;
+                staleHouseDeadPage->setOutOfTime( 
+                    robHousePage->isOutOfTime() );
+                
                 currentGamePage->base_makeActive( true );
                 clearNotes();
                 }
