@@ -18,6 +18,9 @@
 #include "minorGems/ui/event/ActionListener.h"
 
 
+#include <time.h>
+
+
 
 
 class RobHousePage : public LiveHousePage, public ActionListener {
@@ -61,6 +64,8 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         void setWifeMoney( int inMoney );
 
         void setMusicSeed( int inMusicSeed );
+        
+        void setMaxSeconds( int inMaxSeconds );
 
         char getSuccess() {
             return mGridDisplay.getSuccess();
@@ -130,6 +135,9 @@ class RobHousePage : public LiveHousePage, public ActionListener {
         Gallery mGallery;
         
         int mMusicSeed;
+
+        time_t mEndTime;
+        
 
         InventorySlotButton *mPackSlots[ NUM_PACK_SLOTS ];
         

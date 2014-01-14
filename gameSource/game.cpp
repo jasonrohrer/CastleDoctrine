@@ -1665,6 +1665,9 @@ void drawFrame( char inUpdate ) {
                     robHousePage->setMusicSeed( 
                         robCheckoutHousePage->getMusicSeed() );
 
+                    robHousePage->setMaxSeconds( 
+                        robCheckoutHousePage->getMaxSeconds() );
+
                     currentGamePage = robHousePage;
                     currentGamePage->base_makeActive( true );
                     }

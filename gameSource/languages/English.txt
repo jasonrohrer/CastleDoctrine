@@ -213,6 +213,8 @@ wifeHolding "%s (carrying $%d)"
 
 robDescription "Robbing %s house:##(Five stationary minutes are deadly...)"
 
+robCops "Sirens?"
+
 robBackpack "Backpack:"
 
 viewBlueprintShort "Blueprint"

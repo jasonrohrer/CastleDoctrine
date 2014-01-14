@@ -215,6 +215,11 @@ int RobCheckoutHousePage::getMusicSeed() {
     }
 
 
+int RobCheckoutHousePage::getMaxSeconds() {
+    return mMaxSeconds;
+    }
+
+
 
 
 void RobCheckoutHousePage::actionPerformed( GUIComponent *inTarget ) {
@@ -271,8 +276,8 @@ void RobCheckoutHousePage::step() {
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
                     
-                    if( tokens->size() != 10 ||
-                        strcmp( *( tokens->getElement( 9 ) ), "OK" ) != 0 ) {
+                    if( tokens->size() != 11 ||
+                        strcmp( *( tokens->getElement( 10 ) ), "OK" ) != 0 ) {
                         mStatusError = true;
                         mStatusMessageKey = "err_badServerResponse";
                         mMenuButton.setVisible( true );
@@ -303,6 +308,10 @@ void RobCheckoutHousePage::step() {
                         mWifeName = *( tokens->getElement( 6 ) );
                         mSonName = *( tokens->getElement( 7 ) );
                         mDaughterName = *( tokens->getElement( 8 ) );
+                        
+                        mMaxSeconds = 0;
+                        sscanf( *( tokens->getElement( 9 ) ),
+                                "%d", &mMaxSeconds );
 
                         printf( "OwnerName = %s\n", mOwnerName );
                         // printf( "HouseMap = %s\n", mHouseMap );
@@ -313,11 +322,13 @@ void RobCheckoutHousePage::step() {
                         printf( "Wife = %s\n", mWifeName );
                         printf( "Son = %s\n", mSonName );
                         printf( "Daughter = %s\n", mDaughterName );
+                        printf( "MaxSeconds = %d\n", mMaxSeconds );
 
 
                         delete [] *( tokens->getElement( 4 ) );
                         delete [] *( tokens->getElement( 5 ) );
                         delete [] *( tokens->getElement( 9 ) );
+                        delete [] *( tokens->getElement( 10 ) );
 
                         // reset ping time, because house check-out
                         // counts as a ping

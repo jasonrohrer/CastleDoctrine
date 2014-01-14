@@ -771,6 +771,7 @@ function cd_setupDatabase() {
             "lives_left INT NOT NULL,".
             "last_robbed_owner_id INT NOT NULL,".
             "last_robbery_response LONGTEXT NOT NULL,".
+            "last_robbery_deadline DATETIME NOT NULL,".
             "admin TINYINT NOT NULL,".
             "sequence_number INT NOT NULL," .
             "last_price_list_number INT NOT NULL," .
@@ -2307,11 +2308,12 @@ function cd_checkUser() {
         $query = "INSERT INTO $tableNamePrefix"."users ".
             "(ticket_id, email, character_name_history, lives_left, ".
             " last_robbed_owner_id, last_robbery_response, ".
+            " last_robbery_deadline, ".
             " admin, sequence_number, ".
             " last_price_list_number, blocked) ".
             "VALUES(" .
             " '$ticket_id', '$email', '', $lives_left, ".
-            " 0, '', 0, 0, 0, 0 );";
+            " 0, '', CURRENT_TIMESTAMP, 0, 0, 0, 0 );";
         $result = cd_queryDatabase( $query );
 
         $user_id = mysql_insert_id();
@@ -4959,6 +4961,30 @@ function cd_startRobHouse() {
     cd_incrementStat( "robbery_count" );
 
     $encrypted_house_map = cd_sha1Encrypt( $map_encryption_key, $house_map );
+
+    
+    global $maxRobberyTime;
+    $query = "SELECT ADDTIME( CURRENT_TIMESTAMP, '$maxRobberyTime' );";
+    $result = cd_queryDatabase( $query );
+
+    $endTime = mysql_result( $result, 0, 0 );
+
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET last_robbery_deadline = '$endTime' ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+    
+    $query =
+        "SELECT TIME_TO_SEC( TIMEDIFF( '$endTime', CURRENT_TIMESTAMP ) );";
+
+    $result = cd_queryDatabase( $query );
+
+    $max_seconds = mysql_result( $result, 0, 0 );
+
+    // give wiggle room to account for protocol times and server delays
+    $max_seconds -= 5;
+    
     
     echo "$character_name\n";
     echo "$encrypted_house_map\n";
@@ -4969,6 +4995,7 @@ function cd_startRobHouse() {
     echo "$wife_name\n";
     echo "$son_name\n";
     echo "$daughter_name\n";
+    echo "$max_seconds\n";
     echo "OK";
     }
 

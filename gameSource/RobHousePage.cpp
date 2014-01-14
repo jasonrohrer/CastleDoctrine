@@ -214,6 +214,10 @@ void RobHousePage::setMusicSeed( int inMusicSeed ) {
     }
 
 
+void RobHousePage::setMaxSeconds( int inMaxSeconds ) {
+    mEndTime = game_time(NULL) + inMaxSeconds;
+    }
+
 
 void RobHousePage::setDescription( const char *inDescription ) {
     if( mDescription != NULL ) {
@@ -468,6 +472,20 @@ void RobHousePage::draw( doublePair inViewCenter,
     if( mShowBackpack ) {
         doublePair labelPos = { 8, 5.5 };
         drawMessage( "robBackpack", labelPos );
+        }
+
+    int timeLeft = mEndTime - game_time( NULL );
+    
+    if( timeLeft < 60 ) {
+        doublePair labelPos = { 8, 7 };
+        drawMessage( "robCops", labelPos, true );
+
+        char *timeString = autoSprintf( "0:%02d", timeLeft );
+        
+        labelPos.y -= 0.75;
+        
+        drawMessage( timeString, labelPos, true );
+        delete [] timeString;
         }
     }
 

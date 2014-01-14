@@ -46,6 +46,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
 
         virtual int getMusicSeed();
 
+        virtual int getMaxSeconds();
+
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
@@ -68,7 +70,8 @@ class RobCheckoutHousePage : public GamePage, public ActionListener {
         char *mGalleryContents;
         int mWifeMoney;
         int mMusicSeed;
-        
+        int mMaxSeconds;
+
         TextButton mMenuButton;
 
 

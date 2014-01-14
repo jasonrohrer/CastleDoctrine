@@ -388,6 +388,7 @@ music_seed
 wife_name
 son_name
 daughter_name
+max_seconds
 OK
 
 --OR--
@@ -431,6 +432,8 @@ This keystream is XOR'd with the house_map, and then the result is base64-
 encoded to produce encrypted_house_map. 
 
 
+max_seconds is the maximum amount of time the robber can take without dying.
+
 
 
 
@@ -454,6 +457,17 @@ stuff_taken
 gallery_stuff_taken
 OK
 
+--OR--
+
+OUT_OF_TIME
+
+(if the robbery ran out of time)
+
+--OR--
+
+DENIED
+
+(if the check in failed for some reason)
 
 Where:
 

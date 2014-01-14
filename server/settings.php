@@ -472,6 +472,10 @@ $forcedIgnoreTimeout = "0 1:00:0.000";
 $vaultBountyTimeout = "0 1:00:0.000";
 
 
+// what's the maximum time a robber can stay in a house?
+$maxRobberyTime = "0 0:10:0.000";
+
+
 
 // server shutdown mode
 // causes server to respond with SHUTDOWN to most requests
