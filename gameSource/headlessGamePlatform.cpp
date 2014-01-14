@@ -201,6 +201,9 @@ static char *readFullRequest( Socket *inSock ) {
 
 
 
+void loadingFailed( const char *inFailureMessage ) {
+
+    }
 
 
 unsigned int getRandSeed() {
