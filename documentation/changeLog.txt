@@ -55,6 +55,9 @@ Version 29
 --Fixed so that stale robbery responses aren't played back by server when house
   checkin fails.
 
+--Fixed bug in house ping during robbery if owner of house has died.
+
+
 
 
 Version 28   Live Server Fixes

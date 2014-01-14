@@ -4443,6 +4443,17 @@ function cd_pingHouseInternal( $user_id ) {
     if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         return true;
         }
+
+    // try shadow table
+    $query = "UPDATE $tableNamePrefix"."houses_owner_died SET ".
+        "last_ping_time = CURRENT_TIMESTAMP ".
+        "$whereClause;";
+    
+    $result = cd_queryDatabase( $query );
+
+    if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
+        return true;
+        }
     else {
         cd_log( "Ping failed" );
         
