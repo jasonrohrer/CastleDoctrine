@@ -83,9 +83,12 @@ seedBlog(
 
 <BR>
 
+<br>
+<br>
 <hr>
 
 <font size=6>Featured articles:</font>
+<hr>
 <br>
 <br>
 
@@ -110,8 +113,8 @@ seedBlog(
     5,
     // skip none of them (start with first post)
     0,
-    // hide the archive link
-    0,
+    // show the archive link
+    1,
     // hide the submission link from public
     0 );
 ?>
