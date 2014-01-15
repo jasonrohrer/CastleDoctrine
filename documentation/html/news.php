@@ -83,8 +83,38 @@ seedBlog(
 
 <BR>
 
+<hr>
 
+<font size=6>Featured articles:</font>
+<br>
+<br>
 
+<?php
+seedBlog(
+    // name of this seed blog in the database
+    "news",
+    // 1 = show intro text below headlines
+    // 0 = show only headlines
+    1,
+    // 1 = show author for each post
+    // 0 = hide author
+    1,
+    // 1 = show creation date for each post
+    // 0 = hide dates
+    1,
+    // 2 = allow custom order tweaking with up/down widgets
+    // 1 = order by creation date (newest first)
+    // 0 = order by expiration date (oldest first)
+    2,
+    // show at most 5 posts
+    5,
+    // skip none of them (start with first post)
+    0,
+    // hide the archive link
+    0,
+    // hide the submission link from public
+    0 );
+?>
 
 <BR>
 
