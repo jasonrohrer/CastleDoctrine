@@ -1,3 +1,10 @@
+Version 30
+
+--Fixed typo in owner died message (thanks Pottage).
+
+
+
+
 Version 29  2014-January-14
 
 --Improved shroud by thickening it over walls and moving it north to line up
