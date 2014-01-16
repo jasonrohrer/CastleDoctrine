@@ -34,6 +34,7 @@ function showPayLinks( $inSimple ) {
       <li>Early access alpha testing
       <li>Lifetime server account
       <li>All future updates
+      <li>Free Steam key at launch
       <li>Tech support included
       </ul>
 </td></tr></table>
@@ -137,7 +138,7 @@ Immediately after your payment is processed, you will receive an email with an a
 </ul>
 </td></tr></table>
 </center>
-The price also includes downloads of all future updates and a lifetime account on the main game server that I am running.<br>
+The price also includes downloads of all future updates, a free Steam key at launch, and a lifetime account on the main game server that I am running.<br>
 <br>
 The source bundle includes the server software, allowing you to <b>set up and run your own server</b> (a web server with PHP/MySQL is required).<br>
 <br>
