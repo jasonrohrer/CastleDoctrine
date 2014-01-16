@@ -2,6 +2,9 @@ Version 30
 
 --Fixed typo in owner died message (thanks Pottage).
 
+--Improved speed of power propagation code by a factor of 10, increasing the
+  complexity of house electronics that can be simulated by the server.
+ 
 
 
 

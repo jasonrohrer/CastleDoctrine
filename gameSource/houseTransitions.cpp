@@ -560,6 +560,20 @@ static char *propagatePower(  int *inMapIDs,
     memset( internalPowerMap, false, numCells );
 
 
+    // cache properties so that we don't have to ask for them over and
+    // over in loop below
+    char *conductiveCells = new char[numCells];
+    memset( conductiveCells, false, numCells );
+    
+    char *conductiveLeftRightCells = new char[numCells];
+    memset( conductiveLeftRightCells, false, numCells );
+    
+    char *conductiveTopBottomCells = new char[numCells];
+    memset( conductiveTopBottomCells, false, numCells );
+
+    char *conductiveInternalCells = new char[numCells];
+    memset( conductiveInternalCells, false, numCells );
+    
 
 
     char change = false;
@@ -578,6 +592,48 @@ static char *propagatePower(  int *inMapIDs,
             }
         }
 
+    // cache conductive properties, but only if they matter
+    if( change ) {
+        for( int i=0; i<numCells; i++ ) {
+            if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) 
+                ||
+                isMobilePropertySet( inMapMobileIDs[i], inMapMobileStates[i], 
+                                     conductive ) ) {
+                conductiveCells[i] = true;
+                }
+            else {
+                if( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveLeftToRight ) 
+                    ||
+                    isMobilePropertySet( inMapMobileIDs[i], 
+                                         inMapMobileStates[i], 
+                                         conductiveLeftToRight ) ) {
+                    conductiveLeftRightCells[i] = true;
+                    }
+                
+                if( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveTopToBottom ) 
+                    ||
+                    isMobilePropertySet( inMapMobileIDs[i], 
+                                         inMapMobileStates[i], 
+                                         conductiveTopToBottom ) ) {
+                    conductiveTopBottomCells[i] = true;
+                    }
+
+                if( isPropertySet( inMapIDs[i], inMapStates[i], 
+                                   conductiveInternal ) 
+                    ||
+                    isMobilePropertySet( inMapMobileIDs[i], 
+                                         inMapMobileStates[i], 
+                                         conductiveInternal ) ) {
+                    conductiveInternalCells[i] = true;
+                    }
+                }
+            }    
+        }
+    
+
+
     while( change ) {
         // keep propagating power through conductive materials
         change = false;
@@ -591,9 +647,7 @@ static char *propagatePower(  int *inMapIDs,
                 }
             
 
-            if( isPropertySet( inMapIDs[i], inMapStates[i], conductive ) ||
-                isMobilePropertySet( inMapMobileIDs[i], 
-                                     inMapMobileStates[i], conductive ) ) {
+            if( conductiveCells[i] ) {
                 // look for neighbors with power
                 // continue as soon as one found
                 
@@ -646,13 +700,8 @@ static char *propagatePower(  int *inMapIDs,
                     }
                 }
             else {
-                if( !leftRightPowerMap[i] &&
-                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
-                                     conductiveLeftToRight ) ||
-                      isMobilePropertySet( inMapMobileIDs[i], 
-                                           inMapMobileStates[i], 
-                                           conductiveLeftToRight ) ) ) {
-            
+                if( !leftRightPowerMap[i] && conductiveLeftRightCells[i] ) {
+                    
                     // look for left or right neighbor with power
                     int x = i % inMapW;
                     
@@ -679,13 +728,8 @@ static char *propagatePower(  int *inMapIDs,
                     }
                 
 
-                if( !topBottomPowerMap[i] &&
-                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
-                                     conductiveTopToBottom ) ||
-                      isMobilePropertySet( inMapMobileIDs[i], 
-                                           inMapMobileStates[i], 
-                                           conductiveTopToBottom ) ) ) {
-            
+                if( !topBottomPowerMap[i] && conductiveTopBottomCells[i] ) {
+                    
                     // look for top or bottom neighbor with power
                     int y = i / inMapW;
                     
@@ -715,12 +759,8 @@ static char *propagatePower(  int *inMapIDs,
 
                 if( !powerMap[i] &&
                     !internalPowerMap[i] &&
-                    ( isPropertySet( inMapIDs[i], inMapStates[i], 
-                                   conductiveInternal ) ||
-                      isMobilePropertySet( inMapMobileIDs[i], 
-                                           inMapMobileStates[i], 
-                                           conductiveInternal ) ) ) {
-            
+                    conductiveInternalCells[i] ) {
+                                
                     // look for any neighbor with power
                     int x = i % inMapW;
                     
@@ -776,6 +816,12 @@ static char *propagatePower(  int *inMapIDs,
 
     delete [] leftRightPowerMap;
     delete [] internalPowerMap;
+
+    delete [] conductiveCells;
+    delete [] conductiveLeftRightCells;
+    delete [] conductiveTopBottomCells;
+    delete [] conductiveInternalCells;
+    
     
     *outTopBottomPowerMap = topBottomPowerMap;
 
