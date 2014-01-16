@@ -573,7 +573,10 @@ static char *propagatePower(  int *inMapIDs,
 
     char *conductiveInternalCells = new char[numCells];
     memset( conductiveInternalCells, false, numCells );
+
     
+    char *notAtAllConductive = new char[numCells];
+    memset( notAtAllConductive, true, numCells );
 
 
     char change = false;
@@ -600,6 +603,7 @@ static char *propagatePower(  int *inMapIDs,
                 isMobilePropertySet( inMapMobileIDs[i], inMapMobileStates[i], 
                                      conductive ) ) {
                 conductiveCells[i] = true;
+                notAtAllConductive[i] = false;
                 }
             else {
                 if( isPropertySet( inMapIDs[i], inMapStates[i], 
@@ -609,6 +613,7 @@ static char *propagatePower(  int *inMapIDs,
                                          inMapMobileStates[i], 
                                          conductiveLeftToRight ) ) {
                     conductiveLeftRightCells[i] = true;
+                    notAtAllConductive[i] = false;
                     }
                 
                 if( isPropertySet( inMapIDs[i], inMapStates[i], 
@@ -618,6 +623,7 @@ static char *propagatePower(  int *inMapIDs,
                                          inMapMobileStates[i], 
                                          conductiveTopToBottom ) ) {
                     conductiveTopBottomCells[i] = true;
+                    notAtAllConductive[i] = false;
                     }
 
                 if( isPropertySet( inMapIDs[i], inMapStates[i], 
@@ -627,6 +633,7 @@ static char *propagatePower(  int *inMapIDs,
                                          inMapMobileStates[i], 
                                          conductiveInternal ) ) {
                     conductiveInternalCells[i] = true;
+                    notAtAllConductive[i] = false;
                     }
                 }
             }    
@@ -639,6 +646,10 @@ static char *propagatePower(  int *inMapIDs,
         change = false;
         
         for( int i=0; i<numCells; i++ ) {
+            if( notAtAllConductive[i] ) {
+                continue;
+                }
+
             if( powerMap[i] &&
                 leftRightPowerMap[i] &&
                 topBottomPowerMap[i] ) {
@@ -821,7 +832,7 @@ static char *propagatePower(  int *inMapIDs,
     delete [] conductiveLeftRightCells;
     delete [] conductiveTopBottomCells;
     delete [] conductiveInternalCells;
-    
+    delete [] notAtAllConductive;
     
     *outTopBottomPowerMap = topBottomPowerMap;
 
