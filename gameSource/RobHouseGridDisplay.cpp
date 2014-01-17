@@ -54,9 +54,12 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mHouseMapMobileFinalCellStates( NULL ),
           mRobberStoleFromWife( false ) {
 
-    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+    for( int i=0; i<VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D; i++ ) {
         mVisibleMap[i] = 0;
         mVisibleUnderSlipMap[i] = 0;
+        }
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        mShroudPunchThroughMap[i] = 255;
         }
     
     mBottomRowNonConnectedFaded = true;
@@ -410,6 +413,10 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
         mVisibleUnderSlipMap[i] = 255;
         mTargetVisibleMap[i] = false;
         mTargetVisibleUnderSlipMap[i] = false;
+        }
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        mShroudPunchThroughMap[i] = 255;
+        mTargetShroudPunchThroughMap[i] = false;
         }
     
     for( int i=0; i<mNumMapSpots; i++ ) {
@@ -958,13 +965,87 @@ SpriteHandle RobHouseGridDisplay::generateVisibilityShroudSprite(
     
     FastBoxBlurFilter filter2;
 
-    for( int f=0; f<inNumBlurRounds; f++ ) {
+    int blurRoundsLeft = inNumBlurRounds;
+    
+    int blurRoundsBeforePunchThrough = inNumBlurRounds / 2 - 2;
+    if( blurRoundsBeforePunchThrough > inNumBlurRounds ) {
+        blurRoundsBeforePunchThrough = 0;
+        }
+    // do first half now before punching through for mobiles (plus tweak
+    // of -2, so we do two extra after punch through)
+    for( int f=0; f<blurRoundsBeforePunchThrough; f++ ) {
+        
+        filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                touchIndices,
+                                numTouched,
+                                paddedSize, paddedSize );
+        blurRoundsLeft--;
+        }
+
+
+
+
+
+    // clear shround areas over any visible mobiles or family
+    // (punch holes through shround to make sure they're not too obscured)
+
+    for( int y=0; y<HOUSE_D; y++ ) {
+        for( int x=0; x<HOUSE_D; x++ ) {
+            int tileI = y * HOUSE_D + x;
+            
+            if( mShroudPunchThroughMap[tileI] < 255 ) {
+
+                // punch a hole in shroud here
+                                
+                unsigned char newAlpha = mShroudPunchThroughMap[tileI];
+                
+                int totalBlowupFactor = blowUpFactor * VIS_BLOWUP;
+
+                for( int blowUpY= y * totalBlowupFactor; 
+                     blowUpY< y * totalBlowupFactor + totalBlowupFactor; 
+                     blowUpY++ ) {
+
+                    int flipY = totalBlowupFactor * HOUSE_D - blowUpY - 1;
+                        
+
+                    int padY = flipY + blowUpBorder;
+                        
+
+                    for( int blowUpX= x * totalBlowupFactor; 
+                         blowUpX< x * totalBlowupFactor + 
+                             totalBlowupFactor; 
+                         blowUpX++ ) {
+                        
+                        int padX = blowUpX + blowUpBorder;
+                        
+                        int imageIndex = padY * paddedSize + padX;
+                        
+                        if( fullGridChannelsBlownUpAlpha[ imageIndex ]
+                            > newAlpha ) {
+                            
+                            // pull down to more transparent
+                            // but never make shroud more opaque
+                            fullGridChannelsBlownUpAlpha[ imageIndex ] = 
+                                newAlpha;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+    
+    
+    // second half of blur rounds, after punching holes for mobiles
+    for( int f=0; f<blurRoundsLeft; f++ ) {
         
         filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                                 touchIndices,
                                 numTouched,
                                 paddedSize, paddedSize );
         }
+    
+
     
 
     // clear border again, but leave one extra pixel for map-edge shrouding
@@ -1235,6 +1316,52 @@ void RobHouseGridDisplay::draw() {
 
     int slipShroudRevealRate =  60;
     int slipShroudHideRate = 1;
+
+
+    // update shroud punch-throughs to move toward targets
+    // fades in and out at same rate as main shround
+    for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+        if( mRobberIndex == mGoalIndex ) {
+            // robber hit vault
+            // instantly black out, because robber on vault looks weird
+            mShroudPunchThroughMap[i] = 255;
+            }
+        else if( mTargetShroudPunchThroughMap[i] ) {
+            // wants to move toward visible
+            if( mShroudPunchThroughMap[i] != 0 ) {
+                unsigned char oldValue = mShroudPunchThroughMap[i];
+
+                // revealing new areas happens at a different rate 
+                // than shrouding no-longer-seen areas
+                mShroudPunchThroughMap[i] -= 
+                    lrint( mainShroudRevealRate * frameRateFactor );
+                
+                // watch for wrap-around!
+                if( mShroudPunchThroughMap[i] > oldValue ) {
+                    mShroudPunchThroughMap[i] = 0;
+                    }
+
+                }
+            }
+        else {
+            // wants to move toward invisible
+            
+            if( mShroudPunchThroughMap[i] != 255 ) {
+                
+                unsigned char oldValue = mShroudPunchThroughMap[i];
+
+                mShroudPunchThroughMap[i] += 
+                    lrint( mainShroudHideRate * frameRateFactor );
+                
+                // watch for wrap-around!
+                if( mShroudPunchThroughMap[i] < oldValue ) {
+                    mShroudPunchThroughMap[i] = 255;
+                    }
+                }
+            }
+        }
+
+
 
     SpriteHandle visSprite = 
         generateVisibilityShroudSprite( mVisibleMap, mTargetVisibleMap,
@@ -1661,6 +1788,44 @@ void RobHouseGridDisplay::setVisibleOffset( int inXOffset, int inYOffset ) {
                 VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D );
         delete [] mNewVisibleMap;
         delete [] mNewVisibleUnderSlipMap;
+
+
+
+
+        // same for punch through map
+        // slide values
+        unsigned char *mNewShroudPunchThroughMap = new unsigned char[ 
+            HOUSE_D * HOUSE_D ];
+
+        // leave black in excess area
+        memset( mNewShroudPunchThroughMap, 255, HOUSE_D * HOUSE_D );
+                
+        for( int y=0; y<HOUSE_D; y++ ) {
+            int destY = y - yExtra;
+            
+            if( destY >= 0 && destY < HOUSE_D ) {
+                
+                for( int x=0; x<HOUSE_D; x++ ) {
+                    
+                    int destX = x - xExtra;
+                    
+                    if( destX >= 0 && destX < HOUSE_D ) {
+
+                        int i = y * HOUSE_D + x;
+                        int destI = destY * HOUSE_D + destX;
+                        
+                            
+                        mNewShroudPunchThroughMap[ destI ]
+                            = mShroudPunchThroughMap[ i ];
+                        }
+                    }
+                }
+            }
+        
+        // now replace old with new
+        memcpy( mShroudPunchThroughMap, mNewShroudPunchThroughMap, 
+                HOUSE_D * HOUSE_D );
+        delete [] mNewShroudPunchThroughMap;
         }
     
     HouseGridDisplay::setVisibleOffset( inXOffset, inYOffset );
@@ -1724,6 +1889,9 @@ void RobHouseGridDisplay::recomputeVisibility() {
         for( int i=0; i<HOUSE_D * HOUSE_D * VIS_BLOWUP * VIS_BLOWUP; i++ ) {
             mTargetVisibleMap[i] = false;
             mTargetVisibleUnderSlipMap[i] = false;
+            }
+        for( int i=0; i<HOUSE_D * HOUSE_D; i++ ) {
+            mTargetShroudPunchThroughMap[i] = false;
             }
         return;
         }
@@ -2507,6 +2675,31 @@ void RobHouseGridDisplay::recomputeVisibilityInt() {
 
     delete [] blockingMap;
 
+
+    
+    // compute which cells want to punch through shroud
+    for( int i=0; i< HOUSE_D * HOUSE_D; i++ ) {
+        char shouldShowThroughShroud = false;
+
+        if( mTileVisibleMap[i] ) {
+            int fullTileI = subToFull( i );
+
+            if( mHouseMapMobileIDs[fullTileI] != 0 ) {
+                    
+                if( ! isPropertySet( mHouseMapMobileIDs[fullTileI], 
+                                     mHouseMapMobileCellStates[fullTileI], 
+                                     stuck ) ) {
+                    shouldShowThroughShroud = true;
+                    }
+                }
+            
+            if( isSubMapPropertySet( i, family ) ) {
+                shouldShowThroughShroud = true;
+                }    
+            }
+        
+        mTargetShroudPunchThroughMap[i] = shouldShowThroughShroud;
+        }
     }
 
 

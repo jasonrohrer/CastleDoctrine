@@ -13,6 +13,11 @@ Version 30
   limit the server load to simulations longer than about 3 seconds (also
   reducing client timeouts and retries).
 
+--Added punchthrough on shroud edges where shroud partially obscures a mobile
+  or family object that is actually visible.  No more almost-invisible pit
+  bulls at the end of long, shadowy hallways.
+
+ 
 
 
 Version 29  Live Server Fixes 

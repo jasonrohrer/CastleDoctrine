@@ -136,6 +136,16 @@ class RobHouseGridDisplay : public HouseGridDisplay {
             VIS_BLOWUP * HOUSE_D * VIS_BLOWUP * HOUSE_D ];
 
 
+        // alpha values that, if less than 255, means the shroud
+        // should be punched through and made more transparent at a spot
+        unsigned char mShroudPunchThroughMap[ HOUSE_D * HOUSE_D ];
+        
+        // true/false for whether each punch through spot wants to move
+        // toward transparent or not
+        char mTargetShroudPunchThroughMap[ HOUSE_D * HOUSE_D ];
+        
+
+
         // for each tile, true if (even partly) visible
         // false if completely invisible
         char mTileVisibleMap[ HOUSE_D * HOUSE_D ];
