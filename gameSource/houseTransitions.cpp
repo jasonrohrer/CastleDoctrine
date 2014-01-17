@@ -499,17 +499,18 @@ void freeHouseTransitions() {
 
 
 
-#include "minorGems/util/crc32.h"
+#include "minorGems/crypto/hashes/sha1.h"
 
 // computes a digest of a map state
 // resulting string destroyed by caller
-static unsigned int getMapStateChecksum( int *inMapStates, 
-                                         int inMapW, int inMapH ) {
+static char *getMapStateChecksum( int *inMapStates, int inMapW, int inMapH ) {
     
     int numCells = inMapW * inMapH;
         
-    return crc32( (unsigned char*)inMapStates, 
-                  numCells * sizeof( int ) );
+    return
+        computeSHA1Digest( (unsigned char*)inMapStates, 
+                           numCells * sizeof( int ) );
+    
     }
 
 
@@ -1483,7 +1484,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     char loopDetected = false;
     
     // track checksums of states seen so far so that we can avoid a loop
-    SimpleVector<unsigned int> seenStates;
+    SimpleVector<char *> seenStates;
     
     // add start state
     seenStates.push_back( getMapStateChecksum( inMapStates, inMapW, inMapH ) );
@@ -1511,13 +1512,13 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         if( transitionHappened ) {
             transitionCount++;
             
-            unsigned int newChecksum = 
+            char *newChecksum = 
                 getMapStateChecksum( inMapStates, inMapW, inMapH );
             
             for( int i=0; i<seenStates.size(); i++ ) {
-                unsigned int oldChecksum = *( seenStates.getElement( i ) );
+                char *oldChecksum = *( seenStates.getElement( i ) );
             
-                if( oldChecksum == newChecksum ) {
+                if( strcmp( oldChecksum, newChecksum ) == 0 ) {
                     loopDetected = true;
                     }
                 }
@@ -1565,17 +1566,17 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         memcpy( lowestSeenStates, inMapStates, numCells * sizeof( int ) );
         
         // run one more time until we return to this state
-        unsigned int returnToChecksum = 
+        char *returnToChecksum = 
             getMapStateChecksum( inMapStates, inMapW, inMapH );
         
 
         applyPowerTransitions( inMapIDs, inMapStates, 
                                inMapMobileIDs, inMapMobileStates,
                                inMapW, inMapH );
-        unsigned int lastChecksum = 
+        char *lastChecksum = 
             getMapStateChecksum( inMapStates, inMapW, inMapH );
         
-        while( lastChecksum != returnToChecksum &&
+        while( strcmp( lastChecksum, returnToChecksum ) != 0 &&
                transitionCount <= transitionLimit ) {
             // a mid-loop state
             
@@ -1586,6 +1587,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
                     lowestSeenStates[i] = inMapStates[i];
                     }
                 }
+            delete [] lastChecksum;
 
             applyPowerTransitions( inMapIDs, inMapStates,
                                    inMapMobileIDs, inMapMobileStates,
@@ -1597,6 +1599,8 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
             }
 
         // returned to start-of-loop state
+        delete [] lastChecksum;
+        delete [] returnToChecksum;
 
         // set all cells in map to lowest-seen states from the loop
         memcpy( inMapStates, lowestSeenStates, numCells * sizeof( int ) );
@@ -1605,6 +1609,10 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     
 
     delete [] startStates;
+
+    for( int i=0; i<seenStates.size(); i++ ) {
+        delete [] *( seenStates.getElement( i ) );
+        }
 
 
 
