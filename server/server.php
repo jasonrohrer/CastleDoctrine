@@ -7455,6 +7455,12 @@ function cd_newHouseForUser( $user_id ) {
         
         // COMMIT to release the FOR UPDATE lock here
         cd_queryDatabase( "COMMIT;" );
+
+        // this is a brand new user (today), and their
+        // last_owner_visit_time will be set to today, so their
+        // first edit won't track them as a unique daily user today
+        // track them now
+        cd_incrementStat( "unique_users" );
         }
 
 

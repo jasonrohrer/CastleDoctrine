@@ -4,7 +4,15 @@ Version 30
 
 --Improved speed of power propagation code by a factor of 10, increasing the
   complexity of house electronics that can be simulated by the server.
- 
+
+
+
+
+Version 29  Live Server Fixes 
+
+--Fixed server stats code to track new users as unique users for that day.
+
+
 
 
 
