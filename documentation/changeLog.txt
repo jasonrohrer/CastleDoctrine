@@ -2,9 +2,16 @@ Version 30
 
 --Fixed typo in owner died message (thanks Pottage).
 
---Improved speed of power propagation code by a factor of 10, increasing the
+--Improved speed of power propagation code by a factor of 6, increasing the
   complexity of house electronics that can be simulated by the server.
 
+--Reduced the maximum electronics step count to 32 (down from 256).  Once the
+  step count limit has been reached, the electronics are assumed to be looping
+  and are settled down into their lowest-seen states.  An example house that
+  had electronics which took 16 steps to resolve, on a 108-move robbery, took
+  1.5 seconds to simulate on the server.  Setting the max step count to 32 will
+  limit the server load to simulations longer than about 3 seconds (also
+  reducing client timeouts and retries).
 
 
 

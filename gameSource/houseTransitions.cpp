@@ -1513,7 +1513,7 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     //  eventually loop, and we don't want to simulate that, because it
     //  effectively freezes the game [noticed by Joshua Collins]).
     int transitionCount = 0;
-    int transitionLimit = 256;
+    int transitionLimit = 32;
         
     int *startStates = new int[ numCells ];
         
