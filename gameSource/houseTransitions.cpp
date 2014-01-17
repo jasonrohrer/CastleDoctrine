@@ -638,6 +638,23 @@ static char *propagatePower(  int *inMapIDs,
                 }
             }    
         }
+
+
+    // optimization:
+    // actually conductive cells, that participate in the loop below,
+    // are often sparse.
+    // extract them now so we can loop over fewer cells during propagation
+    
+    SimpleVector<int> conductiveIndicesList;
+    
+    for( int i=0; i<numCells; i++ ) {
+        if( ! notAtAllConductive[i] ) {
+            conductiveIndicesList.push_back( i );
+            }
+        }
+
+    int numConductive = conductiveIndicesList.size();
+    int *conductiveIndices = conductiveIndicesList.getElementArray();
     
 
 
@@ -645,10 +662,8 @@ static char *propagatePower(  int *inMapIDs,
         // keep propagating power through conductive materials
         change = false;
         
-        for( int i=0; i<numCells; i++ ) {
-            if( notAtAllConductive[i] ) {
-                continue;
-                }
+        for( int c=0; c<numConductive; c++ ) {
+            int i = conductiveIndices[c];
 
             if( powerMap[i] &&
                 leftRightPowerMap[i] &&
@@ -833,6 +848,8 @@ static char *propagatePower(  int *inMapIDs,
     delete [] conductiveTopBottomCells;
     delete [] conductiveInternalCells;
     delete [] notAtAllConductive;
+    
+    delete [] conductiveIndices;
     
     *outTopBottomPowerMap = topBottomPowerMap;
 
