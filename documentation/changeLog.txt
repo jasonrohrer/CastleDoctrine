@@ -17,6 +17,8 @@ Version 30
   or family object that is actually visible.  No more almost-invisible pit
   bulls at the end of long, shadowy hallways.
 
+--Brick can now be thrown to open a wooden door.
+
  
 
 
