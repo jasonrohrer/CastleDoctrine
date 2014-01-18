@@ -5212,6 +5212,21 @@ function cd_endRobHouse() {
         echo "OUT_OF_TIME";
         return;
         }
+
+    // for each new endRobHouse request that comes through,
+    // kick the deadline forward, because our request might be slow
+    // to finish, and the client might retry over and over, and
+    // we don't want the player to be deadline-killed while this is happening
+
+    // push back by 1 minute
+    $deadlinePushback = "0 0:01:0.000";
+    
+    $query = "UPDATE $tableNamePrefix"."users ".
+        "SET last_robbery_deadline = ".
+        "    ADDTIME( last_robbery_deadline, '$deadlinePushback' ) ".
+        "WHERE user_id = '$user_id';";
+    $result = cd_queryDatabase( $query );
+
     
 
     

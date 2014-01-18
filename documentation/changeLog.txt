@@ -24,6 +24,11 @@ Version 29  Live Server Fixes
 
 --Fixed server stats code to track new users as unique users for that day.
 
+--Fixed so that retried endRobHouse requests that happen near the robbery
+  timeout deadline push the deadline forward and do not result in the death of
+  the robber (as long as the first endRobHouse request received by the server
+  came in before the deadline).
+
 
 
 
