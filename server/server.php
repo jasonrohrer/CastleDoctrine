@@ -5209,6 +5209,7 @@ function cd_endRobHouse() {
     $secondsLeft = mysql_result( $result, 0, 0 );
 
     if( $secondsLeft <= 0 ) {
+        cd_processStaleCheckouts( $user_id );
         echo "OUT_OF_TIME";
         return;
         }
@@ -5227,7 +5228,12 @@ function cd_endRobHouse() {
         "WHERE user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
-    
+
+    // note that any user-caused failure after this point,
+    // now that we've pushed
+    // the deadline forward, has to force-kill the robber
+    // (otherwise, robber could send malformed requests to push
+    //  the deadline forward eternally)
 
     
     $success = cd_requestFilter( "success", "/[012]/" );
@@ -5245,6 +5251,7 @@ function cd_endRobHouse() {
         > $cd_numBackpackSlots ) {
         cd_log( "End of robbery with ".
                 "more than $cd_numBackpackSlots backpack slots denied" );
+        cd_processStaleCheckouts( $user_id );
         cd_transactionDeny();
         return;
         }
@@ -5432,6 +5439,7 @@ function cd_endRobHouse() {
                 if( count( $parts ) != 2 ) {
                     cd_log( "Robbery end with bad move list ".
                             "($move_list) denied" );
+                    cd_processStaleCheckouts( $user_id );
                     cd_transactionDeny();
                     return;
                     }
@@ -5467,6 +5475,7 @@ function cd_endRobHouse() {
     if( $totalBackpack != $totalBackpackShouldBe ) {
         cd_log( "Robbery end with tools used not adding up with remaining ".
                 "backpack contents denied" );
+        cd_processStaleCheckouts( $user_id );
         cd_transactionDeny();
         return;
         }
@@ -5623,6 +5632,7 @@ function cd_endRobHouse() {
         if( $simResult == 0 ) {       
             cd_log( "Robbery end with failed robbery simulation".
                     " denied" );
+            cd_processStaleCheckouts( $user_id );
             cd_transactionDeny();
             return;
             }
@@ -5667,7 +5677,7 @@ function cd_endRobHouse() {
                     "sim_end_backpack = $sim_end_backpack_contents , ".
                     "sim_end_house_map = $sim_end_house_map " );
                 
-                
+                cd_processStaleCheckouts( $user_id );
                 cd_transactionDeny();
                 return;
                 }
