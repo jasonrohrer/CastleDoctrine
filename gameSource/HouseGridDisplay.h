@@ -334,6 +334,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // destroyed by caller
         char *getBlockedMap();
         
+        // affects what counts as blocking in getBlockedMap calls 
+        char mDeadFamilyBlocking;
+
+        
         void checkExitPaths();
 
         // paths as allocated arrays of GridPos 

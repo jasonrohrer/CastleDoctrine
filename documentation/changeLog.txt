@@ -19,7 +19,12 @@ Version 30
 
 --Brick can now be thrown to open a wooden door.
 
- 
+--Changed so that family members aren't paralyzed if their exit path is blocked
+  by a dead body (they at least walk up to the dead body and stop).  This makes
+  a body-blocked wife less defenseless (she can still walk to pick up her
+  shotgun). 
+
+
 
 
 Version 29  Live Server Fixes 

@@ -382,6 +382,21 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mFamilyObjects.deleteAll();
     mFamilyStatus.deleteAll();
     mFamilySeenRobber.deleteAll();
+
+    if( ! mAllFamilyObjectsHaveExitPath ) {
+        // some family killed since owner last edited this house.
+
+        // try again, this time letting them walk through
+        // dead bodies, which will mean that during robbery, they
+        // will walk up to dead bodies and stop (instead of being
+        // frozen in place because of a far-away blocking body)
+        
+        printf( "All family don't have paths.  Looking again...\n" );
+        mDeadFamilyBlocking = false;
+        checkExitPaths();
+        mDeadFamilyBlocking = true;
+        }
+    
     
     int numPaths = mFamilyExitPaths.size();
     

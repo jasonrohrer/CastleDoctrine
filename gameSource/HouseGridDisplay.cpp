@@ -85,6 +85,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mMandatoryNeedsPlacing( false ),
           mMandatoryToPlaceID( -1 ),
           mAllFamilyObjectsHaveExitPath( false ),
+          mDeadFamilyBlocking( true ),
           mPointerInside( false ),
           mWallShadowSprite( NULL ),
           mSkipShadowComputation( false ),
@@ -3834,15 +3835,21 @@ void HouseGridDisplay::clearSpecialHighlights() {
 char *HouseGridDisplay::getBlockedMap() {
     char *blockedMap = new char[mNumMapSpots];
     for( int i=0; i<mNumMapSpots; i++ ) {
-        if( !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+        if( mHouseMapIDs[i] != 0 &&
+            !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
                             family ) &&
             !isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
-                            mobile ) &&
-            mHouseMapIDs[i] != 0 ) {
+                            mobile ) ) {
             // not mobile, not family, not bare floor
             blockedMap[i] = true;
             }
         else {
+            blockedMap[i] = false;
+            }
+        
+        if( ! mDeadFamilyBlocking && 
+            isPropertySet( mHouseMapIDs[i], mHouseMapCellStates[i],
+                           deadFamily ) ) {
             blockedMap[i] = false;
             }
         }
