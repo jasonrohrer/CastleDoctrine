@@ -1,4 +1,4 @@
-Version 30
+Version 30  2014-January-17
 
 --Fixed typo in owner died message (thanks Pottage).
 

@@ -3,7 +3,7 @@
 
 
 global $cd_version;
-$cd_version = "29";
+$cd_version = "30";
 
 
 global $cd_numBackpackSlots;
