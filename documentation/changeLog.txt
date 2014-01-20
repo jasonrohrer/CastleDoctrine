@@ -1,3 +1,11 @@
+Version 30  Live Server Fixes
+
+--Added stat tracking max total house value seen in a given day (for computing
+  contest exchange rate).
+
+
+
+
 Version 30  2014-January-17
 
 --Fixed typo in owner died message (thanks Pottage).
