@@ -1325,6 +1325,8 @@ function cd_setupDatabase() {
 
             "bounties_accumulated INT NOT NULL DEFAULT 0," .
             "bounties_paid INT NOT NULL DEFAULT 0," .
+
+            "max_total_house_value INT NOT NULL DEFAULT 0," .
             
             "self_test_deaths INT NOT NULL DEFAULT 0," .
             "self_test_suicides INT NOT NULL DEFAULT 0," .
@@ -4498,6 +4500,7 @@ function cd_endEditHouse() {
     // change counts as an edit
     cd_incrementStat( "edit_count" );
     
+    cd_trackMaxTotalHouseValue();
 
     echo "OK";    
     }
@@ -6274,7 +6277,7 @@ function cd_endRobHouse() {
     
     
 
-    
+    cd_trackMaxTotalHouseValue();
     
     echo $response;
     }
@@ -7743,6 +7746,24 @@ function cd_incrementStat( $inStatColumnName, $inIncrementAmount = 1 ) {
 
 
 
+// update one column's max-stat in stat table for today
+// or creates a row of 0's in the stat table for today (if no row exists)
+// and puts a new max value in that one column.
+function cd_updateMaxStat( $inStatColumnName, $inPossibleNewMax ) {
+    global $tableNamePrefix;
+    
+    $query = "INSERT INTO $tableNamePrefix"."server_stats ".
+        "SET stat_date = CURRENT_DATE, ".
+        "    $inStatColumnName = $inPossibleNewMax ".
+        "ON DUPLICATE KEY UPDATE ".
+        "   $inStatColumnName = GREATEST( $inStatColumnName, ".
+        "                                 $inPossibleNewMax );";
+
+    cd_queryDatabase( $query );
+    }
+
+
+
 function cd_incrementPurchaseCountStat( $inObjectID, $inPrice,
                                         $inIncrementAmount = 1 ) {
     global $tableNamePrefix;
@@ -7756,6 +7777,23 @@ function cd_incrementPurchaseCountStat( $inObjectID, $inPrice,
         "   purchase_count = purchase_count + $inIncrementAmount;";
 
     cd_queryDatabase( $query );
+    }
+
+
+
+
+function cd_trackMaxTotalHouseValue() {
+    
+    global $tableNamePrefix;
+    $query = "SELECT SUM( value_estimate ) ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE edit_count !=0;";
+
+    $result = cd_queryDatabase( $query );
+
+    $max_total_house_value_now = mysql_result( $result, 0, 0 );
+
+    cd_updateMaxStat( "max_total_house_value", $max_total_house_value_now );
     }
 
     
