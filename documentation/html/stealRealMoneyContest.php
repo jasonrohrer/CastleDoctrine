@@ -31,7 +31,7 @@ Here's how it works:
 <br>
 The contest will run until 5pm US PST on Monday, January 27.  At that moment in time, whatever money you have in the game will be converted into real US Dollars and paid to you.  Steal more, win more.  Have your in-game money stolen from you, and the robber will win more.<br>
 <br>
-I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided among all living players at the 5pm deadline based on the fraction of total game money that each player posses.  The exchange rate will fluctuate throughout the contest period, according to how much total money accumulates in the game.  The current exchange rate is:
+I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided among all living players at the 5pm deadline based on the fraction of total game money that each player possesses.  The exchange rate will fluctuate throughout the contest period, according to how much total money accumulates in the game.  The current exchange rate is:
 <br>
 <br>
 <center>
@@ -159,6 +159,14 @@ The top eight players will be determined by estimated house value as it appears 
 <br>
 <br>
 All payments will be made using PayPal.  Their MassPay feature will let me export the payment list and automatically pay everyone with one click.  I'm assuming that each person registered for the game with an email address that can receive PayPal payments.  If this is not the case for you, you may want to add your game email to your PayPal account (one PayPal account can have multiple email addresses associated with it).  If this is impossible for some reason, please get in touch with me by email to have your game email address changed on my server.
+<br>
+<br>
+<br>
+
+<b>Is there a minimum payment?</b>
+<br>
+<br>
+I will send a PayPal payment to each player whose in-game house value converts to at least $1 USD at the end of the contest.  Anyone who has less than $1 USD equivalent will not be paid.  Also, keep in mind that, depending on your PayPal account (business or personal), PayPal's fees may chew up quite a bit of the smaller payments that I send.
 <br>
 <br>
 <br>
