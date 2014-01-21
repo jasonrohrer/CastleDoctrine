@@ -65,8 +65,4 @@ foreach( $sampleHouseValues as $sample ) {
 echo "</table>";
 
 
-
-eval( $footer );
-
-
 ?>
