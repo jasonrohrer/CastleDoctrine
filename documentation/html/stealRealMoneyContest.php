@@ -23,7 +23,7 @@ Pre-Launch Contest<br>
 <br>
 <br>
 
-To celebrate The Castle Doctrine's forthcoming launch on January 29, and to mark the last week of a very successful alpha test, I figured it was <b>time to give back</b> to the game's community.  Or rather, <b><i>have it taken back.</i></b>
+To celebrate The Castle Doctrine's forthcoming launch on January 29, and to mark the last week of a very successful alpha test, I figured it was <b>time to give back</b> to the player community.  Or rather, <b><i>have it taken back.</i></b>
 <br>
 <br>
 Here's how it works:
@@ -31,7 +31,7 @@ Here's how it works:
 <br>
 The contest will run until 5pm US PST on Monday, January 27.  At that moment in time, whatever money you have in the game will be converted into real US Dollars and paid to you.  Steal more, win more.  Have your in-game money stolen from you, and the robber will win more.<br>
 <br>
-I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided amoung all living players at the 5pm deadline based on the fraction of total game money that each player posses.  The exchange rate will fluctuate throughoutt the contest period, according to how much total money acccumulates in the game.  The current exchange rate is:
+I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided amoung all living players at the 5pm deadline based on the fraction of total game money that each player posses.  The exchange rate will fluctuate throughout the contest period, according to how much total money acccumulates in the game.  The current exchange rate is:
 <br>
 <br>
 <center>
@@ -52,9 +52,7 @@ But wait!  There's more!  The very best players can also...
 
 <br>
 <br>
-
-<font size=6>STEAL REAL STUFF</font>
-<br>
+<center><font size=6>STEAL REAL STUFF</font></center>
 <br>
 In addition to the cash prize divided amoung all players, the <b>top eight</b> houses in the game at the contest deadline will also win <b>two</b> fabulous prizes each.
 <br>
@@ -67,7 +65,7 @@ In addition to the cash prize divided amoung all players, the <b>top eight</b> h
 <br>
 <br>
 
-Each of the top eight players will have their favorite, in-game painting transformed into a gorgeous 20x20 inch giclee-printed canvas.  Vibrant colors, archival pigments, the whole nine yards.  For these tiny 32x32 pixel paintings, each pixel will be an enormous 5/8 inch square on the canvas.<br>
+Each of the top eight players will have their favorite, in-game painting transformed into a gorgeous 20x20 inch giclee-printed canvas.  Vibrant colors, archival pigments, the whole nine yards.  To enlarge these tiny 32x32 pixel paintings, each pixel will be an enormous 5/8 inch square on the canvas.<br>
 <br>
 
 <center>
@@ -76,7 +74,7 @@ Each of the top eight players will have their favorite, in-game painting transfo
 </center>
 <br>
 
-<b>But there's a catch:</b>  to win a given painting, that player must have that painting in their possession at the contest deadline.  If you have your favorite painting stolen, you're out of luck.
+<b>But there's a catch:</b>  to win a given painting, you must have that painting in your possession at the contest deadline.  If you have your favorite painting stolen, you're out of luck.
 
 <br>
 <br>
@@ -142,7 +140,7 @@ Go on a shopping spree at the only place where I ever touched a handgun.  Don't 
 <b>How will you fairly determine who won at 5pm?  Won't there be chaos?</b>
 <br>
 <br>
-At 5pm, I will take a snapshot of the server database to "freeze" the state of the game world safely for study offline.  I will then study that game world to determine who is living, and how much money they have, and also who the top 8 players are.  Note that only players who have edited their current house at least once, and put their house on the public list, will be considered for prize money.  Your private starter home, with its untouched $2000, won't get you a prize.
+At 5pm, I will take a snapshot of the server database to "freeze" the state of the game world safely for study offline.  I will then study that game world to determine who is living, and how much money they have, including their tool resale value, and also who the top 8 players are.  Note that only players who have edited their current house at least once, and put their house on the public list, will be considered for prize money.  Your private starter home, with its untouched $2000, won't get you a prize.
 <br>
 <br>
 <br>
@@ -171,9 +169,88 @@ I plan to have all payments sent out within a week after the contest ends.  Reme
 <br>
 <br>
 
+<b>When will prizes for the top eight players be shipped?</b>
+<br>
+<br>
+Having the paintings made will take a bit of time.  I hope to have all of the prizes shipped out within a month after the contest ends.
+<br>
+<br>
+<br>
+
+
+<b>Won't splitting the money based on a player's fraction of the total money encourage rich players to take out poor players?</b>
+<br>
+<br>
+No, I've accounted for this.<br>
+<br>
+If the prizes were based on the fraction of total money at the deadline, then yes, rich players could "burn" some of their own money to knock out lower players, thereby increasing their share of the deadline total, even though they would have less money as a result.  Worst case, the richest player could knock everyone else out and have only $1 left, but claim the entire $3000 prize.<br>
+<br>
+To prevent this, the exchange rate is based on the highest game-wide total ever seen over the course of the contest.  Thus, the exchange rate only goes UP over the course of the contest.  This encourages players to acquire more money individually, because they are each facing the same exchange rate, and penalizes them for "burning money" to knock other players out.  Suppose the total at some point was $1,000,0000.  The exchange rate would be $333 per USD.  Suppose the richest player has $100,000, which would be worth a 300 USD prize, with 2700 USD going to other players.  Now suppose that rich player burns $90K to knock every other player out of the game.  The exchange rate remains the same, which means that lone player's remaining $10,000 would only be worth a 30 USD prize.
+<br>
+<br>
+<br>
+
+<b>Wait, so does that mean that you might not pay out the entire $3000 USD bounty?</b>
+<br>
+<br>
+Correct.  It depends on the collective behavior of the player community during the contest.  If one player becomes hugely wealthy mid-game and then dies before the end, the exchange rate will be inflated by that player and then not come back down.  In the above example, I'd be keeping $2970.  It's kind of like a game.  How much will I pay, in the end?
+<br>
+<br>
+<br>
+
+<b>What about "punished by rewards"?  Aren't you afraid of people playing this game just because of the prizes, instead of playing just for the sake of playing?</b>
+<br>
+<br>
+I'm a little bit worried about that.  But the prize structure here matches the spirit of the game's community pretty well, so I'm hoping that players will see it simply as another really cool thing that happened in the world of The Castle Doctrine.  The cash prizes aren't fixed, and they are uncertain, so it's not like someone can bank on them and then be terribly discouraged by not getting a huge payout.  The physical prizes are mostly just amusing soveniers from the game's mental space.  Well, except for the paintings --- those are pretty darn cool!  (I'm actually going to make nine and keep one.)  But they are so tied into the game that they are only meaningful to people who are really into the game already.<br>
+<br>
+Also, <a href="http://chrishecker.com/No_One_Knows_About_Your_Game">no one knows about your game</a>.  My budget is small, and running this kind of contest is way cheaper and more interesting than advertising.  It matches the spirit of the game and doesn't bother people who are not already interested in the game.
+<br>
+<br>
+<br>
+
+<b>Isn't it unethical to give away a weapon as a prize?  How will you sleep at night if it falls into the wrong hands?</b>
+<br>
+<br>
+The club that I'm giving away can be easily purchased in 47 states across the country without a license.  If someone really wants to get one of these, they can easily do so.  Besides, in the wrong hands, baseball bats and hammers are far more deadly.
+<br>
+<br>
+<br>
+
+<b>You want me to travel all the way to New Mexico to spend a $50 gift certficate?  What's the deal?</b>
+<br>
+<br>
+The certificate will have the Custom Cartridge Company's logo on it and be an interesting artifact in its own right.  I mean, it's a <i>gift certificate to a gun shop</i>.  Besides, there are many beatiful sights in New Mexico, so you will likely visit there someday.  Keep your gift certificate in a safe place until that day comes.
+<br>
+<br>
+<br>
+
+<b>What will you do if one of the top eight players can't accept their prize for legal reasons?</b>
+<br>
+<br>
+I'll try to find another winning player for them to swap prizes with.  There are only eight people, and I'm sure we can work it out together.
+<br>
+<br>
+<br>
+
+<b>What if one of the top eight players has no painting in their possession when the contest ends?</b>
+<br>
+<br>
+I'll move further down the list of top players until I find one who has a painting.
+<br>
+<br>
+<br>
+
+<b>Where are the pages of fine print written by the lawyers?  Where are the official rules?</b>
+<br>
+<br>
+The official rules are this page.  When there is some doubt about the nuances of those rules, I'll make a decision according to my best judgement.  This is clearly a contest of skill, not chance, which makes it legal pretty much everywhere.  If it's not legal in your state or country, you have my sympathy.
+<br>
+<br>
+<br>
+
+
 
     
-
 <center>
 
 <br><br><br>
