@@ -107,13 +107,15 @@ A little rusty at the tip from being carried around on a bike.  Think of it as p
 <br>
 <u><font size=5>Second - Fifth Prizes:  <i>A Door Devil</i></font></u>
 <br>
-Sick of having your front door kicked in at three in the afternoon?  Our 85-year-old neighbor in Las Cruces was.  Maybe she should have installed one of these.  Worried that the feds aren't going to give you enough warning when they barge in?  If you're actually worried about that, you're probably the kind of person the feds are actually watching!  In any case, it's amazing what a few strip of metal and some long screws can do:
+Sick of having your front door kicked in at three in the afternoon?  Our 85-year-old neighbor in Las Cruces was.  Maybe she should have installed one of these.  Worried that the feds aren't going to give you enough warning when they barge in?  If you're actually worried about that, you're probably the kind of person the feds are actually watching!  In any case, it's amazing what a few strips of metal and some long screws can do:
 <center>
 <iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/2UxEX2HbhO8?rel=0" frameborder="0" allowfullscreen></iframe>
 <br>
+
 <img src="contestImages/prizes/doorDevil.png" width=540 height=132 border=0>
 </center><br>
-You can also watch <a href="http://www.youtube.com/watch?v=vVw-5gHIJZ8">this video</a> to see some big guys really hammer on one of these.  The folks at Door Devil were nice enough to give us <b>four</b> kits to hand out as prizes for the second-, third-, fourth-, and fifth-place players.  Did I mention that it comes with a free yard sign?
+
+You can also watch <a href="http://www.youtube.com/watch?v=vVw-5gHIJZ8">this video</a> to see some big guys really hammer on one of these.  The folks at Door Devil were kind enough to give us <b>four</b> kits to hand out as prizes for the second-, third-, fourth-, and fifth-place players.  Did I mention that it comes with a free yard sign?
 
 
 <br>
@@ -183,7 +185,7 @@ Having the paintings made will take a bit of time.  I hope to have all of the pr
 <br>
 No, I've accounted for this.<br>
 <br>
-If the prizes were based on the fraction of total money at the deadline, then yes, rich players could "burn" some of their own money to knock out lower players, thereby increasing their share of the deadline total, even though they would have less money as a result.  Worst case, the richest player could knock everyone else out and have only $1 left, but claim the entire $3000 prize.<br>
+If the prizes were based on the fraction of total money at the deadline, then yes, rich players could "burn" some of their own money to knock out lower players, thereby increasing their share of the reduced deadline total, even though they would have less in-game money themselves as a result.  Worst case, the richest player could knock everyone else out and have only $1 left, but claim the entire $3000 prize.<br>
 <br>
 To prevent this, the exchange rate is based on the highest game-wide total ever seen over the course of the contest.  Thus, the exchange rate only goes UP over the course of the contest.  This encourages players to acquire more money individually, because they are each facing the same exchange rate, and penalizes them for "burning money" to knock other players out.  Suppose the total at some point was $1,000,0000.  The exchange rate would be $333 per USD.  Suppose the richest player has $100,000, which would be worth a 300 USD prize, with 2700 USD going to other players.  Now suppose that rich player burns $90K to knock every other player out of the game.  The exchange rate remains the same, which means that lone player's remaining $10,000 would only be worth a 30 USD prize.
 <br>
@@ -243,7 +245,7 @@ I'll move further down the list of top players until I find one who has a painti
 <b>Where are the pages of fine print written by the lawyers?  Where are the official rules?</b>
 <br>
 <br>
-The official rules are this page.  When there is some doubt about the nuances of those rules, I'll make a decision according to my best judgment.  This is clearly a contest of skill, not chance, which makes it legal pretty much everywhere.  If it's not legal in your state or country, you have my sympathy.
+The official rules are this page.  When there is some doubt about the nuances of those rules, I'll make a decision according to my best judgment.  This is clearly a contest of skill, not a lottery, which makes it legal pretty much everywhere.  If it's not legal in your state or country, you have my sympathy.
 <br>
 <br>
 <br>
