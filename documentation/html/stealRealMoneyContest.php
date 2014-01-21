@@ -31,7 +31,7 @@ Here's how it works:
 <br>
 The contest will run until 5pm US PST on Monday, January 27.  At that moment in time, whatever money you have in the game will be converted into real US Dollars and paid to you.  Steal more, win more.  Have your in-game money stolen from you, and the robber will win more.<br>
 <br>
-I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided amoung all living players at the 5pm deadline based on the fraction of total game money that each player posses.  The exchange rate will fluctuate throughout the contest period, according to how much total money acccumulates in the game.  The current exchange rate is:
+I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting up a game-wide bounty of $3000 USD.  This amount will be divided among all living players at the 5pm deadline based on the fraction of total game money that each player posses.  The exchange rate will fluctuate throughout the contest period, according to how much total money accumulates in the game.  The current exchange rate is:
 <br>
 <br>
 <center>
@@ -54,7 +54,7 @@ But wait!  There's more!  The very best players can also...
 <br>
 <center><font size=6>STEAL REAL STUFF</font></center>
 <br>
-In addition to the cash prize divided amoung all players, the <b>top eight</b> houses in the game at the contest deadline will also win <b>two</b> fabulous prizes each.
+In addition to the cash prize divided among all players, the <b>top eight</b> houses in the game at the contest deadline will also win <b>two</b> fabulous prizes each.
 <br>
 <br>
 
@@ -82,7 +82,7 @@ Each of the top eight players will have their favorite, in-game painting transfo
 <br>
 <br>
 
-<font size=5>Real Securty Stuff</font>
+<font size=5>Real Security Stuff</font>
 
 <br>
 <br>
@@ -94,7 +94,7 @@ In addition to a painting, the top eight players will also receive these securit
 <br>
 <u><font size=5>First Prize:  <i>Jason Rohrer's Dog Club</i></font></u>
 <br>
-Own the club that started it all.  A heartwarming souvenier from Las Cruces, New Mexico.  (Note:  was never actually used to club a dog.)  Way safer than a gun!  Much harder to commit suicide with.  More compact than a golf club, which was actually the anti-dog tool of choice in Cruces.
+Own the club that started it all.  A heartwarming souvenir from Las Cruces, New Mexico.  (Note:  was never actually used to club a dog.)  Way safer than a gun!  Much harder to commit suicide with.  More compact than a golf club, which was actually the anti-dog tool of choice in Cruces.
 <br><br>
 <center><img src="contestImages/prizes/clubFolded.jpg" width=329 height=300 border=0> <font color =black>.</font> <img src="contestImages/prizes/clubExtended.jpg" width=225 height=300 border=0></center>
 <br>
@@ -120,8 +120,8 @@ You can also watch <a href="http://www.youtube.com/watch?v=vVw-5gHIJZ8">this vid
 <br>
 <br>
 <br>
-<u><font size=5>Sixth - Eigth Prizes:  <i>Custom Cartridge Shopping Spree</i></font></u><br>
-Ready to take life into your own hands?  Why not do it in style, the New Mexico way, at Las Cruces's very own Custom Cartridge Company?<br>
+<u><font size=5>Sixth - Eighth Prizes:  <i>Custom Cartridge Shopping Spree</i></font></u><br>
+Ready to take life into your own hands?  Why not do it in style, the New Mexico way, at Las Cruces' very own Custom Cartridge Company?<br>
 <br>
 <center><img src="newsImages/selfDefense/gunShop.jpg" width=395 height=348 border=0></center>
 <br>
@@ -201,7 +201,7 @@ Correct.  It depends on the collective behavior of the player community during t
 <b>What about "punished by rewards"?  Aren't you afraid of people playing this game just because of the prizes, instead of playing just for the sake of playing?</b>
 <br>
 <br>
-I'm a little bit worried about that.  But the prize structure here matches the spirit of the game's community pretty well, so I'm hoping that players will see it simply as another really cool thing that happened in the world of The Castle Doctrine.  The cash prizes aren't fixed, and they are uncertain, so it's not like someone can bank on them and then be terribly discouraged by not getting a huge payout.  The physical prizes are mostly just amusing soveniers from the game's mental space.  Well, except for the paintings --- those are pretty darn cool!  (I'm actually going to make nine and keep one.)  But they are so tied into the game that they are only meaningful to people who are really into the game already.<br>
+I'm a little bit worried about that.  But the prize structure here matches the spirit of the game's community pretty well, so I'm hoping that players will see it simply as another really cool thing that happened in the world of The Castle Doctrine.  The cash prizes aren't fixed, and they are uncertain, so it's not like someone can bank on them and then be terribly discouraged by not getting a huge payout.  The physical prizes are mostly just amusing souvenirs from the game's mental space.  Well, except for the paintings --- those are pretty darn cool!  (I'm actually going to make nine and keep one.)  But they are so tied into the game that they are only meaningful to people who are really into the game already.<br>
 <br>
 Also, <a href="http://chrishecker.com/No_One_Knows_About_Your_Game">no one knows about your game</a>.  My budget is small, and running this kind of contest is way cheaper and more interesting than advertising.  It matches the spirit of the game and doesn't bother people who are not already interested in the game.
 <br>
@@ -216,10 +216,10 @@ The club that I'm giving away can be easily purchased in 47 states across the co
 <br>
 <br>
 
-<b>You want me to travel all the way to New Mexico to spend a $50 gift certficate?  What's the deal?</b>
+<b>You want me to travel all the way to New Mexico to spend a $50 gift certificate?  What's the deal?</b>
 <br>
 <br>
-The certificate will have the Custom Cartridge Company's logo on it and be an interesting artifact in its own right.  I mean, it's a <i>gift certificate to a gun shop</i>.  Besides, there are many beatiful sights in New Mexico, so you will likely visit there someday.  Keep your gift certificate in a safe place until that day comes.
+The certificate will have the Custom Cartridge Company's logo on it and be an interesting artifact in its own right.  I mean, it's a <i>gift certificate to a gun shop</i>.  Besides, there are many beautiful sights in New Mexico, so you will likely visit there someday.  Keep your gift certificate in a safe place until that day comes.
 <br>
 <br>
 <br>
@@ -243,7 +243,7 @@ I'll move further down the list of top players until I find one who has a painti
 <b>Where are the pages of fine print written by the lawyers?  Where are the official rules?</b>
 <br>
 <br>
-The official rules are this page.  When there is some doubt about the nuances of those rules, I'll make a decision according to my best judgement.  This is clearly a contest of skill, not chance, which makes it legal pretty much everywhere.  If it's not legal in your state or country, you have my sympathy.
+The official rules are this page.  When there is some doubt about the nuances of those rules, I'll make a decision according to my best judgment.  This is clearly a contest of skill, not chance, which makes it legal pretty much everywhere.  If it's not legal in your state or country, you have my sympathy.
 <br>
 <br>
 <br>
