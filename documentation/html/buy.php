@@ -77,6 +77,16 @@ a massively-multiplayer game of burglary and home defense by
 <br>
 <br>
 
+<u>Steam launch coming on January 29.</u><br>
+This is the last week of the alpha discount.<br>
+Every alpha player gets a free Steam key.
+
+<br>
+<br>
+<br>
+
+
+
 <font size=5>
 "A powerful, memorable game."</font> --Alec Meer, RPS [<a href="http://www.rockpapershotgun.com/2013/03/07/castle-doctrine-preview-2/">1</a>] [<a href="http://www.rockpapershotgun.com/2013/03/08/the-castle-doctrine/">2</a>] 
 <br>
