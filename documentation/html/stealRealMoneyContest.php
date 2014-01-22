@@ -40,7 +40,7 @@ I'm taking a fraction of The Castle Doctrine's alpha-period earnings and putting
 <center> 
 
 <?php
-   include( "../../server/exchangeRate.php" );
+   include( "gameServer/exchangeRate.php" );
 ?>
 
 </td></tr></table>
@@ -107,7 +107,7 @@ A little rusty at the tip from being carried around on a bike.  Think of it as p
 <br>
 <u><font size=5>Second - Fifth Prizes:  <i>A Door Devil</i></font></u>
 <br>
-Sick of having your front door kicked in at three in the afternoon?  Our 85-year-old neighbor in Las Cruces was.  Maybe she should have installed one of these.  Worried that the feds aren't going to give you enough warning when they barge in?  If you're actually worried about that, you're probably the kind of person the feds are actually watching!  In any case, it's amazing what a few strips of metal and some long screws can do:
+Sick of having your front door kicked in at three in the afternoon?  Our 85-year-old neighbor in Las Cruces was.  Maybe she should have installed one of these.  Worried that the feds aren't going to give you enough warning when they barge in?  If you're worried about that, you're probably the kind of person the feds are actually watching!  In any case, it's amazing what a few strips of metal and some long screws can do:
 <center>
 <iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/2UxEX2HbhO8?rel=0" frameborder="0" allowfullscreen></iframe>
 <br>
@@ -195,7 +195,7 @@ No, I've accounted for this.<br>
 <br>
 If the prizes were based on the fraction of total money at the deadline, then yes, rich players could "burn" some of their own money to knock out lower players, thereby increasing their share of the reduced deadline total, even though they would have less in-game money themselves as a result.  Worst case, the richest player could knock everyone else out and have only $1 left, but claim the entire $3000 prize.<br>
 <br>
-To prevent this, the exchange rate is based on the highest game-wide total ever seen over the course of the contest.  Thus, the exchange rate only goes UP over the course of the contest.  This encourages players to acquire more money individually, because they are each facing the same exchange rate, and penalizes them for "burning money" to knock other players out.  Suppose the total at some point was $1,000,0000.  The exchange rate would be $333 per USD.  Suppose the richest player has $100,000, which would be worth a 300 USD prize, with 2700 USD going to other players.  Now suppose that rich player burns $90K to knock every other player out of the game.  The exchange rate remains the same, which means that lone player's remaining $10,000 would only be worth a 30 USD prize.
+To prevent this, the exchange rate is based on the highest game-wide total ever seen over the course of the contest.  Thus, the exchange rate only goes UP over the course of the contest.  This encourages players to acquire more money individually, because they are each facing the same exchange rate, and penalizes them for "burning money" to knock other players out.  Suppose the total at some point was $1,000,0000.  The exchange rate would be $333 game dollars per USD.  Suppose the richest player has $100,000, which would be worth a 300 USD prize, with 2700 USD going to other players.  Now suppose that rich player burns $90K to knock every other player out of the game.  The exchange rate remains the same, which means that lone player's remaining $10,000 would only be worth a 30 USD prize.
 <br>
 <br>
 <br>
@@ -208,7 +208,7 @@ Correct.  It depends on the collective behavior of the player community during t
 <br>
 <br>
 
-<b>What about "punished by rewards"?  Aren't you afraid of people playing this game just because of the prizes, instead of playing just for the sake of playing?</b>
+<b>What about "punished by rewards"?  Aren't you afraid that people will play this game just because of the prizes, instead of playing just for the sake of playing?</b>
 <br>
 <br>
 I'm a little bit worried about that.  But the prize structure here matches the spirit of the game's community pretty well, so I'm hoping that players will see it simply as another really cool thing that happened in the world of The Castle Doctrine.  The cash prizes aren't fixed, and they are uncertain, so it's not like someone can bank on them and then be terribly discouraged by not getting a huge payout.  The physical prizes are mostly just amusing souvenirs from the game's mental space.  Well, except for the paintings --- those are pretty darn cool!  (I'm actually going to make nine and keep one.)  But they are so tied into the game that they are only meaningful to people who are really into the game already.<br>

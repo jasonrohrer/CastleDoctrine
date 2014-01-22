@@ -5,7 +5,7 @@
 include( "settings.php" );
 
 
-$startDate = "2014-01-20";
+$startDate = "2014-01-22";
 
 
 $endDate = "2014-01-28";
