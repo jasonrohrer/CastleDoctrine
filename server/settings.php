@@ -473,7 +473,7 @@ $vaultBountyTimeout = "0 1:00:0.000";
 
 
 // what's the maximum time a robber can stay in a house?
-$maxRobberyTime = "0 0:10:0.000";
+$maxRobberyTime = "0 0:20:0.000";
 
 
 
