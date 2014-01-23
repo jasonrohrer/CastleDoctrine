@@ -3,6 +3,8 @@ Version 30  Live Server Fixes
 --Added stat tracking max total house value seen in a given day (for computing
   contest exchange rate).
 
+--Added full robbery history on each player's detail page in admin view.
+
 
 
 

@@ -8744,6 +8744,44 @@ function cd_showDetail() {
     foreach( $names as $name ) {
         echo "$name<br>";
         }
+
+    $query = "SELECT robber_name, victim_name, value_estimate, ".
+        "rob_time, robber_died, scouting_count ".
+        "FROM $tableNamePrefix"."robbery_logs ".
+        "WHERE user_id = '$user_id';";
+
+    $result = cd_queryDatabase( $query );
+
+    $numRows = mysql_numrows( $result );
+    echo "<br><br>Robbery history:<br>";
+
+    echo "<table border=1>";
+    echo "<tr><td><b>Time</b></td>";
+    echo "<td><b>Robber Name</b></td>";
+    echo "<td><b>Victim Name</b></td>";
+    echo "<td><b>Died?</b></td>";
+    echo "<td><b>Scouted</b></td>";
+    echo "<td><b>Value Estimate</b></td></tr>";
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $rob_time = mysql_result( $result, $i, "rob_time" );
+        $robber_died = mysql_result( $result, $i, "robber_died" );
+        $scouting_counts = mysql_result( $result, $i, "scouting_count" );
+
+        $robber_name = mysql_result( $result, $i, "robber_name" );
+        $victim_name = mysql_result( $result, $i, "victim_name" );
+        $value_estimate = mysql_result( $result, $i, "value_estimate" );
+
+        echo "<tr><td>$rob_time</td>";
+        echo "<td>$robber_name</td>";
+        echo "<td>$victim_name</td>";
+        echo "<td>$robber_died</td>";
+        echo "<td>$scouting_counts</td>";
+        echo "<td>$value_estimate</td></tr>";
+        }
+    echo "</table>";
+    
+    
     
     }
 
