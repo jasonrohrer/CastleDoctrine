@@ -9357,14 +9357,14 @@ function cd_fatalError( $message ) {
     
     echo( $logMessage );
 
-    cd_log( $logMessage );
-
     global $emailAdminOnFatalError, $adminEmail;
 
     if( $emailAdminOnFatalError ) {
         cd_mail( $adminEmail, "Castle Doctrine fatal error",
                  $logMessage );
         }
+    
+    cd_log( $logMessage );
     
     die();
     }
@@ -9450,10 +9450,6 @@ function cd_noticeAndWarningHandler( $errno, $errstr, $errfile, $errline ) {
 
     echo( $logMessage . "\n" );
 
-
-    cd_log( $logMessage );
-
-
     // treat notices as reportable failures, because they cause protocol
     // failures for client
     global $emailAdminOnFatalError, $adminEmail;
@@ -9465,6 +9461,10 @@ function cd_noticeAndWarningHandler( $errno, $errstr, $errfile, $errline ) {
                  $logMessage );
         
         }
+
+    
+
+    cd_log( $logMessage );
     }
 
 
