@@ -54,7 +54,7 @@ echo "<br><br>At the end of the contest:<br>";
 
 echo "<TABLE BORDER=1 cellpadding=5>";
 echo
-"<tr><td><b>If your house is worth:</b></td><td><b>You will win:</b></td>";
+"<tr><td><b>If your cash + tools are worth:</b></td><td><b>You will win:</b></td>";
 
 
 foreach( $sampleHouseValues as $sample ) {
