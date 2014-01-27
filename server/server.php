@@ -8773,11 +8773,11 @@ function cd_showDetail() {
         echo "$name<br>";
         }
 
-    $query = "SELECT robber_name, victim_name, house_user_id, ".
+    $query = "SELECT robber_name, victim_name, user_id, house_user_id, ".
         "value_estimate, ".
         "rob_time, robber_died, scouting_count ".
         "FROM $tableNamePrefix"."robbery_logs ".
-        "WHERE user_id = '$user_id';";
+        "WHERE user_id = '$user_id' OR house_user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
 
@@ -8798,14 +8798,29 @@ function cd_showDetail() {
         $scouting_counts = mysql_result( $result, $i, "scouting_count" );
 
         $robber_name = mysql_result( $result, $i, "robber_name" );
+        $robber_user_id = mysql_result( $result, $i, "user_id" );
         $victim_name = mysql_result( $result, $i, "victim_name" );
         $house_user_id = mysql_result( $result, $i, "house_user_id" );
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
 
         echo "<tr><td>$rob_time</td>";
-        echo "<td>$robber_name</td>";
-        echo "<td><a href=\"server.php?action=show_detail" .
-            "&user_id=$house_user_id\">$victim_name</a></td>";
+
+        if( $robber_user_id == $user_id ) {
+            echo "<td>$robber_name</td>";
+            }
+        else {
+            echo "<td><a href=\"server.php?action=show_detail" .
+                "&user_id=$robber_user_id\">$robber_name</a></td>";
+            }
+
+        if( $house_user_id == $user_id ) {
+            echo "<td>$victim_name</td>";
+            }
+        else {
+            echo "<td><a href=\"server.php?action=show_detail" .
+                "&user_id=$house_user_id\">$victim_name</a></td>";
+            }
+        
         echo "<td>$robber_died</td>";
         echo "<td>$scouting_counts</td>";
         echo "<td>$value_estimate</td></tr>";
