@@ -9,6 +9,9 @@ Version 30  Live Server Fixes
   database (for cases where the error was caused by NOT being able to connect
   to the database in the first place).
 
+--Support for monitoring concurrent MySQL connections and contacting admin if a
+  threshold is surpassed.
+
 
 
 

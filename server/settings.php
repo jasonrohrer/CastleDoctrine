@@ -148,6 +148,13 @@ $curlPath = "/usr/bin/curl";
 
 
 
+// how many simultaneous mysql connections can we see before we
+// start worrying and contacting the administator?
+$mysqlConnectionCountThreshold = 50;
+
+
+
+
 // mail settings
 
 $siteEmailAddress = "Jason Rohrer <jcr13@cornell.edu>";
