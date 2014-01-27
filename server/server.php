@@ -183,6 +183,9 @@ else if( $action == "show_log" ) {
 else if( $action == "clear_log" ) {
     cd_clearLog();
     }
+else if( $action == "test_admin_call" ) {
+    cd_testAdminCall();
+    }
 else if( $action == "check_user" ) {
     cd_checkUser();
     }
@@ -1479,6 +1482,21 @@ function cd_clearLog() {
     else {
         echo "DELETE operation failed?";
         }
+    }
+
+
+
+function cd_testAdminCall() {
+    cd_checkPassword( "test_admin_call" );
+
+    echo "[<a href=\"server.php?action=show_data" .
+         "\">Main</a>]<br><br><br>";
+
+    echo "Calling admin...<br><br>";
+    
+    cd_callAdmin(
+        "This is a test of the administrator emergency call system.  ".
+        "If you can hear this, it's working." );
     }
 
 
@@ -8140,6 +8158,13 @@ function cd_showData() {
     echo "<a href=\"server.php?action=show_log\">".
         "Show log</a>";
     echo "<hr>";
+    global $callAdminInEmergency;
+    if( $callAdminInEmergency ) {    
+        echo "<a href=\"server.php?action=test_admin_call\">".
+            "Test phone call to admin</a>";
+        echo "<hr>";
+        }
+    
     echo "Generated for $remoteIP\n";
     
     }
@@ -9949,6 +9974,53 @@ function cd_mail( $inEmail,
     }
 
 
+
+
+
+// makes a Twilio call to the admin with $inTextMessage as text-to-speech
+function cd_callAdmin( $inTextMessage ) {
+
+    
+    global $twilioFromNumber, $twilioToNumber, $twilioAcountID,
+        $twilioAuthToken;
+
+    $fromParam = urlencode( $twilioFromNumber );
+    $toParam = urlencode( $twilioToNumber );
+
+    $encodedMessage = urlencode( $inTextMessage );
+
+
+    // repeat 4 times
+    $messageCopies =
+        "Message%5B0%5D=$encodedMessage".
+        "&".
+        "Message%5B1%5D=$encodedMessage".
+        "&".
+        "Message%5B2%5D=$encodedMessage".
+        "&".
+        "Message%5B3%5D=$encodedMessage";
+    
+
+    $twimletURL = "http://twimlets.com/message?$messageCopies";
+    
+    $urlParam = urlencode( $twimletURL );
+    
+    
+    global $curlPath;
+
+    $curlCallString =
+    "$curlPath -X POST ".
+    "'https://api.twilio.com/2010-04-01/Accounts/$twilioAcountID/Calls.json' ".
+    "-d 'To=$toParam'  ".
+    "-d 'From=$fromParam' ".
+    "-d ".
+    "'Url=$urlParam' ".
+    "-u $twilioAcountID:$twilioAuthToken";
+
+    exec( $curlCallString );
+
+    return;
+    }
 
 
 
