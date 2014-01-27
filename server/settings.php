@@ -132,7 +132,7 @@ $adminEmail = "jason@server.com";
 
 
 // enable to call the admin in an emergency using the Twilio phone API
-$callAdminInEmergency = 1;
+$callAdminInEmergency = 0;
 
 // must be a number registered with Twilio
 $twilioFromNumber = "+15307565555";
