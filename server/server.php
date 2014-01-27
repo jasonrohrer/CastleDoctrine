@@ -8773,7 +8773,8 @@ function cd_showDetail() {
         echo "$name<br>";
         }
 
-    $query = "SELECT robber_name, victim_name, value_estimate, ".
+    $query = "SELECT robber_name, victim_name, house_user_id, ".
+        "value_estimate, ".
         "rob_time, robber_died, scouting_count ".
         "FROM $tableNamePrefix"."robbery_logs ".
         "WHERE user_id = '$user_id';";
@@ -8798,11 +8799,13 @@ function cd_showDetail() {
 
         $robber_name = mysql_result( $result, $i, "robber_name" );
         $victim_name = mysql_result( $result, $i, "victim_name" );
+        $house_user_id = mysql_result( $result, $i, "house_user_id" );
         $value_estimate = mysql_result( $result, $i, "value_estimate" );
 
         echo "<tr><td>$rob_time</td>";
         echo "<td>$robber_name</td>";
-        echo "<td>$victim_name</td>";
+        echo "<td><a href=\"server.php?action=show_detail" .
+            "&user_id=$house_user_id\">$victim_name</a></td>";
         echo "<td>$robber_died</td>";
         echo "<td>$scouting_counts</td>";
         echo "<td>$value_estimate</td></tr>";
