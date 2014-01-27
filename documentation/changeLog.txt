@@ -12,6 +12,14 @@ Version 30  Live Server Fixes
 --Support for monitoring concurrent MySQL connections and contacting admin if a
   threshold is surpassed.
 
+--Made server/client exchange more robust against MySQL connection overflow.
+  The server now sleeps for 30 seconds after failing to connect due to too many
+  MySQL connections before returning an error to the client, allowing the
+  client to gracefully timeout and retry the connection later without choking
+  on the error message.  The server has a limit of 100 simultaneous MySQL
+  connections, but hitting that limit is no longer fatal to players (they just
+  see more client retries until the surge passes).
+
 
 
 

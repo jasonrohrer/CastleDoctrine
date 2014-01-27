@@ -46,7 +46,7 @@ header('Pragma: no-cache');
 
 
 // enable verbose error reporting to detect uninitialized variables
-error_reporting( E_ALL );
+//error_reporting( E_ALL );
 
 
 
@@ -9091,9 +9091,32 @@ function cd_connectToDatabase() {
     
     
     $cd_mysqlLink =
-        mysql_connect( $databaseServer, $databaseUsername, $databasePassword )
-        or cd_operationError( "Could not connect to database server: " .
-                              mysql_error() );
+        mysql_connect( $databaseServer, $databaseUsername, $databasePassword );
+
+
+    if( ! $cd_mysqlLink && mysql_errno() == 1040 ) {
+        // too many mysql connections!
+        
+        // sleep before displaying an error message
+        // this will give the client a chance to give up on this
+        // connection and try reconnecting again
+        // (without our error message screwing it up)
+
+        // 30 seconds should be long enough.
+        sleep( 30 );
+
+        // note that this is better than retrying the mysql connection
+        // here after sleeping, because the client will give up on
+        // us by that time anyway, and the connection that we make
+        // after sleeping will consume resources but be wasted.
+        }
+    
+    if( !$cd_mysqlLink ) {
+        
+        cd_operationError( "Could not connect to database server: " .
+                           mysql_error() );
+        }
+    
     
     mysql_select_db( $databaseName )
         or cd_operationError( "Could not select $databaseName database: " .
