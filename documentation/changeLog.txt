@@ -20,6 +20,9 @@ Version 30  Live Server Fixes
   connections, but hitting that limit is no longer fatal to players (they just
   see more client retries until the surge passes).
 
+--Support for changing a user's email in the admin interface.
+
+
 
 
 

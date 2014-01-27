@@ -8743,7 +8743,6 @@ function cd_showDetail() {
 
     echo "User ID: $user_id<br>\n";
     echo "Ticket: $ticket_id<br>\n";
-    echo "Email: $email<br>\n";
 
     $blockedChecked = "";
     if( $blocked ) {
@@ -8757,6 +8756,8 @@ function cd_showDetail() {
             <FORM ACTION="server.php" METHOD="post">
     <INPUT TYPE="hidden" NAME="action" VALUE="update_user">
     <INPUT TYPE="hidden" NAME="user_id" VALUE="<?php echo $user_id;?>">
+    Email: <INPUT TYPE="text" MAXLENGTH=40 SIZE=30 NAME="email"
+            VALUE="<?php echo $email;?>"><br>            
     Blocked <INPUT TYPE="checkbox" NAME="blocked" VALUE=1
                  <?php echo $blockedChecked;?> ><br>
     Admin <INPUT TYPE="checkbox" NAME="admin" VALUE=1
@@ -8826,7 +8827,7 @@ function cd_blockUserID() {
     $blocked = cd_requestFilter( "blocked", "/[01]/" );
 
     // don't touch admin
-    if( cd_updateUser_internal( $user_id, $blocked, -1 ) ) {
+    if( cd_updateUser_internal( $user_id, $blocked, -1, -1 ) ) {
         cd_showData();
         }
     }
@@ -8842,16 +8843,17 @@ function cd_updateUser() {
 
     $blocked = cd_requestFilter( "blocked", "/[1]/", "0" );
     $admin = cd_requestFilter( "admin", "/[1]/", "0" );
+    $email = cd_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
 
-    if( cd_updateUser_internal( $user_id, $blocked, $admin ) ) {
+    if( cd_updateUser_internal( $user_id, $blocked, $admin, $email ) ) {
         cd_showDetail();
         }
     }
 
 
-// set either to -1 to leave unchanged
+// set any to -1 to leave unchanged
 // returns 1 on success
-function cd_updateUser_internal( $user_id, $blocked, $admin ) {
+function cd_updateUser_internal( $user_id, $blocked, $admin, $email ) {
     
     global $tableNamePrefix;
         
@@ -8860,7 +8862,8 @@ function cd_updateUser_internal( $user_id, $blocked, $admin ) {
     
 
     
-    $query = "SELECT user_id, blocked, admin FROM $tableNamePrefix"."users ".
+    $query = "SELECT user_id, blocked, admin, email ".
+        "FROM $tableNamePrefix"."users ".
         "WHERE user_id = '$user_id';";
     $result = cd_queryDatabase( $query );
 
@@ -8869,6 +8872,7 @@ function cd_updateUser_internal( $user_id, $blocked, $admin ) {
     if( $numRows == 1 ) {
         $old_blocked = mysql_result( $result, 0, "blocked" );
         $old_admin = mysql_result( $result, 0, "admin" );
+        $old_email = mysql_result( $result, 0, "email" );
 
         if( $admin == -1 ) {
             $admin = $old_admin;
@@ -8876,10 +8880,13 @@ function cd_updateUser_internal( $user_id, $blocked, $admin ) {
         if( $blocked == -1 ) {
             $blocked = $old_blocked;
             }
+        if( $email == -1 ) {
+            $email = $old_email;
+            }
         
         
         $query = "UPDATE $tableNamePrefix"."users SET " .
-            "blocked = '$blocked', admin = '$admin' " .
+            "blocked = '$blocked', admin = '$admin', email = '$email' " .
             "WHERE user_id = '$user_id';";
         
         $result = cd_queryDatabase( $query );
