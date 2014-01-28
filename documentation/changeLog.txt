@@ -22,6 +22,8 @@ Version 30  Live Server Fixes
 
 --Support for changing a user's email in the admin interface.
 
+--Added remote server monitoring.
+
 
 
 
