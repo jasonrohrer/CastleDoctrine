@@ -517,6 +517,15 @@ $shutdownMessage =
 
 
 
+// after an unplanned outage, enable this before restarting server
+// to give players a grace period from their death-from-timeouts.
+//
+// WARNING:  do not leave this on long term, because it blocks all
+// flush operations, which are necessary to prevent old, unused data
+// from building up in the database.
+$gracePeriod = 0;
+
+
 
 // if server is running in perma-permadeath mode (limit on number of fresh
 // starts per player), how many lives each gets.

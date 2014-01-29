@@ -1537,7 +1537,13 @@ function cd_testAdminCall() {
 // check if we should flush stale checkouts from the database
 // do this once every 2 minutes
 function cd_checkForFlush() {
-    global $tableNamePrefix, $chillTimeout, $forcedIgnoreTimeout;
+    global $tableNamePrefix, $chillTimeout, $forcedIgnoreTimeout, $gracePeriod;
+
+
+    if( $gracePeriod ) {
+        // skip flushing entirely during grace period
+        }
+    
 
     $tableName = "$tableNamePrefix"."server_globals";
     
@@ -4682,7 +4688,8 @@ function cd_pingHouse() {
             $result = cd_queryDatabase( $query );
             $secondsLeft = mysql_result( $result, 0, 0 );
 
-            if( $secondsLeft <= 0 ) {
+            global $gracePeriod;
+            if( $secondsLeft <= 0 && ! $gracePeriod ) {
                 echo "OUT_OF_TIME";
                 return;
                 }
@@ -5274,7 +5281,9 @@ function cd_endRobHouse() {
     $result = cd_queryDatabase( $query );
     $secondsLeft = mysql_result( $result, 0, 0 );
 
-    if( $secondsLeft <= 0 ) {
+    global $gracePeriod;
+    
+    if( $secondsLeft <= 0 && ! $gracePeriod ) {
         cd_processStaleCheckouts( $user_id );
         echo "OUT_OF_TIME";
         return;

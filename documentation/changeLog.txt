@@ -12,6 +12,10 @@ Version 31
   downtime will no longer result in your death, assuming that the outtage is
   short enough that you don't get timed out server-side.
 
+--Added a grace-period switch on the server that can be enabled after unplanned
+  outtages to allow players delayed by the outtage to check in stale robberies
+  and self tests without dying.
+
 
 
 
