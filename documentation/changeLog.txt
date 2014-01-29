@@ -16,7 +16,11 @@ Version 31   2014-January-28
   outtages to allow players delayed by the outtage to check in stale robberies
   and self tests without dying.
 
---Fixed eyedropper tool getting stuck on when ALT-tabbing.
+--Fixed eyedropper tool getting stuck on when ALT-tabbing.  On Windows, this
+  required an update of the SDL DLL from 1.2.13 to 1.2.15 (note that the DLL
+  itself seems to have the version number 1.2.14, but I did download the
+  1.2.15 bundle).
+
 
 
 
