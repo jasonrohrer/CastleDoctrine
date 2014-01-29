@@ -7,6 +7,11 @@ Version 31
   client displays a dismissable message when it receives a shutdown warning
   from the server.
 
+--Client now retries eternally until it hears back from server (instead of
+  stopping after a hard connection error occurs).  A network outtage or server
+  downtime will no longer result in your death, assuming that the outtage is
+  short enough that you don't get timed out server-side.
+
 
 
 

@@ -135,6 +135,15 @@ static void checkForRequestRetry( SerialWebRecord *r ) {
 
     if( timePassed > webRetrySeconds ) {
         // start a fresh request
+        
+        // note whether old one failed first, though
+        // (we may have been ignoring the request's error state until
+        //  we reached this retry)
+        int stepResult = stepWebRequest( r->activeHandle );
+        if( stepResult == -1 ) {
+            printf( "\nWeb request %d failed\n", r->activeHandle );
+            }
+
 
         int oldActiveHandle = r->activeHandle;
         
@@ -311,6 +320,14 @@ int stepWebRequestSerial( int inHandle ) {
             // found our request, just step it and return
             int stepResult = stepWebRequest( r->activeHandle );
 
+            if( stepResult == -1 ) {
+                // treat hard web errors as passing hiccups
+                // act as if we're still waiting for result, and
+                // let normal retry timeout pass before
+                // retrying
+                stepResult = 0;
+                }
+
             if( stepResult != 0 ) {
                 // not still processing (done or hit error)
                 r->done = true;
@@ -355,6 +372,15 @@ int stepWebRequestSerial( int inHandle ) {
                     }
 
                 int stepResult = stepWebRequest( r->activeHandle );
+
+                if( stepResult == -1 ) {
+                    // treat hard web errors as passing hiccups
+                    // act as if we're still waiting for result, and
+                    // let normal retry timeout pass before
+                    // retrying
+                    stepResult = 0;
+                    }
+
 
                 if( stepResult != 0 ) {
                     // not still processing (done or hit error)
