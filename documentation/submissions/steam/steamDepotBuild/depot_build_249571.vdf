@@ -10,7 +10,7 @@
 	// include all files recursivley
   "FileMapping"
   {
-    "LocalPath" "windows\CastleDoctrine_v30\*"
+    "LocalPath" "windows\CastleDoctrine_v31\*"
     "DepotPath" "."
     "recursive" "1"
   }
