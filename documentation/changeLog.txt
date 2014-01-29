@@ -24,6 +24,7 @@ Version 30  Live Server Fixes
 
 --Added remote server monitoring.
 
+--Patched various security holes in server PHP code (thanks Chris Cowan).
 
 
 
