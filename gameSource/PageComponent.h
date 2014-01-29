@@ -50,6 +50,9 @@ class PageComponent : public GUIComponent {
 
         // set to true to ignore events and NOT
         // pass them on to sub-components
+        // still handles and passes UP events (so that
+        // down states that were invoked before the ignore started
+        // do not get stuck)
         void setIgnoreEvents( char inIgnoreEvents );
         
 

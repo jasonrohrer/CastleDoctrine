@@ -259,6 +259,12 @@ extern double frameRateFactor;
 
 
 void GamePage::base_step() {
+    if( sShutdownPendingWarning ) {
+        // skip stepping stuff so that game doesn't advance
+        // while the user's view is obscured
+        return;
+        }
+    
     PageComponent::base_step();
 
 

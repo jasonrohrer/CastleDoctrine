@@ -170,10 +170,6 @@ void PageComponent::base_pointerDrag( float inX, float inY ){
 
 
 void PageComponent::base_pointerUp( float inX, float inY ){
-    if( mIgnoreEvents ) {
-        return;
-        }
-    
     inX -= mX;
     inY -= mY;
     
@@ -209,10 +205,6 @@ void PageComponent::base_keyDown( unsigned char inASCII ){
 
         
 void PageComponent::base_keyUp( unsigned char inASCII ){
-    if( mIgnoreEvents ) {
-        return;
-        }
-    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     
@@ -245,10 +237,6 @@ void PageComponent::base_specialKeyDown( int inKeyCode ){
 
 
 void PageComponent::base_specialKeyUp( int inKeyCode ){
-    if( mIgnoreEvents ) {
-        return;
-        }
-    
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
     
