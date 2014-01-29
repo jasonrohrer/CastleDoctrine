@@ -8116,6 +8116,8 @@ function cd_generateHeader() {
 
     $userCount = cd_countUsers();
 
+    $houseCount = cd_countRobbableHouses();
+
     $perUserString = "?";
     if( $userCount > 0 ) {
         $perUserString = cd_formatBytes( $bytesUsed / $userCount );
@@ -8123,14 +8125,16 @@ function cd_generateHeader() {
     
     
     echo "<table width='100%' border=0><tr>".
-        "<td>[<a href=\"server.php?action=show_data" .
+        "<td valign=top width=25%>[<a href=\"server.php?action=show_data" .
             "\">Main</a>] ".
             "[<a href=\"server.php?action=show_prices" .
             "\">Prices</a>] ".
             "[<a href=\"server.php?action=show_stats" .
             "\">Stats</a>]</td>".
-        "<td align=center>$sizeString ($perUserString per user)</td>".
-        "<td align=right>[<a href=\"server.php?action=logout" .
+        "<td valign=top align=center width=50%>".
+        "$sizeString ($perUserString per user)<br>".
+        "$houseCount robbable houses</td>".
+        "<td valign=top align=right width=25%>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
     }
@@ -9888,6 +9892,20 @@ function cd_countUsers() {
 
     $query = "SELECT COUNT(*) ".
         "FROM $tableNamePrefix"."houses;";
+    $result = cd_queryDatabase( $query );
+
+    return mysql_result( $result, 0, 0 );
+    }
+
+
+
+function cd_countRobbableHouses() {
+    global $tableNamePrefix;
+
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE ( edit_count > 0 OR value_estimate > 0 ) ".
+        "AND blocked = 0;";
     $result = cd_queryDatabase( $query );
 
     return mysql_result( $result, 0, 0 );
