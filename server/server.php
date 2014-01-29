@@ -9904,7 +9904,8 @@ function cd_countRobbableHouses() {
 
     $query = "SELECT COUNT(*) ".
         "FROM $tableNamePrefix"."houses ".
-        "WHERE ( edit_count > 0 OR value_estimate > 0 ) ".
+        "WHERE ( edit_count > 0 OR ".
+        "        ( edit_count != 0 AND value_estimate > 0 ) )".
         "AND blocked = 0;";
     $result = cd_queryDatabase( $query );
 
