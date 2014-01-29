@@ -34,13 +34,13 @@ function showPayLinks( $inSimple ) {
       <li>Early access alpha testing
       <li>Lifetime server account
       <li>All future updates
-      <li>Free Steam key at launch
+      <li>Free Steam key
       <li>Tech support included
       </ul>
 </td></tr></table>
 
-      <font size=5>Available now for $8</font><br>
-      <font size=4 color=#ff0000>(50% off final price during alpha)</font><br><br>
+      <font size=5>Available now for $12</font><br>
+      <font size=4 color=#ff0000>(25% off final price during launch week)</font><br><br>
       
       <a href="https://sites.fastspring.com/jasonrohrer/instant/thecastledoctrine?referrer=<?php echo $referrer;?>">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
@@ -77,6 +77,7 @@ a massively-multiplayer game of burglary and home defense by
 <br>
 <br>
 
+<!--
 <u>Steam launch coming on January 29.</u><br>
 This is the last week of the alpha discount.<br>
 Every alpha player gets a free Steam key.
@@ -84,7 +85,7 @@ Every alpha player gets a free Steam key.
 <br>
 <br>
 <br>
-
+-->
 
 
 <font size=5>
@@ -148,7 +149,7 @@ Immediately after your payment is processed, you will receive an email with an a
 </ul>
 </td></tr></table>
 </center>
-The price also includes downloads of all future updates, a free Steam key at launch, and a lifetime account on the main game server that I am running.<br>
+The price also includes downloads of all future updates, a free Steam key, and a lifetime account on the main game server that I am running.<br>
 <br>
 The source bundle includes the server software, allowing you to <b>set up and run your own server</b> (a web server with PHP/MySQL is required).<br>
 <br>
