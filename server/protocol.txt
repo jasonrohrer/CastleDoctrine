@@ -174,8 +174,18 @@ server.php?action=start_self_test&user_id=[id number]
                                  &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
+
 or
+
 FAILED  (in the case of a house that has gone stale)
+
+or
+
+OK
+SERVER_GOING_DOWN
+(in the case that test can start okay, but the server is trying to shutdown)
+
+
 
 Note:
 Tells server that house owner has started a self test.
@@ -192,8 +202,18 @@ server.php?action=end_self_test&user_id=[id number]
                                &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
+
 or
+
 FAILED  (in the case of a house that has gone stale)
+
+or
+
+OK
+SERVER_GOING_DOWN
+(in the case that test can end okay, but the server is trying to shutdown)
+
+
 
 Note:
 Tells server that house owner has left a self test (Leave action) without dying
@@ -270,10 +290,21 @@ server.php?action=ping_house&user_id=[id number]
                             &ticket_hmac=[hmac-sha1, hex-encoded]
 Returns:
 OK
+
 or
+
 FAILED  (in the case of a house that has gone stale and can't be pinged)
+
 or
+
 OUT_OF_TIME (in the case that the robbery time limit was exceeded)
+
+or
+
+OK
+SERVER_GOING_DOWN
+(in the case that a ping is okay, but the server is trying to shutdown)
+
 
 Note:
 Proves that house is still being actively edited or robbed, keeping the

@@ -53,6 +53,7 @@ static SimpleVector<SerialWebRecord> serialRecords;
 static char serverShutdown = false;
 static char playerPermadead = false;
 
+extern char *shutdownMessage;
 
 
 
@@ -103,6 +104,21 @@ void checkForServerShutdown( SerialWebRecord *inR ) {
         
         if( strstr( result, "SHUTDOWN" ) != NULL ) {
             serverShutdown = true;
+            
+            int numParts;
+            char **parts = split( result, "\n", &numParts );
+            
+            if( numParts == 2 ) {
+                
+                if( shutdownMessage != NULL ) {
+                    delete [] shutdownMessage;
+                    }
+                shutdownMessage = stringDuplicate( parts[1] );
+                }
+            for( int i=0; i<numParts; i++ ) {
+                delete [] parts[i];
+                }
+            delete [] parts;
             }
 
         if( strstr( result, "PERMADEAD" ) != NULL ) {

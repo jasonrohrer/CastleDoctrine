@@ -1,3 +1,15 @@
+Version 31
+
+--Added a custom reason-for-shutdown message sent by the server that the client
+  displays.
+
+--Added pending shutdown warnings to the ping and self-test protocols.  The
+  client displays a dismissable message when it receives a shutdown warning
+  from the server.
+
+
+
+
 Version 30  Live Server Fixes
 
 --Added stat tracking max total house value seen in a given day (for computing

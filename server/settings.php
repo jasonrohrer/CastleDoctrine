@@ -508,6 +508,13 @@ $maxRobberyTime = "0 0:20:0.000";
 // maintenance, etc.
 
 $shutdownMode = 0;
+// message to send to client explaining shutdown.
+/* Separate lines with ## */ 
+$shutdownMessage =
+"The server is going to be rebooted to add a##".
+"third CPU core. Should be back online soon.##".
+"--Jason";
+
 
 
 

@@ -26,6 +26,7 @@ doublePair GamePage::sResponseWarningPosition = { 0, 0 };
 double GamePage::sWaitingFade = 0;
 char GamePage::sWaiting = false;
 
+char GamePage::sShutdownPendingWarning = false;
 
 
 extern int currentActiveSerialWebRequest;
@@ -152,7 +153,19 @@ void GamePage::setTipPosition( char inTop ) {
 
 void GamePage::base_draw( doublePair inViewCenter, 
                           double inViewSize ){
-    
+
+    if( sShutdownPendingWarning ) {
+        // skip drawing current page and draw warning instead
+
+        doublePair labelPos = { 0, 0 };
+        
+        drawMessage( "shutdownPendingWarning", labelPos );
+        
+        return;
+        }
+
+
+
     PageComponent::base_draw( inViewCenter, inViewSize );
     
 
@@ -303,6 +316,24 @@ void GamePage::base_step() {
         sWaitingSpriteDirection = 1;
         }
         
+    }
+
+
+
+void GamePage::showShutdownPendingWarning() {
+    sShutdownPendingWarning = true;
+    setIgnoreEvents( true );
+    }
+
+
+
+void GamePage::base_keyDown( unsigned char inASCII ) {
+    PageComponent::base_keyDown( inASCII );
+    
+    if( sShutdownPendingWarning && inASCII == ' ' ) {
+        sShutdownPendingWarning = false;
+        setIgnoreEvents( false );
+        }
     }
 
 

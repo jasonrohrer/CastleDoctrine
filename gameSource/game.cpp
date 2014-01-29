@@ -1,5 +1,11 @@
 int versionNumber = 30;
 
+// retain an older version number here if server is compatible
+// with older client versions.
+// Change this number (and number on server) if server has changed
+// in a way that breaks old clients.
+int ticketHashVersionNumber = 30;
+
 
 
 #include <stdio.h>
@@ -193,6 +199,8 @@ Font *mainFontFixed;
 Font *numbersFontFixed;
 
 Font *tinyFont;
+
+char *shutdownMessage = NULL;
 
 
 char *reflectorURL = NULL;
@@ -593,6 +601,11 @@ void freeFrameDrawer() {
     
     freeTools();
     freeGalleryObjects();
+
+    if( shutdownMessage != NULL ) {
+        delete [] shutdownMessage;
+        shutdownMessage = NULL;
+        }
 
     if( serverURL != NULL ) {
         delete [] serverURL;
@@ -1038,6 +1051,7 @@ void drawFrame( char inUpdate ) {
     if( getServerShutdown() ) {
         currentGamePage = finalMessagePage;
         finalMessagePage->setMessageKey( "serverShutdownMessage" );
+        finalMessagePage->setSubMessage( shutdownMessage );
         
         currentGamePage->base_makeActive( true );
         }

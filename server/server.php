@@ -2,8 +2,19 @@
 
 
 
+// server will tell clients to upgrade to this version
 global $cd_version;
 $cd_version = "30";
+
+
+// leave an older version here IF older clients can also connect safely
+// (newer clients must use this old version number in their ticket hash
+//  too).
+// NOTE that if old clients are incompatible, both numbers should be updated.
+global $cd_ticketHashVersion;
+$cd_ticketHashVersion = "30";
+
+
 
 
 global $cd_numBackpackSlots;
@@ -187,6 +198,8 @@ if( $shutdownMode &&
       $action == "get_self_test_log" ) ) {
 
     echo "SHUTDOWN";
+    global $shutdownMessage;
+    echo "\n$shutdownMessage";
     }
 else if( $action == "version" ) {
     global $cd_version;
@@ -4677,6 +4690,11 @@ function cd_pingHouse() {
         
         
         echo "OK";
+
+        global $shutdownMode;
+        if( $shutdownMode ) {
+            echo "\nSERVER_GOING_DOWN";
+            }
         }
     else {
         echo "FAILED";
@@ -4714,6 +4732,11 @@ function cd_startSelfTest() {
     
     if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         echo "OK";
+        
+        global $shutdownMode;
+        if( $shutdownMode ) {
+            echo "\nSERVER_GOING_DOWN";
+            }
         }
     else {
         echo "FAILED";
@@ -4751,6 +4774,11 @@ function cd_endSelfTest() {
     
     if( cd_getMySQLRowsMatchedByUpdate() == 1 ) {
         echo "OK";
+        
+        global $shutdownMode;
+        if( $shutdownMode ) {
+            echo "\nSERVER_GOING_DOWN";
+            }
         }
     else {
         echo "FAILED";
@@ -7237,11 +7265,11 @@ function cd_verifyTransaction() {
     $ticket_id = $row[ "ticket_id" ];
 
 
-    global $sharedClientSecret, $cd_version;
+    global $sharedClientSecret, $cd_ticketHashVersion;
     
     $correct_ticket_hmac = cd_hmac_sha1( $ticket_id,
                                          "$sequence_number" .
-                                         "$cd_version" .
+                                         "$cd_ticketHashVersion" .
                                          $sharedClientSecret );
 
 

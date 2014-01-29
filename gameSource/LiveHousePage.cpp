@@ -124,6 +124,11 @@ void LiveHousePage::step() {
                             mOutOfTime = true;
                             }
                         }
+                    else if( strstr( response, 
+                                     "SERVER_GOING_DOWN" ) != NULL ) {
+                        showShutdownPendingWarning();
+                        }
+                    
 
                     delete [] response;
                     }

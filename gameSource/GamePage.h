@@ -53,6 +53,11 @@ class GamePage : public PageComponent {
         virtual void base_step();
 
         
+        // override to catch keypress to dismiss shutdown warning
+        // overlay
+        virtual void base_keyDown( unsigned char inASCII );
+
+        
     protected:
         
 
@@ -104,6 +109,13 @@ class GamePage : public PageComponent {
         // override this from PageComponent to show waiting status
         virtual void setWaiting( char inWaiting );
         
+
+
+        // shows an overlay message warning the user that
+        // a server shutdown is pending
+        virtual void showShutdownPendingWarning();
+        
+
         GamePage();
         
 
@@ -135,6 +147,8 @@ class GamePage : public PageComponent {
         
         static double sWaitingFade;
         static char sWaiting;
+
+        static char sShutdownPendingWarning;
     };
 
 

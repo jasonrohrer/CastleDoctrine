@@ -47,6 +47,10 @@ class PageComponent : public GUIComponent {
         void setPosition( double inX, double inY );
 
         doublePair getPosition();
+
+        // set to true to ignore events and NOT
+        // pass them on to sub-components
+        void setIgnoreEvents( char inIgnoreEvents );
         
 
         void base_pointerMove( float inX, float inY );
@@ -57,7 +61,7 @@ class PageComponent : public GUIComponent {
 
         void base_pointerUp( float inX, float inY );
 
-        void base_keyDown( unsigned char inASCII );
+        virtual void base_keyDown( unsigned char inASCII );
         
         void base_keyUp( unsigned char inASCII );
 
@@ -143,6 +147,8 @@ class PageComponent : public GUIComponent {
         PageComponent *mParent;
         
         char mVisible;
+
+        char mIgnoreEvents;
 
     };
 
