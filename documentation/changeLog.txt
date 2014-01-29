@@ -1,4 +1,4 @@
-Version 31
+Version 31   2014-January-28
 
 --Added a custom reason-for-shutdown message sent by the server that the client
   displays.

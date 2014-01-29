@@ -4,7 +4,7 @@
 
 // server will tell clients to upgrade to this version
 global $cd_version;
-$cd_version = "30";
+$cd_version = "31";
 
 
 // leave an older version here IF older clients can also connect safely
