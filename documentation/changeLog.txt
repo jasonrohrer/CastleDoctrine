@@ -16,6 +16,8 @@ Version 31   2014-January-28
   outtages to allow players delayed by the outtage to check in stale robberies
   and self tests without dying.
 
+--Fixed eyedropper tool getting stuck on when ALT-tabbing.
+
 
 
 
