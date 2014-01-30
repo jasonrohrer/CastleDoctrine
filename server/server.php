@@ -8118,11 +8118,22 @@ function cd_generateHeader() {
 
     $houseCount = cd_countRobbableHouses();
 
+    $result = cd_queryDatabase( "SHOW FULL PROCESSLIST;" );
+    $connectionCount = mysql_numrows( $result );
+    
     $perUserString = "?";
     if( $userCount > 0 ) {
         $perUserString = cd_formatBytes( $bytesUsed / $userCount );
         }
-    
+
+    $houseWord = "houses";
+    if( $houseCount == 1 ) {
+        $houseWord = "house";
+        }
+    $connectionWord = "connections";
+    if( $connectionCount == 1 ) {
+        $connectionWord = "connection";
+        }
     
     echo "<table width='100%' border=0><tr>".
         "<td valign=top width=25%>[<a href=\"server.php?action=show_data" .
@@ -8133,7 +8144,8 @@ function cd_generateHeader() {
             "\">Stats</a>]</td>".
         "<td valign=top align=center width=50%>".
         "$sizeString ($perUserString per user)<br>".
-        "$houseCount robbable houses</td>".
+        "$houseCount robbable $houseWord<br>".
+        "$connectionCount active MySQL $connectionWord</td>".
         "<td valign=top align=right width=25%>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
