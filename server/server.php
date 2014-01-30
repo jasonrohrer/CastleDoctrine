@@ -367,7 +367,8 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
         cd_doesTableExist( $tableNamePrefix."son_names" ) &&
         cd_doesTableExist( $tableNamePrefix."daughter_names" ) &&
         cd_doesTableExist( $tableNamePrefix."server_stats" ) &&
-        cd_doesTableExist( $tableNamePrefix."item_purchase_stats" );
+        cd_doesTableExist( $tableNamePrefix."item_purchase_stats" ) &&
+        cd_doesTableExist( $tableNamePrefix."user_stats" );
     
         
     if( $allExist  ) {
@@ -1406,6 +1407,31 @@ function cd_setupDatabase() {
         echo "<B>$tableName</B> table already exists<BR>";
         }
 
+
+
+    // stats collected every flush interval
+    $tableName = $tableNamePrefix . "user_stats";
+
+    if( ! cd_doesTableExist( $tableName ) ) {
+
+        // doesn't need to be innodb, because rows never change
+        $query =
+            "CREATE TABLE $tableName(" .
+            "stat_time DATETIME NOT NULL PRIMARY KEY," .
+            "users_last_five_minutes INT NOT NULL," .
+            "users_last_hour INT NOT NULL," .
+            "users_last_day INT NOT NULL );";
+        
+
+        $result = cd_queryDatabase( $query );
+
+
+        echo "<B>$tableName</B> table created<BR>";       
+        }
+    else {
+        echo "<B>$tableName</B> table already exists<BR>";
+        }
+
     
     
 
@@ -1614,6 +1640,19 @@ function cd_checkForFlush() {
 
         cd_log( "Flush operation starting up." );
         cd_queryDatabase( "COMMIT;" );
+
+        
+        $usersDay = cd_countUsersTime( '1 0:00:00' );
+        $usersHour = cd_countUsersTime( '0 1:00:00' );
+        $usersFiveMin = cd_countUsersTime( '0 0:05:00' );
+
+        $query = "INSERT INTO $tableNamePrefix"."user_stats".
+            "( stat_time, users_last_five_minutes, users_last_hour, ".
+            "  users_last_day ) ".
+            "VALUES( CURRENT_TIMESTAMP, ".
+            "        $usersFiveMin, $usersHour, $usersDay );";
+        cd_queryDatabase( $query );
+        
         
 
         global $tableNamePrefix;
