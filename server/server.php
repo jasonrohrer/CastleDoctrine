@@ -8120,6 +8120,12 @@ function cd_generateHeader() {
 
     $result = cd_queryDatabase( "SHOW FULL PROCESSLIST;" );
     $connectionCount = mysql_numrows( $result );
+
+    global $tableNamePrefix;
+    $usersDay = cd_countUsersTime( '1 0:00:00' );
+    $usersHour = cd_countUsersTime( '0 1:00:00' );
+    $usersMinute = cd_countUsersTime( '0 0:01:00' );
+    $usersSecond = cd_countUsersTime( '0 0:00:01' );
     
     $perUserString = "?";
     if( $userCount > 0 ) {
@@ -8145,7 +8151,9 @@ function cd_generateHeader() {
         "<td valign=top align=center width=50%>".
         "$sizeString ($perUserString per user)<br>".
         "$houseCount robbable $houseWord<br>".
-        "$connectionCount active MySQL $connectionWord</td>".
+        "$connectionCount active MySQL $connectionWord<br>".
+        "Users: $usersDay/d | $usersHour/h | $usersMinute/m | ".
+        "$usersSecond/s</td>".
         "<td valign=top align=right width=25%>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
@@ -9909,6 +9917,21 @@ function cd_countUsers() {
     return mysql_result( $result, 0, 0 );
     }
 
+
+
+// counts users in a given time interval (string time interval) 
+function cd_countUsersTime( $inInterval ) {
+    global $tableNamePrefix;
+
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."houses ".
+        "WHERE last_owner_action_time > ".
+        "SUBTIME( CURRENT_TIMESTAMP, '$inInterval' );";
+    $result = cd_queryDatabase( $query );
+
+    return mysql_result( $result, 0, 0 );
+    }
+ 
 
 
 function cd_countRobbableHouses() {
