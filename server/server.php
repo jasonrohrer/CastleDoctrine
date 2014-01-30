@@ -8124,6 +8124,7 @@ function cd_generateHeader() {
     global $tableNamePrefix;
     $usersDay = cd_countUsersTime( '1 0:00:00' );
     $usersHour = cd_countUsersTime( '0 1:00:00' );
+    $usersFiveMin = cd_countUsersTime( '0 0:05:00' );
     $usersMinute = cd_countUsersTime( '0 0:01:00' );
     $usersSecond = cd_countUsersTime( '0 0:00:01' );
     
@@ -8152,8 +8153,8 @@ function cd_generateHeader() {
         "$sizeString ($perUserString per user)<br>".
         "$houseCount robbable $houseWord<br>".
         "$connectionCount active MySQL $connectionWord<br>".
-        "Users: $usersDay/d | $usersHour/h | $usersMinute/m | ".
-        "$usersSecond/s</td>".
+        "Users: $usersDay/d | $usersHour/h | $usersFiveMin/5m | ".
+        "$usersMinute/m | $usersSecond/s</td>".
         "<td valign=top align=right width=25%>[<a href=\"server.php?action=logout" .
             "\">Logout</a>]</td>".
         "</tr></table><br><br><br>";
