@@ -1,5 +1,7 @@
-Version 31a
-(Unix Source bundle update)
+Version 31a   2014-January-31
+
+--Unix Source bundle update.
+
 (Includes all Live Server Fixes listed below.)
 
 
