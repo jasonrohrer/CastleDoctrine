@@ -1,3 +1,10 @@
+Version 31a
+(Unix Source bundle update)
+(Includes all Live Server Fixes listed below.)
+
+
+
+
 Version 31  Live Server Fixes
 
 --Added a bunch of stats to the admin view.
@@ -6,11 +13,17 @@ Version 31  Live Server Fixes
 
 --Fixed a deadlock in ping_house by retrying after a deadlock.
 
---Fixed deprecated call-by-reference warnings (thanks Mike H).
-
 --Added a 5-minute delay before a new house goes on the house list to thwart
   the prevalence of farming neglected starter homes in the 2000-bracket on the
   house list.
+
+--Added tracking of total daily connections stats.
+
+--Fixed server source so that it can be installed on a fresh database without
+  throwing database errors (thanks Mike H).
+
+--Fixed deprecated call-by-reference warnings (thanks Mike H).
+
 
 
 

@@ -126,10 +126,6 @@ $touchedHouseMapHashes = array();
 
 
 
-// all calls need to connect to DB, so do it once here
-cd_connectToDatabase();
-
-// close connection down below (before function declarations)
 
 
 // testing:
@@ -143,6 +139,20 @@ cd_connectToDatabase();
 
 // grab POST/GET variables
 $action = cd_requestFilter( "action", "/[A-Z_]+/i" );
+
+$trackDatabaseStats = true;
+
+if( $action == "" || $action == "cd_setup" ) {
+    // our stats table might not exist yet!
+    $trackDatabaseStats = false;
+    }
+
+
+// all calls need to connect to DB, so do it once here
+cd_connectToDatabase( $trackDatabaseStats );
+
+// close connection down below (before function declarations)
+
 
 
 global $flushDuringClientCalls;
@@ -1321,6 +1331,7 @@ function cd_setupDatabase() {
             "stat_date DATE NOT NULL PRIMARY KEY," .
             "unique_users INT NOT NULL DEFAULT 0," .
 
+            "database_connections INT NOT NULL DEFAULT 0," .
             "max_concurrent_connections INT NOT NULL DEFAULT 0," .
 
             "edit_count INT NOT NULL DEFAULT 0," .
@@ -3063,6 +3074,17 @@ function cd_startEditHouse() {
         $wife_loot_value = 0;
         $loot_value = $total_loot_value;
         }
+
+    $creationTimeUpdate = "";
+    if( $edit_count == 0 ) {
+        // the house has not been edited yet
+        // in the case of a "quit house" that the owner left
+        // during last session, the creation time could be very old
+        // update the creation time here to now, because this
+        // is when the owner really started to work on the house
+        $creationTimeUpdate =
+            " creation_time = CURRENT_TIMESTAMP, ";
+        }
     
     $query = "UPDATE $tableNamePrefix"."houses SET ".
         "edit_checkout = 1, last_ping_time = CURRENT_TIMESTAMP, ".
@@ -3075,6 +3097,7 @@ function cd_startEditHouse() {
         "carried_loot_value = 0, ".
         "carried_vault_contents = '#', ".
         "carried_gallery_contents = '#', ".
+        "$creationTimeUpdate".
         // reset payment counts
         "payment_count = 0, you_paid_total = 0, wife_paid_total = 0 ".
         "WHERE user_id = $user_id;";
@@ -9236,8 +9259,10 @@ $cd_mysqlLink;
 
 /**
  * Connects to the database according to the database variables.
+ *
+ * If $inTrackStats is true, will save connection count stats to database.
  */  
-function cd_connectToDatabase() {
+function cd_connectToDatabase( $inTrackStats = true) {
     global $databaseServer,
         $databaseUsername, $databasePassword, $databaseName,
         $cd_mysqlLink;
@@ -9280,7 +9305,11 @@ function cd_connectToDatabase() {
 
     $numRows = mysql_numrows( $result );
 
-    cd_updateMaxStat( "max_concurrent_connections", $numRows );
+    if( $inTrackStats ) {
+        cd_incrementStat( "database_connections" );
+
+        cd_updateMaxStat( "max_concurrent_connections", $numRows );
+        }
     
     global $mysqlConnectionCountThreshold;
 
