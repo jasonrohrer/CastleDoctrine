@@ -500,6 +500,12 @@ $vaultBountyTimeout = "0 1:00:0.000";
 $maxRobberyTime = "0 0:20:0.000";
 
 
+// delay before a new house is listed (time from when that house created
+// on the server, thus a house that is worked on for longer than this
+// will go on the list as soon as it is done)
+$newHouseListingDelayTime = "0 0:05:0.000";
+
+
 
 // server shutdown mode
 // causes server to respond with SHUTDOWN to most requests

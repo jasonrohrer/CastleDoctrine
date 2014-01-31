@@ -8,6 +8,10 @@ Version 31  Live Server Fixes
 
 --Fixed deprecated call-by-reference warnings (thanks Mike H).
 
+--Added a 5-minute delay before a new house goes on the house list to thwart
+  the prevalence of farming neglected starter homes in the 2000-bracket on the
+  house list.
+
 
 
 

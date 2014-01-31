@@ -4917,6 +4917,8 @@ function cd_listHouses() {
     //  by joining the houses table to itself)
     $tableName = $tableNamePrefix ."houses";
 
+    global $newHouseListingDelayTime;
+    
     // get one extra, beyond requested limit, to detect presence
     // of additional pages beyond limit    
     $query_limit = $limit + 1;
@@ -4936,6 +4938,8 @@ function cd_listHouses() {
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
         "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 ) ".
+        "AND houses.creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
+        "                                    '$newHouseListingDelayTime' ) ".
         "$searchClause ".
         "AND houses.user_id NOT IN ".
         "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
@@ -5153,7 +5157,8 @@ function cd_startRobHouse() {
 
     $backpack_contents = mysql_result( $result, 0, "backpack_contents" );
 
-    
+
+    global $newHouseListingDelayTime;
     
     // automatically ignore blocked users and houses already checked
     // out for robbery by another player
@@ -5172,6 +5177,8 @@ function cd_startRobHouse() {
         "AND edit_count != 0 ".
         "AND ( value_estimate != 0 OR edit_count > 0 ) ".
         "AND ( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
+        "AND creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
+        "                             '$newHouseListingDelayTime' ) ".
         "FOR UPDATE;";
 
     $result = cd_queryDatabase( $query );
