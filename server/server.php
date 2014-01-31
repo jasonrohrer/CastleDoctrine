@@ -4635,8 +4635,13 @@ function cd_pingHouseInternal( $user_id ) {
             "         TIMEDIFF( CURRENT_TIMESTAMP, '$last_ping_time' ) ) ".
             "WHERE house_user_id = $house_user_id ".
             "      AND chill = 1;";
-        $result = cd_queryDatabase( $query );
-
+        
+        // watch for deadlock with flush call here
+        while( cd_queryDatabase( $query, 0 ) == FALSE ) {
+            // sleep before trying again
+            sleep( 1 );
+            }
+        
         // any force-ignore on this house have their expiration postponed
         $query = "UPDATE $tableNamePrefix"."ignore_houses  SET ".
             "forced_start_time = ".
