@@ -4472,13 +4472,13 @@ function cd_endEditHouse() {
                                     $self_test_move_list,
                                     0,
                                     
-                                    &$success,
-                                    &$wife_killed_robber,
-                                    &$wife_killed,
-                                    &$wife_robbed,
-                                    &$family_killed_count,
-                                    &$end_backpack_contents,
-                                    &$end_house_map );
+                                    $success,
+                                    $wife_killed_robber,
+                                    $wife_killed,
+                                    $wife_robbed,
+                                    $family_killed_count,
+                                    $end_backpack_contents,
+                                    $end_house_map );
 
             if( $simResult == 0 ) {
                 
@@ -5740,13 +5740,13 @@ function cd_endRobHouse() {
                                 $move_list,
                                 $wife_loot_value,
                                     
-                                &$sim_success,
-                                &$sim_wife_killed_robber,
-                                &$sim_wife_killed,
-                                &$sim_wife_robbed,
-                                &$sim_family_killed_count,
-                                &$sim_end_backpack_contents,
-                                &$sim_end_house_map );
+                                $sim_success,
+                                $sim_wife_killed_robber,
+                                $sim_wife_killed,
+                                $sim_wife_robbed,
+                                $sim_family_killed_count,
+                                $sim_end_backpack_contents,
+                                $sim_end_house_map );
 
         if( $simResult == 0 ) {       
             cd_log( "Robbery end with failed robbery simulation".

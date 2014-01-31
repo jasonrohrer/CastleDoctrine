@@ -6,6 +6,7 @@ Version 31  Live Server Fixes
 
 --Fixed a deadlock in ping_house by retrying after a deadlock.
 
+--Fixed deprecated call-by-reference warnings (thanks Mike H).
 
 
 
