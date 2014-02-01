@@ -3558,6 +3558,23 @@ function cd_endEditHouse() {
     // ensures that a dovetailed flush won't kick us out
     // also updates chill and force-ignore start times one more time
     cd_pingHouseInternal( $user_id );
+
+
+    
+    // to avoid house cache misses, EVER
+    // stick this map in the cache now, as a separate transaction
+    // before doing anything else
+    //
+    // For some reason, perhaps due to strange transaction interleaving,
+    // a checked-in house's map is occasionally NOT in the cache,
+    // even though the hash has been computed and stored
+    // This has only been seen happening at the end of a robbery, BUT
+    // the map shows up in the cache later, after the robbery end fails.
+    // Furthermore, it looks like an interleaved house edit is causing
+    // it.  Thus, the house edit completes, and the house is unlocked,
+    // BEFORE the map is added to the cache for some reason.
+    $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
+    $house_map_hash = cd_storeHouseMap( $house_map );
     
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -3617,7 +3634,7 @@ function cd_endEditHouse() {
     $total_loot_value = $loot_value + $wife_loot_value;
     
     
-    $house_map = cd_requestFilter( "house_map", "/[#0-9,:!]+/" );
+    
 
     $vault_contents = cd_requestFilter( "vault_contents", "/[#0-9:]+/" );
 
@@ -4530,7 +4547,7 @@ function cd_endEditHouse() {
             }
         }
     
-    $house_map_hash = cd_storeHouseMap( $house_map );
+    
     $self_test_house_map_hash = cd_storeHouseMap( $self_test_house_map );
     
     $backpack_value_estimate =

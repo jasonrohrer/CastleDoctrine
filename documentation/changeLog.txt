@@ -22,6 +22,10 @@ Version 31a  Live Server Fixes
 
 --Added retry for deadlock on chilling_houses in flush call.
 
+--Added work-around for strange, rare issue of house maps missing from the map
+  cache table at the end of a robbery only to show up in that table later
+  (maybe from an edit that ends right before the robbery).
+
 
 
 
