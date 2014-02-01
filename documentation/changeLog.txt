@@ -20,6 +20,8 @@ Version 31a  Live Server Fixes
 
 --Added retry for deadlock on chilling_houses table when creating a new house.
 
+--Added retry for deadlock on chilling_houses in flush call.
+
 
 
 

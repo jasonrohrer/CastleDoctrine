@@ -2130,7 +2130,11 @@ function cd_checkForFlush() {
             "WHERE  chill_start_time < ".
             "       SUBTIME( CURRENT_TIMESTAMP, '$chillTimeout' );";
 
-        $result = cd_queryDatabase( $query );
+        // watch for deadlock here
+        while( cd_queryDatabase( $query, 0 ) == FALSE ) {
+            // sleep before retrying
+            sleep( 1 );
+            }
 
         $staleChillsRemoved = mysql_affected_rows();
 
