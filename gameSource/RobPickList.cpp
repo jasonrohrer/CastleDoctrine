@@ -134,13 +134,34 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
     else if( inTarget == &mFilterButton || inTarget == &mSearchField ) {
         delete [] mAppliedSearchWords;
 
-        char *separateWords = mSearchField.getText();
+        char *searchText = mSearchField.getText();
 
-        char found;
-        mAppliedSearchWords = replaceAll( separateWords, " ", "+", &found );
+        SimpleVector<char *> *words = tokenizeString( searchText );
+
+        delete [] searchText;
         
-        delete [] separateWords;
+        if( words->size() == 0 ) {
+            // reset us back to our neighborhood on the house list
+            mCurrentSkip = -1;
+            }
+        
+        if( words->size() > 0 ) {
+            char **wordsArray = words->getElementArray();
+        
+            mAppliedSearchWords = join( wordsArray, words->size(), "+" );
 
+            for( int i=0; i<words->size(); i++ ) {
+                delete [] wordsArray[i];
+                }
+            delete [] wordsArray;
+            }
+        else {
+            mAppliedSearchWords = stringDuplicate( "" );
+            }
+
+        delete words;
+
+        
         refreshList( true, false );
         }
     else if( inTarget == &mIgnoreButton ) {
@@ -195,7 +216,8 @@ void RobPickList::refreshList( char inPreserveSearch,
         mSearchField.setText( mAppliedSearchWords );
         }
     
-    if( ! inPreservePosition ) {
+    if( ! inPreservePosition && mCurrentSkip != -1 ) {
+        // reset list, and not already resetting it to our neighborhood
         mCurrentSkip = 0;
         }
 

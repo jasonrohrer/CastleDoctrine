@@ -5,6 +5,9 @@ Version 32
   player's current house value.  The player can then scroll freely up and down
   from there (thanks Iceman).
 
+--Running an empty search on the house list page now returns you to your value
+  neighborhood on the house list instead of jumping back to the top of the list
+  (thanks Jere).
 
 
 
