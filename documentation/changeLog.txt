@@ -18,6 +18,7 @@ Version 31a  Live Server Fixes
   provides no skip value).  This works with v32 clients to auto-set the first
   house page shown, but is also backwards compatible with v31 clients.
 
+--Added retry for deadlock on chilling_houses table when creating a new house.
 
 
 

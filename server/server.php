@@ -7867,7 +7867,12 @@ function cd_newHouseForUser( $user_id ) {
     // clear chills
     $query = "DELETE FROM $tableNamePrefix"."chilling_houses ".
         "WHERE house_user_id = $user_id;";
-    cd_queryDatabase( $query );
+
+    // watch for deadlock with flush call here
+    while( cd_queryDatabase( $query, 0 ) == FALSE ) {
+        // sleep before trying again
+        sleep( 1 );
+        }
     
     
     // all houses user has been inside recently give the user a chill
