@@ -333,7 +333,7 @@ home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 home_id#character_name#last_robber_name#loot_value#rob_attempts#robber_deaths#f
 ....
-more_pages
+more_pages#skip
 OK
 
 Where:
@@ -346,6 +346,13 @@ name_search contains a single word or multiple words concatonated with "+"
 ("+" is URL-encoding of " ")
 
 more_pages is 1 if there are more pages and 0 of there are not
+
+skip in the call is optional.  If omitted, a list page of [limit] houses from
+around the player's house value will be returned.
+
+skip in the return value shows the skip that was used to get to the current
+page (either supplied by the call or inferred from the user's house value).
+
 
 Note:
 Lists only robbable houses.

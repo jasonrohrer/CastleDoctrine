@@ -90,6 +90,12 @@ RobPickList::RobPickList( double inX, double inY,
     mIgnoreButton.setMouseOverTip( translate( "ignoreTip" ) );
     mClearIgnoreListButton.setMouseOverTip( 
         translate( "clearIgnoreListTip" ) );
+
+    if( !mRobberyLog ) {
+        // start off with no skip specified to fetch house page
+        // near our value range from server first time
+        mCurrentSkip = -1;
+        }
     }
 
 
@@ -225,14 +231,24 @@ void RobPickList::refreshList( char inPreserveSearch,
         clearIgnoreListParameter = stringDuplicate( "" );
         }
     
+    char *skipString;
+    
+    if( mCurrentSkip != -1 ) {
+        skipString = autoSprintf( "&skip=%d", mCurrentSkip );
+        }
+    else {
+        skipString = stringDuplicate( "" );
+        }
+    
 
     char *actionString = autoSprintf( 
-        "action=%s&skip=%d&limit=%d&name_search=%s%s%s&user_id=%d"
+        "action=%s%s&limit=%d&name_search=%s%s%s&user_id=%d"
         "&%s",
-        action, mCurrentSkip, linesPerPage, mAppliedSearchWords,
+        action, skipString, linesPerPage, mAppliedSearchWords,
         ignoreParameter, clearIgnoreListParameter,
         userID, ticketHash );
 
+    delete [] skipString;
     delete [] ticketHash;
     delete [] ignoreParameter;
     delete [] clearIgnoreListParameter;
@@ -449,8 +465,9 @@ void RobPickList::step() {
                             *( lines->getElement( lines->size() - 2  ) );
                     
                         int numRead = 
-                            sscanf( line, "%d", &( mArePagesLeft ) );
-                        if( numRead != 1 ) {
+                            sscanf( line, "%d#%d", &( mArePagesLeft ), 
+                                    &( mCurrentSkip ) );
+                        if( numRead != 2 ) {
                             badParse = true;
                             }
                         

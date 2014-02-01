@@ -4877,7 +4877,14 @@ function cd_listHouses() {
     cd_processStaleCheckouts( $user_id );
     
 
-    $skip = cd_requestFilter( "skip", "/\d+/", 0 );
+    $skip = cd_requestFilter( "skip", "/\d+/", "" );
+
+    $findGoodSkip = false;
+
+    if( $skip == "" ) {
+        $findGoodSkip = true;
+        $skip = 0;
+        }
     
     $limit = cd_requestFilter( "limit", "/\d+/", 20 );
     $name_search = cd_requestFilter( "name_search", "/[a-z ]+/i" );
@@ -4941,6 +4948,39 @@ function cd_listHouses() {
     $tableName = $tableNamePrefix ."houses";
 
     global $newHouseListingDelayTime;
+
+
+    $whereClause =
+        "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
+        "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
+        "AND houses.edit_count != 0 ".
+        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 ) ".
+        "AND houses.creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
+        "                                    '$newHouseListingDelayTime' ) ".
+        "$searchClause ".
+        "AND houses.user_id NOT IN ".
+        "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
+        "  WHERE user_id = $user_id AND started = 1 ) ";
+
+
+    if( $findGoodSkip ) {
+        $query = "SELECT COUNT(*) FROM $tableName as houses ".
+            $whereClause .
+            "AND houses.value_estimate >= ".
+            "    ( SELECT value_estimate FROM $tableName ".
+            "                            WHERE user_id = $user_id );";
+
+        // fixme:
+        // query for count.  Find good skip that is a multiple of LIMIT
+        $result = cd_queryDatabase( $query );
+        $numBeforeGoodSkip = mysql_result( $result, 0, 0 );
+
+        $numPagesToSkip = floor($numBeforeGoodSkip / $limit);
+
+        $skip = $numPagesToSkip * $limit;
+        }
+    
+    
     
     // get one extra, beyond requested limit, to detect presence
     // of additional pages beyond limit    
@@ -4957,16 +4997,7 @@ function cd_listHouses() {
         "LEFT JOIN $tableNamePrefix"."chilling_houses as chills ".
         "     ON houses.user_id = chills.house_user_id AND ".
         "        chills.user_id = '$user_id' ".
-        "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
-        "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
-        "AND houses.edit_count != 0 ".
-        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 ) ".
-        "AND houses.creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
-        "                                    '$newHouseListingDelayTime' ) ".
-        "$searchClause ".
-        "AND houses.user_id NOT IN ".
-        "( SELECT house_user_id FROM $tableNamePrefix"."ignore_houses ".
-        "  WHERE user_id = $user_id AND started = 1 ) ".
+        $whereClause .
         "ORDER BY houses.value_estimate DESC, houses.rob_attempts DESC ".
         "LIMIT $skip, $query_limit;";
 
@@ -5009,10 +5040,10 @@ function cd_listHouses() {
         }
     
     if( $numRows > $limit ) {
-        echo "1\n";
+        echo "1#$skip\n";
         }
     else {
-        echo "0\n";
+        echo "0#$skip\n";
         }
     echo "OK";
     }
@@ -6541,10 +6572,10 @@ function cd_listLoggedRobberies() {
         }
 
     if( $numRows > $limit ) {
-        echo "1\n";
+        echo "1#$skip\n";
         }
     else {
-        echo "0\n";
+        echo "0#$skip\n";
         }
     echo "OK";
     }

@@ -1,3 +1,25 @@
+Version 32
+
+--Client support for not specifying a skip in the first house list fetched,
+  allowing the server to pick a good page in the house list based on the
+  player's current house value.  The player can then scroll freely up and down
+  from there (thanks Iceman).
+
+
+
+
+Version 31a  Live Server Fixes
+
+--Server support for returning a starting house list page around the player's
+  house value (auto-setting how many houses on the list to skip if the client
+  provides no skip value).  This works with v32 clients to auto-set the first
+  house page shown, but is also backwards compatible with v31 clients.
+
+
+
+
+
+
 Version 31a   2014-January-31
 
 --Unix Source bundle update.
