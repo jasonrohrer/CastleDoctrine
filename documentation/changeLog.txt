@@ -11,6 +11,7 @@ Version 32
 
 
 
+
 Version 31a  Live Server Fixes
 
 --Server support for returning a starting house list page around the player's
@@ -25,6 +26,9 @@ Version 31a  Live Server Fixes
 --Added work-around for strange, rare issue of house maps missing from the map
   cache table at the end of a robbery only to show up in that table later
   (maybe from an edit that ends right before the robbery).
+
+--Added retries to work around deadlocks in isolated queries at the tail end
+  of endRobHouse.
 
 
 

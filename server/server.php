@@ -6433,7 +6433,14 @@ function cd_endRobHouse() {
     // now execute all pending database updates after lock for
     // target house row has been released
     foreach( $pendingDatabaseUpdateQueries as $query ) {
-        cd_queryDatabase( $query );
+
+        // each of these queries is its own transaction
+        // possible for each one to deadlock on its own
+        
+        while( cd_queryDatabase( $query, 0 ) == FALSE ) {
+            // wait before retrying
+            sleep( 1 );
+            }
         }
 
 
