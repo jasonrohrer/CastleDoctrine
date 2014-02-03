@@ -28,7 +28,7 @@ This page contains the official results of The Castle Doctrine's <a href="stealR
 <br>
 First of all, over 1000 people participated during peak of contest on Sunday, with 859 people playing during last day on Monday.  At the end, 297 of those people still had a house in the game.<br>
 <br>
-<b>$3,163,271</b> in-game dollar value had accumulated in these 297 vaults.  The resulting exchange rate was $1 USD for every $1054 in-game dollars.  121 lucky people ended the game with at least $1054, which translates into at least a $1 US prize for each of them.  55 people won $10 USD or more.  6 people won $100 USD or more.  As a result, I will pay out $2954 in total prize money.<br>
+<b>$3,163,271</b> of in-game dollar value had accumulated in these 297 vaults.  The resulting exchange rate was $1 USD for every $1054 in-game dollars.  121 lucky people ended the game with at least $1054, which translates into at least a $1 USD prize for each of them.  55 people won $10 USD or more.  6 people won $100 USD or more.  As a result, I will pay out $2954 in total prize money.<br>
 <br>
 Here's the prize distribution:
 <center>
@@ -152,11 +152,11 @@ function winnerRow( $inNumber, $inGameAmount,
 <br>
 Thank you, everyone, for participating.<br>
 <br>
-So... did this contest work to promote the game before launch?  Was it worth running?  Absolutely.  The buzz around the contest created the second biggest pre-steam sales day in Castle Doctrine history:  795 people bought the game in one day.  This was topped only by the alpha launch day back in March 2013, when 826 people bought the game.<br>
+So... did this contest work to promote the game before launch?  Was it worth running?  Absolutely.  The buzz around the contest created the second biggest pre-Steam sales day in Castle Doctrine history:  795 people bought the game in one day.  This was topped only by the alpha launch day back in March 2013, when 826 people bought the game.<br>
 <br>
 All told the contest cost me around $4500 to run, which is cheaper than advertising for a week on any noteworthy website.  The sales generated from the coverage on a single day more than covered this cost.  It didn't annoy innocent bystanders (like advertising does), and it added to the world and community of the game in an interesting and meaningful way.<br>
 <br>
-And, perhaps most importantly, it created an incredibly tense moment in time that I, and many members of the game's community, will never forget.<br>
+And, perhaps most importantly, it created an incredibly tense moment in history that I, and many members of the game's community, will never forget.<br>
 <br>
 4:59pm PST on Monday, January 27, 2014.<br>
 <br>
