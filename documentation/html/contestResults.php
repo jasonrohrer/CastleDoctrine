@@ -23,7 +23,7 @@ Contest Results<br>
 <br>
 <br>
 
-This page contains the official results of The Castle Doctrine's <a href="stealRealMoney.php">STEAL REAL MONEY Contest</a>.
+This page contains the official results of The Castle Doctrine's <a href="stealRealMoneyContest.php">STEAL REAL MONEY Contest</a>.
 <br>
 <br>
 First of all, over 1000 people participated during peak of contest on Sunday, with 859 people playing during last day.  At the end, 297 of those people still had a house in the game.<br>
@@ -37,6 +37,84 @@ Here's the prize distribution:
 With those stats out of the way, on to...
 <br>
 <br>
-<center><font size=6>The Top 8 Houses</font></center>
+<center><font size=6>The Top 9 Houses</font></center>
+
+<br>
+It turns out that house number 8 on the list <i>had no painting</i> at the end of the contest.  Thus, player #9 receives a painting instead.
+<br>
+<br>
+<br>
+
+<?php
+
+function winnerRow( $inNumber, $inGameAmount,
+                    $inCharacterName, $inPlayerName, $inPrize,
+                    $inPaintingName ) {
+                        
+    echo "<tr><td><table border=0>";
+
+    $inGameAmountString = number_format( $inGameAmount );
+    
+    echo "<tr><td valign=top>#$inNumber: <b>$inPlayerName</b></td>";
+    echo "<td valign=top>\$$inGameAmountString</td>";
+    echo "<td valign=top>Also known as<br><b>$inCharacterName</b></td></tr>";
+
+    $prizeMoney = floor( $inGameAmount / 1054 );
+
+    $extraPrize = "";
+    if( $inPrize != "" ) {
+        $extraPrize = "<br>AND <i>$inPrize</i>";
+        }
+
+    $paintingLine = "";
+
+    if( $inPaintingName != "" ) {
+        $paintingLine = "<br>AND giclee print of <i>$inPaintingName</i>";
+        }
+    
+    
+    echo "<tr><td colspan=3>Prize: <b>\$$prizeMoney USD</b>".
+    "$extraPrize".
+    "$paintingLine</td></tr>";
+
+    $paintingNumber = $inNumber + 10 - 1;
+    
+    
+    echo "<tr><td align=center colspan=2><img src='contestImages/results/entryways/screen0000$inNumber.png' ".
+    "width=365 height=200><br>".
+    "<img src='contestImages/results/paintings/screen000$paintingNumber.png' ".
+    "width=152 height=152 alt='$inPaintingName'></td>";
+    echo "<td align=center><a href='contestImages/results/maps/map0000$inNumber.png'>".
+    "<img border=0 src='contestImages/results/maps/thumbs/map0000$inNumber.png' ".
+    "width=224 height=224><br>Click for full map</a></td>";
+
+    
+    echo "</tr>";
+
+    echo "</table border=0></td></tr>";
+    }
+
+
+?>
+
+
+<center>
+<table border=1>
+
+<?php winnerRow( 1, 333952, "Jeffrey William McCoy",
+                 "Aaron Bleackley (ZenRose)", "Jason Rohrer's Dog Club",
+                 "Surge After Hokusai --- by Steven Diamond" ); ?>
+
+<?php winnerRow( 2, 254150, "Andrew Curtis Thomas",
+                 "Tom Loughlin (ukuko)", "A Door Devil",
+                 "Blythe --- by Andy Lin" ); ?>
+
+<?php winnerRow( 3, 200813, "David Travis Lopez",
+                 "Iceman", "A Door Devil",
+                 "Savanna --- by Adam Saltsman" ); ?>
+
+</table>
+</center>
+
 
 <?php include( "footer.php" ); ?>
