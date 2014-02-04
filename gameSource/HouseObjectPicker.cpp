@@ -237,94 +237,111 @@ void HouseObjectPicker::step() {
 
 
 
+void HouseObjectPicker::drawObjectInBox( int inSelectedIndex,
+                                         doublePair inPosition ) {
+    
+    ObjectPriceRecord *r = mObjectList.getElement( inSelectedIndex );
+
+    int orientation = 0;
+
+    if( !mShowTools ) {    
+        int numOrientations = getNumOrientations( r->id, 0 );
+            
+        if( numOrientations == 4 ) {
+            // default to left-facing
+            orientation = 3;
+            }
+        if( numOrientations == 2 ) {
+            // default to horizontal
+            orientation = 1;
+            }
+        }
+        
+        
+        
+    SpriteHandle sprite;
+    SpriteHandle underSprite = NULL;
+    SpriteHandle behindSprite = NULL;
+        
+    if( mShowTools ) {
+        sprite = getToolSprite( r->id );
+        }
+    else {
+        sprite = getObjectSprite( r->id, orientation, 0 );
+            
+        if( isUnderSpritePresent( r->id, 0 ) ) {
+            underSprite = getObjectSpriteUnder( r->id, orientation, 0 );
+            }
+        if( isBehindSpritePresent( r->id, 0 ) ) {
+            behindSprite = getObjectSpriteBehind( r->id, orientation, 0 );
+            }
+        }
+        
+
+    // color like a reactive button if we have only 1 item
+    char oneItem = ( mObjectList.size() == 1 );
+    if( oneItem && mHover && ! mDragOver ) {    
+        setDrawColor( 0.75, 0.75, 0.75, 1 );
+        }
+    else if( oneItem && mDragOver ) {
+        setDrawColor( 0.25, 0.25, 0.25, 1 );
+        }
+    else {
+        setDrawColor( 0.5, 0.5, 0.5, 1 );
+        }
+        
+    drawSquare( inPosition, 1 );
+        
+        
+        
+
+    if( mShowTools ) {
+        // gray background to match backpack slot backgrounds
+            
+        if( oneItem && mDragOver ) {
+            setDrawColor( 0.1, 0.1, 0.1, 1 );
+            }
+        else {
+            setDrawColor( 0.25, 0.25, 0.25, 1 );
+            }
+        }
+    else {
+        // no drag-over darkening behavior
+        // (already black)
+        setDrawColor( 0, 0, 0, 1 );
+        }
+        
+    drawSquare( inPosition, 1 - mPixWidth );
+
+    if( underSprite != NULL ) {
+        // darken a bit
+        setDrawColor( 0.75, 0.75, 0.75, 1 );
+        drawSprite( underSprite, inPosition, mSpriteScale );
+        }
+
+    setDrawColor( 1, 1, 1, 1 );
+        
+    if( behindSprite != NULL ) {
+        drawSprite( behindSprite, inPosition, mSpriteScale );
+        }
+
+    drawSprite( sprite, inPosition, mSpriteScale );
+
+    
+    }
+
+
+
+
 void HouseObjectPicker::draw() {
 
     if( mSelectedIndex >= 0 ) {
-        ObjectPriceRecord *r = mObjectList.getElement( mSelectedIndex );
-
-        int orientation = 0;
-
-        if( !mShowTools ) {    
-            int numOrientations = getNumOrientations( r->id, 0 );
-            
-            if( numOrientations == 4 ) {
-                // default to left-facing
-                orientation = 3;
-                }
-            if( numOrientations == 2 ) {
-                // default to horizontal
-                orientation = 1;
-                }
-            }
-        
-        
-        
-        SpriteHandle sprite;
-        SpriteHandle underSprite = NULL;
-        SpriteHandle behindSprite = NULL;
-        
-        if( mShowTools ) {
-            sprite = getToolSprite( r->id );
-            }
-        else {
-            sprite = getObjectSprite( r->id, orientation, 0 );
-            
-            if( isUnderSpritePresent( r->id, 0 ) ) {
-                underSprite = getObjectSpriteUnder( r->id, orientation, 0 );
-                }
-            if( isBehindSpritePresent( r->id, 0 ) ) {
-                behindSprite = getObjectSpriteBehind( r->id, orientation, 0 );
-                }
-            }
         
         doublePair center = { 0, 0 };
-
-
-        // color like a reactive button if we have only 1 item
-        char oneItem = ( mObjectList.size() == 1 );
-        if( oneItem && mHover && ! mDragOver ) {    
-            setDrawColor( 0.75, 0.75, 0.75, 1 );
-            }
-        else if( oneItem && mDragOver ) {
-            setDrawColor( 0.25, 0.25, 0.25, 1 );
-            }
-        else {
-            setDrawColor( 0.5, 0.5, 0.5, 1 );
-            }
         
-        drawSquare( center, 1 );
+        drawObjectInBox( mSelectedIndex, center );
         
-        if( mShowTools ) {
-            // gray background to match backpack slot backgrounds
-            
-            if( oneItem && mDragOver ) {
-                setDrawColor( 0.1, 0.1, 0.1, 1 );
-                }
-            else {
-                setDrawColor( 0.25, 0.25, 0.25, 1 );
-                }
-            }
-        else {
-            // no drag-over darkening behavior
-            // (already black)
-            setDrawColor( 0, 0, 0, 1 );
-            }
-        
-        drawSquare( center, 1 - mPixWidth );
-
-        if( underSprite != NULL ) {
-            // darken a bit
-            setDrawColor( 0.75, 0.75, 0.75, 1 );
-            drawSprite( underSprite, center, mSpriteScale );
-            }
-
-        setDrawColor( 1, 1, 1, 1 );
-        
-        if( behindSprite != NULL ) {
-            drawSprite( behindSprite, center, mSpriteScale );
-            }
-
-        drawSprite( sprite, center, mSpriteScale );
+        ObjectPriceRecord *r = mObjectList.getElement( mSelectedIndex );
 
         char *priceString = autoSprintf( "$%d", r->price );
         
@@ -342,6 +359,21 @@ void HouseObjectPicker::draw() {
         mainFont->drawString( priceString, pricePos, align );
 
         delete [] priceString;        
+        }
+
+    if( mHover ) {
+        doublePair center = { 0, 0 };
+            
+        
+        for( int i=mSelectedIndex+1; 
+             i<mSelectedIndex + 5 && i <mObjectList.size(); 
+             i++ ) {
+            
+            center.y -=2;
+            
+            drawObjectInBox( i, center );
+            }
+        
         }
     }
 

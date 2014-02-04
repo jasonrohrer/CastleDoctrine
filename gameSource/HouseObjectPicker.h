@@ -117,7 +117,9 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         char isInside( float inX, float inY );
         
-
+        
+        void drawObjectInBox( int inSelectedIndex, doublePair inPosition );
+        
     };
 
 
