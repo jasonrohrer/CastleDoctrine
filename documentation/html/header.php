@@ -24,7 +24,7 @@ if( isset( $blockRobots ) && $blockRobots == 1 ) {
 <center>
 
 
-<a href="http://thecastledoctrine.net/buy.php"><img src="<?php echo $pathToRoot;?>headerLaunch.png" width="712" height="164" border=0></a>
+<a href="http://thecastledoctrine.net/buy.php"><img src="<?php echo $pathToRoot;?>headerFinal.png" width="712" height="164" border=0></a>
 <table border=0 width="712" cellpadding=2 cellspacing=0>
 
 <tr bgcolor="#222222">

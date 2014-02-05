@@ -31,16 +31,16 @@ function showPayLinks( $inSimple ) {
  <center>
       <center><table border=0><tr><td> 
 <ul> 
-      <li>Early access alpha testing
       <li>Lifetime server account
       <li>All future updates
       <li>Free Steam key
+      <li>Full source code
       <li>Tech support included
       </ul>
 </td></tr></table>
 
-      <font size=5>Available now for $12</font><br>
-      <font size=4 color=#ff0000>(25% off final price during launch week)</font><br><br>
+      <font size=5>Available now for $16</font><br>
+      <!--<font size=4 color=#ff0000>(25% off final price during launch week)</font><br><br>-->
       
       <a href="https://sites.fastspring.com/jasonrohrer/instant/thecastledoctrine?referrer=<?php echo $referrer;?>">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
@@ -145,7 +145,8 @@ Immediately after your payment is processed, you will receive an email with an a
 <ul>
 <li>Windows build</li>
 <li>MacOS build (10.5 and later Intel)</li>
-<li>Full source code bundle (which can also be compiled on GNU/Linux)</li>
+<li>GNU/Linux build (compiled on 32-bit Ubuntu 12.04)</li>
+<li>Full source code bundle (compile it yourself)</li>
 </ul>
 </td></tr></table>
 </center>
