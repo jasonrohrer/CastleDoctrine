@@ -5,7 +5,8 @@
 
 PageComponent::PageComponent( double inX, double inY )
         : mX( inX ), mY( inY ), mParent( NULL ), mVisible( true ),
-          mIgnoreEvents( false ) {
+          mIgnoreEvents( false ),
+          mMouseEventHog( NULL ) {
     
     }
         
@@ -88,6 +89,8 @@ doublePair PageComponent::getPosition() {
 
 void PageComponent::base_clearState(){
     
+    mMouseEventHog = NULL;
+
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
 
@@ -114,11 +117,19 @@ void PageComponent::base_pointerMove( float inX, float inY ){
     inX -= mX;
     inY -= mY;
     
-    for( int i=0; i<mComponents.size(); i++ ) {
-        PageComponent *c = *( mComponents.getElement( i ) );
-    
-        if( c->isVisible() && c->isActive() ) {
-            c->base_pointerMove( inX, inY );
+
+    if( mMouseEventHog != NULL ) {
+        if( mMouseEventHog->isVisible() && mMouseEventHog->isActive() ) {
+            mMouseEventHog->base_pointerMove( inX, inY );
+            }
+        }
+    else {    
+        for( int i=0; i<mComponents.size(); i++ ) {
+            PageComponent *c = *( mComponents.getElement( i ) );
+            
+            if( c->isVisible() && c->isActive() ) {
+                c->base_pointerMove( inX, inY );
+                }
             }
         }
     
@@ -135,11 +146,18 @@ void PageComponent::base_pointerDown( float inX, float inY ){
     inX -= mX;
     inY -= mY;
     
-    for( int i=0; i<mComponents.size(); i++ ) {
-        PageComponent *c = *( mComponents.getElement( i ) );
-    
-        if( c->isVisible() && c->isActive() ) {
-            c->base_pointerDown( inX, inY );
+    if( mMouseEventHog != NULL ) {
+        if( mMouseEventHog->isVisible() && mMouseEventHog->isActive() ) {
+            mMouseEventHog->base_pointerDown( inX, inY );
+            }
+        }
+    else { 
+        for( int i=0; i<mComponents.size(); i++ ) {
+            PageComponent *c = *( mComponents.getElement( i ) );
+            
+            if( c->isVisible() && c->isActive() ) {
+                c->base_pointerDown( inX, inY );
+                }
             }
         }
     
@@ -156,11 +174,18 @@ void PageComponent::base_pointerDrag( float inX, float inY ){
     inX -= mX;
     inY -= mY;
     
-    for( int i=0; i<mComponents.size(); i++ ) {
-        PageComponent *c = *( mComponents.getElement( i ) );
-    
-        if( c->isVisible() && c->isActive() ) {
-            c->base_pointerDrag( inX, inY );
+    if( mMouseEventHog != NULL ) {
+        if( mMouseEventHog->isVisible() && mMouseEventHog->isActive() ) {
+            mMouseEventHog->base_pointerDrag( inX, inY );
+            }
+        }
+    else {
+        for( int i=0; i<mComponents.size(); i++ ) {
+            PageComponent *c = *( mComponents.getElement( i ) );
+            
+            if( c->isVisible() && c->isActive() ) {
+                c->base_pointerDrag( inX, inY );
+                }
             }
         }
 
@@ -172,12 +197,19 @@ void PageComponent::base_pointerDrag( float inX, float inY ){
 void PageComponent::base_pointerUp( float inX, float inY ){
     inX -= mX;
     inY -= mY;
-    
-    for( int i=0; i<mComponents.size(); i++ ) {
-        PageComponent *c = *( mComponents.getElement( i ) );
-    
-        if( c->isVisible() && c->isActive() ) {
-            c->base_pointerUp( inX, inY );
+
+    if( mMouseEventHog != NULL ) {
+        if( mMouseEventHog->isVisible() && mMouseEventHog->isActive() ) {
+            mMouseEventHog->base_pointerUp( inX, inY );
+            }
+        }
+    else {
+        for( int i=0; i<mComponents.size(); i++ ) {
+            PageComponent *c = *( mComponents.getElement( i ) );
+            
+            if( c->isVisible() && c->isActive() ) {
+                c->base_pointerUp( inX, inY );
+                }
             }
         }
 
@@ -264,4 +296,25 @@ void PageComponent::setWaiting( char inWaiting ) {
     if( mParent != NULL ) {
         mParent->setWaiting( inWaiting );
         }
+    }
+
+
+
+void PageComponent::setHogMouseEvents( char inHogMouseEvents ) {
+    PageComponent *newHog = this;
+    
+    
+    if( ! inHogMouseEvents ) {
+        newHog = NULL;
+        }
+    
+    if( mParent != NULL ) {
+        mParent->setMouseEventHog( newHog );
+        }
+    }
+
+
+
+void PageComponent::setMouseEventHog( PageComponent *inHog ) {
+    mMouseEventHog = inHog;
     }

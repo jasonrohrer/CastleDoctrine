@@ -142,6 +142,17 @@ class PageComponent : public GUIComponent {
         
 
 
+        // this component blocks all other sibling sub-components from
+        // receiving events
+        void setHogMouseEvents( char inHogMouseEvents );
+        
+
+        // sets the event hog amoung the sub-components of this component
+        // or NULL to set no event hog
+        // auto-cleared with clearState called
+        void setMouseEventHog( PageComponent *inHog );
+        
+
 
         SimpleVector<PageComponent*> mComponents;
         
@@ -152,6 +163,8 @@ class PageComponent : public GUIComponent {
         char mVisible;
 
         char mIgnoreEvents;
+
+        PageComponent *mMouseEventHog;
 
     };
 

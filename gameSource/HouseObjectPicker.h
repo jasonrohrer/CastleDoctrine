@@ -76,6 +76,10 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         
         virtual void setVisible( char inIsVible );
 
+        
+        char isDropDownOpen();
+        int getDropDownNumCells();
+        
 
     protected:
         virtual void clearState() {
@@ -91,6 +95,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         char mHover;
         char mDragOver;
         
+        char mDropDownOpen;
+        char mHoverIndex;
 
         char mShowTools;
         double mSpriteScale;

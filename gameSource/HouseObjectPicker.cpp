@@ -39,6 +39,8 @@ HouseObjectPicker::HouseObjectPicker( double inX, double inY,
         : PageComponent( inX, inY ),
           mHover( false ),
           mDragOver( false ),
+          mDropDownOpen( false ),
+          mHoverIndex( -1 ),
           mShowTools( inTools ), 
           mSpriteScale( 1 / 32.0 ),
           mShouldShowGridView( false ),
@@ -121,12 +123,12 @@ HouseObjectPicker::~HouseObjectPicker() {
 void HouseObjectPicker::triggerToolTip() {
     if( mShowTools ) {
         setToolTip( getToolDescription( 
-                        mObjectList.getElement( mSelectedIndex )->id ) );
+                        mObjectList.getElement( mHoverIndex )->id ) );
         }
     else {
         char *description = 
             getObjectDescription( 
-                mObjectList.getElement( mSelectedIndex )->id, 
+                mObjectList.getElement( mHoverIndex )->id, 
                 0,
                 mWifeName );
         
@@ -180,6 +182,7 @@ void HouseObjectPicker::setSelectedObject( int inObjectID ) {
         
         if( r->id == inObjectID ) {
             mSelectedIndex = i;
+            mHoverIndex = i;
             // auto-move it to top of stack
             useSelectedObject();
 
@@ -225,6 +228,7 @@ void HouseObjectPicker::useSelectedObject() {
     mObjectList.push_front( r );
     
     mSelectedIndex = 0;
+    mHoverIndex = 0;
     
     mUpButton.setVisible( false );
     mDownButton.setVisible( true );
@@ -361,12 +365,14 @@ void HouseObjectPicker::draw() {
         delete [] priceString;        
         }
 
-    if( mHover ) {
+    if( mDropDownOpen ) {
         doublePair center = { 0, 0 };
             
+
+        int numCells = getDropDownNumCells();
         
         for( int i=mSelectedIndex+1; 
-             i<mSelectedIndex + 5 && i <mObjectList.size(); 
+             i <= mSelectedIndex + numCells; 
              i++ ) {
             
             center.y -=2;
@@ -494,9 +500,11 @@ void HouseObjectPicker::setPrices( ObjectPriceRecord *inRecords,
 
     if( mObjectList.size() > 0 ) {
         mSelectedIndex = 0;
+        mHoverIndex = 0;
         }
     else {
         mSelectedIndex = -1;
+        mHoverIndex = -1;
         }
     }
 
@@ -537,17 +545,51 @@ char HouseObjectPicker::isInside( float inX, float inY ) {
 
 
 
+char HouseObjectPicker::isDropDownOpen() {
+    return mDropDownOpen;
+    }
+
+
+
+int HouseObjectPicker::getDropDownNumCells() {
+    int dropDownNumCells = 5;
+    if( mSelectedIndex + dropDownNumCells >= mObjectList.size() ) {
+        dropDownNumCells = mObjectList.size() - mSelectedIndex - 1;
+        }
+    return dropDownNumCells;
+    }
+
+
+
 void HouseObjectPicker::pointerMove( float inX, float inY ) {
+    
+    
     if( isInside( inX, inY ) ) {
+        mHoverIndex = mSelectedIndex;
         triggerToolTip();
         mHover = true;
+        mDropDownOpen = true;
+        setHogMouseEvents( true );
         }
+    else if( mDropDownOpen &&
+             fabs( inX ) < 1.75 &&
+             inY < 1 && 
+             inY > -( 1 + getDropDownNumCells() * 2 ) ) {
+        mHover = false;
+        mDropDownOpen = true;
+        
+        mHoverIndex = mSelectedIndex + ( (int)( -inY + 1 ) / 2 );
+        triggerToolTip();
+        }
+    
     else {
-        if( mHover ) {
+        if( mHover || mDropDownOpen ) {
             // hover just left
             setToolTip( NULL );
             }
         mHover = false;
+        mDropDownOpen = false;
+        setHogMouseEvents( false );
         }
     }
 
@@ -585,6 +627,24 @@ void HouseObjectPicker::pointerUp( float inX, float inY ) {
     else if( isInside( inX, inY ) ) {
         // click means show grid view (two ways to show grid view)
         mShouldShowGridView = true;
+        mHover = false;
+        mDropDownOpen = false;
+        setHogMouseEvents( false );
+        fireActionPerformed( this );
+        }
+    else if( mDropDownOpen &&
+             fabs( inX ) < 1 &&
+             inY < 1 && 
+             inY > -( 1 + getDropDownNumCells() * 2 ) ) {
+        mHover = false;
+        mDropDownOpen = false;
+        setHogMouseEvents( false );
+
+        mHoverIndex = mSelectedIndex + ( (int)( -inY + 1 ) / 2 );
+        mSelectedIndex = mHoverIndex;
+
+        useSelectedObject();
+
         fireActionPerformed( this );
         }
     }

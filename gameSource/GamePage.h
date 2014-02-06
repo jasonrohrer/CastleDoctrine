@@ -67,6 +67,11 @@ class GamePage : public PageComponent {
         virtual void step() {
             };
         
+        // called before added sub-components have been drawn
+        virtual void drawUnderComponents( doublePair inViewCenter, 
+                                          double inViewSize ) {
+            };
+        // called after added sub-components have been drawn
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize ) {
             };

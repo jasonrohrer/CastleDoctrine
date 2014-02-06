@@ -97,6 +97,8 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         virtual void actionPerformed( GUIComponent *inTarget );
 
 
+        virtual void drawUnderComponents( doublePair inViewCenter, 
+                                          double inViewSize );
         virtual void draw( doublePair inViewCenter, 
                            double inViewSize );
         

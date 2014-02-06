@@ -164,6 +164,8 @@ void GamePage::base_draw( doublePair inViewCenter,
         return;
         }
 
+    
+    drawUnderComponents( inViewCenter, inViewSize );
 
 
     PageComponent::base_draw( inViewCenter, inViewSize );
