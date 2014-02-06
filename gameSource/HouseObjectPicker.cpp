@@ -370,14 +370,54 @@ void HouseObjectPicker::draw() {
             
 
         int numCells = getDropDownNumCells();
+
+        double shadowWidth = 1 + 4 * mPixWidth;
+            
+        double halfPixWidth = mPixWidth / 2;
+
+        char firstBox = true;
         
         for( int i=mSelectedIndex+1; 
              i <= mSelectedIndex + numCells; 
              i++ ) {
+
+            char lastBox = false;
             
+            if( i == mSelectedIndex + numCells ) {
+                lastBox = true;
+                }
+        
             center.y -=2;
             
+            
+            setDrawColor( 0, 0, 0, .125 );
+
+
+
+            for( int s=0; s<0; s++ ) {
+                
+                double bottom = center.y - 1;
+                
+                if( lastBox ) {
+                    bottom = center.y - shadowWidth + s * halfPixWidth;
+                    }
+
+                double top = center.y + 1;
+                
+                if( firstBox ) {
+                    // don't draw shadow over up/down arrows
+                    top = center.y;
+                    }
+
+                drawRect( center.x - shadowWidth + s * halfPixWidth, 
+                          top, 
+                          center.x + shadowWidth - s * halfPixWidth, 
+                          bottom );
+                }
+            
             drawObjectInBox( i, center );
+
+            firstBox = false;
             }
         
         }
