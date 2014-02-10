@@ -5153,6 +5153,18 @@ function cd_mapNameToUserID( $inCharacterName ) {
     if( mysql_numrows( $result ) != 0 ) {        
         $user_id = mysql_result( $result, 0, "user_id" );    
         }
+    else {
+        // try shadow table
+        $query = "SELECT user_id FROM $tableNamePrefix"."houses_owner_died ".
+            "WHERE character_name = '$inCharacterName';";
+
+        $result = cd_queryDatabase( $query );
+    
+        if( mysql_numrows( $result ) != 0 ) {        
+            $user_id = mysql_result( $result, 0, "user_id" );        
+            }
+        }
+    
     return $user_id;
     }
 
@@ -5184,7 +5196,8 @@ function cd_startRobHouse() {
     $to_rob_user_id = cd_mapNameToUserID( $to_rob_character_name );
 
     if( $to_rob_user_id == -1 ) {
-        // requested character name gone, assume died and house reclaimed
+        // requested character name gone, and not in shadow table either,
+        // assume died and house reclaimed
         echo "RECLAIMED";
         return;
         }
@@ -5252,6 +5265,7 @@ function cd_startRobHouse() {
         "AND edit_count != 0 ".
         "AND ( value_estimate != 0 OR edit_count > 0 ) ".
         "AND ( rob_checkout = 0 OR robbing_user_id = $user_id ) ".
+        "AND character_name = '$to_rob_character_name' ".
         "AND creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
         "                             '$newHouseListingDelayTime' ) ".
         "FOR UPDATE;";
@@ -5261,10 +5275,30 @@ function cd_startRobHouse() {
     $numRows = mysql_numrows( $result );
     
     if( $numRows < 1 ) {
-        // don't log this, because it happens a lot (when someone else
-        // snatches the house first)
-        cd_transactionDeny( false );
-        return;
+
+        // try query on shadow table too, in case user already checked this
+        // house out in a previous request that may have timed out (and the
+        // owner may have since died)
+        // thus, the user may have a shadow-table house checked out already!
+        $mainTableName = "$tableNamePrefix"."houses";
+        $shadowTableName = "$tableNamePrefix"."houses_owner_died";
+    
+        // point same query at shadow table
+        $query = preg_replace( "/$mainTableName/", "$shadowTableName",
+                               $query );
+
+        $result = cd_queryDatabase( $query );
+        
+        $numRows = mysql_numrows( $result );
+
+        if( $numRows < 1 ) {
+            // not found in main OR shadow
+            
+            // don't log this, because it happens a lot (when someone else
+            // snatches the house first)
+            cd_transactionDeny( false );
+            return;
+            }
         }
     $row = mysql_fetch_array( $result, MYSQL_ASSOC );
 

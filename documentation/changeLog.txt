@@ -30,6 +30,10 @@ Version 31a  Live Server Fixes
 --Added retries to work around deadlocks in isolated queries at the tail end
   of endRobHouse.
 
+--Fix for rare bug where a timed out startRobHouse request crosses paths with
+  the owner of that house dying, resulting in the forced death of the robber
+  (thanks Max Jehle).
+
 
 
 
