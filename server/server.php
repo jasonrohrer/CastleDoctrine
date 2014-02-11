@@ -5512,6 +5512,38 @@ function cd_endRobHouse() {
     $reachedVaultRecently = mysql_result( $result, 0, 0 );
 
 
+
+
+    $map_encryption_key = cd_requestFilter( "map_encryption_key", "/\S+/" );
+    // in base64
+    $encrypted_house_map = cd_requestFilter( "encrypted_house_map",
+                                             "/[A-Za-z0-9\/+=]+/" );
+
+    $house_map = cd_sha1Decrypt( $map_encryption_key, $encrypted_house_map );
+
+    if( $success == 1 ||
+        $family_killed_count > 0 ) {
+
+        // This is a damage-saving robbery, at least according to the player.
+        // We haven't verified this yet through simulation, BUT
+        // we should premptively store the house map in the cache
+        // here before starting a transaction.
+
+        // otherwise, there is a chance that the new map will NOT be in the
+        // cache for a moment during the commit (but the house table will
+        // be updated to contain that new hash)
+        
+        // never store house map with "empty vault" state in place
+        // because vault status can change separately from map changing
+        $house_map_no_empty_vault =
+            preg_replace( "/#999:2!#/", "#999#", $house_map );
+        
+        cd_storeHouseMap( $house_map_no_empty_vault );
+        }
+
+
+
+    
     
     
     cd_queryDatabase( "SET AUTOCOMMIT=0" );
@@ -5731,13 +5763,6 @@ function cd_endRobHouse() {
 
     
 
-    
-    $map_encryption_key = cd_requestFilter( "map_encryption_key", "/\S+/" );
-    // in base64
-    $encrypted_house_map = cd_requestFilter( "encrypted_house_map",
-                                             "/[A-Za-z0-9\/+=]+/" );
-
-    $house_map = cd_sha1Decrypt( $map_encryption_key, $encrypted_house_map );
     
     
     
