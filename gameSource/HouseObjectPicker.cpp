@@ -371,7 +371,7 @@ void HouseObjectPicker::draw() {
 
         int numCells = getDropDownNumCells();
 
-        double shadowWidth = 1 + 4 * mPixWidth;
+        double shadowWidth = 1 + 3 * mPixWidth;
             
         double halfPixWidth = mPixWidth / 2;
 
@@ -394,7 +394,7 @@ void HouseObjectPicker::draw() {
 
 
 
-            for( int s=0; s<0; s++ ) {
+            for( int s=0; s<6; s++ ) {
                 
                 double bottom = center.y - 1;
                 
