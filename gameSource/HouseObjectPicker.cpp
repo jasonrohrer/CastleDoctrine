@@ -614,11 +614,16 @@ void HouseObjectPicker::pointerMove( float inX, float inY ) {
     else if( mDropDownOpen &&
              fabs( inX ) < 1.75 &&
              inY < 1 && 
-             inY > -( 1 + getDropDownNumCells() * 2 ) ) {
+             inY > -( 1.75 + getDropDownNumCells() * 2 ) ) {
         mHover = false;
         mDropDownOpen = true;
         
         mHoverIndex = mSelectedIndex + ( (int)( -inY + 1 ) / 2 );
+
+        // watch mouse hanging over bottom
+        if( mHoverIndex - mSelectedIndex > getDropDownNumCells() ) {
+            mHoverIndex = mSelectedIndex + getDropDownNumCells();
+            }
         triggerToolTip();
         }
     
