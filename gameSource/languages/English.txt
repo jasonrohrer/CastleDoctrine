@@ -96,6 +96,12 @@ openAuctionListTip "View currently running gallery auctions"
 gridViewObjects "View full grid of objects"
 gridViewTools "View full grid of tools"
 
+moreButtonObject "%d more object..."
+moreButtonTool "%d more tool..."
+
+moreButtonObjects "%d more objects..."
+moreButtonTools "%d more tools..."
+
 
 pickerDescription "Pick one:"
 pickerBack "Back"

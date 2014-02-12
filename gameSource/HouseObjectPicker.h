@@ -116,6 +116,8 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         SpriteButton mDownButton;
         SpriteButton mGridViewButton;
         
+        SpriteHandle mMoreSprite;
+
 
         char *mWifeName;
 
@@ -124,8 +126,14 @@ class HouseObjectPicker : public PageComponent, public ActionListener,
         char isInside( float inX, float inY );
         
         
+        void drawBox( doublePair inPosition, double inVerticalRadius = 1 );
         void drawObjectInBox( int inSelectedIndex, doublePair inPosition );
+
+
+        char getMoreButtonPresent();
         
+        // 0 if not present
+        double getMoreButtonExtent();
     };
 
 
