@@ -598,7 +598,7 @@ void EditHousePage::drawUnderComponents( doublePair inViewCenter,
 void EditHousePage::draw( doublePair inViewCenter, 
                                double inViewSize ) {
         
-    doublePair labelPos = { 0, 6.75 };
+    doublePair labelPos = { 0, 7 };
     
     drawMessage( "editDescription", labelPos, false );    
 

@@ -72,7 +72,7 @@ blueprintDescription "Blueprint for %s house:"
 
 
 
-editDescription "Work on your house:"
+editDescription "Work on your house:##(Five idle minutes make you leave...)"
 
 loadBackpackDescription "Load your backpack:"
 loadBackpackSellModeDescription "Sell tools:"
@@ -220,7 +220,7 @@ startTileDescription "Welcome Mat"
 wifeHolding "%s (carrying $%d)"
 
 
-robDescription "Robbing %s house:##(Five stationary minutes are deadly...)"
+robDescription "Robbing %s house:##(Five idle minutes are deadly...)"
 
 robCops "Sirens?"
 

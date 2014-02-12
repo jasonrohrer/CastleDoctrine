@@ -17,6 +17,8 @@ Version 32
   at the end of a damage-saving robbery were stuck closed in edit mode---now
   ALL trapdoors are closed in edit mode).
 
+--Warning on edit screen about timeout.  Reworded robbery timeout warning.
+
 
 
 
