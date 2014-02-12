@@ -9,6 +9,14 @@ Version 32
   neighborhood on the house list instead of jumping back to the top of the list
   (thanks Jere).
 
+--Much improved object and tool picker that displays a drop down menu showing
+  the top six items on the stack.
+
+--Trapdoor is now CLOSED in edit mode, making it much easier to walk around
+  your house, and also fixing some inconsitencies (trapdoors that were closed
+  at the end of a damage-saving robbery were stuck closed in edit mode---now
+  ALL trapdoors are closed in edit mode).
+
 
 
 
