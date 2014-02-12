@@ -490,6 +490,15 @@ void HouseObjectPicker::draw() {
                           top, 
                           center.x + shadowWidth - s * halfPixWidth, 
                           bottom );
+
+                if( firstBox ) {
+                    // draw extra over right edge so shadow covers
+                    // any price that sticks out
+                    drawRect( center.x, 
+                              center.y + 1, 
+                              center.x + shadowWidth - s * halfPixWidth, 
+                              bottom );
+                    }
                 }
             
             if( lastBox && drawMoreButton ) {
