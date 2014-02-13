@@ -1585,6 +1585,8 @@ void drawFrame( char inUpdate ) {
                     currentGamePage = fetchSelfTestReplayPage;
                     
                     fetchSelfTestReplayPage->setOwnerID( r->uniqueID );
+                    fetchSelfTestReplayPage->setOwnerCharacterName( 
+                        r->rawCharacterName );
                     
                     currentGamePage->base_makeActive( true );
                     }

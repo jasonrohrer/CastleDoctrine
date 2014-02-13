@@ -6848,7 +6848,11 @@ function cd_getSelfTestLog() {
     
 
     $house_owner_id = cd_requestFilter( "house_owner_id", "/\d+/" );
-    
+    $house_owner_character_name =
+        cd_requestFilter( "house_owner_character_name", "/[A-Z_]+/i" );
+
+
+    $owner_user_id = cd_mapNameToUserID( $house_owner_character_name );
     
     
     $query = "SELECT character_name, ".
@@ -6856,7 +6860,7 @@ function cd_getSelfTestLog() {
         "self_test_house_map_hash, self_test_move_list, wife_present, ".
         "wife_loot_value, music_seed ".
         "FROM $tableNamePrefix"."houses ".
-        "WHERE user_id = '$house_owner_id';";
+        "WHERE user_id = '$owner_user_id';";
 
     $result = cd_queryDatabase( $query );
 

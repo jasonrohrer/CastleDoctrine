@@ -29,7 +29,8 @@ Version 32
 --Optimized use of blur filters during loading, reduced load time by 20%.
 
 --Fixed invisible objects in saved map shots ('+' key) from tape playback page.
- 
+
+--Fixed get_self_test_log admin call to work with v22 house list changes.
 
 
 

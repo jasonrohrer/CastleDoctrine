@@ -629,6 +629,7 @@ server.php?action=get_self_test_log&user_id=[id number]
                                    &sequence_number=[number]
                                    &ticket_hmac=[hmac-sha1, hex-encoded]
                                    &house_owner_id=[id number]
+                                   &house_owner_character_name=[name]
 Returns:
 owner_name
 houseMap
@@ -648,6 +649,9 @@ moveList = ASCII string representing moves made
 
 Note:
 This call is DENIED if user_id does not have admin status.
+
+house_owner_id is the home_id returned by list_houses
+
 
 
 
