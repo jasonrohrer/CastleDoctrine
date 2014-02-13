@@ -218,6 +218,10 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         // fade applied to mobiles
         float *mHouseMapMobileCellFades;
 
+        // set when taking a whole map shot so that fades are skipped
+        // false otherwise
+        char mDoNotApplyFades;
+
         // we draw one last row of tiles, from off the bottom edge of the
         // screen, to complete overhangs on top of the last row.
         // should bottom row "overhang" tiles that are from non-connected

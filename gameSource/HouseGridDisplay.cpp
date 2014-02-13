@@ -59,6 +59,7 @@ HouseGridDisplay::HouseGridDisplay( double inX, double inY,
           mHouseMapMobileCellStates( NULL ),
           mHouseMapCellFades( NULL ),
           mHouseMapMobileCellFades( NULL ),
+          mDoNotApplyFades( false ),
           mBottomRowNonConnectedFaded( false ),
           mHouseMapToolTipOverrideOn( NULL ),
           mHouseMapToolTipOverrideState( NULL ),
@@ -1774,7 +1775,7 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
             
             char isNeverFade = isSubMapPropertySet( i, neverFade );
 
-            if( isNeverFade ) {
+            if( isNeverFade || mDoNotApplyFades ) {
                 houseTileFade = 1;
                 }
 
@@ -1992,6 +1993,10 @@ void HouseGridDisplay::drawTiles( char inBeneathShadowsOnly ) {
                     // mobiles are never walls, always fade
                     float fade = mHouseMapMobileCellFades[fullI];
                     
+                    if( mDoNotApplyFades ) {
+                        fade = 1;
+                        }
+
                     if( isPropertySet( mobID, mobState, darkHaloBehind ) ) {
                         
                         drawDarkHaloBehind( mobID, mobOrientation, mobState,
@@ -4025,6 +4030,8 @@ void HouseGridDisplay::saveWholeMapImage() {
 
     Image **blockImages = new Image*[ numBlockD * numBlockD ];
     
+    mDoNotApplyFades = true;
+    
     for( int yb=0; yb<numBlockD; yb++ ) {
         // y of first tile in block
         int y = yb * blockD;
@@ -4071,6 +4078,7 @@ void HouseGridDisplay::saveWholeMapImage() {
                                  2 * TILE_RADIUS * blockD );
             }
         }
+    mDoNotApplyFades = false;
     
     
     int blockPixelD = blockImages[0]->getWidth();
