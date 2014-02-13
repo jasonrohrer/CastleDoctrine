@@ -23,6 +23,8 @@ Version 32
   vault right as shotgun-wife stepped next to vault (so robber succeeded and
   died in same move).
 
+--Fixed signature weaknesses for object groupWith settings and to prevent
+  deletion of states (thanks Arakira).
 
 
 

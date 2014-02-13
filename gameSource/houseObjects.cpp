@@ -756,7 +756,8 @@ static houseObjectState readState( File *inStateDir, int inObjectID,
         if( tgaBytes != NULL ) {
             char *fileHash = computeSHA1Digest( tgaBytes, length );
             
-            char *fullString = autoSprintf( "%s %s",
+            char *fullString = autoSprintf( "%d %d %s %s",
+                                            inObjectID, inStateNumber,
                                             fileHash, propertySignatureKey );
             delete [] fileHash;
             
@@ -1028,6 +1029,88 @@ void initHouseObjects() {
                     }
 
                 objects.push_back( r );
+
+
+
+                // handle full-object signature for record r
+                File *objectSigFile = f->getChildFile( "objectSignature.txt" );
+                char *objectSigContents = objectSigFile->readFileContents();
+                
+                char *savedSig = NULL;
+                if( objectSigContents != NULL ) {
+                    savedSig = trimWhitespace( objectSigContents );
+                    delete[] objectSigContents;
+                    }
+                
+                SimpleVector<char> workingString;
+                
+                char *headerString = 
+                    autoSprintf( "%d %d %d ", r.id, 
+                                 r.numStates, r.numGroupWith );
+                
+                workingString.appendElementString( headerString );
+                delete [] headerString;
+
+                for( int i=0; i<r.numStates; i++ ) {
+                    char *stateString = 
+                        autoSprintf( "%d %d ", 
+                                     i, r.states[i].numOrientations );
+                    
+                    workingString.appendElementString( stateString );
+                    delete [] stateString;
+                    }
+                for( int i=0; i<r.numGroupWith; i++ ) {
+                    char *groupWithString = 
+                        autoSprintf( "%s ", r.groupWithNames[i] );
+                    
+                    workingString.appendElementString( groupWithString );
+                    delete [] groupWithString;
+                    }
+                
+                char *stringToSign = workingString.getElementString();
+                
+                char *sig = computeSHA1Digest( stringToSign );
+                
+                delete [] stringToSign;
+                
+                char sigOK = true;
+            
+                if( regeneratePropertySignatures ) {
+                    objectSigFile->writeToFile( sig );
+                    }
+                else if( savedSig == NULL ) {
+                    sigOK = false;
+                    }
+                else if( strcmp( sig, savedSig ) != 0 ) {
+                    sigOK = false;
+                    }
+                
+                delete objectSigFile;
+               
+                if( savedSig != NULL ) {
+                    delete [] savedSig;
+                    }
+
+                if( sig != NULL ) {
+                    delete [] sig;
+                    }
+                
+
+
+                if( ! sigOK ) {
+                    
+                    char *dirName = f->getFullFileName();
+                    char *message = 
+                        autoSprintf( "%s\n%s",
+                                     translate( "badObjectSignature" ),
+                                     dirName );
+                    delete [] dirName;
+                    
+                    loadingFailed( message );
+                    delete [] message;
+                    }
+
+                
                 }
             else {
                 delete [] r.name;
