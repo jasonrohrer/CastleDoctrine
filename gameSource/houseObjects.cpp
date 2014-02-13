@@ -339,6 +339,9 @@ static SpriteHandle imageToHaloSprite( Image *inImage ) {
     
     int w = alphaImage->getWidth();
     int h = alphaImage->getHeight();
+
+    // room for blur to spread 6 pixels from sprite outline
+    int extraRoom = 6;
     
     // extra room
     int haloW = w * 2;
@@ -346,6 +349,14 @@ static SpriteHandle imageToHaloSprite( Image *inImage ) {
     
     int offsetX = w/2;
     int offsetY = h/2;
+
+    // only apply blur to this region for efficiency
+    // (found with profiler)
+    int haloRegionStartX = offsetX -  extraRoom - 1;
+    int haloRegionStartY = offsetY - extraRoom - 1;
+
+    int haloRegionEndX = offsetX + w + extraRoom + 1;
+    int haloRegionEndY = offsetY + h + extraRoom + 1;
     
 
     int numHaloPixels = haloW * haloH;
@@ -376,9 +387,9 @@ static SpriteHandle imageToHaloSprite( Image *inImage ) {
                 haloChannel[haloI] = 255;
                 }
             
-            if( y > 1 && y < haloH - 1 
+            if( y > haloRegionStartY && y < haloRegionEndY 
                 && 
-                x > 1 && x < haloW - 1 ) {
+                x > haloRegionStartX && x < haloRegionEndX ) {
                 // away from border
                 touchedPixels[ numTouched ] = haloI;
                 numTouched++;

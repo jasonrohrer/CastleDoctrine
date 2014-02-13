@@ -26,6 +26,8 @@ Version 32
 --Fixed signature weaknesses for object groupWith settings and to prevent
   deletion of states (thanks Arakira).
 
+--Optimized use of blur filters during loading, reduced load time by 20%.
+ 
 
 
 
