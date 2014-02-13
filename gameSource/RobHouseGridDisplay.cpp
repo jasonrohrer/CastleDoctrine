@@ -713,8 +713,10 @@ void RobHouseGridDisplay::applyTransitionsAndProcess() {
 
     // block death of robber on welcome mat
     // (can't even be shot by wife while on welcome mat)
+    // ALSO if robber already hit goal, robber cannot die
 
-    if( mRobberIndex != mStartIndex ) {
+    if( mRobberIndex != mStartIndex &&
+        mRobberIndex != mGoalIndex ) {
         
         // check possible sources of death
         // robber location and four neighbors

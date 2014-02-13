@@ -19,6 +19,11 @@ Version 32
 
 --Warning on edit screen about timeout.  Reworded robbery timeout warning.
 
+--Fixed bug that caused duplication of family members if robber stepped onto
+  vault right as shotgun-wife stepped next to vault (so robber succeeded and
+  died in same move).
+
+
 
 
 
