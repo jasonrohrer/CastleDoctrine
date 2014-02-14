@@ -919,6 +919,18 @@ void drawFrame( char inUpdate ) {
 
 
     if( !inUpdate ) {
+
+        if( isQuittingBlocked() ) {
+            // unsafe NOT to keep updating here, because pending network
+            // requests can stall
+
+            // keep stepping current page, but don't do any other processing
+            // (and still block user events from reaching current page)
+            if( currentGamePage != NULL ) {
+                currentGamePage->base_step();
+                }
+            }
+
         drawFrameNoUpdate( false );
             
         drawPauseScreen();

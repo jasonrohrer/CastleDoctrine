@@ -32,6 +32,9 @@ Version 32
 
 --Fixed get_self_test_log admin call to work with v22 house list changes.
 
+--Made pausing during deadly times safer by ensuring that pending network requests still get processed (thanks David Rhinehart).
+
+
 
 
 
