@@ -87,7 +87,6 @@ print
         gsave
         translate
         csquare
-        csquare_edge
         grestore
 } def
 
