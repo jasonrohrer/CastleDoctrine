@@ -30,6 +30,12 @@ $squareWidth = $pageWidth / $width;
 $squareHeight = $pageWidth / $height;
 
 
+$whiteBorder = 4 * 72;
+
+$pageWidthB = $pageWidth + $whiteBorder;
+$pageHeightB = $pageHeight + $whiteBorder;
+
+
 #print "image is $width x $height\n";
 
 $maxColorVal = <FILE>;
@@ -44,7 +50,7 @@ print
 %%CreationDate: June 22, 2008
 %%DocumentData: Clean7Bit
 %%Origin: 0 0
-%%BoundingBox: 0 0 $pageWidth $pageHeight
+%%BoundingBox: -$whiteBorder -$whiteBorder $pageWidthB $pageHeightB
 %%LanguageLevel: 2
 %%Pages: 1
 %%Page: 1 1
@@ -68,6 +74,19 @@ print
         gsave
         translate
         csquare
+        grestore
+} def
+
+
+
+% draws a black line using x y x2 y2 from the stack
+/dline {
+        gsave
+        0 0 0 setrgbcolor
+        2 setlinewidth
+        moveto
+        lineto
+        stroke
         grestore
 } def
 
@@ -101,11 +120,128 @@ for( $y=0; $y<$height; $y++ ) {
 		$r = $r / $maxColorVal;
 		$g = $g / $maxColorVal;
 		$b = $b / $maxColorVal;
+
+		if( $y == 0 ) {
+			for( $i=4; $i>0; $i-- ) {
+				if( $x == 0 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX - $squareWidth, 
+							$squareY + $i * $squareHeight );
+				}
+
+				printf( "%.3f %.3f %.3f %d %d dp\n", 
+						$r, $g, $b, $squareX, $squareY + $i * $squareHeight );
+
+				if( $x == $width - 1 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX + $squareWidth, 
+							$squareY + $i * $squareHeight );
+				}
+			}
+		}
+
+		if( $x == 0 ) {
+			for( $i=4; $i>0; $i-- ) {
+				if( $y == 0 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX - $i * $squareWidth, 
+							$squareY + $squareHeight );
+				}
+
+				printf( "%.3f %.3f %.3f %d %d dp\n", 
+						$r, $g, $b, $squareX - $i * $squareWidth, $squareY );
+				
+				if( $y == $height - 1 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX - $i * $squareWidth, 
+							$squareY - $squareHeight );
+				}
+			}
+		}
 		
 		printf( "%.3f %.3f %.3f %d %d dp\n", 
 				$r, $g, $b, $squareX, $squareY );
+
+		
+		if( $y == $width - 1 ) {
+			for( $i=1; $i<=4; $i++ ) {
+				if( $x == 0 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX - $squareWidth, 
+							$squareY - $i * $squareHeight );
+				}
+
+				printf( "%.3f %.3f %.3f %d %d dp\n", 
+						$r, $g, $b, $squareX, $squareY - $i * $squareHeight );
+
+				if( $x == $width - 1 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX + $squareWidth, 
+							$squareY - $i * $squareHeight );
+				}
+			}
+		}
+
+
+
+		if( $x == $width - 1 ) {
+			for( $i=1; $i<=4; $i++ ) {
+				if( $y == 0 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX + $i * $squareWidth, 
+							$squareY + $squareHeight );
+				}
+				printf( "%.3f %.3f %.3f %d %d dp\n", 
+						$r, $g, $b, $squareX + $i * $squareWidth, $squareY );
+				if( $y == $height - 1 ) {
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX + $i * $squareWidth, 
+							$squareY - $squareHeight );
+				}
+			}
+		}
+
 	}
 }
+
+
+# tickmarks
+
+my $tickLength = 72;
+
+printf( "%d 0  %d  0 dline\n",
+		-$whiteBorder, -$whiteBorder + $tickLength );
+
+printf( "%d 0  %d  0 dline\n",
+		$pageWidthB, $pageWidthB - $tickLength );
+
+printf( "%d $pageHeight  %d  $pageHeight dline\n",
+		-$whiteBorder, -$whiteBorder + $tickLength );
+
+printf( "%d $pageHeight  %d  $pageHeight dline\n",
+		$pageWidthB, $pageWidthB - $tickLength );
+
+
+printf( "0 %d 0  %d dline\n",
+		-$whiteBorder, -$whiteBorder + $tickLength );
+
+printf( "0 %d 0  %d dline\n",
+		$pageHeightB, $pageHeightB - $tickLength );
+
+
+printf( "$pageWidth %d $pageWidth  %d dline\n",
+		-$whiteBorder, -$whiteBorder + $tickLength );
+
+printf( "$pageWidth %d $pageWidth  %d dline\n",
+		$pageHeightB, $pageHeightB - $tickLength );
 
 print "\nshowpage\n";
 
