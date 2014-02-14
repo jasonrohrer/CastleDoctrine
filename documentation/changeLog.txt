@@ -1,4 +1,4 @@
-Version 32
+Version 32    2014-February-14
 
 --Client support for not specifying a skip in the first house list fetched,
   allowing the server to pick a good page in the house list based on the
@@ -32,7 +32,8 @@ Version 32
 
 --Fixed get_self_test_log admin call to work with v22 house list changes.
 
---Made pausing during deadly times safer by ensuring that pending network requests still get processed (thanks David Rhinehart).
+--Made pausing during deadly times safer by ensuring that pending network 
+  requests still get processed (thanks David Rhinehart).
 
 
 
