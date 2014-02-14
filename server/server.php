@@ -3372,6 +3372,25 @@ function cd_idQuantityToResaleValue( $inIDQuantityString, $inPriceArray ) {
 
 
 
+// computes purchase cost of items in an ID:quantity list string
+function cd_idQuantityToPurchaseCost( $inIDQuantityString, $inPriceArray ) {
+    global $resaleRate;
+    
+    $quantityArray = cd_idQuantityStringToArray( $inIDQuantityString );
+
+    $totalValue = 0;
+
+
+    foreach( $quantityArray as $id => $quantity ) {
+
+        $totalValue += $quantity * $inPriceArray[$id];
+        }
+    
+    return $totalValue;
+    }
+
+
+
 // count total sum of quantities in string
 function cd_idQuantityStringCount( $inIDQuantityString ) {
 
@@ -4985,13 +5004,22 @@ function cd_listHouses() {
 
 
     if( $findGoodSkip ) {
+        $query = "SELECT value_estimate, backpack_contents FROM $tableName ".
+            "WHERE user_id = $user_id;";
+        $result = cd_queryDatabase( $query );
+        
+        $value_estimate = mysql_result( $result, 0, "value_estimate" );
+        $backpack_contents = mysql_result( $result, 0, "backpack_contents" );
+
+        $backpack_cost = cd_idQuantityToPurchaseCost( $backpack_contents,
+                                                      cd_getPriceArray() );
+
+        $totalWealth = $value_estimate + $backpack_cost;
+        
         $query = "SELECT COUNT(*) FROM $tableName as houses ".
             $whereClause .
-            "AND houses.value_estimate >= ".
-            "    ( SELECT value_estimate FROM $tableName ".
-            "                            WHERE user_id = $user_id );";
+            "AND houses.value_estimate >= $totalWealth;";
 
-        // fixme:
         // query for count.  Find good skip that is a multiple of LIMIT
         $result = cd_queryDatabase( $query );
         $numBeforeGoodSkip = mysql_result( $result, 0, 0 );

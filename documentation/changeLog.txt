@@ -1,3 +1,12 @@
+Version 32  Live Server Fixes
+
+--Fixed so that backpack contents value is taken into account when calculating
+  your financial neigborhood to decide which page of the house list to show you
+  first (before, if you spent all money on tools, you'd start at the 0 houses).
+
+
+
+
 Version 32    2014-February-14
 
 --Client support for not specifying a skip in the first house list fetched,
