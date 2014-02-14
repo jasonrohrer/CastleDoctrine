@@ -69,11 +69,25 @@ print
 } def
 
 
+% draws a black border along bottom and left edge of a square
+% (for overlap testing)
+/csquare_edge {
+        newpath
+        0    0   moveto
+        $squareWidth.5  0   lineto
+        $squareWidth.5    $squareHeight.5 lineto
+        0 0 0 setrgbcolor
+        4 setlinewidth
+        stroke
+} def
+
+
 % draws a colored square using r g b x y from the stack
 /dp {
         gsave
         translate
         csquare
+        csquare_edge
         grestore
 } def
 
@@ -121,6 +135,16 @@ for( $y=0; $y<$height; $y++ ) {
 		$g = $g / $maxColorVal;
 		$b = $b / $maxColorVal;
 
+
+		if( $x == 0 && $y == 0 ) {
+			for( $i=4; $i>1; $i-- ) {
+				printf( "%.3f %.3f %.3f %d %d dp\n", 
+						$r, $g, $b, 
+						$squareX - $i * $squareWidth, 
+						$squareY + $squareHeight );
+			}
+		}
+
 		if( $y == 0 ) {
 			for( $i=4; $i>0; $i-- ) {
 				if( $x == 0 ) {
@@ -144,12 +168,6 @@ for( $y=0; $y<$height; $y++ ) {
 
 		if( $x == 0 ) {
 			for( $i=4; $i>0; $i-- ) {
-				if( $y == 0 ) {
-					printf( "%.3f %.3f %.3f %d %d dp\n", 
-							$r, $g, $b, 
-							$squareX - $i * $squareWidth, 
-							$squareY + $squareHeight );
-				}
 
 				printf( "%.3f %.3f %.3f %d %d dp\n", 
 						$r, $g, $b, $squareX - $i * $squareWidth, $squareY );
@@ -162,12 +180,16 @@ for( $y=0; $y<$height; $y++ ) {
 				}
 			}
 		}
+
+
+
+
 		
 		printf( "%.3f %.3f %.3f %d %d dp\n", 
 				$r, $g, $b, $squareX, $squareY );
 
 		
-		if( $y == $width - 1 ) {
+		if( $y == $height - 1 ) {
 			for( $i=1; $i<=4; $i++ ) {
 				if( $x == 0 ) {
 					printf( "%.3f %.3f %.3f %d %d dp\n", 
@@ -178,13 +200,6 @@ for( $y=0; $y<$height; $y++ ) {
 
 				printf( "%.3f %.3f %.3f %d %d dp\n", 
 						$r, $g, $b, $squareX, $squareY - $i * $squareHeight );
-
-				if( $x == $width - 1 ) {
-					printf( "%.3f %.3f %.3f %d %d dp\n", 
-							$r, $g, $b, 
-							$squareX + $squareWidth, 
-							$squareY - $i * $squareHeight );
-				}
 			}
 		}
 
@@ -205,6 +220,16 @@ for( $y=0; $y<$height; $y++ ) {
 							$r, $g, $b, 
 							$squareX + $i * $squareWidth, 
 							$squareY - $squareHeight );
+				}
+			}
+
+			if( $y == $height - 1 && $x == $width - 1 ) {
+				for( $i=2; $i<=4; $i++ ) {
+					
+					printf( "%.3f %.3f %.3f %d %d dp\n", 
+							$r, $g, $b, 
+							$squareX + $squareWidth, 
+							$squareY - $i * $squareHeight );
 				}
 			}
 		}
