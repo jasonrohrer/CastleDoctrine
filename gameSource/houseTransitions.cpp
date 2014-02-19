@@ -1514,11 +1514,6 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
     //  effectively freezes the game [noticed by Joshua Collins]).
     int transitionCount = 0;
     int transitionLimit = 32;
-        
-    int *startStates = new int[ numCells ];
-        
-    memcpy( startStates, inMapStates, numCells * sizeof( int ) );
-
 
     while( transitionHappened && ! loopDetected ) {
         transitionHappened = 
@@ -1556,19 +1551,29 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         // in case of looping, all elements involved in the loop settle
         // down into the lowest-seen state number that they encounter 
         // during execution of the loop
-
-        if( transitionCount > transitionLimit ) {
-            // hit transition limit without seeing a real loop
-            
-            // return to start state before running the loop again in this
-            // case, because we're going to look for lowest-seen-states
-            // within this transition limit instead of a full loop
-            memcpy( inMapStates, startStates, numCells * sizeof( int ) );
-            }
-        // otherwise, DON'T return to start state, because we use the
+        // in this case, DON'T return to start state, because we use the
         // current state as a return state for loop detection (and start
         // state might not actually be part of loop, so may never be returned
         // to)
+
+
+        // in the case of a step limit overrun with no loop, 
+        // all elements settle
+        // down into the lowest state that we see for them from here on out
+        //
+        // in this case, start stepping from our current state,
+        // where we got cut off by the limit, and look for the 
+        // lowest seen state for each component from this point forward
+        // (don't return to the starting state, because we want to 
+        //  eliminate the chance of sub-components that are actually 
+        //  looping before the step count is hit from being set back to
+        //  their starting states by the global state suddenly exceeding
+        //  the step limit)
+        
+
+        // In other words:
+        // We start from the same state for both real looping and overrun.
+
 
         // observer the same transition limit here as we look for the 
         // lowest seen state for each cell (in the case of
@@ -1625,7 +1630,6 @@ void applyTransitions( int *inMapIDs, int *inMapStates,
         }
     
 
-    delete [] startStates;
 
     for( int i=0; i<seenStates.size(); i++ ) {
         delete [] *( seenStates.getElement( i ) );

@@ -1,3 +1,12 @@
+Version 33
+
+--Fixed the electrobreaker issue and wireless transmission by not jumping back
+  to start state when a circuit overruns the substep limit (thanks Iceman).
+
+
+
+
+
 Version 32  Live Server Fixes
 
 --Fixed so that backpack contents value is taken into account when calculating
