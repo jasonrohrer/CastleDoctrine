@@ -1358,8 +1358,6 @@ static void applyMobileTransitions( int *inMapIDs, int *inMapStates,
                 &&
                 transRecord->targetEndState != mobOverTileState ) {
                 
-                printf( "Mobile-triggered transition hit\n" );
-
                 inMapStates[ mobIndex ] = transRecord->targetEndState;
                 
                 // only allow one transition triggered per mobile object

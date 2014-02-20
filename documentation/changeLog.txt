@@ -6,6 +6,8 @@ Version 33
 --Huge optimization to power propagation and transitions by skipping cells
   (like empty floor and walls) that are never affected by power.
 
+--Got rid of terminal print out when a mobile steps on a button.
+
 
 
 
