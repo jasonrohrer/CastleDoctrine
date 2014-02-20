@@ -3,6 +3,8 @@ Version 33
 --Fixed the electrobreaker issue and wireless transmission by not jumping back
   to start state when a circuit overruns the substep limit (thanks Iceman).
 
+--Huge optimization to power propagation and transitions by skipping cells
+  (like empty floor and walls) that are never affected by power.
 
 
 

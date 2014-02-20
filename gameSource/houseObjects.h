@@ -108,6 +108,9 @@ enum propertyID {
 char isPropertySet( int inObjectID, int inState, propertyID inProperty );
 
 
+// true if inProperty occurs in some state for inObjectID
+char isPropertyEverSet( int inObjectID, propertyID inProperty );
+
 
 // tests if inOtherObjectID is in inObjectID's group
 char isInGroup( int inObjectID, int inOtherObjectID );

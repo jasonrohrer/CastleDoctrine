@@ -112,6 +112,10 @@ typedef struct houseObjectRecord {
         // but these are deleted after the names are converted to ids to
         // fill in groupWith
         char **groupWithNames;
+
+
+        // true if a property is set for any state of this object
+        char propertiesEverSet[ endPropertyID ];
         
     } houseObjectRecord;
 
@@ -938,6 +942,11 @@ void initHouseObjects() {
 
             if( completeRecord ) {
 
+                for( int p=0; p<endPropertyID; p++ ) {
+                    r.propertiesEverSet[p] = false;
+                    }
+
+
                 // look for groupWith
                 r.numGroupWith = 0;
                 r.groupWithNames = NULL;
@@ -1027,6 +1036,12 @@ void initHouseObjects() {
                     if( stateDir->exists() && stateDir->isDirectory() ) {
                         
                         r.states[s] = readState( stateDir, r.id, s );
+
+                        for( int p=0; p<endPropertyID; p++ ) {
+                            if( r.states[s].properties[p] ) {
+                                r.propertiesEverSet[p] = true;
+                                }
+                            }
                         }
 
                     delete stateDir;
@@ -1423,6 +1438,19 @@ char isPropertySet( int inObjectID, int inState, propertyID inProperty ) {
     
     return state->properties[ inProperty ];
     }
+
+
+
+char isPropertyEverSet( int inObjectID, propertyID inProperty ) {
+    int index = idToIndexMap[inObjectID];
+    
+    houseObjectRecord *r = objects.getElement( index );
+
+    return r->propertiesEverSet[ inProperty ];
+    }
+
+
+
 
 
 
