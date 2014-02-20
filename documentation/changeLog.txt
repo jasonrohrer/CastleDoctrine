@@ -1,3 +1,12 @@
+Version 33  Live Server Fixes
+
+--Temporary fix to prevent people who submitt #L#L#L move lists (multiple leave
+  events due to mashing the keyboard during client-side framerate lag) from
+  being killed (thanks Jabloko).
+
+
+
+
 Version 33     2014-February-20
 
 --Fixed the electrobreaker issue and wireless transmission by not jumping back

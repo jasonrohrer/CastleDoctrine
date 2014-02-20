@@ -5964,10 +5964,19 @@ function cd_endRobHouse() {
                     "Simulation returned with these results: ".
                     "sim_end_backpack = $sim_end_backpack_contents , ".
                     "sim_end_house_map = $sim_end_house_map " );
+
+                cd_log( "Player-submitted end_house_map = $house_map" );
+
+                // FIXME:
+                // temporary work-around for multiple-leave client bug
+                // this can cause family duplication, so let them
+                // through for now even if sim fails
+                if( ! strstr( $move_list, "#L#L" ) ) {    
+                    cd_processStaleCheckouts( $user_id );
+                    cd_transactionDeny();
+                    return;
+                    }
                 
-                cd_processStaleCheckouts( $user_id );
-                cd_transactionDeny();
-                return;
                 }
             }            
         // else sim result is 2 (connect failed), so we know
