@@ -184,8 +184,15 @@ void RobPickList::actionPerformed( GUIComponent *inTarget ) {
         
         mClearIgnoreListButton.setVisible( false );
         
-        // back to top of list, since all bets are off about positioning
+        // back to default list position, 
+        // since all bets are off about positioning
         // with all the new list members that might be added
+        if( strcmp( mAppliedSearchWords, "" ) == 0 ) {
+            // no filter words
+            // reset us back to our neighborhood on the house list
+            mCurrentSkip = -1;
+            }
+
         refreshList( true, false );
         }
     }
