@@ -4,6 +4,8 @@ Version 33  Live Server Fixes
   events due to mashing the keyboard during client-side framerate lag) from
   being killed (thanks Jabloko).
 
+--Fixed undefined variable warning in set_error_handler (thanks MMaster).
+
 
 
 

@@ -27,7 +27,7 @@ $cd_flushInterval = "0 0:02:0.000";
 
 
 // override the default Notice and Warning handler 
-set_error_handler( cd_noticeAndWarningHandler, E_NOTICE | E_WARNING );
+set_error_handler( "cd_noticeAndWarningHandler", E_NOTICE | E_WARNING );
 
 
 
