@@ -6,6 +6,8 @@ Version 33  Live Server Fixes
 
 --Fixed undefined variable warning in set_error_handler (thanks MMaster).
 
+--Better error logging when server-side simulation fails.
+
 
 
 

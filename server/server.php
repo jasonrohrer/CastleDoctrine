@@ -4547,6 +4547,13 @@ function cd_endEditHouse() {
                 
                 cd_log( "House check-in with failed self-test simulation".
                         " denied" );
+                cd_log(
+                    "Simulation called with these parameters: ".
+                    "house_map = $house_map , ".
+                    "backpack_contents = # , ".
+                    "move_list = $self_test_move_list , ".
+                    "wife_loot_value = 0 " );
+
                 cd_transactionDeny();
                 return;
                 }
@@ -5920,6 +5927,13 @@ function cd_endRobHouse() {
         if( $simResult == 0 ) {       
             cd_log( "Robbery end with failed robbery simulation".
                     " denied" );
+            cd_log(
+                "Simulation called with these parameters: ".
+                "old_house_map = $old_house_map , ".
+                "old_backpack_contents = $old_backpack_contents , ".
+                "move_list = $move_list , ".
+                "wife_loot_value = $wife_loot_value " );
+
             cd_processStaleCheckouts( $user_id );
             cd_transactionDeny();
             return;
@@ -7335,22 +7349,24 @@ function cd_simulateRobbery( $house_map,
                 $responseParts = preg_split( "/\s+/", $response );
 
                 if( count( $responseParts ) == 8 ) {
+
+                    if( $responseParts[0] != "FAILED" ) {
+                        $success = $responseParts[0];
                     
-                    $success = $responseParts[0];
+                        $wife_killed_robber = $responseParts[1];
+                        $wife_killed = $responseParts[2];
+                        $wife_robbed = $responseParts[3];
+                        $family_killed_count = $responseParts[4];
+                        $end_backpack_contents = $responseParts[5];
+                        $end_house_map = $responseParts[6];
                     
-                    $wife_killed_robber = $responseParts[1];
-                    $wife_killed = $responseParts[2];
-                    $wife_robbed = $responseParts[3];
-                    $family_killed_count = $responseParts[4];
-                    $end_backpack_contents = $responseParts[5];
-                    $end_house_map = $responseParts[6];
-                    
-                    return 1;
+                        return 1;
+                        }
                     }
-                else {
-                    // FAILED response from server
-                    return 0;
-                    }
+
+                // FAILED response from server
+                cd_log( "Simulation failed with message: $response" );
+                return 0;
                 }            
             }
 
