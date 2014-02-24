@@ -1743,12 +1743,17 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
 
 void RobHouseGridDisplay::robberTriedToLeave() {
-    mSuccess = 2;
-    processFamilyAndMobilesAtEnd();
+    if( mSuccess == 0 ) {
+        
+        mSuccess = 2;
+        processFamilyAndMobilesAtEnd();
 
-    mMoveList.push_back( stringDuplicate( "L" ) );
-
-    fireActionPerformed( this );
+        mMoveList.push_back( stringDuplicate( "L" ) );
+        
+        fireActionPerformed( this );
+        }
+    // else ignore it, and don't allow robbery to leave twice, 
+    // even if player is mashing keys
     }
 
 

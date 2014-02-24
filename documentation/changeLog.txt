@@ -1,3 +1,15 @@
+Version 34
+
+--Prevented multiple leave actions from being appended to the end of the move
+  list if the player is mashing the keyboard while leaving a robbery.  This
+  caused the family to be processed twice at the end, resulting in family
+  duplication in the resulting map, leading to robber death from simulation
+  mismatch.
+
+
+
+
+
 Version 33  Live Server Fixes
 
 --Temporary fix to prevent people who submitt #L#L#L move lists (multiple leave
