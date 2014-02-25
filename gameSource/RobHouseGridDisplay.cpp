@@ -34,6 +34,7 @@ RobHouseGridDisplay::RobHouseGridDisplay( double inX, double inY )
           mDead( false ),
           mDeathSourceID( -1 ),
           mDeathSourceState( 1 ),
+          mFamilyAndMobilesProcessedAtEnd( false ),
           mLeaveDisplayCanBeShown( true ),
           mLeaveSprite( loadSprite( "left.tga" ) ),
           mCurrentTool( -1 ),
@@ -346,6 +347,8 @@ void RobHouseGridDisplay::setHouseMap( const char *inHouseMap ) {
     mDead = false;
     mDeathSourceID = -1;
     mDeathSourceState = 1;
+
+    mFamilyAndMobilesProcessedAtEnd = false;
 
     stopUsingTool();
     mToolJustUsed = false;
@@ -1647,7 +1650,7 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
 
 
 void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
-    if( mDead ) {
+    if( mSuccess != 0 || mDead ) {
         // can't move anymore
         return;
         }
@@ -1743,7 +1746,7 @@ void RobHouseGridDisplay::moveRobber( int inNewIndex ) {
 
 
 void RobHouseGridDisplay::robberTriedToLeave() {
-    if( mSuccess == 0 ) {
+    if( mSuccess == 0 && ! mDead ) {
         
         mSuccess = 2;
         processFamilyAndMobilesAtEnd();
@@ -2811,6 +2814,11 @@ void RobHouseGridDisplay::recomputeVisibilityFloat() {
 
 
 void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
+    if( mFamilyAndMobilesProcessedAtEnd ) {
+        // only do this once to avoid family duplication
+        return;
+        }
+
     int numFamily = mFamilyObjects.size();
 
 
@@ -3014,5 +3022,7 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
 
     mHouseMapMobileFinalIDs = newMobileIDs;
     mHouseMapMobileFinalCellStates = newMobileCellStates;
+
+    mFamilyAndMobilesProcessedAtEnd = true;
     }
 

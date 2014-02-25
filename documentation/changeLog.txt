@@ -6,6 +6,11 @@ Version 34
   duplication in the resulting map, leading to robber death from simulation
   mismatch.
 
+--Blocked robber actions after death or reaching vault (in case of keyboard
+  mashing where several key events might be queue for a given frame) to prevent
+  family duplication due to multiple end actions.  Also added a check to always
+  prevent multiple occurrences of family end processing.
+ 
 
 
 

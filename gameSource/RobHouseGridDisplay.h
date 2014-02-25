@@ -98,6 +98,8 @@ class RobHouseGridDisplay : public HouseGridDisplay {
         int mDeathSourceID;
         int mDeathSourceState;
 
+        char mFamilyAndMobilesProcessedAtEnd;
+
         char mLeaveDisplayCanBeShown;
         SpriteHandle mLeaveSprite;
 
