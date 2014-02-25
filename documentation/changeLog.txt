@@ -11,6 +11,8 @@ Version 34
   family duplication due to multiple end actions.  Also added a check to always
   prevent multiple occurrences of family end processing.
  
+--Fixed bug where family members jumped back to their starting postitions when
+  panning around a paused security tape at the end of the robbery.
 
 
 
