@@ -7468,6 +7468,41 @@ function cd_verifyTransaction() {
     if( $transactionAlreadyVerified ) {
         return 1;
         }
+
+
+    // first, make sure this is a valid, modern HTTP request
+    if( $_SERVER[ "SERVER_PROTOCOL" ] == "" ||
+        $_SERVER[ "SERVER_PROTOCOL" ] == "HTTP/0.9" ) {
+
+        // sleep to allow client to timeout and retry without forcing
+        // it to deal with this error message
+        sleep( 30 );
+
+        cd_log( "Incomplete HTTP request, SERVER_PROTOCOL= ".
+                $_SERVER[ "SERVER_PROTOCOL" ] );
+        
+        echo "INCOMPLETE";
+        return 0;
+        }
+
+
+    if( $_SERVER[ "REQUEST_METHOD" ] == "POST" &&
+        $_SERVER[ "CONTENT_LENGTH" ] !=
+        strlen( file_get_contents( 'php://input' ) ) ) {
+
+        // sleep to allow client to timeout and retry without forcing
+        // it to deal with this error message
+        sleep( 30 );
+
+        cd_log( "Incomplete HTTP POST body, Content-Length= ".
+                $_SERVER[ "CONTENT_LENGTH" ] . ", but saw body length of ".
+                strlen( file_get_contents( 'php://input' ) ) );
+        
+        echo "INCOMPLETE";
+        return 0;
+        }
+    
+
     
     
     global $tableNamePrefix;

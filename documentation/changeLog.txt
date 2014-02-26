@@ -27,6 +27,9 @@ Version 33  Live Server Fixes
 
 --Better error logging when server-side simulation fails.
 
+--Detection of truncated HTTP requests (server now sleeps for 30 seconds if it
+  detects this, allowing the client to time out and retry).
+
 
 
 

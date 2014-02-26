@@ -1,6 +1,15 @@
 All returns are whitespace-delimited.
 
 
+If the server detects that a request is incomplete (an incomplete HTTP/1.0
+request for GET requests, or a truncated request body that doesn't match the
+Content-Length header for POST requests), the server will sleep for 30 seconds
+before returning 'INCOMPLETE'.  The sleep allows clients to time out and retry
+without having to deal with the error message (the server lets them treat
+INCOMPLETE requests like server timeouts).  The server only performs this check
+for requests that include a ticket_hmac.
+
+
 
 Most calls can return 'DENIED' on failure
 
