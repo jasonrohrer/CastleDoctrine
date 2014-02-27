@@ -291,10 +291,11 @@ void PageComponent::addComponent( PageComponent *inComponent ){
 
 
 
-void PageComponent::setWaiting( char inWaiting ) {
+void PageComponent::setWaiting( char inWaiting,
+                                char inWarningOnly ) {
     // pass up chain (stops at GamePage)
     if( mParent != NULL ) {
-        mParent->setWaiting( inWaiting );
+        mParent->setWaiting( inWaiting, inWarningOnly );
         }
     }
 

@@ -111,8 +111,23 @@ class GamePage : public PageComponent {
             };
         
 
+        // subclasses can override this to selectively permit
+        // the waiting icon to be drawn at particular times
+        virtual char canShowWaitingIcon() {
+            return true;
+            }
+        
+        // subclasses can override this to control size of waiting icon
+        // displayed on their pages
+        virtual char makeWaitingIconSmall() {
+            return false;
+            }
+        
+
+
         // override this from PageComponent to show waiting status
-        virtual void setWaiting( char inWaiting );
+        virtual void setWaiting( char inWaiting,
+                                 char inWarningOnly = false );
         
 
 
@@ -152,7 +167,8 @@ class GamePage : public PageComponent {
         
         static double sWaitingFade;
         static char sWaiting;
-
+        static char sShowWaitingWarningOnly;
+        
         static char sShutdownPendingWarning;
     };
 

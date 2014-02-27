@@ -159,6 +159,11 @@ class LoadBackpackPage : public LiveHousePage, public ActionListener {
         
         void checkSellModeStatus();
 
+        
+        // override because large icon overlaps with picker
+        virtual char makeWaitingIconSmall() {
+            return true;
+            }
 
     };
 

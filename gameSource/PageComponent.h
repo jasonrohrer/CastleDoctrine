@@ -138,7 +138,12 @@ class PageComponent : public GUIComponent {
         // a server response) so that an appropriate indicator can be 
         // displayed.
         // inWaiting is true if waiting, false if done waiting.
-        virtual void setWaiting( char inWaiting );
+        // inSmallIcon is true if there's not room on page for larger warning
+        // icon
+        // inWarningOnly is true if the waiting icon should be hidden
+        //               during normal, non-delayed network operations.
+        virtual void setWaiting( char inWaiting,
+                                 char inWarningOnly = false );
         
 
 

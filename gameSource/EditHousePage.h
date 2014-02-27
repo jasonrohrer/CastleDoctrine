@@ -217,7 +217,10 @@ class EditHousePage : public LiveHousePage, public ActionListener {
         void recomputeChangeCost();
         
         
-        
+        // override because large icon overlaps with picker
+        virtual char makeWaitingIconSmall() {
+            return true;
+            }
 
     };
 

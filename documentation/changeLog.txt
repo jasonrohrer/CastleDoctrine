@@ -14,6 +14,12 @@ Version 34
 --Fixed bug where family members jumped back to their starting postitions when
   panning around a paused security tape at the end of the robbery.
 
+--Added connection icons to all live house pages (editing, robbery, backpack,
+  etc.) for pings that take longer than 8 seconds to connect or need to be
+  retried.  This lets people know that their network may have gone out before
+  its too late (thanks Joshua Collins).
+
+
 
 
 

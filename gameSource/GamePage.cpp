@@ -25,6 +25,7 @@ doublePair GamePage::sResponseWarningPosition = { 0, 0 };
 
 double GamePage::sWaitingFade = 0;
 char GamePage::sWaiting = false;
+char GamePage::sShowWaitingWarningOnly = false;
 
 char GamePage::sShutdownPendingWarning = false;
 
@@ -242,12 +243,19 @@ void GamePage::base_draw( doublePair inViewCenter,
             }
 
 
-        if( showWarningIcon ) {
+        if( showWarningIcon && ! makeWaitingIconSmall() ) {
             spritePos.y -= 0.5;
             
             setDrawColor( r, g, b, sWaitingFade );
             
             drawSprite( sResponseWarningSprite, spritePos, 1/16.0 );
+            sResponseWarningShowing = true;
+            sResponseWarningPosition = spritePos;
+            }
+        else if( showWarningIcon ) {
+            // should show warning, but not enough room (small icon)
+            
+            // still show tool tip centered on small icon
             sResponseWarningShowing = true;
             sResponseWarningPosition = spritePos;
             }
@@ -276,7 +284,14 @@ void GamePage::base_step() {
         }
     
 
-    if( sWaiting ) {
+    if( sWaiting 
+        && 
+        canShowWaitingIcon() 
+        &&
+        ( ! sShowWaitingWarningOnly 
+          || 
+          getWebRequestRetryStatus( currentActiveSerialWebRequest ) > 0 ) ) {
+        
         sWaitingFade += 0.05 * frameRateFactor;
     
         if( sWaitingFade > 1 ) {
@@ -382,9 +397,10 @@ void GamePage::base_makeNotActive(){
 
 
 
-void GamePage::setWaiting( char inWaiting ) {
+void GamePage::setWaiting( char inWaiting, char inWarningOnly ) {
     sWaiting = inWaiting;
-
+    sShowWaitingWarningOnly = inWarningOnly;
+    
     if( sWaiting == false && mResponseWarningTipShowing ) {
         setToolTip( NULL );
         }
