@@ -1,4 +1,4 @@
-Version 34
+Version 34    2014-February-28
 
 --Prevented multiple leave actions from being appended to the end of the move
   list if the player is mashing the keyboard while leaving a robbery.  This
