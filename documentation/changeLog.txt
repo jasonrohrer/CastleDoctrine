@@ -1,3 +1,11 @@
+Version 34    Live Server Fixes
+
+--Fixed stale price list issue that could result in house loss after editing
+  (thanks Mark Host).
+
+
+
+
 Version 34    2014-February-28
 
 --Prevented multiple leave actions from being appended to the end of the move

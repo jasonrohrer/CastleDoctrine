@@ -3125,13 +3125,7 @@ function cd_startEditHouse() {
     $last_price_list_number = $row[ "last_price_list_number" ];
 
 
-    $last_price_list_number ++;
-
-
-    $query = "UPDATE $tableNamePrefix"."users SET ".
-        "last_price_list_number = '$last_price_list_number' ".
-        "WHERE user_id = $user_id;";
-    cd_queryDatabase( $query );
+    
 
     
     
@@ -4627,6 +4621,19 @@ function cd_endEditHouse() {
     cd_queryDatabase( "COMMIT;" );
     cd_queryDatabase( "SET AUTOCOMMIT=1" );
 
+    
+    // house checked back in, further end_edit_house calls (like retries)
+    // will not make it through to this point
+    // Safe to update last_price_list_number now
+    $last_price_list_number ++;
+
+    $query = "UPDATE $tableNamePrefix"."users SET ".
+        "last_price_list_number = '$last_price_list_number' ".
+        "WHERE user_id = $user_id;";
+    cd_queryDatabase( $query );
+
+    
+    
     cd_incrementStat( "house_tiles_bought", $numTilesBought );
     cd_incrementStat( "tools_bought", $numToolsBought );
 
