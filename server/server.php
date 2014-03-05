@@ -2695,7 +2695,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
     if( $staleShadowRobberyCount ) {
         // clear all the robberies themselves
 
-        $query = "SELECT gallery_contents ".
+        $query = "SELECT gallery_contents, carried_gallery_contents ".
             "FROM $tableNamePrefix"."houses_owner_died ".
             "WHERE user_id = '$last_robbed_owner_id' AND ".
             "robbing_user_id = '$user_id';";
@@ -2705,6 +2705,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         $row = mysql_fetch_array( $result, MYSQL_ASSOC );
         
         $gallery_contents = $row[ "gallery_contents" ];
+        $carried_gallery_contents = $row[ "carried_gallery_contents" ];
         $owner_id = $last_robbed_owner_id;
         
         // remove this house from the shadow table
@@ -2721,6 +2722,7 @@ function cd_processStaleCheckouts( $user_id, $house_id_to_skip = -1 ) {
         
         // return any remaining gallery stuff to auction house
         cd_returnGalleryContents( $gallery_contents );
+        cd_returnGalleryContents( $carried_gallery_contents );
         }
 
 
@@ -5612,6 +5614,7 @@ function cd_endRobHouse() {
         "house_map_hash, user_id, character_name, ".
         "wife_name, son_name, daughter_name, ".
         "loot_value, vault_contents, gallery_contents, ".
+        "carried_gallery_contents, ".
         "rob_attempts, robber_deaths, consecutive_rob_success_count, ".
         "edit_count, payment_count, wife_paid_total, you_paid_total ".
         "FROM $tableNamePrefix"."houses ".
@@ -5818,6 +5821,7 @@ function cd_endRobHouse() {
         cd_idQuantityNormalizeString( $house_vault_contents );
     
     $house_gallery_contents = $row[ "gallery_contents" ];
+    $house_carried_gallery_contents = $row[ "carried_gallery_contents" ];
     
     $amountTaken = 0;
     $stuffTaken = $house_vault_contents;
@@ -6469,6 +6473,7 @@ function cd_endRobHouse() {
         // return any remaining gallery stuff to auction house
         // (this will be an empty return if robbery successful)
         cd_returnGalleryContents( $house_gallery_contents );
+        cd_returnGalleryContents( $house_carried_gallery_contents );
         }
 
 
@@ -7780,7 +7785,8 @@ function cd_newHouseForUser( $user_id ) {
     // row gap.  In the case of concurrent inserts for the same user_id,
     // the second insert will fail (user_id is the primary key)
     
-    $query = "select user_id, gallery_contents, rob_checkout ".
+    $query = "select user_id, gallery_contents, carried_gallery_contents, ".
+        "rob_checkout ".
         "FROM $tableNamePrefix"."houses ".
         "WHERE user_id = $user_id ".
         "FOR UPDATE;";
@@ -7826,6 +7832,10 @@ function cd_newHouseForUser( $user_id ) {
             // return gallery items to auciton house
             $gallery_contents = mysql_result( $result, 0, "gallery_contents" );
             cd_returnGalleryContents( $gallery_contents );
+
+            $carried_gallery_contents =
+                mysql_result( $result, 0, "carried_gallery_contents" );
+            cd_returnGalleryContents( $carried_gallery_contents );
             }
 
         

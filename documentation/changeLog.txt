@@ -5,6 +5,11 @@ Version 34    Live Server Fixes
 
 --True doormat suicide now leaves a tape.
 
+--Fixed paintings getting lost from the game if a robber who just stole a
+  painting dies in another house before returning home with the painting 
+  (thanks LiteS).
+
+
 
 
 
