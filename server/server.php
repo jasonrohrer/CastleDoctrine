@@ -6089,11 +6089,13 @@ function cd_endRobHouse() {
         
 
         // log any robbery where something semi-interesing happened:
+        // if robber died (bounty)
         // if tools were used (or dropped in vault) or if robber took
         // at least 1 step in.
         // (Don't log cases where a robbery carrying nothing stepped in
         //  the door one step and then left)
-        if( strlen( $move_list ) > 1 || $old_backpack_contents != "#" ) {
+        if( $robber_died ||
+            strlen( $move_list ) > 1 || $old_backpack_contents != "#" ) {
         
             // log this robbery too, because it can cause change owner can
             // notice (backpack stuff dropped in the vault)
