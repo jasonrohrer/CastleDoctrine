@@ -4,7 +4,7 @@
 
 // server will tell clients to upgrade to this version
 global $cd_version;
-$cd_version = "34";
+$cd_version = "35";
 
 
 // leave an older version here IF older clients can also connect safely
@@ -12,7 +12,7 @@ $cd_version = "34";
 //  too).
 // NOTE that if old clients are incompatible, both numbers should be updated.
 global $cd_ticketHashVersion;
-$cd_ticketHashVersion = "33";
+$cd_ticketHashVersion = "35";
 
 
 

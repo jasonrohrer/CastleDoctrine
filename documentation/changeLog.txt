@@ -1,4 +1,4 @@
-Version 35
+Version 35      2014-March-31
 
 --Prevented blocked family members from jumping back to positions on top of
   shotgun or panic button at the end of a robbery (allowed insta-kill and
@@ -12,6 +12,7 @@ Version 35
 
 --Fixed edit-house movement keys getting stuck down when switching back and
   forth between self test (thanks MMaster).
+
 
 
 
