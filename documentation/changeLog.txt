@@ -4,6 +4,8 @@ Version 35
   shotgun or panic button at the end of a robbery (allowed insta-kill and
   insta-press situations to be created).
 
+--Fixed lingering 'ENTER to confirm' message in safe movement mode after move
+  confirmation.
 
 
 

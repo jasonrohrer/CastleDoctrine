@@ -34,6 +34,7 @@ class GamePage : public PageComponent {
         // inTip can either be a translation key or a raw tip
         // copied internally
         virtual void setToolTip( const char *inTip );
+        virtual void clearToolTip( const char *inTipToClear );
         
 
         

@@ -145,6 +145,24 @@ void GamePage::setToolTip( const char *inTip ) {
 
 
 
+void GamePage::clearToolTip( const char *inTipToClear ) {
+    if( mTip != NULL ) {
+        if( strcmp( mTip, inTipToClear ) == 0 ) {
+
+            // tip disappearing, save it as mLastTip
+            if( mLastTip != NULL ) {
+                delete [] mLastTip;
+                }
+            mLastTip = mTip;
+            mLastTipFade = 1.0;
+            
+            mTip = NULL;
+            }
+        }
+    }
+
+
+
 void GamePage::setTipPosition( char inTop ) {
     mTipAtTopOfScreen = inTop;
     }

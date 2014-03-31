@@ -89,8 +89,12 @@ class PageComponent : public GUIComponent {
         // default implementations pass tool tip up to parent
 
 
-        // inTip destroyed by caller
+        // inTip destroyed by caller, or NULL to clear
         virtual void setToolTip( const char *inTip );
+
+        // clears a specific tool tip---only if this tip is still showing
+        virtual void clearToolTip( const char *inTipToClear );
+        
 
         // clears hover or partially-pressed status
         virtual void clearState() {

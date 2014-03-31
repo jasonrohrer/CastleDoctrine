@@ -1665,6 +1665,9 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
             mSafeMoveConfirmed = true;
             // apply move again, now that we have confirmation
             moveRobber( mSafeMoveIndex );
+
+            // clear if our waiting-for-confirmation tip is still showing 
+            clearToolTip( translate( "safeMoveTip" ) );
             }
         }
     

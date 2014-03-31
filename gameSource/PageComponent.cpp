@@ -34,6 +34,14 @@ void PageComponent::setToolTip( const char *inTip ) {
 
 
 
+void PageComponent::clearToolTip( const char *inTipToClear ) {
+    if( mParent != NULL ) {
+        mParent->clearToolTip( inTipToClear );
+        }
+    }
+
+
+
 void PageComponent::base_step(){
     for( int i=0; i<mComponents.size(); i++ ) {
         PageComponent *c = *( mComponents.getElement( i ) );
