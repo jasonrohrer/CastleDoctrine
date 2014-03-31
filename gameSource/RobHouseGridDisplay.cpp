@@ -1668,6 +1668,11 @@ void RobHouseGridDisplay::keyDown( unsigned char inASCII ) {
 
             // clear if our waiting-for-confirmation tip is still showing 
             clearToolTip( translate( "safeMoveTip" ) );
+
+            // no action fired from this move because it isn't triggered
+            // by a specialKeyDown event in HouseGridDisplay
+            // (that event already happened, before confirmation)
+            fireActionPerformed( this );
             }
         }
     

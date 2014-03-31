@@ -7,6 +7,9 @@ Version 35
 --Fixed lingering 'ENTER to confirm' message in safe movement mode after move
   confirmation.
 
+--Fixed safe movement mode to display cause-of-death messages right away
+  (thanks Doug).
+
 
 
 
