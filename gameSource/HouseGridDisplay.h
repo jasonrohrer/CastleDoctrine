@@ -155,6 +155,9 @@ class HouseGridDisplay : public PageComponent, public ActionListenerList {
         void saveWholeMapImage();
 
 
+        void clearMovementKeyHolds();
+        
+
 
         virtual void setVisibleOffset( int inXOffset, int inYOffset );
 

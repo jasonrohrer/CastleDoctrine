@@ -541,6 +541,9 @@ void EditHousePage::makeActive( char inFresh ) {
         return;
         }
     
+    mGridDisplay.clearMovementKeyHolds();
+    
+
     mJumpToTapes = false;
     mDone = false;
     mDead = false;

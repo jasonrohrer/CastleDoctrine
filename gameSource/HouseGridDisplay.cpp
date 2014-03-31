@@ -351,6 +351,12 @@ void HouseGridDisplay::setDaughterName( const char *inDaughterName ) {
     }
 
     
+void HouseGridDisplay::clearMovementKeyHolds() {
+    for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
+        mSpecialKeysHeldSteps[i] = 0;
+        mSpecialKeysHeldStepsTotal[i] = 0;
+        }
+    }
 
 
 
@@ -650,10 +656,7 @@ void HouseGridDisplay::setHouseMap( const char *inHouseMap ) {
 
     mForbiddenMoveHappened = false;
 
-    for( int i=0; i<MG_KEY_LAST_CODE + 1; i++ ) {
-        mSpecialKeysHeldSteps[i] = 0;
-        mSpecialKeysHeldStepsTotal[i] = 0;
-        }
+    clearMovementKeyHolds();
     }
 
 

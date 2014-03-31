@@ -10,6 +10,9 @@ Version 35
 --Fixed safe movement mode to display cause-of-death messages right away
   (thanks Doug).
 
+--Fixed edit-house movement keys getting stuck down when switching back and
+  forth between self test (thanks MMaster).
+
 
 
 
