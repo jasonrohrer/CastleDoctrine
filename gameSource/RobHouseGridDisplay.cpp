@@ -2926,7 +2926,12 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
             while( pathSpot < pathLength - 1 ) {
                 int newIndex = posToIndex( path[pathSpot] );
                 
-                if( newIDs[ newIndex ] == 0 ) {
+                if( newIDs[ newIndex ] == 0 &&
+                    ( mHouseMapMobileIDs[ newIndex ] == 0
+                      ||
+                      ! isPropertySet( mHouseMapMobileIDs[ newIndex ],
+                                       mHouseMapMobileCellStates[ newIndex ],
+                                       noFamilyStartHere ) ) ) {
                     
                     found = true;
                     
@@ -2947,7 +2952,13 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
                     for( int y=mFullMapD/2; y<mFullMapD; y++ ) {
                         int index = y * mFullMapD + x;
                         
-                        if( newIDs[ index ] == 0 ) {
+                        if( newIDs[ index ] == 0 &&
+                            ( mHouseMapMobileIDs[ index ] == 0
+                              ||
+                              ! isPropertySet( mHouseMapMobileIDs[ index ],
+                                               mHouseMapMobileCellStates[ 
+                                                   index ],
+                                               noFamilyStartHere ) ) ) {
                             
                             found = true;
                     
@@ -2964,7 +2975,13 @@ void RobHouseGridDisplay::processFamilyAndMobilesAtEnd() {
                     for( int y=mFullMapD/2-1; y>=0; y-- ) {
                         int index = y * mFullMapD + x;
                         
-                        if( newIDs[ index ] == 0 ) {
+                        if( newIDs[ index ] == 0 &&
+                            ( mHouseMapMobileIDs[ index ] == 0
+                              ||
+                              ! isPropertySet( mHouseMapMobileIDs[ index ],
+                                               mHouseMapMobileCellStates[ 
+                                                   index ],
+                                               noFamilyStartHere ) ) ) {
                             
                             found = true;
                     

@@ -1,3 +1,13 @@
+Version 35
+
+--Prevented blocked family members from jumping back to positions on top of
+  shotgun or panic button at the end of a robbery (allowed insta-kill and
+  insta-press situations to be created).
+
+
+
+
+
 Version 34    Live Server Fixes
 
 --Fixed stale price list issue that could result in house loss after editing

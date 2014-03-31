@@ -85,6 +85,7 @@ int getObjectID( const char *inName );
     F(playerFacingAway), \
     F(interactingWithPlayer), \
     F(wifeOwns), \
+    F(noFamilyStartHere), \
     F(onTopOfPlayer), \
     F(thinShroud), \
     F(blockSubInfo), \
