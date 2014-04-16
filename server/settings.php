@@ -457,11 +457,11 @@ $playerStartMoney = 2000;
 // their activities
 
 // Bounty is earned by the house that kills the player.
-$startingBounty = 200;
+$startingBounty = 100;
 
 $theftBountyIncrement = 500;
 
-$murderBountyIncrement = 1000;
+$murderBountyIncrement = 200;
 
 
 
@@ -482,18 +482,18 @@ $vaultReachLimit = 4;
 
 // how long the chill on a house lasts after you die there
 // experimenting with 1 hour
-$chillTimeout = "0 1:00:0.000";
+$chillTimeout = "1 0:00:0.000";
 
 // how long a forced ignore lasts after you rob a given user and that
 // user dies (makes two-account exploits much slower, since you can't just
 // respawn a second account repeatedly and re-rob it).
 // experimenting with 1 hour
-$forcedIgnoreTimeout = "0 1:00:0.000";
+$forcedIgnoreTimeout = "1 0:00:0.000";
 
 
 // how long before another bounty can be added to a player for reaching
 // the same house's vault again?
-$vaultBountyTimeout = "0 1:00:0.000";
+$vaultBountyTimeout = "1 0:00:0.000";
 
 
 // what's the maximum time a robber can stay in a house?
