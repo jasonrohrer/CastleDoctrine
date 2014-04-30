@@ -7177,7 +7177,7 @@ function cd_buyAuction() {
     // make sure user has enough balance in house, and house checked out
 
     $query = "SELECT gallery_contents, wife_loot_value, loot_value, ".
-        "vault_contents, backpack_contents ".
+        "vault_contents, backpack_contents, value_estimate ".
         "FROM $houseTable ".
         "WHERE user_id = '$user_id' AND blocked='0' ".
         "AND edit_checkout = 1 FOR UPDATE;";
@@ -7196,6 +7196,7 @@ function cd_buyAuction() {
     $old_wife_balance = mysql_result( $result, 0, "wife_loot_value" );
 
     $old_total_balance = $old_balance + $old_wife_balance;
+    $old_value_estimate = mysql_result( $result, 0, "value_estimate" );
     
     
     if( $old_total_balance < $price ) {
@@ -7230,6 +7231,8 @@ function cd_buyAuction() {
 
     $new_vault_balance = ceil( $new_total_balance / 2 );
     $new_wife_balance = floor( $new_total_balance / 2 );
+
+    $new_value_estimate = $old_value_estimate - $price;
     
     $old_gallery_contents = mysql_result( $result, 0, "gallery_contents" );
     $new_gallery_contents = "";
@@ -7251,7 +7254,8 @@ function cd_buyAuction() {
         "loot_value = '$new_vault_balance', ".
         "wife_loot_value = '$new_wife_balance', ".
         "gallery_contents = '$new_gallery_contents', ".
-        "last_auction_price = '$price' ".
+        "last_auction_price = '$price', ".
+        "value_estimate = '$new_value_estimate' ".        
         "WHERE user_id = '$user_id';";
 
     $result = cd_queryDatabase( $query );
