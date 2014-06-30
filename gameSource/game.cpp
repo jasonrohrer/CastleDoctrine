@@ -158,6 +158,16 @@ char downKey = 's';
 char rightKey = 'd';
 
 
+char doesOverrideGameImageSize() {
+    return false;
+    }
+
+
+
+void getGameImageSize( int *outWidth, int *outHeight ) {
+    // do nothing
+    }
+
 
 
 const char *getWindowTitle() {
