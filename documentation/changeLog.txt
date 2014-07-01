@@ -1,3 +1,11 @@
+Version 36    ????
+
+--Fonts now use real kerning (improvement to font engine that is being used in
+  the next game).
+
+
+
+
 Version 35    Live Server Fixes
 
 --Buying a painting now updates the house value estimate immediately, in case
