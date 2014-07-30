@@ -860,7 +860,7 @@ Version 16   Live Server Fixes
 
 Version 16   2013-August-21
 
---Added support for web proxies (thanks Florian Yusuf Ali).
+--Added support for web proxies (thanks Florian).
 
 --Fixed visibility computation mismatch across platforms (caused by floating
   point round-off inconsistencies between platforms) by switching to an integer
