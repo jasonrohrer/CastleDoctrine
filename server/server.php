@@ -8936,7 +8936,7 @@ function cd_showRecentUserEmails() {
         "LEFT JOIN $tableNamePrefix"."users AS users ".
         "ON houses.user_id = users.user_id ".
         "WHERE houses.last_owner_visit_time > ".
-        "      SUBTIME( CURRENT_TIMESTAMP, '$day_limit 0:00:00' );";
+        "      DATE_SUB( CURRENT_TIMESTAMP, INTERVAL $day_limit DAY );";
         
     $result = cd_queryDatabase( $query );
 
