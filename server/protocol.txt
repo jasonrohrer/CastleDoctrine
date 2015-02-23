@@ -573,7 +573,7 @@ log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
 log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
 log_id#character_name#last_robber_name#loot_value#tape_length#robber_deaths#f
 ....
-more_pages
+more_pages#skip
 OK
 
 Where:
@@ -587,6 +587,13 @@ f is a flag associated with each list item.  It is 0 if the tape has not been
 watched yet, and 1 if the tape has been watched.
 
 more_pages is 1 if there are more pages and 0 of there are not
+
+skip in the call is optional.  If omitted, a list page of [limit] houses from
+around the player's house value will be returned.
+
+skip in the return value shows the skip that was used to get to the current
+page (either supplied by the call or inferred from the user's house value).
+
 
 Note:
 Lists only logged successful robberies, where last_robber_name is the name

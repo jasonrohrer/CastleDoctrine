@@ -3,6 +3,9 @@ Version 36    ????
 --Fonts now use real kerning (improvement to font engine that is being used in
   the next game).
 
+--Fixed protocol doc to mention #skip in list_logged_robberies result (thanks
+  Martijn V).
+
 
 
 
