@@ -1604,6 +1604,10 @@ function cd_checkForFlush() {
     //$staleTimeout = "0 0:01:0.000";
     //$staleFlaggedMapTimeout = "0 0:02:0.000";
     
+
+    // flush logs after 30 days
+    $logFlushDays = 30;
+     
     
     cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
@@ -2253,6 +2257,16 @@ function cd_checkForFlush() {
         cd_log( "Flush paid $playersPaid players." );
 
 
+
+        $query = "DELETE ".
+            "FROM $tableNamePrefix"."log ".
+            "WHERE entry_time < ".
+            "DATE_SUB( CURRENT_TIMESTAMP, INTERVAL $logFlushDays DAY );";
+        
+        $result = cd_queryDatabase( $query );
+        
+        cd_queryDatabase( "COMMIT;" );
+        
         
 
         // flush done

@@ -18,6 +18,9 @@ Version 35    Live Server Fixes
 --Fixed socket write to move simulator to handle very long move lists by
   breaking move list up into chunks and switching stream to blocking mode.
 
+--Added flushing of server logs after 30 days to save space.
+
+
 
 
 Version 35      2014-March-31
