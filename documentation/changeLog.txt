@@ -15,6 +15,9 @@ Version 35    Live Server Fixes
   the player quits the game before finishing their house edit (thanks Chris
   Bradford).
 
+--Fixed socket write to move simulator to handle very long move lists by
+  breaking move list up into chunks and switching stream to blocking mode.
+
 
 
 Version 35      2014-March-31

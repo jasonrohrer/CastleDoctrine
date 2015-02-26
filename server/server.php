@@ -7328,7 +7328,7 @@ function cd_simulateRobbery( $house_map,
         
         if( $socketFile ) {
 
-            stream_set_blocking( $socketFile, 0 );
+            stream_set_blocking( $socketFile, 1 );
 
             $request =
                 "simulate_robbery\n".
@@ -7337,8 +7337,30 @@ function cd_simulateRobbery( $house_map,
                 "$move_list\n".
                 "$wife_money\n".
                 "[END_REQUEST]";
+
+
+            // this request can be very long, maybe long enough to
+            // trigger a bug in fwrite for sockets.  Break into chunks.
             
-            fwrite( $socketFile, $request );
+            $writeSize = 500;
+            $numWritten = 0;
+            $numWrittenThisTime = $writeSize;
+
+            $numToWrite = strlen( $request );
+
+            $numChunks = 0;
+            while( $numWrittenThisTime > 0 && $numWritten < $numToWrite ) {
+                $numWrittenThisTime =
+                    fwrite( $socketFile, substr( $request, $numWritten ),
+                            $writeSize );
+                if( $numWrittenThisTime === false ) {
+                    break;
+                    }
+                $numWritten += $numWrittenThisTime;
+
+                $numChunks ++;
+                }
+            
             fflush( $socketFile );
             
             $endResponseSeen = false;
