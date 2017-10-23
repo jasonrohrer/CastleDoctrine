@@ -481,13 +481,13 @@ $vaultReachLimit = 4;
 
 
 // how long the chill on a house lasts after you die there
-// experimenting with 1 hour
-$chillTimeout = "1 0:00:0.000";
+// experimenting with 2 hours
+$chillTimeout = "0 2:00:0.000";
 
 // how long a forced ignore lasts after you rob a given user and that
 // user dies (makes two-account exploits much slower, since you can't just
 // respawn a second account repeatedly and re-rob it).
-// experimenting with 1 hour
+// experimenting with 1 day
 $forcedIgnoreTimeout = "1 0:00:0.000";
 
 
