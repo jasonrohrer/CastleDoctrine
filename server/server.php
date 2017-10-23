@@ -1574,7 +1574,9 @@ function cd_testAdminCall() {
 // check if we should flush stale checkouts from the database
 // do this once every 2 minutes
 function cd_checkForFlush() {
-    global $tableNamePrefix, $chillTimeout, $forcedIgnoreTimeout, $gracePeriod;
+    global $tableNamePrefix, $chillTimeoutSecPerAvailableHouse,
+        $maxChillTimeoutSec,
+        $forcedIgnoreTimeout, $gracePeriod;
 
 
     if( $gracePeriod ) {
@@ -2124,15 +2126,58 @@ function cd_checkForFlush() {
             }
 
 
+        // how many houses are available currently?
+        global $newHouseListingDelayTime;
+        
+        $query =
+            "SELECT COUNT(*) FROM $tableNamePrefix"."houses "
+            "WHERE blocked='0' ".
+            "AND rob_checkout = 0 AND edit_checkout = 0 ".
+            "AND edit_count != 0 ".
+            "AND ( value_estimate != 0 OR edit_count > 0 ) ".
+            "AND creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
+            "                             '$newHouseListingDelayTime' ) ;";
+
+        $houseCountResult = cd_queryDatabase( $query );
+        $houseCount = mysql_result( $houseCountResult, 0, 0 );
+
+        
         // back to transactions
         cd_queryDatabase( "SET AUTOCOMMIT = 0;" );
 
+        // One house is the user's house, so -1 for that
+        // An additional -1, because we're assuming that they spend
+        // 5 minutes (or whatever the chillTimeoutSecPer is) robbing each house
+        // so we need to account for the time they already spent robbing the
+        // first house that they died in.  -2 total.
+        // If there are 3 active players (houseCount=3), each player sees 2
+        // other houses, and the chill timer per house is the base 5 minutes
+        // They spend 5 minutes robbing one house, die, and that house gets
+        // a 5 minute chill.  They spend that chill time robbing the other
+        // house, die, and then the second house has a 5 minute chill.  But
+        // the first chill has expired.  This lets them go back and forth
+        // between houses for "serious," non-spam robberies without down-time.
+        $chillTimeoutSec =
+            $chillTimeoutSecPerAvailableHouse * ( $houseCount - 2 );
+
+        // two or fewer players?  Then there's only one house on the list
+        // for each player.
+        if( $houseCount <= 2 ) {
+            // bare minimum
+            $chillTimeoutSec = $chillTimeoutSecPerAvailableHouse;
+            }
+
+        if( $chillTimeoutSec > $maxChillTimeoutSec ) {
+            $chillTimeoutSec = $maxChillTimeoutSec;
+            }
+        
 
         // check for stale house chills
         $query = "DELETE ".
             "FROM $tableNamePrefix"."chilling_houses ".
             "WHERE  chill_start_time < ".
-            "       SUBTIME( CURRENT_TIMESTAMP, '$chillTimeout' );";
+            "       DATE_SUB( CURRENT_TIMESTAMP, ".
+            "                 INTERVAL $chillTimeoutSec SECOND );";
 
         // watch for deadlock here
         while( cd_queryDatabase( $query, 0 ) == FALSE ) {

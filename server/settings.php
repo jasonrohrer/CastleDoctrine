@@ -481,8 +481,17 @@ $vaultReachLimit = 4;
 
 
 // how long the chill on a house lasts after you die there
-// experimenting with 2 hours
-$chillTimeout = "0 2:00:0.000";
+// is multiplied by the number of available houses
+// Thus, when there are very few houses available, the chill timers become
+// shorter.
+// experimenting with 5 minutes per available house
+$chillTimeoutSecPerAvailableHouse = 300;
+
+// never make it longer than this
+// stick with old server value of 2 hours
+$maxChillTimeoutSec = 7200;
+
+
 
 // how long a forced ignore lasts after you rob a given user and that
 // user dies (makes two-account exploits much slower, since you can't just
