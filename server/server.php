@@ -2130,7 +2130,7 @@ function cd_checkForFlush() {
         global $newHouseListingDelayTime;
         
         $query =
-            "SELECT COUNT(*) FROM $tableNamePrefix"."houses "
+            "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
             "WHERE blocked='0' ".
             "AND rob_checkout = 0 AND edit_checkout = 0 ".
             "AND edit_count != 0 ".
