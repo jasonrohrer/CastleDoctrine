@@ -27,6 +27,10 @@ Version 35    Live Server Fixes
   chill timers.  Chill timeouts are still capped at 2 hours, matching the old
   server behavior when the house list is very long. 
 
+--Fixed a punctuation error that was causing owner-died houses (that were 
+  being robbed) to be deleted inccorectly (thanks Martin B.)
+
+
 
 
 Version 35      2014-March-31

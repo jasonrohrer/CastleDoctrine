@@ -1975,7 +1975,7 @@ function cd_checkForFlush() {
                 "    ( SELECT COUNT(*) FROM $housesTable ".
                 "      WHERE ".
                 "      house_map_hash = '$house_map_hash' OR ".
-                "      self_test_house_map_hash = '$house_map_hash' ) ";
+                "      self_test_house_map_hash = '$house_map_hash' ) ".
                 "    + ".
                 "    ( SELECT COUNT(*) FROM $shadowHousesTable ".
                 "      WHERE ".
@@ -2044,7 +2044,7 @@ function cd_checkForFlush() {
                 "    ( SELECT COUNT(*) FROM $housesTable ".
                 "      WHERE ".
                 "      house_map_hash = '$house_map_hash' OR ".
-                "      self_test_house_map_hash = '$house_map_hash' ) ";
+                "      self_test_house_map_hash = '$house_map_hash' ) ".
                 "    + ".
                 "    ( SELECT COUNT(*) FROM $shadowHousesTable ".
                 "      WHERE ".
