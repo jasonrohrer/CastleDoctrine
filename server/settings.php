@@ -493,6 +493,18 @@ $maxChillTimeoutSec = 7200;
 
 
 
+// the minimum size of the house list.  Padd house list with abandoned houses
+// up to this limit, if possible
+// picks abandoned houses that have killed at least one robber in the past.
+$minHouseLimit = 100;
+
+// how much to seed abandoned houses with (range)?
+$abandonedHouseSeedAmountMin = 50;
+$abandonedHouseSeedAmountMax = 200;
+
+
+
+
 // how long a forced ignore lasts after you rob a given user and that
 // user dies (makes two-account exploits much slower, since you can't just
 // respawn a second account repeatedly and re-rob it).

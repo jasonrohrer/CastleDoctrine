@@ -2302,6 +2302,78 @@ function cd_checkForFlush() {
         cd_log( "Flush paid $playersPaid players." );
 
 
+        
+        $query = "SELECT COUNT(*) FROM $tableNamePrefix"."houses ".
+            "WHERE value_estimate > 0 AND edit_count != 0;";
+
+        $result = cd_queryDatabase( $query );
+        
+        $count = mysql_result( $result, 0, 0 );
+
+        global $minHouseLimit, $abandonedHouseSeedAmountMin,
+            $abandonedHouseSeedAmountMax;
+
+        if( $abandonedHouseSeedAmountMin > 0 &&
+            $count < $minHouseLimit ) {
+
+            cd_log( "Flush sees $count houses where we want ".
+                    "$minHouseLimit minimum." );
+
+            $numToAdd = $minHouseLimit - $count;
+        
+            $query = "SELECT user_id FROM $tableNamePrefix"."houses ".
+                "WHERE value_estimate = 0 AND robber_deaths > 0 ".
+                "AND last_owner_visit_time < ".
+                "DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 7 DAY ) ".
+                "ORDER BY RAND() LIMIT $numToAdd;";
+
+            $result = cd_queryDatabase( $query );
+
+            $numRows = mysql_numrows( $result );
+        
+            for( $i=0; $i<$numRows; $i++ ) {
+                $loot_value = rand( $abandonedHouseSeedAmountMin,
+                                    $abandonedHouseSeedAmountMax );
+                $vault_contents = "#";
+
+                // random item in each vault
+                $query = "SELECT object_id FROM $tableNamePrefix"."prices ".
+                    "WHERE  object_id LIKE '5%' ".
+                    "AND CHAR_LENGTH( object_id ) = 3 ".
+                    "ORDER BY RAND() LIMIT 1;";
+                $result2 = cd_queryDatabase( $query );
+
+                $numRows2 = mysql_numrows( $result2 );
+
+                if( $numRows2 == 1 ) {
+                    $object_id = mysql_result( $result2, 0, "object_id" );
+
+                    $vault_contents = "$object_id:1";
+                    }
+
+                // don't include item in value estimate
+                // it's a surprise
+                $value_estimate = cd_computeValueEstimate( $loot_value,
+                                                           "#" );
+                
+                    
+                $user_id = mysql_result( $result, $i, "user_id" );
+
+                $query = "UPDATE $tableNamePrefix"."houses ".
+                    "SET loot_value = $loot_value, ".
+                    "value_estimate = $value_estimate, ".
+                    "vault_contents = '$vault_contents' ".
+                    "WHERE user_id = $user_id;";
+                cd_queryDatabase( $query );
+                }
+
+            cd_log( "Flush succeeded in seeding $numRows abandoned houses ".
+                    " (tried to add $numToAdd)." );
+            }
+        
+        
+        
+
 
         $query = "DELETE ".
             "FROM $tableNamePrefix"."log ".

@@ -30,6 +30,9 @@ Version 35    Live Server Fixes
 --Fixed a punctuation error that was causing owner-died houses (that were 
   being robbed) to be deleted inccorectly (thanks Martin B.)
 
+--House list now kept to 100 minimum by seeding randomly-selected abandonned,
+  non-trivial houses with loot.  There are 1500 of these in the database.
+
 
 
 
