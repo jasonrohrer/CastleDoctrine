@@ -166,6 +166,13 @@ You can take a look at the <a href="requirements.php">system requirements</a>.
 <br>
 <br>
 
+<center><iframe src="https://discordapp.com/widget?id=267002994426511360&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe></center>
+
+<br>
+<br>
+<br>
+
+    
 [<a href="credits.php">Game Credits</a>]
 
 
