@@ -919,6 +919,8 @@ function cd_setupDatabase() {
             "last_owner_action_time DATETIME NOT NULL,".
             "INDEX( last_owner_action_time ),".
             "last_owner_visit_time DATETIME NOT NULL,".
+            // any time state-provided money is added to the house
+            // either salary or squatter money for an abandoned house
             "last_pay_check_time DATETIME NOT NULL,".
             "INDEX( last_pay_check_time ),".
             "payment_count INT NOT NULL,".
@@ -2362,7 +2364,8 @@ function cd_checkForFlush() {
                 $query = "UPDATE $tableNamePrefix"."houses ".
                     "SET loot_value = $loot_value, ".
                     "value_estimate = $value_estimate, ".
-                    "vault_contents = '$vault_contents' ".
+                    "vault_contents = '$vault_contents', ".
+                    "last_pay_check_time = CURRENT_TIMESTAMP ".
                     "WHERE user_id = $user_id;";
                 cd_queryDatabase( $query );
                 }
@@ -2370,7 +2373,49 @@ function cd_checkForFlush() {
             cd_log( "Flush succeeded in seeding $numRows abandoned houses ".
                     " (tried to add $numToAdd)." );
             }
+
+
+        // find abandoned seeded houses that have been around a while
+        // add more money to them
+        $query = "SELECT user_id, loot_value, vault_contents ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE value_estimate > 0 AND robber_deaths > 0 ".
+            "AND last_owner_visit_time < ".
+            "DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 7 DAY ) ".
+            "AND last_pay_check_time < ".
+            "DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 DAY );";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
         
+        for( $i=0; $i<$numRows; $i++ ) {
+            $user_id = mysql_result( $result, $i, "user_id" );
+            $loot_value = mysql_result( $result, $i, "loot_value" );
+            $vault_contents = mysql_result( $result, $i, "vault_contents" );
+
+            // increment value by double normal seed amount
+            $loot_value += 2 * rand( $abandonedHouseSeedAmountMin,
+                                     $abandonedHouseSeedAmountMax );
+
+            // include item in value estimate at this point, surprise is stale
+            $value_estimate = cd_computeValueEstimate( $loot_value,
+                                                       $vault_contents );
+                
+                    
+            $query = "UPDATE $tableNamePrefix"."houses ".
+                "SET loot_value = $loot_value, ".
+                "value_estimate = $value_estimate, ".
+                "vault_contents = '$vault_contents', ".
+                "last_pay_check_time = CURRENT_TIMESTAMP ".
+                "WHERE user_id = $user_id;";
+            cd_queryDatabase( $query );
+            }
+
+        if( $numRows > 0 ) {    
+            cd_log( "Flush added extra seed money to $numRows ".
+                    "abandoned houses." );
+            }
         
         
 

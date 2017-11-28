@@ -35,6 +35,11 @@ Version 35    Live Server Fixes
 
 --Fixed lack of default value for forced_start_time (thanks Bart H.).
 
+--After a seeded abandoned house has sat on the list for 24 hours, extra seed
+  money is added, repeatedly for each subsequent 24 hours that it is on the
+  list (thanks Ukuko).
+
+
 
 
 Version 35      2014-March-31
