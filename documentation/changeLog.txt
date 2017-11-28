@@ -33,6 +33,7 @@ Version 35    Live Server Fixes
 --House list now kept to 100 minimum by seeding randomly-selected abandonned,
   non-trivial houses with loot.  There are 1500 of these in the database.
 
+--Fixed lack of default value for forced_start_time (thanks Bart H.).
 
 
 

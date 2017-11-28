@@ -6438,8 +6438,9 @@ function cd_endRobHouse() {
         // a forced ignore waiting to start (if the owner of this house
         // dies)
         $query = "INSERT INTO $tableNamePrefix"."ignore_houses ".
-            "( user_id, house_user_id, started, forced, forced_pending ) ".
-            "VALUES( '$user_id', '$victim_id', 0, 0, 1 ) ".
+            "( user_id, house_user_id, started, forced, forced_pending, ".
+            "  forced_start_time ) ".
+            "VALUES( '$user_id', '$victim_id', 0, 0, 1, CURRENT_TIMESTAMP ) ".
             "ON DUPLICATE KEY UPDATE forced_pending = 1;";
 
         $pendingDatabaseUpdateQueries[] = $query;
