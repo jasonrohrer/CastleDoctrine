@@ -39,6 +39,9 @@ Version 35    Live Server Fixes
   money is added, repeatedly for each subsequent 24 hours that it is on the
   list (thanks Ukuko).
 
+--Value of item in vault of abandonned houses is no longer a surprise
+  (surprise wasn't maintained after first visit anyway) (thanks Jere).
+
 
 
 

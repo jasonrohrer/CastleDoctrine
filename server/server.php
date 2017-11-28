@@ -2353,10 +2353,10 @@ function cd_checkForFlush() {
                     $vault_contents = "$object_id:1";
                     }
 
-                // don't include item in value estimate
-                // it's a surprise
+                // DO include item in value estimate
+                // it's no longer a surprise
                 $value_estimate = cd_computeValueEstimate( $loot_value,
-                                                           "#" );
+                                                           $vault_contents );
                 
                     
                 $user_id = mysql_result( $result, $i, "user_id" );
