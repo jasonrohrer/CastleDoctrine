@@ -484,12 +484,12 @@ $vaultReachLimit = 4;
 // is multiplied by the number of available houses
 // Thus, when there are very few houses available, the chill timers become
 // shorter.
-// experimenting with 5 minutes per available house
-$chillTimeoutSecPerAvailableHouse = 300;
+// experimenting with ~14 minutes per available house
+$chillTimeoutSecPerAvailableHouse = 864;
 
 // never make it longer than this
-// stick with old server value of 2 hours
-$maxChillTimeoutSec = 7200;
+// now that there are abandonned houses on the list, put this up to 24 hours
+$maxChillTimeoutSec = 86400;
 
 
 

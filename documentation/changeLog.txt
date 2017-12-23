@@ -42,6 +42,8 @@ Version 35    Live Server Fixes
 --Value of item in vault of abandonned houses is no longer a surprise
   (surprise wasn't maintained after first visit anyway) (thanks Jere).
 
+--Max chill timeout of 24 hours, now that there are 100+ houses on the list
+  (thanks Adam W.)
 
 
 
