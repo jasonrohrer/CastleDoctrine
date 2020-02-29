@@ -13,6 +13,6 @@
 
 
 
-const char *sharedServerSecret = "This is an example secret.  You probably cannot connect to the main server without replacing this.";
+const char *sharedServerSecret = "Please do not use this secret string to connect unfairly modded clients to the main server.  Keep in mind that this is an indie, open-source game made entirely by one person.  I am trusting you to do the right thing.  --Jason";
 
 
