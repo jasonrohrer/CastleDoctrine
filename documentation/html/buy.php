@@ -39,7 +39,7 @@ function showPayLinks( $inSimple ) {
       </ul>
 </td></tr></table>
 
-      <font size=5>Available now for $16</font><br>
+      <font size=5>Available now for $4</font><br>
       <!--<font size=4 color=#ff0000>(25% off final price during launch week)</font><br><br>-->
       
       <a href="https://sites.fastspring.com/jasonrohrer/instant/thecastledoctrine?referrer=<?php echo $referrer;?>">
