@@ -1,25 +1,36 @@
 Subject:  My back catalog gets a price drop
 
 
-Reaching the halfway point in my life and career has given me a new perspective.  The focus shifts slightly from "what I'm doing, and what I'm going to do," to "what I've done."
-
-My career has a few high points---games that are still like nothing else out there, and stand the test of time as playable, compelling experiences.  These are games that I still play myself from time to time, and I find myself getting sucked back into them.  With enough distance, they almost feel like the work of a stranger, and they tend to give me a, "how on earth did I manage to make THAT?" feeling.
-
-The Castle Doctrine, a multiplayer game of burglary and home defense, and Inside a Star-filled Sky, a game about infinity and recursion, are two of those high points.
-
-Alas, as the years wear on, they have become old games---ancient, really, relative to the short history of commercial indie games.  TCD is now six years old, and IASFS is a shocking nine years old.  IASFS is so old that it hails from an era when Steam hand-picked every game on their platform.  They didn't like the logo that I submitted, so one of their staff artists designed a new logo for me without even asking.  (Their logo was better!)
-
-And these ancient games have outdated prices.  Who is going to pay $16 or even $8 for a long-forgotten, one-person indie game?
-
-Thus, it feels like a good time to revive these old gems with a much-needed price drop.  They're both $4 each now, which is 50% off IASFS old $8 price, and 75% off the now-ridiculous $16 TCD price.
-
-The Castle Doctrine has been improved with more houses added to the list when the player population is sparse, making it much more playable regardless of how many other players are active.
-
-Inside a Star-filled Sky has also been spruced up a bit with better support for high resolution monitors and the high-resolution mice that go with them.  It's looking as sharp and smooth as ever.
-
-
-Thanks for all your support over my 16-year career of making games.
-
-Jason Rohrer
-March 2020
-Davis, California
+Reaching the halfway point in my life and career has given me a new perspective.  The focus shifts slightly from "what I'm doing, and what I'm going to do," to "what I've done."<br>
+<br>
+My career has a few high points---games that are still like nothing else out there and stand the test of time as playable, compelling experiences.  These are games that I still play myself from time to time, and I find myself getting sucked back into them.  With enough distance, they almost feel like the work of a stranger, and they tend to give me a, "how on earth did I manage to make THAT?" feeling.<br>
+<br>
+The Castle Doctrine, a multiplayer game of burglary and home defense, and Inside a Star-filled Sky, a game about infinity and recursion, are two of those high points.<br>
+<br>
+Alas, as the years wear on, they have become old games---ancient, really, relative to the short history of commercial indie games.  TCD is now six years old, and IASFS is a shocking nine years old.  IASFS is so old that it hails from an era when Steam hand-picked every game on their platform.  They didn't like the logo that I submitted, so one of their staff artists designed a new logo for me without even asking.  (Their logo was better!)<br>
+<br>
+And these ancient games have outdated prices.  Who is going to pay $16 or even $8 for a long-forgotten, one-person indie game?<br>
+<br>
+Thus, it feels like a good time to revive these old gems with a much-needed price drop.  They're both $4 each now, which is 50% off IASFS old $8 price, and 75% off the now-ridiculous $16 TCD price.<br>
+<br>
+The Castle Doctrine has been improved with more houses added to the list when the player population is sparse, making it much more playable regardless of how many other players are active.<br>
+<br>
+Inside a Star-filled Sky has also been spruced up a bit with better support for high resolution monitors and the high-resolution mice that go with them.  It's looking as sharp and smooth as ever.<br>
+<br>
+These games can be found on Steam here:<br>
+<br>
+<a href="https://store.steampowered.com/app/104100/Inside_a_Starfilled_Sky">https://store.steampowered.com/app/104100/Inside_a_Starfilled_Sky</a><br>
+<br>
+<a href="https://store.steampowered.com/app/249570/The_Castle_Doctrine">https://store.steampowered.com/app/249570/The_Castle_Doctrine</a><br>
+<br>
+<br>
+<br>
+Thanks for all your support over my 16-year career of making games.<br>
+<br>
+Jason Rohrer<br>
+March 2020<br>
+Davis, California<br>
+<br>
+<br>
+<br>
+To unsubscribe from future release updates, go here:  <a href="[unsubscribe]">Unsubscribe</a>
