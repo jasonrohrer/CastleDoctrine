@@ -2243,8 +2243,89 @@ function cd_checkForFlush() {
             cd_log( "After flush, $count house forced ignores remain." );
             }
 
-        
 
+
+
+        $returnedCarriedCount = 0;
+        
+        // watch for stale situations where someone has
+        // carried_  loot, tools, or gallery paintings, but never returned
+        // home
+        $query = "SELECT user_id, ".
+            "vault_contents, gallery_contents, loot_value, ".
+            "carried_loot_value, carried_vault_contents, ".
+            "carried_gallery_contents ".
+            "FROM $tableNamePrefix"."houses ".
+            "WHERE edit_checkout = 0 AND self_test_running = 0 ".
+            "AND edit_count != 0 AND rob_checkout = 0 " .
+            "AND ( carried_loot_value > 0 OR carried_vault_contents != '#' ".
+            "    OR carried_gallery_contents != '#' ) ".
+            "AND last_ping_time < ".
+            "SUBTIME( CURRENT_TIMESTAMP, '$staleTimeout' ) FOR UPDATE;";
+
+        $result = cd_queryDatabase( $query );
+
+        $numRows = mysql_numrows( $result );
+
+        
+        for( $i=0; $i<$numRows; $i++ ) {
+            $user_id = mysql_result( $result, $i, "user_id" );
+            
+            $vault_contents = mysql_result( $result, $i, "vault_contents" );
+            $gallery_contents = mysql_result( $result, $i, "gallery_contents" );
+            $loot_value = mysql_result( $result, $i, "loot_value" );
+
+            $carried_loot_value =
+                mysql_result( $result, $i, "carried_loot_value" );
+            $carried_vault_contents =
+                mysql_result( $result, $i, "carried_vault_contents" );
+            $carried_gallery_contents =
+                mysql_result( $result, $i, "carried_gallery_contents" );
+
+
+            // add carried stuff into vault
+            $loot_value += $carried_loot_value;
+            $vault_contents =
+                cd_idQuantityUnion( $vault_contents, $carried_vault_contents );
+    
+            if( $gallery_contents == "#" ) {
+                $gallery_contents = $carried_gallery_contents;
+                }
+            else {
+                if( $carried_gallery_contents != "#" ) {
+                    // append
+                    $gallery_contents =
+                        $gallery_contents . "#" . $carried_gallery_contents;
+                    }
+                }
+
+            $value_estimate = cd_computeValueEstimate( $loot_value,
+                                                       $vault_contents );
+            
+            $query = "UPDATE $tableNamePrefix"."houses SET ".
+                "loot_value = '$loot_value', ".
+                "value_estimate = '$value_estimate', ".
+                "vault_contents = '$vault_contents', ".
+                "gallery_contents = '$gallery_contents', ".
+                "carried_loot_value = 0, ".
+                "carried_vault_contents = '#', ".
+                "carried_gallery_contents = '#' ".
+                "WHERE user_id = $user_id;";
+            cd_queryDatabase( $query );
+
+            $returnedCarriedCount ++;
+            }
+
+        
+        // commit to free lock before next lock
+        cd_queryDatabase( "COMMIT;" );
+
+        
+        cd_log( "Flush returned carried items for ".
+                "$returnedCarriedCount houses" );
+
+
+        
 
         // now pay anyone who needs paying
 
@@ -5186,7 +5267,8 @@ function cd_listHouses() {
         "WHERE houses.user_id != '$user_id' AND houses.blocked='0' ".
         "AND houses.rob_checkout = 0 AND houses.edit_checkout = 0 ".
         "AND houses.edit_count != 0 ".
-        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 ) ".
+        "AND ( houses.value_estimate != 0 OR houses.edit_count > 0 OR ".
+        "      houses.gallery_contents != '#' ) ".
         "AND houses.creation_time < SUBTIME( CURRENT_TIMESTAMP, ".
         "                                    '$newHouseListingDelayTime' ) ".
         "$searchClause ".

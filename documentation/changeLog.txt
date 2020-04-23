@@ -45,6 +45,14 @@ Version 35    Live Server Fixes
 --Max chill timeout of 24 hours, now that there are 100+ houses on the list
   (thanks Adam W.)
 
+--Fixed so that carried tools, loot, and paintings received after a robbery are
+  eventually returned to the robber's house, even if they never return home to
+  edit their house (before, the loot would be caught in carried limbo forever,
+  and it turns out that a bunch of paintings were trapped this way ever since
+  2014, when someone quit the game after a successful robbery without ever
+  returning to their own house) (thanks Gabe J.)
+
+
 
 
 Version 35      2014-March-31
