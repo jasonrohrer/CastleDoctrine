@@ -28,14 +28,15 @@ if( isset( $blockRobots ) && $blockRobots == 1 ) {
 <table border=0 width="712" cellpadding=2 cellspacing=0>
 
 <tr bgcolor="#222222">
-<td width=18% align=center>[<a href="http://thecastledoctrine.net/news.php">news</a>]</td>
-<td width=18% align=center>[<a href="http://thecastledoctrine.net/forums">forums</a>]</td>
-<td width=18% align=center>[<a href="http://thecastledoctrine.gamepedia.com">wiki</a>]</td>
-<td width=18% align=center>[<a href="http://thecastledoctrine.net/buy.php">buy</a>]</td>
-<td width=28% align=center>[<a href="http://thecastledoctrine.net/stealRealMoneyContest.php">Steal Real Money</a>]</td>
+<td width=15% align=center>[<a href="news.php">news</a>]</td>
+<td width=15% align=center>[<a href="http://thecastledoctrine.net/forums">forums</a>]</td>
+<td width=15% align=center>[<a href="http://thecastledoctrine.gamepedia.com">wiki</a>]</td>
+<td width=15% align=center>[<a href="buy.php">buy</a>]</td>
+<td width=20% align=center>[<a href="stealRealMoneyContest.php">Steal Real Money</a>]</td>
+<td width=20% align=center>[<a href="crypto.php">Crypto Tokens</a>]</td>
 <!--<td width=20% align=center>[<a href="http://www.reddit.com/r/CastleDoctrine">subreddit</a>]</td>-->
 </tr>
 
-<tr><td colspan=5 bgcolor="#222222">
+<tr><td colspan=6 bgcolor="#222222">
 
 <table border=0 width="100%" cellpadding=5><tr><td bgcolor="#000000">
