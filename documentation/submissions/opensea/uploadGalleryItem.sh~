@@ -1,0 +1,6 @@
+if [ $# -ne 3 ]
+then
+
+	echo "Usage:  uploadGalleryItem.sh item_folder web_window_id"
+	echo
+fi
