@@ -13,17 +13,22 @@ $pathToRoot = "";
 include( "header.php" );
 
 
-$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=thecastledoctrine-test";
+//$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=thecastledoctrine";
 
 //$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=jason-rohrer";
 
-$numAssets = 155;
+// use relay, if local server can't support latest ssl
+// note ? at end
+$assetsURL = "http://onehouronelife.com/openseaRelay.php?";
+
+
+$numFetchedLastBatch = 1;
 
 $numFetched = 0;
 
 $assetHTML = array();
 
-while( $numFetched < $numAssets ) {
+while( $numFetchedLastBatch > 0 ) {
 
     // try 50 each time, and last batch will be shorter
     $limit = 50;
@@ -59,15 +64,20 @@ while( $numFetched < $numAssets ) {
 
         $numOrders = count( $sell_orders );
 
-        // last one?
-        $orderToCheck = $numOrders - 1;
+        $priceEth = 0;
 
-        $price = $sell_orders[ $orderToCheck ][ 'current_price' ];
-
-        $priceEth = $price / pow( 10.0, 18.0 );
-
+        if( $numOrders > 0 ) {
+            
+            // last one?
+            $orderToCheck = $numOrders - 1;
+            
+            $price = $sell_orders[ $orderToCheck ][ 'current_price' ];
+            
+            $priceEth = $price / pow( 10.0, 18.0 );
+            }
+        
         $priceLine = "$priceEth ETH";
-
+            
         if( $priceEth == 0 ) {
             $priceLine = "[not for sale]";
             }
@@ -79,6 +89,7 @@ while( $numFetched < $numAssets ) {
         }
     
     $numFetched += $numAssets;
+    $numFetchedLastBatch = $numAssets;
     }
 
 $assetHTML = array_reverse( $assetHTML )
@@ -95,7 +106,7 @@ $assetHTML = array_reverse( $assetHTML )
 <br>
 <br>
 
-    Collect all <?php echo $numFetched;?>!
+    View collection <a href="https://opensea.io/collection/thecastledoctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
 
 <br>
 <br>
@@ -113,7 +124,9 @@ $numPrinted = 0;
 foreach( $assetHTML as $html ) {
 
     
-    echo "<td align=center bgcolor=#222222 width=33%>$html</td>";
+    echo "<td align=center bgcolor=#222222>";
+    echo "<div style='width: 170px; word-wrap: break-word'>";
+    echo "$html</dev></td>";
     $numPrinted++;
     
     if( $numPrinted % $perRow == 0 ) {
