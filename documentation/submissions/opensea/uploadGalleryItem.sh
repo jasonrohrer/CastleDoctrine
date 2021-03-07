@@ -83,40 +83,49 @@ sleep 2
 
 # tab to name field
 xdotool key Tab
+sleep 1
 
 xdotool type "TCD #$id --- $info"
 
+sleep 1
 
 # tab to URL field
 xdotool key Tab
 
+sleep 1
+
 xdotool type "http://thecastledoctrine.net/crypto.php"
 
+sleep 1
 
 # tab to description field
 xdotool key Tab
+
+sleep 1
+
 
 xdotool type "The Castle Doctrine non-fungible painting token #$id
 
 $info"
 
+sleep 1
 
 
 # scroll to bottom to reach property add button
 xdotool key Page_Down Page_Down Page_Down
 
-
+sleep 1
 
 
 # move mouse over property add button
 xdotool mousemove --window $window 1022 $propertyPosY
 
-sleep 2
+sleep 1
 
 # click property add button
 xdotool click 1
 
-sleep 2
+sleep 1
 
 # tab to property name field
 xdotool key Tab Tab
@@ -158,7 +167,7 @@ sleep 1
 xdotool mousemove --window $window 300 $buttonPosY
 
 
-sleep 2
+sleep 1
 
 # click create button
 xdotool click 1
