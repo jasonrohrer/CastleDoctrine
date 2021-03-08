@@ -28,6 +28,12 @@ $numFetched = 0;
 
 $assetHTML = array();
 
+$itemURLs = array();
+
+$showURLs = 0;
+
+
+
 while( $numFetchedLastBatch > 0 ) {
 
     // try 50 each time, and last batch will be shorter
@@ -51,6 +57,8 @@ while( $numFetchedLastBatch > 0 ) {
         $name = $asset['name'];
 
         $link = $asset['permalink'];
+
+        $itemURLs[] = $link;
         
         // split name into lines
         $nameParts = preg_split( "/ --- /", $name );
@@ -92,7 +100,10 @@ while( $numFetchedLastBatch > 0 ) {
     $numFetchedLastBatch = $numAssets;
     }
 
-$assetHTML = array_reverse( $assetHTML )
+$assetHTML = array_reverse( $assetHTML );
+
+
+$itemURLs = array_reverse( $itemURLs );
 
 
 ?>
@@ -106,7 +117,16 @@ $assetHTML = array_reverse( $assetHTML )
 <br>
 <br>
 
-    View collection <a href="https://opensea.io/collection/thecastledoctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
+    <center>
+    <table width=75% border=0 cellpadding=10>
+    <tr><td bgcolor=#222222>
+<?php echo $numFetched;?> unique pixel paintings from the independent video game The Castle Doctrine.  Inside the game world, only one player can own each painting, but paintings can be stolen by other players through in-game burglaries, which are completely legal.  In the real world, only one person can own each non-fungible painting token, but tokens can be stolen by other people through real-life burglaries, which are completely illegal.  Please acquire your tokens responsibly.
+    </td></tr></table></center>
+
+    <br>
+
+    
+    View collection and bid on <a href="https://opensea.io/collection/thecastledoctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
 
 <br>
 <br>
@@ -117,6 +137,14 @@ $assetHTML = array_reverse( $assetHTML )
 <tr>
 <?php
 
+if( $showURLs ) {
+    foreach( $itemURLs as $url ) {
+        echo "$url<br>";
+        }
+    }
+
+
+    
 $perRow = 3;
 
 $numPrinted = 0;
