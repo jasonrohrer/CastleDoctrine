@@ -13,4 +13,4 @@ while read url; do
 	./startAuction.sh $url $windowID
 
 	sleep 5s
-done <testItemURLs.txt
+done <itemURLs.txt
