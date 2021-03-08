@@ -30,6 +30,10 @@ $assetHTML = array();
 
 $itemURLs = array();
 
+$forSaleURLs = array();
+
+$notForSaleURLs = array();
+
 $showURLs = 0;
 
 
@@ -88,6 +92,10 @@ while( $numFetchedLastBatch > 0 ) {
             
         if( $priceEth == 0 ) {
             $priceLine = "[not for sale]";
+            $notForSaleURLs[] = $link;
+            }
+        else {
+            $forSaleURLs[] = $link;
             }
         
         $html = "<a href=$link><img border=0 src=$image_url></a>".
@@ -104,6 +112,8 @@ $assetHTML = array_reverse( $assetHTML );
 
 
 $itemURLs = array_reverse( $itemURLs );
+$forSaleURLs = array_reverse( $forSaleURLs );
+$notForSaleURLs = array_reverse( $notForSaleURLs );
 
 
 ?>
@@ -138,7 +148,21 @@ $itemURLs = array_reverse( $itemURLs );
 <?php
 
 if( $showURLs ) {
+    $c = count( $itemURLs );
+    echo "<br><br>All URLS ($c):<br>";
     foreach( $itemURLs as $url ) {
+        echo "$url<br>";
+        }
+
+    $c = count( $forSaleURLs );
+    echo "<br><br>For SaleURLS ($c):<br>";
+    foreach( $forSaleURLs as $url ) {
+        echo "$url<br>";
+        }
+
+    $c = count( $notForSaleURLs );
+    echo "<br><br>NOT for sale URLS ($c):<br>";
+    foreach( $notForSaleURLs as $url ) {
         echo "$url<br>";
         }
     }
