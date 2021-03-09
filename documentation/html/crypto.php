@@ -13,7 +13,7 @@ $pathToRoot = "";
 include( "header.php" );
 
 
-//$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=thecastledoctrine";
+//$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=the-castle-doctrine";
 
 //$assetsURL = "https://api.opensea.io/api/v1/assets?order_direction=desc&collection=jason-rohrer";
 
@@ -136,7 +136,7 @@ $notForSaleURLs = array_reverse( $notForSaleURLs );
     <br>
 
     
-    View collection and bid on <a href="https://opensea.io/collection/thecastledoctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
+    View collection and bid on <a href="https://opensea.io/collection/the-castle-doctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
 
 <br>
 <br>
