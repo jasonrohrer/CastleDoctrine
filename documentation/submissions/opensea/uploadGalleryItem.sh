@@ -54,7 +54,7 @@ xdotool key "ctrl+a"
 
 
 # type create URL
-xdotool type "https://opensea.io/collection/the-castle-doctrine/assets/create"
+xdotool type "https://opensea.io/collection/thecastledoctrine/assets/create"
 
 xdotool key KP_Enter
 
