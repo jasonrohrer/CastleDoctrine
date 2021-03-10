@@ -37,8 +37,9 @@ xdotool key KP_Enter
 sleep 15
 
 
-# move mouse over highest bidder button
-xdotool mousemove --window $window 501 359
+# move mouse over set price button (default, but click 
+# to set up tab-to-field later)
+xdotool mousemove --window $window 257 352
 
 sleep 1
 
@@ -54,33 +55,48 @@ xdotool key Tab
 sleep 1
 
 # start price
-# don't leave at 0, because that's what we use to detect whether it's currently
-# for sale or not on tcd website
-xdotool type "0.001"
+xdotool type "6"
+
+# tab to end price switch
+xdotool key Tab
+sleep 1
+
+# enable switch
+xdotool type " "
+sleep 1
+
+# leave end price at 0
 
 
+# tab to end date drop-down
+xdotool key Tab Tab Tab Tab
+sleep 1
 
-# move mouse over auction # days drop-down
-xdotool mousemove --window $window 813 751
 
+# click on Sunday the 14
+xdotool mousemove --window $window 645 368
 sleep 1
 
 xdotool click 1
-
 sleep 1
 
-# move mouse over one week
-xdotool mousemove --window $window 753 839
-
+# close date picker
+xdotool key KP_Enter
 sleep 1
 
-xdotool click 1
 
+# tab to end time
+xdotool key Tab
 sleep 1
+
+# enter 12 noon
+xdotool type "1200p"
+sleep 1
+
 
 
 # move mouse over post button
-xdotool mousemove --window $window 969 501
+xdotool mousemove --window $window 962 476
 
 sleep 1
 
