@@ -121,7 +121,7 @@ $notForSaleURLs = array_reverse( $notForSaleURLs );
 <center>
 
 <font size=6>THE CRYPTO DOCTRINE</font><br>
-    The Castle Doctrine paintings as one-of-a-kind, Non-fungible crypto tokens<br>
+    The Castle Doctrine paintings as one-of-a-kind, non-fungible crypto tokens<br>
 
 </center>
 <br>
@@ -135,8 +135,17 @@ $notForSaleURLs = array_reverse( $notForSaleURLs );
 
     <br>
 
+    <br>
+    <center>
+    <table width=75% border=0 cellpadding=10>
+    <tr><td bgcolor=#222222>
+    The current plan:<br><br>
+    A Dutch auction (price starts high and drops to 0 over time) will start soon.  The scheduled end date for the auction will be on Sunday, March 14, 2021 at Noon EST.  A <a href="https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/80159687877489176210653573561790647259183104110845052606440451128372406255617">Test Item</a> using a similar format to what is planned is available, which will allow you to get a wallet set up and figure out how to bid.
+    </td></tr></table></center>
+    <br>
+    <br>
     
-    View collection and bid on <a href="https://opensea.io/collection/the-castle-doctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
+    View collection and (eventually) bid on <a href="https://opensea.io/collection/the-castle-doctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
 
 <br>
 <br>
