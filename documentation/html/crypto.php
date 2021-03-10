@@ -221,11 +221,13 @@ A non-fungible token is like a title deed on the Ethereum blockchain that declar
 <br>
 <br>
 <br>
+<br>
 
 <b>Can't you just make more copies of these tokens later?</b>
 <br>
 <br>
 Yes, I can, but they won't be the real, original tokens sold in this auction.  In fact, someone else can make "fake" painting tokens too and put them out there.  However, anyone can look up a token's history on the blockchain, using a tool like OpenSea, and check the provenance.  The real painting tokens were created by me this week.  Any fake tokens, created by me or anyone else, will have later birth dates, making them easily recognizable as fakes.
+<br>
 <br>
 <br>
 <br>
@@ -237,11 +239,13 @@ Once you get one of these tokens into your Ethereum wallet, you become the one t
 <br>
 <br>
 <br>
+<br>
 
 <b>So I can potentially resell a painting for a profit in the future?</b>
 <br>
 <br>
 Yes, that's possible.  It's also possible for it to drop in value in the future, of course.
+<br>
 <br>
 <br>
 <br>
@@ -254,6 +258,7 @@ The blockchain token contract specifies a 10% royalty fee, back to me, on all fu
 <br>
 <br>
 <br>
+<br>
 
 
 
@@ -261,6 +266,7 @@ The blockchain token contract specifies a 10% royalty fee, back to me, on all fu
 <br>
 <br>
 If, in a miraculous turn of events, these paintings become insanely popular and bring in loads of auction money and back-end royalties, I will share the money with any of the original artists who want some of it.  These paintings were all made for me at my specific request, back in 2013, but these people are all my personal friends, and I'm not looking to screw anyone over.
+<br>
 <br>
 <br>
 <br>
@@ -275,11 +281,13 @@ An English auction is more familiar, where the price starts with a low bid, peop
 <br>
 <br>
 <br>
+<br>
 
 <b>Why not an English auction?</b>
 <br>
 <br>
 Bidding in an English auction requires an irrevocable promise to pay, so that the highest bidder can receive the item in an atomic swap when the auction ends.  That's a more complicated (and thus expensive) operation on the blockchain, because the bid funds need to be locked in a contract.  Thus, in an English auction, potential buyers need to essentially pay gas fees even to bid, and they don't get those fees back if someone else wins the item.  A Dutch auction doesn't have this problem, because it's essential a falling fixed price, and a buyer can buy the item instantly at any time, with no promise to pay later.  Also, the original game used a Dutch auction for the paintings, with very high starting prices, so this setup in real life makes a nice parallel.
+<br>
 <br>
 <br>
 <br>
@@ -292,11 +300,13 @@ A Dutch auction works best with an insanely high starting price, to put everyone
 <br>
 <br>
 <br>
+<br>
 
 <b>How do I actually bid?</b>
 <br>
 <br>
 Bidding takes place with Ethereum cryptocurrency, so you're going to need to get your hands on some of that, and put it into an Ethereum wallet.  You bid through the OpenSea system, so you have to use wallet software that is compatible with their website, as a browser extension.  That's how they authorize your purchase, by asking your browser extension wallet for permission.  MetaMask is the most widely used browser wallet, with support for Firefox, Chrome, Brave, and Edge.  You can download it for your browser here:  <a href="https://metamask.io/download.html">https://metamask.io/download.html</a>.  Once you have it installed, you can either create a new Ethereum wallet in MetaMask, and send some Ethereum to it, or sign in to an existing Ethereum wallet inside MetaMask.  When you go to buy an item on OpenSea, MetaMask will pop up and ask you to approve the transaction.
+<br>
 <br>
 <br>
 <br>
@@ -308,11 +318,13 @@ Bidding takes place with Ethereum cryptocurrency, so you're going to need to get
 Doing anything on the Ethereum blockchain requires a gas fee, payed to the nodes that are operating the network.  The size of the fee corresponds to the complexity of the operation and the current congestion in the network.  Something simple, like sending someone Ethereum currency, might incur a fee of something like $4 to $10 worth of Ethereum, depending on the time of day and network congestion.  Transferring non-fungible tokens require a more complex contract operation on the blockchain, so the gas fees are quite a bit higher, with $60 fees or more being common at peak times.  You will pay a substantial gas fee when buying a painting token, but you'll be able to see a preview of that fee before you approve the transaction.  Keep gas fees in mind, however, if you're thinking about snagging a painting on the cheap.<br>
 <br>
 <br>
+<br>
 
 <b>NFTs are a scam.  And they're destroying the planet.  They're a planet-destroying scam!  How dare you?</b>
 <br>
 <br>
 I'm definitely taking a walk on the moral wild side with this one.  Follow the saccharine sound of my silver pipe, as I lead the way to ruin.
+<br>
 <br>
 <br>
 <br>
@@ -322,6 +334,7 @@ I'm definitely taking a walk on the moral wild side with this one.  Follow the s
 <br>
 <br>
 Oh, I'm definitely cashing in on the hype.
+<br>
 <br>
 <br>
 <br>
