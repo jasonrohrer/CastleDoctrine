@@ -147,7 +147,7 @@ $notForSaleURLs = array_reverse( $notForSaleURLs );
     <br>
     <br>
     
-    View the collection and bid on <a href="https://opensea.io/collection/the-castle-doctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
+    View the collection and bid on <a href="https://opensea.io/collection/thecastledoctrine">on OpenSea</a>.  Collect all <?php echo $numFetched;?>!
 
 <br>
 <br>
@@ -235,7 +235,7 @@ Yes, I can, but they won't be the real, original tokens sold in this auction.  I
 <b>Why would I want one of these?  What can I do with it?</b>
 <br>
 <br>
-Once you get one of these tokens into your Ethereum wallet, you become the one true owner of the token, and you can do whatever you want with it.  You can hold it, transfer it, gift it, wait for offers on it, or even auction it yourself.  This web page, and the <a href="https://opensea.io/collection/the-castle-doctrine">OpenSea collection page</a>, track the current status of each painting.  If someone offers up a painting for sale in the future, their asking price will show up here.  Even though the painting token will be out of my hands, it will still be in the public blockchain, where everyone can check its status.
+Once you get one of these tokens into your Ethereum wallet, you become the one true owner of the token, and you can do whatever you want with it.  You can hold it, transfer it, gift it, wait for offers on it, or even auction it yourself.  This web page, and the <a href="https://opensea.io/collection/thecastledoctrine">OpenSea collection page</a>, track the current status of each painting.  If someone offers up a painting for sale in the future, their asking price will show up here.  Even though the painting token will be out of my hands, it will still be in the public blockchain, where everyone can check its status.
 <br>
 <br>
 <br>
