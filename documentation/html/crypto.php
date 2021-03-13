@@ -34,6 +34,9 @@ $forSaleURLs = array();
 
 $notForSaleURLs = array();
 
+$ids = array();
+
+
 $showURLs = 0;
 
 
@@ -60,6 +63,8 @@ while( $numFetchedLastBatch > 0 ) {
         $image_url = $asset['image_thumbnail_url'];
         $name = $asset['name'];
 
+        $names[] = $name;
+        
         $link = $asset['permalink'];
 
         $itemURLs[] = $link;
@@ -69,6 +74,12 @@ while( $numFetchedLastBatch > 0 ) {
 
         $nameParts[0] = "<a href=$link>" . $nameParts[0] . "</a>";
 
+        $idParts = preg_split( "/#/", $nameParts[0] );
+
+        
+        $ids[] = $idParts[1];
+        
+        
         $name = join( "<br>", $nameParts );
         
         
@@ -114,6 +125,20 @@ $assetHTML = array_reverse( $assetHTML );
 $itemURLs = array_reverse( $itemURLs );
 $forSaleURLs = array_reverse( $forSaleURLs );
 $notForSaleURLs = array_reverse( $notForSaleURLs );
+$ids = array_reverse( $ids );
+
+$map = array();
+
+for( $i=0; $i<count($ids); $i++ ) {
+    $map[ $ids[$i] ] = $assetHTML[$i];
+    }
+
+
+ksort( $map, SORT_NUMERIC );
+$assetHTML = array();
+foreach( $map as $key => $val) {
+    $assetHTML[] = $val;
+    }
 
 
 ?>
