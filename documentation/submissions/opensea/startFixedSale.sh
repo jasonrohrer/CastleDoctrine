@@ -58,7 +58,7 @@ xdotool click 1
 
 
 # wait for sig window to pop up:
-sleep 15
+sleep 20
 
 
 sigWindowID=`xdotool getactivewindow`
