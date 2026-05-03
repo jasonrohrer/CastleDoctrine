@@ -2,23 +2,37 @@
 # run this to build two headless client folders and launch them both
 # in nohup mode
 
-cd CastleDoctrine/gameSource
+pw="secret"
+portA=5077
+portB=5078
+
+
+
+cd /home/jcr13/checkout/CastleDoctrine/gameSource
 ./makeHeadlessGame.sh
 ./makeHeadlessGameFolder.sh
 
 
-cd ~
+cd /home/jcr13
+
+# kill existing, if running
+
+echo -n "quit\n$pw\n[END_REQUEST]" | netcat localhost $portA
+echo -n "quit\n$pw\n[END_REQUEST]" | netcat localhost $portB
+
 
 rm -r headlessClientA/
 rm -r headlessClientB/
 
-cp -r cpp/CastleDoctrine/gameSource/headlessFolder ./headlessClientA
+cp -r checkout/CastleDoctrine/gameSource/headlessFolder ./headlessClientA
 
-echo "secret" > ./headlessClientA/settings/simulatorServerPassword.ini
+echo $pw > ./headlessClientA/settings/simulatorServerPassword.ini
+
+echo $portA > ./headlessClientA/settings/simulatorServerPort.ini
 
 cp -r ./headlessClientA ./headlessClientB
 
-echo "5078" > ./headlessClientB/settings/simulatorServerPort.ini
+echo $porB > ./headlessClientB/settings/simulatorServerPort.ini
 
 cd ./headlessClientA
 nohup ./CastleDoctrineHeadless > headlessLog.txt 2>&1 &
