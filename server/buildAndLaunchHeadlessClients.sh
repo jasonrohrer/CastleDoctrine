@@ -32,7 +32,7 @@ echo $portA > ./headlessClientA/settings/simulatorServerPort.ini
 
 cp -r ./headlessClientA ./headlessClientB
 
-echo $porB > ./headlessClientB/settings/simulatorServerPort.ini
+echo $portB > ./headlessClientB/settings/simulatorServerPort.ini
 
 cd ./headlessClientA
 nohup ./CastleDoctrineHeadless > headlessLog.txt 2>&1 &
