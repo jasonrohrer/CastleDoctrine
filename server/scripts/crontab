@@ -1,2 +1,3 @@
 0 9 * * * /home/jcr13/nightlyCron.sh
 * * * * * /home/jcr13/public_html/gameServer/checkForFlush.sh
+
