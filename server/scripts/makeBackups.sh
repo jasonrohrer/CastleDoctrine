@@ -24,16 +24,17 @@ gzip -f /home/jcr13/backups/cd_news_$date.mysql
 dirName=cd_webPHP_$date
 dirPath=/home/jcr13/backups/$dirName
 
-rm -r $dirPath
+rm -rf $dirPath
+mkdir $dirPath
 
 cd /home/jcr13/public_html
 find . -type f -name '*.php' -exec cp --parents -t $dirPath {} +
 
 cd /home/jcr13/backups
 
-tar czf $dirName.tar.gz $dirname
+tar czf $dirName.tar.gz $dirName
 
-rm -r $dirname
+rm -r $dirName
 
 
 
