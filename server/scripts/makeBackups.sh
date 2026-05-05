@@ -38,6 +38,25 @@ rm -r $dirName
 
 
 
+
+# now binary builds, since they are a pain to re-make if lost
+
+dirName=cd_builds_$date
+dirPath=/home/jcr13/backups/$dirName
+
+rm -rf $dirPath
+mkdir $dirPath
+
+cp /home/jcr13/cdDownloads/* $dirPath
+
+cd /home/jcr13/backups
+
+tar czf $dirName.tar.gz $dirName
+
+rm -r $dirName
+
+
+
 # delete backup files older than two weeks
 
 find /home/jcr13/backups -mtime +14 -delete
