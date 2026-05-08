@@ -10415,7 +10415,7 @@ function cd_checkPassword( $inFunctionName ) {
             $nonce = cd_hmac_sha1( $serverSecretKey, uniqid() );
             
             $callURL =
-                "http://api2.yubico.com/wsapi/2.0/verify?id=$yubicoClientID".
+                "https://api2.yubico.com/wsapi/2.0/verify?id=$yubicoClientID".
                 "&otp=$yubikey&nonce=$nonce";
             
             $result = trim( file_get_contents( $callURL ) );
